@@ -292,6 +292,26 @@ checkcons.close()
 outcmx.write('open ' + outname + '_viol_cons.pb\n')
 outcmx.write('color #%s %s\n' %(str(x+6),'brown'))
 
+outcmx.write('open hbond_cons.pb\n')
+outcmx.write('color #%s %s\n' %(str(x+6),'pink'))
+
+selhbond = 'name hbond  #1.1:'
+hbond = open('hbond_cons.pb','w')
+hbond.write("; halfbond = false\n; color = pink\n; radius = 0.2\n; dashes = 0\n")
+for line in open('hbond.upl').readlines():
+	cns = line.split()
+	if "#" not in cns[0]:
+		if cns[5] != 'H':
+			print(cns)
+			hbond.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], cns[2], cns[3],cns[5],'pink'))
+			if cns[0] not in selhbond:
+				selhbond = selhbond +'%s,' %(cns[0])
+			if cns[3] not in selhbond:
+				selhbond = selhbond +'%s,' %(cns[3])
+selhbond = selhbond[:-1] + '@O,N\n'
+outcmx.write(selhbond)
+hbond.close()
+
 outpml.write('color gray60, final\n')
 outpml.write('split_states ' + pdbname + '\n')
 for y in range(2,21,1):
