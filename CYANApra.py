@@ -224,6 +224,35 @@ for uplfile in upls:
 	fout.writelines(newlines)
 fin.close()
 fout.close()
+upls2 = [upl for upl in upls if 'final' not in upl]
+upls2 = [upl for upl in upls2 if 'hbond' not in upl]
+print(upls2)
+for uplfile in upls2:
+	fin = open(uplfile,'r')
+	outpb = open(uplfile.replace('.upl','_cons.pb'),'w')
+	outpb.write("; halfbond = false\n; color = pink\n; radius = 0.1\n; dashes = 10\n")
+	for line in fin.readlines():
+		cns = line.split()
+		if "#" not in cns[0]:
+			atom1 = cns[2]
+			atom2 = cns[5]
+			if cns[1]+cns[2] in replacements.keys():
+				atom1 = atom1.replace(cns[2], replacements[cns[1]+cns[2]])
+			if cns[4]+cns[5] in replacements.keys():
+				atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
+			if cns[1]+cns[5] not in replacements.keys():
+				atom1 = atom1
+			if cns[4]+cns[5] not in replacements.keys():
+				atom2=atom2
+			if ',' in atom1 and ',' not in atom2:
+				outpb.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1.split(',')[0], cns[3],atom2, 'pink'))
+				outpb.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1.split(',')[1], cns[3],atom2, 'pink'))
+			if ',' in atom2 and ',' not in atom1:
+				outpb.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2.split(',')[0], 'pink'))
+				outpb.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2.split(',')[1], 'pink'))
+			if ',' not in atom1 and ',' not in atom2:
+				outpb.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2, 'pink'))
+
 for lolfile in lols:
 	newlines = []
 	fin = open(lolfile,'r')
@@ -302,7 +331,6 @@ for line in open('hbond.upl').readlines():
 	cns = line.split()
 	if "#" not in cns[0]:
 		if cns[5] != 'H':
-			print(cns)
 			hbond.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], cns[2], cns[3],cns[5],'pink'))
 			if cns[0] not in selhbond:
 				selhbond = selhbond +'%s,' %(cns[0])
