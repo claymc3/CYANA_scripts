@@ -52,18 +52,28 @@ OutPut:
 ''')
 	exit()
 
+cwd = os.getcwd() + '/'
+outdir = cwd + 'post_cyana_ana/'
+print(outdir)
 in_pdb = sys.argv[1]
 fupl = sys.argv[2]
 pdbname = in_pdb.split('.')[0]
 fovw = fupl.replace('.upl','.ovw')
-calc = os.getcwd() + '/CALC.cya'
+calc = cwd + 'CALC.cya'
 outname = fupl.split('.')[0]
-checkcons = open(outname + '_summary.txt','w')
 
+print(os.path.exists(outdir))
+if not os.path.exists(outdir):
+	os.makedirs(outdir)
+
+checkcons = open(outdir + outname + '_summary.txt','w')
 checkcons.write('                         #peaks    upl Violations Assigned Ambiguous Unassigned\n')
 summary = pd.DataFrame(columns=['#peaks', 'upl', 'Violations', 'Assigned', 'Ambiguous', 'Unassigned' ])
 cya_plists = [line.strip().replace('.peaks','-cycle7.peaks') for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
-
+manualcons = [line.strip() for line in open(calc).readlines() if line.strip() and 'constraints' in line][0].split()[2].split(',')
+upls = [con for con in manualcons if 'upl' in con]
+lols = [con for con in manualcons if 'lol' in con]
+dihed = [con for con in manualcons if 'aco' in con]
 plistdict = {}
 for x in range(len(cya_plists)):
 	exec('upl' + str(x+1) + ' = []')
@@ -78,7 +88,7 @@ for x in range(len(cya_plists)):
 		if 'e 0     0     0     0' in line: na+=1
 		if len(line[0:8].strip()) !=0 and 'VC' in line: aa+=1
 		if 'e 0     0     0     0' not in line and 'VC' not in line: sa+=1
-	checkcons.write('%-25s%6d %6d %10d %8d %9d %10d\n' %(plist.replace('-cycle7.peaks',''),na+aa+sa,len(upl),len(viol),na,aa,sa))
+	checkcons.write('%-25s%6d %6d %10d %8d %9d %10d\n' %(plist.replace('-cycle7.peaks',''),na+aa+sa,len(upl),len(viol),sa,aa,na))
 	summary.loc[plist.replace('-cycle7.peaks',''),'#peaks'] = na+aa+sa
 	summary.loc[plist.replace('-cycle7.peaks',''),'upl'] = len(upl)
 	summary.loc[plist.replace('-cycle7.peaks',''),'Violations'] = len(viol)
@@ -90,31 +100,27 @@ checkcons.write('\n\n')
 colors = ['white','raspberry','gold','forest','marine','purple','orange','cyan','pink','deepteal','gray']
 colors2 = ['white','mediumvioletred','orange','forest','royalblue','purple','chocolate','cyan','pink','deepteal','gray']
 
-outpml = open(fupl.replace('.upl','_dist.pml'),'w')
-outpml.write('load '+ in_pdb+'\n')
+outpml = open(outdir + fupl.replace('.upl','_pra.pml'),'w')
+outpml.write('load '+ cwd + in_pdb+'\n')
 outpml.write('set dash_gap, 0.05\n')
 outpml.write('color gray60, all\n')
-outcmx = open(fupl.replace('.upl','_dist.cxc'),'w')
-outcmx.write('open '+ in_pdb+'\n')
+outcmx = open(outdir + fupl.replace('.upl','_pra.cxc'),'w')
+outcmx.write('open '+ cwd + in_pdb+'\n')
 pdbname = in_pdb.replace('.pdb','')
 
 
-badpbout = open(outname + '_poor_cons.pb','w')
+badpbout = open(outdir + outname + '_poor_cons.pb','w')
 badpbout.write("; halfbond = false\n; color = darkred\n; radius = 0.2\n; dashes = 0\n")
-longpbout = open(outname + '_long_cons.pb','w')
+longpbout = open(outdir + outname + '_long_cons.pb','w')
 longpbout.write("; halfbond = false\n; color = aquamarine\n; radius = 0.2\n; dashes = 0\n")
-shortpbout = open(outname + '_short_cons.pb','w')
+shortpbout = open(outdir + outname + '_short_cons.pb','w')
 shortpbout.write("; halfbond = false\n; color = light coral\n; radius = 0.2\n; dashes = 0\n")
-violpbout = open(outname + '_viol_cons.pb','w')
+violpbout = open(outdir + outname + '_viol_cons.pb','w')
 violpbout.write("; halfbond = false\n; color = brown\n; radius = 0.2\n; dashes = 0\n")
 
 '''cns[0] = resi1 , cns[1] = resn1, cns[2]= atom1, cns[3] = resi2, cns[4]=resn2, cns[5] = atom2, cns[6] = dist'''
 i = 1
 finalupl = []
-
-upls = glob.glob(os.getcwd() + '/*.upl')
-upls = [upl for upl in upls if 'cycle' not in upl]
-lols = glob.glob(os.getcwd() + '/*.lol')
 # name1 = line[10:15].strip()
 # resn1 = line[16:20]
 # resi1 = line[20:24].strip()
@@ -189,9 +195,10 @@ for line in open(fupl).readlines():
 				if line not in Filtered:
 					Filtered.append(line)
 					longpbout.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2, 'aquamarine'))
+					
 					lcons2.append(line)
 					dist = 'distance long %s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2)
-					tcolor = 'color cyan, long' + str(i) + '\n'
+					tcolor = 'color cyan, long ' + str(i) + '\n'
 					# show.append('show #1.1:%s@%s target a\n' %(cns[0], atom1))
 					# show.append('show #1.1:%s@%s target a\n' %(cns[3], atom2))
 			if float(cns[6]) <= 3.00:
@@ -224,12 +231,9 @@ for uplfile in upls:
 	fout.writelines(newlines)
 fin.close()
 fout.close()
-upls2 = [upl for upl in upls if 'final' not in upl]
-upls2 = [upl for upl in upls2 if 'hbond' not in upl]
-print(upls2)
-for uplfile in upls2:
+for uplfile in upls:
 	fin = open(uplfile,'r')
-	outpb = open(uplfile.replace('.upl','_cons.pb'),'w')
+	outpb = open(outdir + uplfile.replace('.upl','_cons.pb'),'w')
 	outpb.write("; halfbond = false\n; color = pink\n; radius = 0.1\n; dashes = 10\n")
 	for line in fin.readlines():
 		cns = line.split()
@@ -275,9 +279,9 @@ filtered_upl.close()
 for x in range(len(cya_plists)):
 	plist = cya_plists[x].replace('-cycle7.peaks','')
 	outname = fupl.split('.')[0]
-	outcmx.write('open ' + outname + '_'+ plist + '.pb\n')
+	outcmx.write('open ' + outdir + outname + '_'+ plist + '.pb\n')
 	outcmx.write('color #%s %s\n' %(str(x+2),colors2[x+1]))
-	pbout = open(outname + '_'+ plist + '.pb','w')
+	pbout = open(outdir + outname + '_'+ plist + '.pb','w')
 	pbout.write("; halfbond = false\n")
 	pbout.write("; color = " + colors2[x+1] + '\n')
 	pbout.write("; radius = 0.1\n")
@@ -296,21 +300,21 @@ for x in range(len(cya_plists)):
 outpml.write("hide labels\n")
 
 
-outcmx.write('open ' + outname + '_poor_cons.pb\n')
+outcmx.write('open ' + outdir + outname + '_poor_cons.pb\n')
 outcmx.write('color #%s %s\n' %(str(x+3),'darkred'))
 
 checkcons.write('### Low Support Constraints (final_poor_cons.pb) ###\n')
 for con in badcons2:
 	checkcons.write(con)
 checkcons.write('\n\n')
-outcmx.write('open ' + outname + '_long_cons.pb\n')
+outcmx.write('open ' + outdir +  outname + '_long_cons.pb\n')
 outcmx.write('color #%s %s\n' %(str(x+4),'aquamarine'))
 
 checkcons.write('### Long Distance Constraints d >= 6.00 ###\n')
 for con in lcons2:
 	checkcons.write(con)
 checkcons.write('\n\n')
-outcmx.write('open ' + outname + '_short_cons.pb\n')
+outcmx.write('open ' + outdir + outname + '_short_cons.pb\n')
 outcmx.write('color #%s %s\n' %(str(x+5),'light coral'))
 checkcons.write('### Short Distance Constraints d <= 3.00 ###\n')
 for con in scons2:
@@ -318,14 +322,14 @@ for con in scons2:
 checkcons.write('\n\n')
 checkcons.close()
 
-outcmx.write('open ' + outname + '_viol_cons.pb\n')
+outcmx.write('open ' + outdir + outname + '_viol_cons.pb\n')
 outcmx.write('color #%s %s\n' %(str(x+6),'brown'))
 
-outcmx.write('open hbond_cons.pb\n')
+outcmx.write('open ' + outdir + 'hbond_cons.pb\n')
 outcmx.write('color #%s %s\n' %(str(x+6),'pink'))
 
 selhbond = 'name hbond  #1.1:'
-hbond = open('hbond_cons.pb','w')
+hbond = open(outdir + 'hbond_cons.pb','w')
 hbond.write("; halfbond = false\n; color = pink\n; radius = 0.2\n; dashes = 0\n")
 for line in open('hbond.upl').readlines():
 	cns = line.split()
@@ -361,7 +365,7 @@ outcmx.write('show #1.1@N target a\n')
 outcmx.write('cartoon suppress false\n')
 outcmx.write('label #1.1  text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n')
 outcmx.write('label ontop false\n')
-
+outcmx.write('ui tool show "Side View"')
 outpml.close()
 outcmx.close()
 
