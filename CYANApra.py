@@ -3,28 +3,28 @@ import os
 import sys
 import glob
 import pandas as pd
-replacements ={'ALAH':'N','ALAHA':'CA','ALAQB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'CB',
-'CYSH':'N','CYSHA':'CA','CYSHB2':'CB','CYSHB3':'CB','CYSQB':'CB',
-'ASPH':'N','ASPHA':'CA','ASPHB2':'CB','ASPHB3':'CB','ASPQB':'CB',
-'GLUH':'N','GLUHA':'CA','GLUHB2':'CB','GLUHB3':'CB','GLUQB':'CB','GLUHG2':'CG','GLUHG3':'CG','GLUQG':'CG',
-'PHEH':'N','PHEHA':'CA','PHEHB2':'CB','PHEHB3':'CB','PHEQB':'CB','PHEQD':'CD1,CD2','PHEQE':'CE1,CE2','PHEHD1':'CD1','PHEHE1':'CE1','PHEHZ':'CZ','PHEHE2':'CE2','PHEHD2':'CD2',
-'GLYH':'N','GLYHA2':'CA','GLYHA3':'CA','GLYQA':'CA',
-'HISH':'N','HISHA':'CA','HISHB2':'CB','HISHB3':'CB','HISQB':'CB','HISHD1':'ND1','HISHE2':'NE2','HISHD2':'CD2','HISHE1':'CE1',
-'ILEH':'N','ILEHA':'CA','ILEHB':'CB','ILEQG2':'CG2','ILEHG21':'CG2','ILEHG22':'CG2','ILEHG23':'CG2','ILEHG12':'CG1','ILEHG13':'CG1','ILEQG1':'CG1','ILEQD1':'CD1','ILEHD11':'CD1','ILEHD12':'CD1','ILEHD13':'CD1',
-'LYSH':'N','LYSHA':'CA','LYSHB2':'CB','LYSHB3':'CB','LYSQB':'CB','LYSHG2':'CG','LYSHG3':'CG','LYSHD2':'CD ','LYSHD3':'CD ','LYSQD':'CD ','LYSHE2':'CE','LYSHE3':'CE','LYSQE':'CE','LYSHZ1':'NZ','LYSHZ2':'NZ','LYSHZ3':'NZ','LYSQZ':'NZ',
-'LEUH':'N','LEUHA':'CA','LEUHB2':'CB','LEUHB3':'CB','LEUQB':'CB','LEUHG':'CG','LEUHD11':'CD1','LEUHD12':'CD1','LEUHD13':'CD1','LEUQD1':'CD1','LEUHD21':'CD2','LEUHD22':'CD2','LEUHD23':'CD2','LEUQD2':'CD2','LEUQQD':'CD2,CD1',
-'METH':'N','METHA':'CA','METHB2':'CB','METHB3':'CB','METQB':'CB','METHG2':'CG','METHG3':'CG','METQG':'CG','METQE':'CE','METHE1':'CE','METHE2':'CE','METHE3':'CE',
-'ASNH':'N','ASNHA':'CA','ASNHB2':'CB','ASNHB3':'CB','ASNQB':'CB','ASNHD21':'ND2','ASNHD22':'ND2','ASNQD2':'ND2',
+replacements ={
+'ALAHA':'CA','ALAQB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'CB',
+'CYSHA':'CA','CYSHB2':'CB','CYSHB3':'CB','CYSQB':'CB',
+'ASPHA':'CA','ASPHB2':'CB','ASPHB3':'CB','ASPQB':'CB',
+'GLUHA':'CA','GLUHB2':'CB','GLUHB3':'CB','GLUQB':'CB','GLUHG2':'CG','GLUHG3':'CG','GLUQG':'CG',
+'PHEHA':'CA','PHEHB2':'CB','PHEHB3':'CB','PHEQB':'CB','PHEQD':'CD1,CD2','PHEQE':'CE1,CE2','PHEHD1':'CD1','PHEHE1':'CE1','PHEHZ':'CZ','PHEHE2':'CE2','PHEHD2':'CD2',
+'GLYHA2':'CA','GLYHA3':'CA','GLYQA':'CA',
+'HISHA':'CA','HISHB2':'CB','HISHB3':'CB','HISQB':'CB','HISHD1':'ND1','HISHE2':'NE2','HISHD2':'CD2','HISHE1':'CE1',
+'ILEHA':'CA','ILEHB':'CB','ILEQG2':'CG2','ILEHG21':'CG2','ILEHG22':'CG2','ILEHG23':'CG2','ILEHG12':'CG1','ILEHG13':'CG1','ILEQG1':'CG1','ILEQD1':'CD1','ILEHD11':'CD1','ILEHD12':'CD1','ILEHD13':'CD1',
+'LYSHA':'CA','LYSHB2':'CB','LYSHB3':'CB','LYSQB':'CB','LYSHG2':'CG','LYSHG3':'CG','LYSHD2':'CD ','LYSHD3':'CD ','LYSQD':'CD ','LYSHE2':'CE','LYSHE3':'CE','LYSQE':'CE','LYSHZ1':'NZ','LYSHZ2':'NZ','LYSHZ3':'NZ','LYSQZ':'NZ',
+'LEUHA':'CA','LEUHB2':'CB','LEUHB3':'CB','LEUQB':'CB','LEUHG':'CG','LEUHD11':'CD1','LEUHD12':'CD1','LEUHD13':'CD1','LEUQD1':'CD1','LEUHD21':'CD2','LEUHD22':'CD2','LEUHD23':'CD2','LEUQD2':'CD2','LEUQQD':'CD2,CD1',
+'METHA':'CA','METHB2':'CB','METHB3':'CB','METQB':'CB','METHG2':'CG','METHG3':'CG','METQG':'CG','METQE':'CE','METHE1':'CE','METHE2':'CE','METHE3':'CE',
+'ASNHA':'CA','ASNHB2':'CB','ASNHB3':'CB','ASNQB':'CB','ASNHD21':'ND2','ASNHD22':'ND2','ASNQD2':'ND2',
 'PROHA':'CA','PROHB2':'CB','PROHB3':'CB','PROQB':'CB','PROHG2':'CG','PROHG3':'CG','PROQG':'CG','PROHD2':'CD','PROHD3':'CD','PROQD':'CD',
-'GLNH':'N','GLNHA':'CA','GLNHB2':'CB','GLNHB3':'CB','GLNQB':'CB','GLNHG2':'CG','GLNHG3':'CG','GLNQG':'CG','GLNHE21':'NE2','GLNHE22':'NE2','GLNQE2':'NE2',
-'ARGH':'N','ARGHA':'CA','ARGHB2':'CB','ARGHB3':'CB','ARGQB':'CB','ARGHG2':'CG','ARGHG3':'CG','ARGQG':'CG','ARGHD2':'CD','ARGHD3':'CD','ARGQD':'CD','ARGHE':'NE','ARGHH11':'NH1','ARGHH12':'NH1','ARGQH1':'NH1','ARGHH21':'NH2','ARGHH22':'NH2','ARGQH2':'NH2',
-'SERH':'N','SERHA':'CA','SERHB2':'CB','SERHB3':'CB','SERHG':'OG',
-'THRH':'N','THRHA':'CA','THRHB':'CB','THRHG1':'OG1','THRHG21':'CG2','THRHG22':'CG2','THRHG23':'CG2','THRQG2':'CG2',
-'VALH':'N','VALHA':'CA','VALHB':'CB','VALHG11':'CG1','VALHG12':'CG1','VALHG13':'CG1','VALQG1':'CG1','VALHG21':'CG2','VALHG22':'CG2','VALHG23':'CG2','VALQG2':'CG2','VALQQG':'CG1,CG2',
-'TRPH':'N','TRPHA':'CA','TRPHB2':'CB','TRPHB3':'CB','TRPQB':'CB','TRPHD1':'CD1','TRPHE3':'CE3','TRPHE1':'NE1','TRPHZ3':'CZ3','TRPHZ2':'CZ2','TRPHH2':'CH2',
-'TYRH':'N','TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRQD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH'}
-
-
+'GLNHA':'CA','GLNHB2':'CB','GLNHB3':'CB','GLNQB':'CB','GLNHG2':'CG','GLNHG3':'CG','GLNQG':'CG','GLNHE21':'NE2','GLNHE22':'NE2','GLNQE2':'NE2',
+'ARGHA':'CA','ARGHB2':'CB','ARGHB3':'CB','ARGQB':'CB','ARGHG2':'CG','ARGHG3':'CG','ARGQG':'CG','ARGHD2':'CD','ARGHD3':'CD','ARGQD':'CD','ARGHE':'NE','ARGHH11':'NH1','ARGHH12':'NH1','ARGQH1':'NH1','ARGHH21':'NH2','ARGHH22':'NH2','ARGQH2':'NH2',
+'SERHA':'CA','SERHB2':'CB','SERHB3':'CB','SERHG':'OG',
+'THRHA':'CA','THRHB':'CB','THRHG1':'OG1','THRHG21':'CG2','THRHG22':'CG2','THRHG23':'CG2','THRQG2':'CG2',
+'VALHA':'CA','VALHB':'CB','VALHG11':'CG1','VALHG12':'CG1','VALHG13':'CG1','VALQG1':'CG1','VALHG21':'CG2','VALHG22':'CG2','VALHG23':'CG2','VALQG2':'CG2','VALQQG':'CG1,CG2',
+'TRPHA':'CA','TRPHB2':'CB','TRPHB3':'CB','TRPQB':'CB','TRPHD1':'CD1','TRPHE3':'CE3','TRPHE1':'NE1','TRPHZ3':'CZ3','TRPHZ2':'CZ2','TRPHH2':'CH2',
+'TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRQD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH'}
+#'ALAH':'N','CYSH':'N','ASPH':'N','GLUH':'N','PHEH':'N','GLYH':'N','HISH':'N','ILEH':'N','LYSH':'N','LEUH':'N','METH':'N','ASNH':'N','GLNH':'N','ARGH':'N','SERH':'N','THRH':'N','VALH':'N','TRPH':'N','TYRH':'N',
 if len(sys.argv)==1:
 	print('''
 
@@ -70,10 +70,11 @@ checkcons = open(outdir + outname + '_summary.txt','w')
 checkcons.write('                         #peaks    upl Violations Assigned Ambiguous Unassigned\n')
 summary = pd.DataFrame(columns=['#peaks', 'upl', 'Violations', 'Assigned', 'Ambiguous', 'Unassigned' ])
 cya_plists = [line.strip().replace('.peaks','-cycle7.peaks') for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
-manualcons = [line.strip() for line in open(calc).readlines() if line.strip() and 'constraints' in line][0].split()[2].split(',')
-upls = [con for con in manualcons if 'upl' in con]
-lols = [con for con in manualcons if 'lol' in con]
-dihed = [con for con in manualcons if 'aco' in con]
+manualongcons = [line.strip() for line in open(calc).readlines() if line.strip() and 'constraints' in line][0].split()[2].split(',')
+upls = [con for con in manualongcons if 'upl' in con and 'hbond' not in con]
+print(upls)
+lols = [con for con in manualongcons if 'lol' in con and 'hbond' not in con]
+dihed = [con for con in manualongcons if 'aco' in con]
 plistdict = {}
 for x in range(len(cya_plists)):
 	exec('upl' + str(x+1) + ' = []')
@@ -115,9 +116,10 @@ longpbout = open(outdir + outname + '_long_cons.pb','w')
 longpbout.write("; halfbond = false\n; color = aquamarine\n; radius = 0.2\n; dashes = 0\n")
 shortpbout = open(outdir + outname + '_short_cons.pb','w')
 shortpbout.write("; halfbond = false\n; color = light coral\n; radius = 0.2\n; dashes = 0\n")
-violpbout = open(outdir + outname + '_viol_cons.pb','w')
-violpbout.write("; halfbond = false\n; color = brown\n; radius = 0.2\n; dashes = 0\n")
-
+pviolpbout = open(outdir + outname + '_viol_peaks_cons.pb','w')
+pviolpbout.write("; halfbond = false\n; color = brown\n; radius = 0.2\n; dashes = 0\n")
+uviolpbout = open(outdir + outname + '_viol_upl_cons.pb','w')
+uviolpbout.write("; halfbond = false\n; color = brown\n; radius = 0.2\n; dashes = 0\n")
 '''cns[0] = resi1 , cns[1] = resn1, cns[2]= atom1, cns[3] = resi2, cns[4]=resn2, cns[5] = atom2, cns[6] = dist'''
 i = 1
 finalupl = []
@@ -128,10 +130,19 @@ finalupl = []
 # resn2 = line[33:37]
 # resi2 = line[37:41].strip()
 Upperdict, Lowerdict,= {}, {}
+pmlpviols,pmluviols = [],[]
 Filtered = []
 checkcons.write('### Violated Distance Constraints from %s \n' %(str(fovw)))
+v = 1
 for line in open(fovw).readlines():
 	if line[4:9] == 'Upper' or line[4:9] == 'Lower':
+		v+=1
+		atom1 = line[10:15].strip()
+		if line[16:20].strip()+line[10:15].strip() in replacements.keys():
+			atom1 = replacements[line[16:20].strip()+line[10:15].strip()]
+		atom2 = line[27:32].strip()
+		if line[33:37].strip()+line[27:32].strip() in replacements.keys():
+			atom2 = replacements[line[33:37].strip()+line[27:32].strip()]
 		if 'peak' not in line:
 			cons = '%4s %4s %-3s   %4s %4s %-3s   %6.2f\n' % (line[20:24].strip(),line[16:20],line[10:15].strip(),line[37:41].strip(),line[33:37],line[27:32].strip(),float(line[44:48]))
 			cons2 = '%4s %4s %-3s   %4s %4s %-3s   %6.2f  # %s %s\n' % (line[20:24].strip(),line[16:20],line[10:15].strip(),line[37:41].strip(),line[33:37],line[27:32].strip(),float(line[44:48]), line[50:52], line[62:66])
@@ -139,19 +150,25 @@ for line in open(fovw).readlines():
 				Upperdict[cons] = cons2
 			if line[4:9] == 'lower':
 				Lowerdict[cons] = cons2
+			if line[50:52].strip() >= '10':
+				uviolpbout.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(line[20:24].strip(), atom1, line[37:41].strip(),atom2, 'brown'))
+				dist = 'distance uplviol%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(v), pdbname, line[20:24].strip(), atom1, pdbname, line[37:41].strip(), atom2)
+				tcolor = 'color brown, upl viol ' + str(v) + '\n'
+				pmluviols.append('uplviol' + str(v))
 		if 'peak' in line and 'QQ' not in line:
-			if line[16:20].strip()+line[10:15].strip() in replacements.keys():
-				atom1 = replacements[line[16:20].strip()+line[10:15].strip()]
-			if line[33:37].strip()+line[27:32].strip() in replacements.keys():
-				atom2 = replacements[line[33:37].strip()+line[27:32].strip()]
-				violpbout.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(line[20:24].strip(), atom1, line[37:41].strip(),atom2, 'brown'))
+			pviolpbout.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(line[20:24].strip(), atom1, line[37:41].strip(),atom2, 'brown'))
+			dist = 'distance peakviol %s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(v), pdbname, line[20:24].strip(), atom1, pdbname, line[37:41].strip(), atom2)
+			tcolor = 'color brown, peakviol ' + str(v) + '\n'
+			pmlpviols.append('peakviol' + str(v))
 			for line2 in open(fupl).readlines():
 				cns = line2.split()
 				if cns[8] == line[90:].split()[1] and cns[10] == line[90:].split()[3] and cns[2] == line[10:15].strip() and cns[5] == line[27:32].strip():
 					checkcons.write(line2.replace('\n',' #Violated ' + line[50:88]+ '\n'))
 					Filtered.append(line2)
+			outpml.write(dist)
+			outpml.write(tcolor)
 checkcons.write('\n\n')
-finalupl,badcons,badcons2, show, scons, scons2, lcons,lcons2 = [],[],[],[],[],[],[],[]
+finalupl,poorcons,poorcons2, show, shortcons, shortcons2, longcons,longcons2 = [],[],[],[],[],[],[],[]
 
 for line in open(fupl).readlines():
 	if 'QQ' in line.split()[2] or 'QQ' in line.split()[5]:
@@ -173,32 +190,33 @@ for line in open(fupl).readlines():
 		i+=1
 		if len(line.split()) < 12:
 			upllist.append('UPL' + str(i))
-			dist = 'distance UPL %s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2)
+			dist = 'distance UPL%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2)
 			tcolor = 'color ' + colors[int(cns[10])]  + ', UPL' + str(i) + '\n'
 			pblist.append('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2, colors2[int(cns[10])]))
 		if len(line.split()) >= 12:
 			if float(cns[12]) > 0.5:
 				upllist.append('UPL' + str(i))
-				dist = 'distance UPL %s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2)
+				dist = 'distance UPL%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2)
 				tcolor = 'color ' + colors[int(cns[10])]  + ', UPL' + str(i) + '\n'
 				pblist.append('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2, colors2[int(cns[10])]))
 				finalupl.append(line)
 			if float(cns[12]) < 0.5:
 				badpbout.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2, 'darkred'))
-				badcons2.append(line)
+				poorcons2.append(line)
 				Filtered.append(line)
-				dist = 'distance poor %s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2)
+				dist = 'distance poor%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2)
 				tcolor = 'color red, poor' + str(i) + '\n'
+				poorcons.append('poor'+ str(i))
 				# show.append('show #1.1:%s@%s target a\n' %(cns[0], atom1))
 				# show.append('show #1.1:%s@%s target a\n' %(cns[3], atom2))
 			if float(cns[6]) >= 6.0:
 				if line not in Filtered:
 					Filtered.append(line)
 					longpbout.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2, 'aquamarine'))
-					
-					lcons2.append(line)
-					dist = 'distance long %s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2)
-					tcolor = 'color cyan, long ' + str(i) + '\n'
+					longcons2.append(line)
+					dist = 'distance long%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2)
+					tcolor = 'color cyan, long' + str(i) + '\n'
+					longcons.append('long' + str(i))
 					# show.append('show #1.1:%s@%s target a\n' %(cns[0], atom1))
 					# show.append('show #1.1:%s@%s target a\n' %(cns[3], atom2))
 			if float(cns[6]) <= 3.00:
@@ -207,9 +225,10 @@ for line in open(fupl).readlines():
 						if line not in Filtered:
 							Filtered.append(line)
 							shortpbout.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2, 'light coral'))
-							scons2.append(line)
-							dist = 'distance short %s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2)
-							tcolor = 'color orange, UPL' + str(i) + '\n'
+							shortcons2.append(line)
+							dist = 'distance short%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2)
+							tcolor = 'color orange, short' + str(i) + '\n'
+							shortcons.append('short' + str(i))
 							# show.append('show #1.1:%s@%s target a\n' %(cns[0], atom1))
 							# show.append('show #1.1:%s@%s target a\n' %(cns[3], atom2))
 		outpml.write(dist)
@@ -217,7 +236,8 @@ for line in open(fupl).readlines():
 badpbout.close()
 longpbout.close()
 shortpbout.close()
-violpbout.close()
+pviolpbout.close()
+uviolpbout.close()
 
 for uplfile in upls:
 	newlines = []
@@ -231,13 +251,16 @@ for uplfile in upls:
 	fout.writelines(newlines)
 fin.close()
 fout.close()
+u = 1
 for uplfile in upls:
 	fin = open(uplfile,'r')
 	outpb = open(outdir + uplfile.replace('.upl','_cons.pb'),'w')
+	pmlgroup = 'group %s, ' %(uplfile.replace('.upl',''))
 	outpb.write("; halfbond = false\n; color = pink\n; radius = 0.1\n; dashes = 10\n")
 	for line in fin.readlines():
 		cns = line.split()
 		if "#" not in cns[0]:
+			u+=1
 			atom1 = cns[2]
 			atom2 = cns[5]
 			if cns[1]+cns[2] in replacements.keys():
@@ -251,11 +274,29 @@ for uplfile in upls:
 			if ',' in atom1 and ',' not in atom2:
 				outpb.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1.split(',')[0], cns[3],atom2, 'pink'))
 				outpb.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1.split(',')[1], cns[3],atom2, 'pink'))
+				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1.split(',')[0], pdbname, cns[3], atom2))
+				outpml.write('color pink, %s%s\n'%(uplfile.replace('.upl',''),str(u)))
+				pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
+				u+=1
+				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1.split(',')[1], pdbname, cns[3], atom2))
+				outpml.write('color pink, %s%s\n'%(uplfile.replace('.upl',''),str(u)))
+				pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
 			if ',' in atom2 and ',' not in atom1:
 				outpb.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2.split(',')[0], 'pink'))
 				outpb.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2.split(',')[1], 'pink'))
+				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2.split(',')[0]))
+				outpml.write('color pink, %s%s\n'%(uplfile.replace('.upl',''),str(u)))
+				pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
+				u+=1
+				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2.split(',')[2]))
+				outpml.write('color pink, %s%s\n'%(uplfile.replace('.upl',''),str(u)))
+				pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
 			if ',' not in atom1 and ',' not in atom2:
 				outpb.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2, 'pink'))
+				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+				outpml.write('color pink, %s%s\n'%(uplfile.replace('.upl',''),str(u)))
+				pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
+	outpml.write(pmlgroup + '\n')
 
 for lolfile in lols:
 	newlines = []
@@ -275,7 +316,7 @@ filtered_upl = open(fupl.replace('.upl','4cns.upl'),'w')
 for upl in finalupl:
 	filtered_upl.write(upl)
 filtered_upl.close()
-# print(badcons2)
+# print(poorcons2)
 for x in range(len(cya_plists)):
 	plist = cya_plists[x].replace('-cycle7.peaks','')
 	outname = fupl.split('.')[0]
@@ -300,46 +341,80 @@ for x in range(len(cya_plists)):
 outpml.write("hide labels\n")
 
 
+## Create poor constraints group in pml and write out value to summary files 
 outcmx.write('open ' + outdir + outname + '_poor_cons.pb\n')
 outcmx.write('color #%s %s\n' %(str(x+3),'darkred'))
-
 checkcons.write('### Low Support Constraints (final_poor_cons.pb) ###\n')
-for con in badcons2:
-	checkcons.write(con)
+groupline = 'group poor cons ,'
+for p in range(len(poorcons2)):
+	groupline = groupline + poorcons[p] + ' '
+	checkcons.write(poorcons2[p])
+outpml.write(groupline + "\n")
 checkcons.write('\n\n')
+## Create long constraints group in pml and write out value to summary files 
 outcmx.write('open ' + outdir +  outname + '_long_cons.pb\n')
 outcmx.write('color #%s %s\n' %(str(x+4),'aquamarine'))
-
 checkcons.write('### Long Distance Constraints d >= 6.00 ###\n')
-for con in lcons2:
-	checkcons.write(con)
+groupline = 'group long cons ,'
+for l in range(len(longcons2)):
+	checkcons.write(longcons2[l])
+	groupline = groupline + longcons[l] + ' '
+outpml.write(groupline + "\n")
 checkcons.write('\n\n')
+
+## Create short constraints group in pml and write out value to summary files 
 outcmx.write('open ' + outdir + outname + '_short_cons.pb\n')
 outcmx.write('color #%s %s\n' %(str(x+5),'light coral'))
 checkcons.write('### Short Distance Constraints d <= 3.00 ###\n')
-for con in scons2:
-	checkcons.write(con)
+groupline = 'group short cons ,'
+for s in range(len(shortcons2)):
+	checkcons.write(shortcons2[s])
+	groupline = groupline + shortcons[s] + ' '
+outpml.write(groupline + "\n")
 checkcons.write('\n\n')
 checkcons.close()
-
-outcmx.write('open ' + outdir + outname + '_viol_cons.pb\n')
+groupline = 'group viol peaks ,'
+outcmx.write('open ' + outdir + outname + '_viol_peaks_cons.pb\n')
 outcmx.write('color #%s %s\n' %(str(x+6),'brown'))
+for con in pmlpviols:
+	groupline = groupline + con + ' '
+outpml.write(groupline + "\n")
 
+groupline = 'group viol upls ,'
+outcmx.write('open ' + outdir + outname + '_viol_upl_cons.pb\n')
+outcmx.write('color #%s %s\n' %(str(x+7),'brown'))
+for con in pmluviols:
+	groupline = groupline + con + ' '
 outcmx.write('open ' + outdir + 'hbond_cons.pb\n')
-outcmx.write('color #%s %s\n' %(str(x+6),'pink'))
+outcmx.write('color #%s %s\n' %(str(x+8),'pink'))
+outpml.write(groupline + "\n")
+for uplfile in upls:
+	x = x+8+1
+	outcmx.write('open ' + outdir + uplfile.replace('.upl','_cons.pb') + '\n')
+	outcmx.write('color #%s %s\n' %(str(x),'pink'))
 
 selhbond = 'name hbond  #1.1:'
+hbonsl = []
 hbond = open(outdir + 'hbond_cons.pb','w')
 hbond.write("; halfbond = false\n; color = pink\n; radius = 0.2\n; dashes = 0\n")
+hbgroupline = 'group hbond , '
+h = 1
 for line in open('hbond.upl').readlines():
 	cns = line.split()
 	if "#" not in cns[0]:
 		if cns[5] != 'H':
+			h+=1 
 			hbond.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], cns[2], cns[3],cns[5],'pink'))
+			dist = 'distance hbond%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(h), pdbname, cns[0], cns[2], pdbname, cns[3], cns[5])
+			tcolor = 'color pink, hbond' + str(h) + '\n'
+			hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
 			if cns[0] not in selhbond:
 				selhbond = selhbond +'%s,' %(cns[0])
 			if cns[3] not in selhbond:
 				selhbond = selhbond +'%s,' %(cns[3])
+		outpml.write(dist)
+		outpml.write(tcolor)
+outpml.write(hbgroupline + '\n')
 selhbond = selhbond[:-1] + '@O,N\n'
 outcmx.write(selhbond)
 hbond.close()
@@ -361,6 +436,7 @@ outcmx.write('color :tyr orchid target a\n')
 outcmx.write('color  byhetero target a\n')
 outcmx.write('show :thr,met,ala,leu,val,ile,phe,tyr\n')
 outcmx.write('hide H\n')
+outcmx.write('show #1.1 @H\n')
 outcmx.write('show #1.1@N target a\n')
 outcmx.write('cartoon suppress false\n')
 outcmx.write('label #1.1  text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n')
