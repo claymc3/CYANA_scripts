@@ -222,6 +222,7 @@ for uplfile in upls:
 			newlines.append(line)
 	fout = open(uplfile,'w')
 	fout.writelines(newlines)
+
 fin.close()
 fout.close()
 upls2 = [upl for upl in upls if 'final' not in upl]
