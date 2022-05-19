@@ -41,20 +41,25 @@ Required Input:
 					Which ever upl you specify determines the overveiw file used. 
 
 OutPut:
-
-	name_dist.cxc
-	name_dist.pml
-	peak_list(s).pb
-	name_poor.pb
-	name_long.pb
-	name_short.pb
-	name_viol.pb
+	name_pra.cxc
+	name_pra.pml
+	Pseudobond/Distance Groups from calculation:
+		Each peak list 
+		Poor constraints (SUP < 0.5)
+		Short non intramolecular distance restraints d < 3.0
+		Long distance restraints d > 6.0
+		Peak Violations
+		Manual restrain Violations (violated in 10 or more structures)
+	Pseudobond/Distance Groups from manual restraints:
+		input.upl
+		hbond.upl 
 ''')
 	exit()
+colors = ['white','raspberry','gold','forest','marine','purple','orange','cyan','pink','deepteal','gray']
+colors2 = ['white','mediumvioletred','orange','forest','royalblue','purple','chocolate','cyan','pink','deepteal','gray']
 
 cwd = os.getcwd() + '/'
 outdir = cwd + 'post_cyana_ana/'
-print(outdir)
 in_pdb = sys.argv[1]
 fupl = sys.argv[2]
 pdbname = in_pdb.split('.')[0]
@@ -62,7 +67,6 @@ fovw = fupl.replace('.upl','.ovw')
 calc = cwd + 'CALC.cya'
 outname = fupl.split('.')[0]
 
-print(os.path.exists(outdir))
 if not os.path.exists(outdir):
 	os.makedirs(outdir)
 
@@ -72,15 +76,15 @@ summary = pd.DataFrame(columns=['#peaks', 'upl', 'Violations', 'Assigned', 'Ambi
 cya_plists = [line.strip().replace('.peaks','-cycle7.peaks') for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
 manualongcons = [line.strip() for line in open(calc).readlines() if line.strip() and 'constraints' in line][0].split()[2].split(',')
 upls = [con for con in manualongcons if 'upl' in con and 'hbond' not in con]
-print(upls)
 lols = [con for con in manualongcons if 'lol' in con and 'hbond' not in con]
 dihed = [con for con in manualongcons if 'aco' in con]
-plistdict = {}
 for x in range(len(cya_plists)):
-	exec('upl' + str(x+1) + ' = []')
-	exec('pb' + str(x+1) + ' = []')
+	plistn = cya_plists[x].replace('-cycle7.peaks','')
+	exec("pb%s = open('%s','w')" %(str(x+1), outdir + outname + '_'+ plistn + '.pb'))
+	pbout = eval('pb%s' %str(x+1))
+	pbout.write("; halfbond = false\n; color = " + colors2[x+1] + "\n; radius = 0.1\n; dashes = 0\n")
+	exec("group%s = '%s, '" %(str(x+1), 'group ' + cya_plists[x].replace('-cycle7.peaks','')))
 	plist = cya_plists[x]
-	plistdict[str(x+1)] = plist.replace('-cycle7.peaks','')
 	upl = [line.strip() for line in open(fupl).readlines() if line.strip() and 'plist '+ str(x+1) in line]
 	viol = [line.strip() for line in open(fovw).readlines() if line.strip() and 'list '+ str(x+1) in line]
 	na,sa,aa = 0, 0, 0 
@@ -98,8 +102,6 @@ for x in range(len(cya_plists)):
 	summary.loc[plist.replace('-cycle7.peaks',''),'Assigned'] = sa
 print(summary)
 checkcons.write('\n\n')
-colors = ['white','raspberry','gold','forest','marine','purple','orange','cyan','pink','deepteal','gray']
-colors2 = ['white','mediumvioletred','orange','forest','royalblue','purple','chocolate','cyan','pink','deepteal','gray']
 
 outpml = open(outdir + fupl.replace('.upl','_pra.pml'),'w')
 outpml.write('load '+ cwd + in_pdb+'\n')
@@ -110,8 +112,9 @@ outcmx.write('open '+ cwd + in_pdb+'\n')
 pdbname = in_pdb.replace('.pdb','')
 
 
-badpbout = open(outdir + outname + '_poor_cons.pb','w')
-badpbout.write("; halfbond = false\n; color = darkred\n; radius = 0.2\n; dashes = 0\n")
+
+poorpbout = open(outdir + outname + '_poor_cons.pb','w')
+poorpbout.write("; halfbond = false\n; color = darkred\n; radius = 0.2\n; dashes = 0\n")
 longpbout = open(outdir + outname + '_long_cons.pb','w')
 longpbout.write("; halfbond = false\n; color = aquamarine\n; radius = 0.2\n; dashes = 0\n")
 shortpbout = open(outdir + outname + '_short_cons.pb','w')
@@ -130,7 +133,7 @@ finalupl = []
 # resn2 = line[33:37]
 # resi2 = line[37:41].strip()
 Upperdict, Lowerdict,= {}, {}
-pmlpviols,pmluviols = [],[]
+viol_peakscons,viol_uplscons= 'group viol_peaks, ', 'group viol_upls, '
 Filtered = []
 checkcons.write('### Violated Distance Constraints from %s \n' %(str(fovw)))
 v = 1
@@ -152,30 +155,26 @@ for line in open(fovw).readlines():
 				Lowerdict[cons] = cons2
 			if line[50:52].strip() >= '10':
 				uviolpbout.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(line[20:24].strip(), atom1, line[37:41].strip(),atom2, 'brown'))
-				dist = 'distance uplviol%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(v), pdbname, line[20:24].strip(), atom1, pdbname, line[37:41].strip(), atom2)
-				tcolor = 'color brown, upl viol ' + str(v) + '\n'
-				pmluviols.append('uplviol' + str(v))
+				outpml.write('distance uplviol%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(v), pdbname, line[20:24].strip(), atom1, pdbname, line[37:41].strip(), atom2))
+				viol_uplscons = viol_uplscons + "uplviol%s " %str(v)
 		if 'peak' in line and 'QQ' not in line:
 			pviolpbout.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(line[20:24].strip(), atom1, line[37:41].strip(),atom2, 'brown'))
-			dist = 'distance peakviol %s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(v), pdbname, line[20:24].strip(), atom1, pdbname, line[37:41].strip(), atom2)
-			tcolor = 'color brown, peakviol ' + str(v) + '\n'
-			pmlpviols.append('peakviol' + str(v))
+			outpml.write('distance peakviol %s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(v), pdbname, line[20:24].strip(), atom1, pdbname, line[37:41].strip(), atom2))
+			viol_peakscons = viol_peakscons + "peakviol%s " %str(v)
 			for line2 in open(fupl).readlines():
 				cns = line2.split()
 				if cns[8] == line[90:].split()[1] and cns[10] == line[90:].split()[3] and cns[2] == line[10:15].strip() and cns[5] == line[27:32].strip():
 					checkcons.write(line2.replace('\n',' #Violated ' + line[50:88]+ '\n'))
 					Filtered.append(line2)
-			outpml.write(dist)
-			outpml.write(tcolor)
 checkcons.write('\n\n')
-finalupl,poorcons,poorcons2, show, shortcons, shortcons2, longcons,longcons2 = [],[],[],[],[],[],[],[]
+finalupl,poorcons2, show, shortcons2,longcons2 = [],[],[],[],[]
+poorcons, shortcons, longcons = 'group poor_cons, ', 'group short_cons, ', 'group long_cons, '
 
 for line in open(fupl).readlines():
 	if 'QQ' in line.split()[2] or 'QQ' in line.split()[5]:
 		pass 
 	else:
 		cns = line.split()
-		upllist = eval('upl' + cns[10])
 		pblist = eval('pb' + cns[10])
 		atom1 = cns[2]
 		atom2 = cns[5]
@@ -189,34 +188,31 @@ for line in open(fupl).readlines():
 			atom2=atom2
 		i+=1
 		if len(line.split()) < 12:
-			upllist.append('UPL' + str(i))
-			dist = 'distance UPL%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2)
-			tcolor = 'color ' + colors[int(cns[10])]  + ', UPL' + str(i) + '\n'
-			pblist.append('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2, colors2[int(cns[10])]))
+			outpml.write('distance UPL%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+			pblist.write('#1.1:%s@%s #1.1:%s@%s\n' %(cns[0], atom1, cns[3],atom2))
+			exec('group' + cns[10] + '=' + 'group' + cns[10] + '+ "UPL%s "' %str(i))
+			# print(eval('group' + cns[10]))
 		if len(line.split()) >= 12:
 			if float(cns[12]) > 0.5:
-				upllist.append('UPL' + str(i))
-				dist = 'distance UPL%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2)
-				tcolor = 'color ' + colors[int(cns[10])]  + ', UPL' + str(i) + '\n'
-				pblist.append('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2, colors2[int(cns[10])]))
+				outpml.write('distance UPL%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+				pblist.write('#1.1:%s@%s #1.1:%s@%s\n' %(cns[0], atom1, cns[3],atom2))
+				exec('group' + cns[10] + '=' + 'group' + cns[10] + '+ "UPL%s "' %str(i))
 				finalupl.append(line)
 			if float(cns[12]) < 0.5:
-				badpbout.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2, 'darkred'))
+				poorpbout.write('#1.1:%s@%s #1.1:%s@%s\n' %(cns[0], atom1, cns[3],atom2))
 				poorcons2.append(line)
 				Filtered.append(line)
-				dist = 'distance poor%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2)
-				tcolor = 'color red, poor' + str(i) + '\n'
-				poorcons.append('poor'+ str(i))
+				outpml.write('distance poor%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+				poorcons = poorcons + 'poor%s ' %str(i)
 				# show.append('show #1.1:%s@%s target a\n' %(cns[0], atom1))
 				# show.append('show #1.1:%s@%s target a\n' %(cns[3], atom2))
 			if float(cns[6]) >= 6.0:
 				if line not in Filtered:
 					Filtered.append(line)
-					longpbout.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2, 'aquamarine'))
+					longpbout.write('#1.1:%s@%s #1.1:%s@%s\n' %(cns[0], atom1, cns[3],atom2))
 					longcons2.append(line)
-					dist = 'distance long%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2)
-					tcolor = 'color cyan, long' + str(i) + '\n'
-					longcons.append('long' + str(i))
+					outpml.write('distance long%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+					longcons = longcons + 'long%s ' %str(i)
 					# show.append('show #1.1:%s@%s target a\n' %(cns[0], atom1))
 					# show.append('show #1.1:%s@%s target a\n' %(cns[3], atom2))
 			if float(cns[6]) <= 3.00:
@@ -226,18 +222,21 @@ for line in open(fupl).readlines():
 							Filtered.append(line)
 							shortpbout.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2, 'light coral'))
 							shortcons2.append(line)
-							dist = 'distance short%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2)
-							tcolor = 'color orange, short' + str(i) + '\n'
-							shortcons.append('short' + str(i))
+							outpml.write('distance short%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+							shortcons = shortcons + 'short%s ' %str(i)
 							# show.append('show #1.1:%s@%s target a\n' %(cns[0], atom1))
 							# show.append('show #1.1:%s@%s target a\n' %(cns[3], atom2))
-		outpml.write(dist)
-		outpml.write(tcolor)
-badpbout.close()
+poorpbout.close()
 longpbout.close()
 shortpbout.close()
 pviolpbout.close()
 uviolpbout.close()
+
+outpml.write('color red, poor_cons\n')
+outpml.write('color cyan, long_cons\n')
+outpml.write('color orange, short_cons\n')
+
+
 
 for uplfile in upls:
 	newlines = []
@@ -249,15 +248,15 @@ for uplfile in upls:
 			newlines.append(line)
 	fout = open(uplfile,'w')
 	fout.writelines(newlines)
-
 fin.close()
 fout.close()
+
 u = 1
 for uplfile in upls:
 	fin = open(uplfile,'r')
 	outpb = open(outdir + uplfile.replace('.upl','_cons.pb'),'w')
 	pmlgroup = 'group %s, ' %(uplfile.replace('.upl',''))
-	outpb.write("; halfbond = false\n; color = pink\n; radius = 0.1\n; dashes = 10\n")
+	outpb.write("; halfbond = false\n; color = blue\n; radius = 0.1\n; dashes = 10\n")
 	for line in fin.readlines():
 		cns = line.split()
 		if "#" not in cns[0]:
@@ -273,31 +272,29 @@ for uplfile in upls:
 			if cns[4]+cns[5] not in replacements.keys():
 				atom2=atom2
 			if ',' in atom1 and ',' not in atom2:
-				outpb.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1.split(',')[0], cns[3],atom2, 'pink'))
-				outpb.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1.split(',')[1], cns[3],atom2, 'pink'))
+				outpb.write('#1.1:%s@%s #1.1:%s@%s\n' %(cns[0], atom1.split(',')[0], cns[3],atom2))
+				outpb.write('#1.1:%s@%s #1.1:%s@%s\n' %(cns[0], atom1.split(',')[1], cns[3],atom2))
 				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1.split(',')[0], pdbname, cns[3], atom2))
-				outpml.write('color pink, %s%s\n'%(uplfile.replace('.upl',''),str(u)))
 				pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
 				u+=1
 				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1.split(',')[1], pdbname, cns[3], atom2))
-				outpml.write('color pink, %s%s\n'%(uplfile.replace('.upl',''),str(u)))
 				pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
 			if ',' in atom2 and ',' not in atom1:
-				outpb.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2.split(',')[0], 'pink'))
-				outpb.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2.split(',')[1], 'pink'))
+				outpb.write('#1.1:%s@%s #1.1:%s@%s\n' %(cns[0], atom1, cns[3],atom2.split(',')[0]))
+				outpb.write('#1.1:%s@%s #1.1:%s@%s\n' %(cns[0], atom1, cns[3],atom2.split(',')[1]))
 				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2.split(',')[0]))
-				outpml.write('color pink, %s%s\n'%(uplfile.replace('.upl',''),str(u)))
 				pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
 				u+=1
 				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2.split(',')[2]))
 				outpml.write('color pink, %s%s\n'%(uplfile.replace('.upl',''),str(u)))
 				pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
 			if ',' not in atom1 and ',' not in atom2:
-				outpb.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], atom1, cns[3],atom2, 'pink'))
+				outpb.write('#1.1:%s@%s #1.1:%s@%s\n' %(cns[0], atom1, cns[3],atom2))
 				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-				outpml.write('color pink, %s%s\n'%(uplfile.replace('.upl',''),str(u)))
 				pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
+	
 	outpml.write(pmlgroup + '\n')
+	outpml.write('color blue,' + uplfile.replace('.upl','') + '\n')
 
 for lolfile in lols:
 	newlines = []
@@ -318,86 +315,61 @@ for upl in finalupl:
 	filtered_upl.write(upl)
 filtered_upl.close()
 # print(poorcons2)
+
 for x in range(len(cya_plists)):
-	plist = cya_plists[x].replace('-cycle7.peaks','')
-	outname = fupl.split('.')[0]
+	pbout = eval('pb%s' %str(x+1))
 	outcmx.write('open ' + outdir + outname + '_'+ plist + '.pb\n')
 	outcmx.write('color #%s %s\n' %(str(x+2),colors2[x+1]))
-	pbout = open(outdir + outname + '_'+ plist + '.pb','w')
-	pbout.write("; halfbond = false\n")
-	pbout.write("; color = " + colors2[x+1] + '\n')
-	pbout.write("; radius = 0.1\n")
-	pbout.write("; dashes = 0\n")
-	upllist = eval('upl'+ str(x+1))
-	pblist = eval('pb'+ str(x+1))
-	groupline = 'group ' + plist + ', '
-	for con in range(len(upllist)):
-		# print(pblist[con])
-		upl = upllist[con]
-		cpline = 'copy ' + upl + ', ' + plist + '\n'
-		groupline = groupline + upl + ' '
-		pbout.write(pblist[con])
-	outpml.write(groupline + "\n")
-	pbout.close()
-outpml.write("hide labels\n")
+	groupstr = eval('group' + str(x+1))
+	outpml.write(groupstr + '\n')
+	outpml.write('color %s, %s\n' %(colors[x+1],cya_plists[x].replace('-cycle7.peaks','')))
 
 
-## Create poor constraints group in pml and write out value to summary files 
-outcmx.write('open ' + outdir + outname + '_poor_cons.pb\n')
-outcmx.write('color #%s %s\n' %(str(x+3),'darkred'))
+mn = x+2
+for (group, color) in [('poor','darkred'),('long','aquamarine'),('short', 'coral'),('viol_peaks', 'brown'),('viol_upls', 'brown')]:
+	mn+=1
+	outcmx.write('open ' + outdir + outname + '_' + group + '_cons.pb\n')
+	outcmx.write('color #%s %s\n' %(str(mn),color))
+	grpstr = eval(group + 'cons')
+	outpml.write(grpstr + '\n')
+	outpml.write('color %s, %s\n' %(color, group + 'cons'))
+
+
+
+## Write out poor constraints to summary files 
+# outcmx.write('open ' + outdir + outname + '_poor_cons.pb\n')
+# outcmx.write('color #%s %s\n' %(str(x+3),'darkred'))
 checkcons.write('### Low Support Constraints (final_poor_cons.pb) ###\n')
-groupline = 'group poor cons ,'
 for p in range(len(poorcons2)):
-	groupline = groupline + poorcons[p] + ' '
 	checkcons.write(poorcons2[p])
-outpml.write(groupline + "\n")
 checkcons.write('\n\n')
-## Create long constraints group in pml and write out value to summary files 
-outcmx.write('open ' + outdir +  outname + '_long_cons.pb\n')
-outcmx.write('color #%s %s\n' %(str(x+4),'aquamarine'))
+## Write out long constraints to summary files 
+# outcmx.write('open ' + outdir +  outname + '_long_cons.pb\n')
+# outcmx.write('color #%s %s\n' %(str(x+4),'aquamarine'))
 checkcons.write('### Long Distance Constraints d >= 6.00 ###\n')
-groupline = 'group long cons ,'
 for l in range(len(longcons2)):
 	checkcons.write(longcons2[l])
-	groupline = groupline + longcons[l] + ' '
-outpml.write(groupline + "\n")
 checkcons.write('\n\n')
 
-## Create short constraints group in pml and write out value to summary files 
-outcmx.write('open ' + outdir + outname + '_short_cons.pb\n')
-outcmx.write('color #%s %s\n' %(str(x+5),'light coral'))
+## Write out short constraints to summary files 
+# outcmx.write('open ' + outdir + outname + '_short_cons.pb\n')
+# outcmx.write('color #%s %s\n' %(str(x+5),'light coral'))
 checkcons.write('### Short Distance Constraints d <= 3.00 ###\n')
-groupline = 'group short cons ,'
 for s in range(len(shortcons2)):
 	checkcons.write(shortcons2[s])
-	groupline = groupline + shortcons[s] + ' '
-outpml.write(groupline + "\n")
 checkcons.write('\n\n')
 checkcons.close()
-groupline = 'group viol peaks ,'
-outcmx.write('open ' + outdir + outname + '_viol_peaks_cons.pb\n')
-outcmx.write('color #%s %s\n' %(str(x+6),'brown'))
-for con in pmlpviols:
-	groupline = groupline + con + ' '
-outpml.write(groupline + "\n")
 
-groupline = 'group viol upls ,'
-outcmx.write('open ' + outdir + outname + '_viol_upl_cons.pb\n')
-outcmx.write('color #%s %s\n' %(str(x+7),'brown'))
-for con in pmluviols:
-	groupline = groupline + con + ' '
-outcmx.write('open ' + outdir + 'hbond_cons.pb\n')
-outcmx.write('color #%s %s\n' %(str(x+8),'pink'))
-outpml.write(groupline + "\n")
+
 for uplfile in upls:
-	x = x+8+1
+	mn+=1
 	outcmx.write('open ' + outdir + uplfile.replace('.upl','_cons.pb') + '\n')
-	outcmx.write('color #%s %s\n' %(str(x),'pink'))
+	outcmx.write('color #%s %s\n' %(str(mn),'pink'))
 
 selhbond = 'name hbond  #1.1:'
 hbonsl = []
 hbond = open(outdir + 'hbond_cons.pb','w')
-hbond.write("; halfbond = false\n; color = pink\n; radius = 0.2\n; dashes = 0\n")
+hbond.write("; halfbond = false\n; color = pink\n; radius = 0.2\n; dashes = 10\n")
 hbgroupline = 'group hbond , '
 h = 1
 for line in open('hbond.upl').readlines():
@@ -406,20 +378,18 @@ for line in open('hbond.upl').readlines():
 		if cns[5] != 'H':
 			h+=1 
 			hbond.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], cns[2], cns[3],cns[5],'pink'))
-			dist = 'distance hbond%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(h), pdbname, cns[0], cns[2], pdbname, cns[3], cns[5])
-			tcolor = 'color pink, hbond' + str(h) + '\n'
+			outpml.write('distance hbond%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(h), pdbname, cns[0], cns[2], pdbname, cns[3], cns[5]))
 			hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
 			if cns[0] not in selhbond:
 				selhbond = selhbond +'%s,' %(cns[0])
 			if cns[3] not in selhbond:
 				selhbond = selhbond +'%s,' %(cns[3])
-		outpml.write(dist)
-		outpml.write(tcolor)
 outpml.write(hbgroupline + '\n')
+outpml.write('color pink, hbond\n')
 selhbond = selhbond[:-1] + '@O,N\n'
 outcmx.write(selhbond)
 hbond.close()
-
+outpml.write("hide labels\n")
 outpml.write('color gray60, final\n')
 outpml.write('split_states ' + pdbname + '\n')
 for y in range(2,21,1):
