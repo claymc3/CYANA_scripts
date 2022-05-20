@@ -51,6 +51,7 @@ OutPut:
 	Pseudobond/Distance Groups from manual restraints:
 		input.upl
 		hbond.upl 
+	Anotated Constraints files 
 ''')
 	exit()
 ## Dictionaries for assigning color to pml and cxc scripts for the peak list restraints
@@ -75,7 +76,8 @@ checkcons.write('                         #peaks    upl Violations Assigned Ambi
 
 ## open the CALC.cya file to get the peaks list and additonal constraint files used in the calculation. 
 cya_plists = [line.strip().replace('.peaks','-cycle7.peaks') for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
-manualongcons = [line.strip() for line in open(calc).readlines() if line.strip() and 'constraints' in line][0].split()[2].split(',')
+manualongcons = [line.strip() for line in open(calc).readlines() if line.strip() and '.upl' in line][0].split()[2].split(',')
+print(manualongcons)
 upls = [con for con in manualongcons if 'upl' in con and 'hbond' not in con]
 lols = [con for con in manualongcons if 'lol' in con and 'hbond' not in con]
 dihed = [con for con in manualongcons if 'aco' in con]
@@ -108,7 +110,7 @@ outpml.write('set dash_gap, 0.05\n')
 outpml.write('color gray60, all\n')
 outcmx = open(outdir + fupl.replace('.upl','_pra.cxc'),'w')
 outcmx.write('open '+ cwd + in_pdb+'\n')
-outcmx.write('color #1 gray150\n')
+outcmx.write('color #1 gray(150)\n')
 pdbname = in_pdb.replace('.pdb','')
 
 poorpbout = open(outdir + outname + '_poor_cons.pb','w')
@@ -134,38 +136,59 @@ Upperdict, Lowerdict,= {}, {}
 viol_peakscons,viol_uplscons= 'group viol_peaks, ', 'group viol_upls, '
 finalupls = [["###Violated Restraints\n"],["###Poor/Low Support\n"],["###Long Distance Restraints (d >= 6.0)\n"],["###Short Distance Restraints (d <= 3.0)\n"],["###Good Restraints\n"]]
 checkcons.write('### Violated Distance Constraints from %s \n' %(str(fovw)))
-v = 1
+v = 0
 for line in open(fovw).readlines():
 	if line[4:9] == 'Upper' or line[4:9] == 'Lower':
-		v+=1
-		atom1 = line[10:15].strip()
-		if line[16:20].strip()+line[10:15].strip() in replacements.keys():
-			atom1 = replacements[line[16:20].strip()+line[10:15].strip()]
-		atom2 = line[27:32].strip()
-		if line[33:37].strip()+line[27:32].strip() in replacements.keys():
-			atom2 = replacements[line[33:37].strip()+line[27:32].strip()]
-		if 'peak' not in line:
-			cons = '%4s %4s %-3s   %4s %4s %-3s   %6.2f\n' % (line[20:24].strip(),line[16:20],line[10:15].strip(),line[37:41].strip(),line[33:37],line[27:32].strip(),float(line[44:48]))
-			cons2 = '%4s %4s %-3s   %4s %4s %-3s   %6.2f  # %s %s\n' % (line[20:24].strip(),line[16:20],line[10:15].strip(),line[37:41].strip(),line[33:37],line[27:32].strip(),float(line[44:48]), line[50:52], line[62:66])
-			if line[4:9] == 'Upper':
-				Upperdict[cons] = cons2
-			if line[4:9] == 'lower':
-				Lowerdict[cons] = cons2
-			if line[50:52].strip() >= '10':
-				uviolpbout.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(line[20:24].strip(), atom1, line[37:41].strip(),atom2, 'brown'))
-				outpml.write('distance uplviol%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(v), pdbname, line[20:24].strip(), atom1, pdbname, line[37:41].strip(), atom2))
-				viol_uplscons = viol_uplscons + "uplviol%s " %str(v)
-		if 'peak' in line and 'QQ' not in line:
+		dviol = line.split()
+		atom1 = dviol[1]
+		if dviol[2]+dviol[1] in replacements.keys():
+			atom1 = replacements[dviol[2]+dviol[1]]
+		atom2 = dviol[5]
+		if dviol[6]+dviol[5] in replacements.keys():
+			atom2 = replacements[dviol[6]+dviol[5]]
+		if dviol[9] >= '10':
+			v+=1
+			if 'peak' not in line:
+				pbout = uviolpbout
+				grpout = viol_uplscons
+				grpstr = "uplviol"
+				cons = '%4s %4s %-4s  %4s %4s %-4s  %6.2f\n' % (dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]))
+				cons2 = '%4s %4s %-4s  %4s %4s %-4s  %6.2f  # %s %s\n' % (dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]), dviol[9], dviol[10])
+				if line[4:9] == 'Upper':
+					Upperdict[cons] = cons2
+				if line[4:9] == 'lower':
+					Lowerdict[cons] = cons2
+			if 'peak' in line and 'QQ' not in line:
+				pbout = pviolpbout
+				grpout = viol_peakscons
+				grpstr = "peakviol"
+				for line2 in open(fupl).readlines():
+					cns = line2.split()
+					if cns[8] == line[90:].split()[1] and cns[10] == line[90:].split()[3] and cns[2] == dviol[1] and cns[5] == dviol[5]:
+						checkcons.write(line2.replace('\n',' #Violated ' + line[50:88]+ '\n'))
+						finalupls[0].append(line2)
+						Filtered.append(line2)
+			if ',' in atom1 and ',' not in atom2:
+				pbout.write('#1.1:%s@%s #1.1:%s@%s\n' %(dviol[3], atom1.split(',')[0], dviol[7],atom2))
+				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(grpstr, str(v), pdbname, dviol[3], atom1.split(',')[0], pdbname, dviol[7], atom2))
+				grpout = grpout + "%s%s " %(grpstr,str(v))
+				v+=1
+				pbout.write('#1.1:%s@%s #1.1:%s@%s\n' %(dviol[3], atom1.split(',')[1], dviol[7],atom2))
+				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(grpstr, str(v), pdbname, dviol[3], atom1.split(',')[1], pdbname, dviol[7], atom2))
+				grpout = grpout + "%s%s " %(grpstr,str(v))
+			if ',' in atom2 and ',' not in atom1:
+				pbout.write('#1.1:%s@%s #1.1:%s@%s\n' %(dviol[3], atom1, dviol[7],atom2.split(',')[0]))
+				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(grpstr, str(v), pdbname, dviol[3], atom1, pdbname, dviol[7], atom2.split(',')[0]))
+				grpout = grpout + "%s%s " %(grpstr,str(v))
+				v+=1
+				pbout.write('#1.1:%s@%s #1.1:%s@%s\n' %(dviol[3], atom1, dviol[7],atom2.split(',')[1]))
+				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(grpstr, str(v), pdbname, dviol[3], atom1, pdbname, dviol[7], atom2.split(',')[1]))
+				grpout = grpout + "%s%s " %(grpstr,str(v))
 			if ',' not in atom1 and ',' not in atom2:
-				pviolpbout.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(line[20:24].strip(), atom1, line[37:41].strip(),atom2, 'brown'))
-				outpml.write('distance peakviol %s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(v), pdbname, line[20:24].strip(), atom1, pdbname, line[37:41].strip(), atom2))
-				viol_peakscons = viol_peakscons + "peakviol%s " %str(v)
-			for line2 in open(fupl).readlines():
-				cns = line2.split()
-				if cns[8] == line[90:].split()[1] and cns[10] == line[90:].split()[3] and cns[2] == line[10:15].strip() and cns[5] == line[27:32].strip():
-					checkcons.write(line2.replace('\n',' #Violated ' + line[50:88]+ '\n'))
-					finalupls[0].append(line2)
-					Filtered.append(line2)
+				pbout.write('#1.1:%s@%s #1.1:%s@%s\n' %(dviol[3], atom1, dviol[7],atom2))
+				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(grpstr, str(v), pdbname, dviol[3], atom1, pdbname, dviol[7], atom2))
+				grpout = grpout + "%s%s " %(grpstr,str(v))
+
 checkcons.write('\n\n')
 finalupl,poorcons2, show, shortcons2,longcons2 = [],[],[],[],[]
 poorcons, shortcons, longcons = 'group poor_cons, ', 'group short_cons, ', 'group long_cons, '
@@ -257,7 +280,7 @@ mn = 1
 for x in range(len(cya_plists)):
 	mn+=1
 	pbout = eval('pb%s' %str(x+1))
-	outcmx.write('open ' + outdir + outname + '_'+ plist.replace('-cycle7.peaks','.pb\n'))
+	outcmx.write('open ' + outdir + outname + '_'+ cya_plists[x].replace('-cycle7.peaks','.pb\n'))
 	outcmx.write('color #%s %s\n' %(str(mn),colors2[mn]))
 	groupstr = eval('group' + str(x+1))
 	outpml.write(groupstr + '\n')
