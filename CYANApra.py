@@ -383,10 +383,12 @@ mn+=1
 for line in open('hbond.upl').readlines():
 	cns = line.split()
 	if "#" not in cns[0]:
-		if cns[5] != 'H':
+		if (cns[0],cns[3]) not in hbonsl:
 			h+=1 
+			hbonsl.append((cns[0],cns[3]))
+			hbonsl.append((cns[3],cns[0]))
 			hbond.write('#1.1:%s@%s #1.1:%s@%s %s\n' %(cns[0], cns[2], cns[3],cns[5],'pink'))
-			outpml.write('distance hbond%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(h), pdbname, cns[0], cns[2], pdbname, cns[3], cns[5]))
+			outpml.write('distance hbond%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(h), pdbname, cns[0], cns[2].replace('H','N'), pdbname, cns[3], cns[5].replace('H','N')))
 			hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
 			if cns[0] not in selhbond:
 				selhbond = selhbond +'%s,' %(cns[0])
