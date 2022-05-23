@@ -1,4 +1,4 @@
-n### Mary Clay
+### Mary Clay
 import os
 import sys
 replacements ={
