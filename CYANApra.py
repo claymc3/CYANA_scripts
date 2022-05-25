@@ -113,6 +113,13 @@ outcmx.write('open '+ cwd + in_pdb+'\n')
 outcmx.write('color #1 gray(150)\n')
 pdbname = in_pdb.replace('.pdb','')
 
+mns = len(cya_plists) + 8 + len(upls)
+print(mns)
+
+cmxphisel, cmxchisel, cmxphiviol, cmxchiviol = 'name phipsisel #%s:'%mns, 'name chisel #%s:'%(mns+1), 'name phipsiviol #%s:'%(mns+2), 'name chiviol #%s:'%(mns+3)
+pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'create phi-psi, %s_0001 and resi '%pdbname,'create chi, %s_0001 and resi ' %pdbname, 'create viol_phi-psi, %s_0001 and resi '%pdbname , 'create viol_chi, %s_0001 and resi '%pdbname
+
+
 poorpbout = open(outdir + outname + '_poor_cons.pb','w')
 poorpbout.write("; halfbond = false\n; color = darkred\n; radius = 0.2\n; dashes = 0\n")
 longpbout = open(outdir + outname + '_long_cons.pb','w')
@@ -123,6 +130,7 @@ pviolpbout = open(outdir + outname + '_viol_peaks_cons.pb','w')
 pviolpbout.write("; halfbond = false\n; color = brown\n; radius = 0.2\n; dashes = 0\n")
 uviolpbout = open(outdir + outname + '_viol_upls_cons.pb','w')
 uviolpbout.write("; halfbond = false\n; color = brown\n; radius = 0.2\n; dashes = 0\n")
+
 '''cns[0] = resi1 , cns[1] = resn1, cns[2]= atom1, cns[3] = resi2, cns[4]=resn2, cns[5] = atom2, cns[6] = dist'''
 i = 1
 Filtered = []
@@ -137,6 +145,7 @@ viol_peakscons,viol_uplscons= 'group viol_peaks, ', 'group viol_upls, '
 finalupls = [["###Violated Restraints\n"],["###Poor/Low Support\n"],["###Long Distance Restraints (d >= 6.0)\n"],["###Short Distance Restraints (d <= 3.0)\n"],["###Good Restraints\n"]]
 checkcons.write('### Violated Distance Constraints from %s \n' %(str(fovw)))
 v = 0
+phiv, chiv = [], []
 for line in open(fovw).readlines():
 	if line[4:9] == 'Upper' or line[4:9] == 'Lower':
 		dviol = line.split()
@@ -150,7 +159,7 @@ for line in open(fovw).readlines():
 			v+=1
 			if 'peak' not in line:
 				pbout = uviolpbout
-				grpout = viol_uplscons
+				# grpout = 'viol_uplscons'
 				grpstr = "uplviol"
 				cons = '%4s %4s %-4s  %4s %4s %-4s  %6.2f\n' % (dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]))
 				cons2 = '%4s %4s %-4s  %4s %4s %-4s  %6.2f  # %s %s\n' % (dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]), dviol[9], dviol[10])
@@ -160,7 +169,7 @@ for line in open(fovw).readlines():
 					Lowerdict[cons] = cons2
 			if 'peak' in line and 'QQ' not in line:
 				pbout = pviolpbout
-				grpout = viol_peakscons
+				# grpout = 'viol_peakscons'
 				grpstr = "peakviol"
 				for line2 in open(fupl).readlines():
 					cns = line2.split()
@@ -171,23 +180,41 @@ for line in open(fovw).readlines():
 			if ',' in atom1 and ',' not in atom2:
 				pbout.write('#1.1:%s@%s #1.1:%s@%s\n' %(dviol[3], atom1.split(',')[0], dviol[7],atom2))
 				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(grpstr, str(v), pdbname, dviol[3], atom1.split(',')[0], pdbname, dviol[7], atom2))
-				grpout = grpout + "%s%s " %(grpstr,str(v))
+				if 'peak' in line: viol_uplscons = viol_uplscons + "uplviol"+str(v) + ' '
+				if 'peak' not in line: viol_peakscons = viol_peakscons + "peakviol"+str(v) + ' '
 				v+=1
 				pbout.write('#1.1:%s@%s #1.1:%s@%s\n' %(dviol[3], atom1.split(',')[1], dviol[7],atom2))
 				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(grpstr, str(v), pdbname, dviol[3], atom1.split(',')[1], pdbname, dviol[7], atom2))
-				grpout = grpout + "%s%s " %(grpstr,str(v))
+				if 'peak' in line: viol_uplscons = viol_uplscons + "uplviol"+str(v) + ' '
+				if 'peak' not in line: viol_peakscons = viol_peakscons + "peakviol"+str(v) + ' '
 			if ',' in atom2 and ',' not in atom1:
 				pbout.write('#1.1:%s@%s #1.1:%s@%s\n' %(dviol[3], atom1, dviol[7],atom2.split(',')[0]))
 				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(grpstr, str(v), pdbname, dviol[3], atom1, pdbname, dviol[7], atom2.split(',')[0]))
-				grpout = grpout + "%s%s " %(grpstr,str(v))
+				if 'peak' in line: viol_uplscons = viol_uplscons + "uplviol"+str(v) + ' '
+				if 'peak' not in line: viol_peakscons = viol_peakscons + "peakviol"+str(v) + ' '
 				v+=1
 				pbout.write('#1.1:%s@%s #1.1:%s@%s\n' %(dviol[3], atom1, dviol[7],atom2.split(',')[1]))
 				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(grpstr, str(v), pdbname, dviol[3], atom1, pdbname, dviol[7], atom2.split(',')[1]))
-				grpout = grpout + "%s%s " %(grpstr,str(v))
+				if 'peak' in line: viol_uplscons = viol_uplscons + "uplviol"+str(v) + ' '
+				if 'peak' not in line: viol_peakscons = viol_peakscons + "peakviol"+str(v) + ' '
 			if ',' not in atom1 and ',' not in atom2:
 				pbout.write('#1.1:%s@%s #1.1:%s@%s\n' %(dviol[3], atom1, dviol[7],atom2))
 				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(grpstr, str(v), pdbname, dviol[3], atom1, pdbname, dviol[7], atom2))
-				grpout = grpout + "%s%s " %(grpstr,str(v))
+				if 'peak' in line: viol_uplscons = viol_uplscons + "uplviol"+str(v) + ' '
+				if 'peak' not in line: viol_peakscons = viol_peakscons + "peakviol"+str(v) + ' '
+	if line[4:9] == 'Angle':
+		dang = line.split()
+		if dang[1] == 'PHI' or dang[1] == 'PSI':
+			if dang[3] not in phiv:
+				phiv.append(dang[3])
+				cmxphiviol = cmxphiviol + dang[3] + ','
+				pmlphiviol = pmlphiviol + dang[3] + '+'
+		if 'CHI' in dang[1]:
+			if dang[3] not in chiv:
+				chiv.append(dang[3])
+				cmxchiviol = cmxchiviol + dang[3] + ','
+				pmlchiviol = pmlchiviol + dang[3] + '+'
+
 
 checkcons.write('\n\n')
 finalupl,poorcons2, show, shortcons2,longcons2 = [],[],[],[],[]
@@ -401,6 +428,46 @@ selhbond = selhbond[:-1] + '@O,N\n'
 outcmx.write('open ' + outdir + 'hbond_cons.pb\n')
 outcmx.write('color #%s %s\n' %(str(mn),'pink'))
 outcmx.write(selhbond)
+
+phir, chir = [],[]
+for angf in dihed:
+	for line in open(angf).readlines():
+		if '#' not in line and line.strip():
+			ang = line.split()
+			if ang[2] == 'PHI' or ang[2] == 'PSI':
+				if ang[0] not in phir:
+					phir.append(ang[0])
+					cmxphisel = cmxphisel + ang[0] + ','
+					pmlphisel = pmlphisel + ang[0] + '+'
+			if 'CHI' in ang[2]:
+				if ang[0] not in chir:
+					chir.append(ang[0])
+					cmxchisel = cmxchisel + ang[0] + ','
+					pmlchisel = pmlchisel  + ang[0] + '+'
+
+
+# outcmx.write('combine #1.1 modelId %s name angles\n' %mns)
+outcmx.write('combine #1.1 modelId %s name phi-psi\n'%(mn+1))
+outcmx.write(cmxphisel[:-1] + '\n')
+outcmx.write('color phipsisel purple target ac\n')
+outcmx.write('combine #1.1 modelId %s name chi\n'%(mn+2))
+outcmx.write(cmxchisel[:-1] + '\n')
+outcmx.write('color chisel cornflower blue target ac \n')
+outcmx.write('combine #1.1 modelId %s name viol_phi-psi\n'%(mn+3))
+outcmx.write(cmxphiviol[:-1] + '\n')
+outcmx.write('color phipsiviol hot pink target ac \n')
+outcmx.write('combine #1.1 modelId %s name viol_chi\n'%(mn+4))
+outcmx.write(cmxchiviol[:-1] + '\n')
+outcmx.write('color chiviol mediumvioletred target ac\n')
+
+outpml.write(pmlphisel[:-1] + '\n')
+outpml.write('color purple,phi-psi\n')
+outpml.write(pmlchisel[:-1] + '\n')
+outpml.write('color marin, chi\n')
+outpml.write(pmlchiviol[:-1] + '\n')
+outpml.write('color magenta, viol_phi-psi \n')
+outpml.write(pmlphiviol[:-1] + '\n')
+outpml.write('color red, viol_chi\n')
 outpml.write("hide labels\n")
 outpml.write('color gray60, final\n')
 outpml.write('split_states ' + pdbname + '\n')
