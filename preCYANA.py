@@ -23,21 +23,19 @@ replacements ={
 'TRPHA':'CA','TRPHB2':'CB','TRPHB3':'CB','TRPQB':'CB','TRPHD1':'CD1','TRPHE3':'CE3','TRPHE1':'NE1','TRPHZ3':'CZ3','TRPHZ2':'CZ2','TRPHH2':'CH2',
 'TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRQD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH'}
 #'ALAH':'N','CYSH':'N','ASPH':'N','GLUH':'N','PHEH':'N','GLYH':'N','HISH':'N','ILEH':'N','LYSH':'N','LEUH':'N','METH':'N','ASNH':'N','GLNH':'N','ARGH':'N','SERH':'N','THRH':'N','VALH':'N','TRPH':'N','TYRH':'N',
+
+['ALAH','CYSH','ASPH','GLUH','PHEH','GLYH','HISH','ILEH','LYSH','LEUH','METH','ASNH','GLNH','ARGH','SERH','THRH','VALH','TRPH','TYRH']
 if len(sys.argv)==1:
 	print('''
 
 Usage: 
-	cyanapra [pdb] [upl]
+	cyanapra [pdb]
 
 Required Input:
 
 	PDB			PDB to be used typically the final.pdb or pdb after CNS refinment
 				If this is not located in current directory provide path
 					CNS/refinePDB/r12_cya.pdb
-
-	upl				What upl file would you like to use? final.upl cycle?.upl
-					Which ever upl you specify determines the overveiw file used. 
-
 OutPut:
 	name_pra.cxc
 	name_pra.pml
@@ -54,17 +52,14 @@ colors2 = ['white','mediumvioletred','orange','forest','royalblue','purple','cho
 cwd = os.getcwd() + '/'
 outdir = cwd + 'pre_cyana/'
 in_pdb = sys.argv[1]
-fupl = sys.argv[2]
 pdbname = in_pdb.split('.')[0]
 calc = cwd + 'CALC.cya'
-outname = fupl.split('.')[0]
+outname = in_pdb.split('.')[0]
 
 ## Check for the output directory if it does not exist make it
 if not os.path.exists(outdir):
 	os.makedirs(outdir)
 
-checkcons = open(outdir + outname + '_summary.txt','w')
-checkcons.write('                         #peaks    upl Violations Assigned Ambiguous Unassigned\n')
 
 ## open the CALC.cya file to get the peaks list and additonal constraint files used in the calculation. 
 manualongcons = [line.strip() for line in open(calc).readlines() if line.strip() and '.upl' in line][0].split()[2].split(',')
@@ -84,16 +79,26 @@ outcmx.write('color #1 gray(150)\n')
 pdbname = in_pdb.replace('.pdb','')
 
 mn = 2
-print(mns)
-cmxphisel, cmxchisel = 'name phipsisel #%s:'%mn, 'name chisel #%s:'%(mn+=1)
-pmlphisel, pmlchisel = 'create phi-psi, %s_0001 and resi '%pdbname,'create chi, %s_0001 and resi ' %pdbname
+print(mn)
+cmxphisel, cmxchisel = 'name phipsisel #%s:'%mn, 'name chisel #%s:'%(mn+1)
+
 mcount = 0
+Hasprot = False
 for line in open(in_pdb).readlines():
 	if 'MODEL ' in line:mcount+=1
+	if line[0:4] == "ATOM" or line[0:4] == 'HETA':
+		if line[12:16].strip() == 'H': Hasprot = True
+if Hasprot == False:
+	for aa in ['ALAH','CYSH','ASPH','GLUH','PHEH','GLYH','HISH','ILEH','LYSH','LEUH','METH','ASNH','GLNH','ARGH','SERH','THRH','VALH','TRPH','TYRH']:
+		replacements[aa] = 'N'
 
 print(mcount)
-if mcount > 2:cmxn = '#1.1'
-if mcount <= 1:cmxn = '#1'
+if mcount > 2:
+	cmxn = '#1.1'
+	pmlphisel, pmlchisel = 'create phi-psi, %s_0001 and resi '%pdbname,'create chi, %s_0001 and resi ' %pdbname
+if mcount <= 1:
+	cmxn = '#1'
+	pmlphisel, pmlchisel = 'create phi-psi, %s and resi '%pdbname,'create chi, %s and resi ' %pdbname
 
 u = 0
 for uplfile in upls:
@@ -187,7 +192,6 @@ for angf in dihed:
 					cmxchisel = cmxchisel + ang[0] + ','
 					pmlchisel = pmlchisel  + ang[0] + '+'
 
-
 # outcmx.write('combine #1.1 modelId %s name angles\n' %mns)
 outcmx.write('combine %s modelId %s name phi-psi\n'%(cmxn, mn+1))
 outcmx.write(cmxphisel[:-1] + '\n')
@@ -195,26 +199,16 @@ outcmx.write('color phipsisel purple target ac\n')
 outcmx.write('combine %s modelId %s name chi\n'%(cmxn, mn+2))
 outcmx.write(cmxchisel[:-1] + '\n')
 outcmx.write('color chisel cornflower blue target ac \n')
-outcmx.write('combine %s modelId %s name viol_phi-psi\n'%(cmxn, mn+3))
-outcmx.write(cmxphiviol[:-1] + '\n')
-outcmx.write('color phipsiviol hot pink target ac \n')
-outcmx.write('combine %s modelId %s name viol_chi\n'%(cmxn,mn+4))
-outcmx.write(cmxchiviol[:-1] + '\n')
-outcmx.write('color chiviol mediumvioletred target ac\n')
-
 outpml.write(pmlphisel[:-1] + '\n')
 outpml.write('color purple,phi-psi\n')
 outpml.write(pmlchisel[:-1] + '\n')
 outpml.write('color marin, chi\n')
-outpml.write(pmlchiviol[:-1] + '\n')
-outpml.write('color magenta, viol_phi-psi \n')
-outpml.write(pmlphiviol[:-1] + '\n')
-outpml.write('color red, viol_chi\n')
 outpml.write("hide labels\n")
 outpml.write('color gray60, final\n')
-outpml.write('split_states ' + pdbname + '\n')
+
 
 if mcount > 2:
+	outpml.write('split_states ' + pdbname + '\n')
 	for y in range(2,21,1):
 		outcmx.write('match #1.%s to #1.1\n' %str(y))
 		outpml.write('align %s_%04d, %s_0001\n' %(pdbname,y, pdbname))
