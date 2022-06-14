@@ -23,7 +23,7 @@ Atoms_dict = {'I':['CD1'], 'L':['CD1','CD2'], 'V':['CG1','CG2'], 'M':['CE'], 'A'
 cwd = os.getcwd()
 #####
 if len(sys.argv)==1:
-	print '''
+	print('''
 
 Usage: 
 	PrepCyan [Sequence] [index(s)] [pdb] [upl_extras] [residues] [TALOS] 
@@ -69,7 +69,7 @@ OutPut:
 	name_hbond.upl
 	name_hbond.lol
 	name_dihed.aco
-'''
+''')
 	exit()
 
 
@@ -86,8 +86,8 @@ name = prot.split('.')[0]
 talosSS = os.path.join(TALOSdir +'/predSS.tab')
 
 indihed = os.path.join(TALOSdir +'/pred.tab')
-print "Using " + talosSS
-print "Using " + indihed
+print("Using " + talosSS)
+print("Using " + indihed)
 # Indexes = [int(x) for x in index.split(',')]
 
 #------------------------------------------------------------------------------
@@ -247,41 +247,41 @@ for O in hbond_O:
 				hblol.write("%4s %s  %-3s   %4s %s  %-3s     2.70\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
 				hblol.write("%4s %s  %-3s   %4s %s  %-3s     1.80\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
 
-### For Helical residues NOT in TALOS
-hblol.write("## Helical residues NOT in TALOS\n")
-hbupl.write("## Helical residues NOT in TALOS \n")
-hbond_N = PDB_df[(PDB_df['nuc'] == 'N')].index.tolist()
-hbond_O = PDB_df[(PDB_df['nuc'] == 'O')].index.tolist()
-for O in hbond_O:
-	for N in hbond_N:
-		if str(PDB_df.loc[O,'resid']) + '-' + str(PDB_df.loc[N,'resid']) not in constrained:
-			if abs(PDB_df.loc[O,'resid'] - PDB_df.loc[N,'resid']) == 4: 
-				dist = round(np.sqrt(((PDB_df.loc[O,'X'] - PDB_df.loc[N,'X'])**2) + ((PDB_df.loc[O,'Y'] - PDB_df.loc[N,'Y'])**2) + ((PDB_df.loc[O,'Z'] - PDB_df.loc[N,'Z'])**2)),1)
-				if dist >= 2.7 and dist <= 3.3: 
-					constrained.append(str(PDB_df.loc[O,'resid']) + '-' + str(PDB_df.loc[N,'resid']))
-					hbupl.write("%4s %s  %-3s   %4s %s  %-3s     3.40\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
-					hbupl.write("%4s %s  %-3s   %4s %s  %-3s     2.40\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
-					hblol.write("%4s %s  %-3s   %4s %s  %-3s     2.70\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
-					hblol.write("%4s %s  %-3s   %4s %s  %-3s     1.80\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
-### For Betta Sheet residues 
-hblol.write("## Betta Sheet residues not in TALOS \n")
-hbupl.write("## Betta Sheet residues not in TALOS \n")				
-for O in hbond_O:
-	for N in hbond_N:
-		if str(PDB_df.loc[O,'resid']) + '-' + str(PDB_df.loc[N,'resid']) not in constrained:
-			if abs(PDB_df.loc[O,'resid'] - PDB_df.loc[N,'resid']) != 0: 
-				dist = round(np.sqrt(((PDB_df.loc[O,'X'] - PDB_df.loc[N,'X'])**2) + ((PDB_df.loc[O,'Y'] - PDB_df.loc[N,'Y'])**2) + ((PDB_df.loc[O,'Z'] - PDB_df.loc[N,'Z'])**2)),1)
-				if dist >= 2.7 and dist <= 3.3: 
-					constrained.append(str(PDB_df.loc[O,'resid']) + '-' + str(PDB_df.loc[N,'resid']))
-					hbupl.write("%4s %s  %-3s   %4s %s  %-3s     3.40\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
-					hbupl.write("%4s %s  %-3s   %4s %s  %-3s     2.40\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
-					hblol.write("%4s %s  %-3s   %4s %s  %-3s     2.70\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
-					hblol.write("%4s %s  %-3s   %4s %s  %-3s     1.80\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
+# ### For Helical residues NOT in TALOS
+# hblol.write("## Helical residues NOT in TALOS\n")
+# hbupl.write("## Helical residues NOT in TALOS \n")
+# hbond_N = PDB_df[(PDB_df['nuc'] == 'N')].index.tolist()
+# hbond_O = PDB_df[(PDB_df['nuc'] == 'O')].index.tolist()
+# for O in hbond_O:
+# 	for N in hbond_N:
+# 		if str(PDB_df.loc[O,'resid']) + '-' + str(PDB_df.loc[N,'resid']) not in constrained:
+# 			if abs(PDB_df.loc[O,'resid'] - PDB_df.loc[N,'resid']) == 4: 
+# 				dist = round(np.sqrt(((PDB_df.loc[O,'X'] - PDB_df.loc[N,'X'])**2) + ((PDB_df.loc[O,'Y'] - PDB_df.loc[N,'Y'])**2) + ((PDB_df.loc[O,'Z'] - PDB_df.loc[N,'Z'])**2)),1)
+# 				if dist >= 2.7 and dist <= 3.3: 
+# 					constrained.append(str(PDB_df.loc[O,'resid']) + '-' + str(PDB_df.loc[N,'resid']))
+# 					hbupl.write("%4s %s  %-3s   %4s %s  %-3s     3.40\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
+# 					hbupl.write("%4s %s  %-3s   %4s %s  %-3s     2.40\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
+# 					hblol.write("%4s %s  %-3s   %4s %s  %-3s     2.70\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
+# 					hblol.write("%4s %s  %-3s   %4s %s  %-3s     1.80\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
+# ### For Betta Sheet residues 
+# hblol.write("## Betta Sheet residues not in TALOS \n")
+# hbupl.write("## Betta Sheet residues not in TALOS \n")				
+# for O in hbond_O:
+# 	for N in hbond_N:
+# 		if str(PDB_df.loc[O,'resid']) + '-' + str(PDB_df.loc[N,'resid']) not in constrained:
+# 			if abs(PDB_df.loc[O,'resid'] - PDB_df.loc[N,'resid']) != 0: 
+# 				dist = round(np.sqrt(((PDB_df.loc[O,'X'] - PDB_df.loc[N,'X'])**2) + ((PDB_df.loc[O,'Y'] - PDB_df.loc[N,'Y'])**2) + ((PDB_df.loc[O,'Z'] - PDB_df.loc[N,'Z'])**2)),1)
+# 				if dist >= 2.7 and dist <= 3.3: 
+# 					constrained.append(str(PDB_df.loc[O,'resid']) + '-' + str(PDB_df.loc[N,'resid']))
+# 					hbupl.write("%4s %s  %-3s   %4s %s  %-3s     3.40\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
+# 					hbupl.write("%4s %s  %-3s   %4s %s  %-3s     2.40\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
+# 					hblol.write("%4s %s  %-3s   %4s %s  %-3s     2.70\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
+# 					hblol.write("%4s %s  %-3s   %4s %s  %-3s     1.80\n" % (PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
 hblol.close()
 hbupl.close()
 hblol.close()
 hbupl.close()
-print "Generated hbond.upl and hbond.lol"
+print("Generated hbond.upl and hbond.lol")
 #------------------------------------------------------------------------------
 # Prepare upl constraints for initial calculation only considering structured elements
 # based on TALOS predSS.tab
@@ -320,7 +320,7 @@ for i in range(len(NA_list)):
 						upl.write(NN_out)
 
 
-print "Made %3.0f NN upl constraints " % (len(NN_used))
+print("Made %3.0f NN upl constraints " % (len(NN_used)))
 NC_used = []
 upl.write('## N-C distances from structured regions\n')
 for i in range(len(N_list)):
@@ -345,7 +345,7 @@ for i in range(len(NA_list)):
 					NC_out = "%4s %s  %-3s   %4s %s  %-3s   %6.2f\n" % (PDB_df.loc[NA_list[i],'resid'],PDB_df.loc[NA_list[i],'resn'],PDB_df.loc[NA_list[i],'name'], PDB_df.loc[CA_list[x],'resid'],PDB_df.loc[CA_list[x],'resn'],PDB_df.loc[CA_list[x],'name'],dist)
 					upl.write(NC_out)
 
-print "Made %3.0f NC upl constraints " % (len(NC_used))
+print("Made %3.0f NC upl constraints " % (len(NC_used)))
 CC_used = []
 upl.write('## C-C distances from structured regions\n')
 for i in range(len(C_list)):
@@ -373,10 +373,11 @@ for i in range(len(CA_list)):
 						CC_out = "%4s %s  %-3s   %4s %s  %-3s   %6.2f\n" % (PDB_df.loc[CA_list[i],'resid'],PDB_df.loc[CA_list[i],'resn'],PDB_df.loc[CA_list[i],'name'], PDB_df.loc[CA_list[x],'resid'],PDB_df.loc[CA_list[x],'resn'],PDB_df.loc[CA_list[x],'name'],dist)
 						upl.write(CC_out)
 
-print "Made %3.0f CC upl constraints " % (len(CC_used))
+print("Made %3.0f CC upl constraints " % (len(CC_used)))
 upl.close()
 
-
+ssa = open('ssa.cya'.'w')
+ssa.close()
 
 CYANA = open('CALC.cya','w')
 clac_text = '''
