@@ -119,15 +119,15 @@ pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'create phi-psi, %s_0001 and resi
 
 
 poorpbout = open(outdir + outname + '_poor_cons.pb','w')
-poorpbout.write("; halfbond = false\n; color = darkred\n; radius = 0.2\n; dashes = 0\n")
+poorpbout.write("; halfbond = false\n; color = darkred\n; radius = 0.15\n; dashes = 0\n")
 longpbout = open(outdir + outname + '_long_cons.pb','w')
-longpbout.write("; halfbond = false\n; color = aquamarine\n; radius = 0.2\n; dashes = 0\n")
+longpbout.write("; halfbond = false\n; color = aquamarine\n; radius = 0.15\n; dashes = 0\n")
 shortpbout = open(outdir + outname + '_short_cons.pb','w')
-shortpbout.write("; halfbond = false\n; color = light coral\n; radius = 0.2\n; dashes = 0\n")
+shortpbout.write("; halfbond = false\n; color = light coral\n; radius = 0.15\n; dashes = 0\n")
 pviolpbout = open(outdir + outname + '_viol_peaks_cons.pb','w')
-pviolpbout.write("; halfbond = false\n; color = brown\n; radius = 0.2\n; dashes = 0\n")
+pviolpbout.write("; halfbond = false\n; color = brown\n; radius = 0.15\n; dashes = 0\n")
 uviolpbout = open(outdir + outname + '_viol_upls_cons.pb','w')
-uviolpbout.write("; halfbond = false\n; color = brown\n; radius = 0.2\n; dashes = 0\n")
+uviolpbout.write("; halfbond = false\n; color = brown\n; radius = 0.15\n; dashes = 0\n")
 
 '''cns[0] = resi1 , cns[1] = resn1, cns[2]= atom1, cns[3] = resi2, cns[4]=resn2, cns[5] = atom2, cns[6] = dist'''
 i = 1
