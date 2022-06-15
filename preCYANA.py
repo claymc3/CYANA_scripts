@@ -78,10 +78,8 @@ outcmx.write('open '+ cwd + in_pdb+'\n')
 outcmx.write('color #1 gray(150)\n')
 pdbname = in_pdb.replace('.pdb','')
 
-mn = 2
-print(mn)
-cmxphisel, cmxchisel = 'name phipsisel #%s:'%mn, 'name chisel #%s:'%(mn+1)
 
+mn = 2
 mcount = 0
 Hasprot = False
 for line in open(in_pdb).readlines():
@@ -101,11 +99,13 @@ if mcount <= 1:
 	pmlphisel, pmlchisel = 'create phi-psi, %s and resi '%pdbname,'create chi, %s and resi ' %pdbname
 
 u = 0
+x = 0
 for uplfile in upls:
+	x+=1
 	fin = open(uplfile,'r')
 	outpb = open(outdir + uplfile.replace('.upl','_cons.pb'),'w')
 	pmlgroup = 'group %s, ' %(uplfile.replace('.upl',''))
-	outpb.write("; halfbond = false\n; color = blue\n; radius = 0.1\n; dashes = 10\n")
+	outpb.write("; halfbond = false\n; color = %s\n; radius = 0.1\n; dashes = 0\n" %colors2[x])
 	for line in fin.readlines():
 		cns = line.split()
 		if "#" not in cns[0]:
@@ -142,12 +142,12 @@ for uplfile in upls:
 				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 				pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
 	outpml.write(pmlgroup + '\n')
-	outpml.write('color blue,' + uplfile.replace('.upl','') + '\n')
+	outpml.write('color %s, %s\n' %(uplfile.replace('.upl',''),colors[x]))
 	mn+=1
 	outcmx.write('open ' + outdir + uplfile.replace('.upl','_cons.pb') + '\n')
-	outcmx.write('color #%s %s\n' %(str(mn),'cyan'))
+	outcmx.write('color #%s %s\n' %(str(mn),colors2[x]))
 
-selhbond = 'name hbond  #1.1:'
+selhbond = 'name hbond  %s:'%cmxn
 hbonsl = []
 hbond = open(outdir + 'hbond_cons.pb','w')
 hbond.write("; halfbond = false\n; color = pink\n; radius = 0.2\n; dashes = 10\n")
@@ -161,7 +161,7 @@ for line in open('hbond.upl').readlines():
 			h+=1 
 			hbonsl.append((cns[0],cns[3]))
 			hbonsl.append((cns[3],cns[0]))
-			hbond.write('%s:%s@%s #%s:%s@%s %s\n' %(cmxn, cns[0], cns[2], cmxn, cns[3],cns[5],'pink'))
+			hbond.write('%s:%s@%s %s:%s@%s %s\n' %(cmxn, cns[0], cns[2], cmxn, cns[3],cns[5],'pink'))
 			outpml.write('distance hbond%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(h), pdbname, cns[0], cns[2].replace('H','N'), pdbname, cns[3], cns[5].replace('H','N')))
 			hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
 			if cns[0] not in selhbond:
@@ -176,6 +176,8 @@ outcmx.write('open ' + outdir + 'hbond_cons.pb\n')
 outcmx.write('color #%s %s\n' %(str(mn),'pink'))
 outcmx.write(selhbond)
 
+print(mn)
+cmxphisel, cmxchisel = 'name phipsisel #%s:'%(mn+1), 'name chisel #%s:'%(mn+2)
 phir, chir = [],[]
 for angf in dihed:
 	for line in open(angf).readlines():
@@ -225,10 +227,10 @@ outcmx.write('color :tyr orchid target a\n')
 outcmx.write('color  byhetero target a\n')
 outcmx.write('show :thr,met,ala,leu,val,ile,phe,tyr\n')
 outcmx.write('hide H\n')
-outcmx.write('show #1.1 @H\n')
-outcmx.write('show #1.1@N target a\n')
+outcmx.write('show %s@H\n' %cmxn)
+outcmx.write('show %s@N target a\n' %cmxn)
 outcmx.write('cartoon suppress false\n')
-outcmx.write('label #1.1  text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n')
+outcmx.write('label %s  text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n' %cmxn)
 outcmx.write('label ontop false\n')
 outcmx.write('ui tool show "Side View"')
 outpml.close()
