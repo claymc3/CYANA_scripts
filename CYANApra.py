@@ -115,7 +115,9 @@ pdbname = in_pdb.replace('.pdb','')
 mns = len(cya_plists) + 8 + len(upls)
 
 cmxphisel, cmxchisel, cmxphiviol, cmxchiviol = 'name phipsisel #%s:'%mns, 'name chisel #%s:'%(mns+1), 'name phipsiviol #%s:'%(mns+2), 'name chiviol #%s:'%(mns+3)
-pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'create phi-psi, %s_0001 and resi '%pdbname,'create chi, %s_0001 and resi ' %pdbname, 'create viol_phi-psi, %s_0001 and resi '%pdbname , 'create viol_chi, %s_0001 and resi '%pdbname
+pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'color purple, phi-psi and resi ','color marin, chi and resi ', 'color magenta, viol_phi-psi and resi ', 'create red, viol_chi and resi '
+
+
 
 
 poorpbout = open(outdir + outname + '_poor_cons.pb','w')
@@ -422,11 +424,10 @@ for line in open('hbond.upl').readlines():
 hbond.close()
 outpml.write(hbgroupline + '\n')
 outpml.write('color pink, hbond\n')
-selhbond = selhbond[:-1] + '@O,N\n'
+selhbond = selhbond[:-1] + '@O,N\nshow hbond target a\n'
 outcmx.write('open ' + outdir + 'hbond_cons.pb\n')
 outcmx.write('color #%s %s\n' %(str(mn),'pink'))
 outcmx.write(selhbond)
-
 phir, chir = [],[]
 for angf in dihed:
 	for line in open(angf).readlines():
@@ -443,37 +444,12 @@ for angf in dihed:
 					cmxchisel = cmxchisel + ang[0] + ','
 					pmlchisel = pmlchisel  + ang[0] + '+'
 
-# outcmx.write('combine #1.1 modelId %s name angles\n' %mns)
-outcmx.write('combine #1.1 modelId %s name phi-psi\n'%(mn+1))
-outcmx.write(cmxphisel[:-1] + '\n')
-outcmx.write('color phipsisel purple target ac\n')
-outcmx.write('combine #1.1 modelId %s name chi\n'%(mn+2))
-outcmx.write(cmxchisel[:-1] + '\n')
-outcmx.write('color chisel cornflower blue target ac \n')
-outcmx.write('show chisel\n')
-outcmx.write('combine #1.1 modelId %s name viol_phi-psi\n'%(mn+3))
-outcmx.write(cmxphiviol[:-1] + '\n')
-outcmx.write('color phipsiviol hot pink target ac \n')
-outcmx.write('combine #1.1 modelId %s name viol_chi\n'%(mn+4))
-outcmx.write(cmxchiviol[:-1] + '\n')
-outcmx.write('color chiviol mediumvioletred target ac\n')
-outcmx.write('show chiviol\n')
-
 outpml.write('split_states ' + pdbname + '\n')
 
 for y in range(2,21,1):
 	outcmx.write('match #1.%s to #1.1\n' %str(y))
 	outpml.write('align %s_%04d, %s_0001\n' %(pdbname,y, pdbname))
-outcmx.write('color :thr teal target a\n')
-outcmx.write('color :thr teal target a\n')
-outcmx.write('color :val orange  target a\n')
-outcmx.write('color :leu indian red  target a\n')
-outcmx.write('color :met purple  target a\n')
-outcmx.write('color :ala forest green  target a\n')
-outcmx.write('color :ile dodger blue  target a\n')
-outcmx.write('color :phe slate blue target a\n')
-outcmx.write('color :tyr orchid target a\n')
-outcmx.write('color  byhetero target a\n')
+outcmx.write('color :thr teal target a\ncolor :val orange  target a\ncolor :leu indian red  target a\ncolor :met purple  target a\ncolor :ala forest green  target a\ncolor :ile dodger blue  target a\ncolor :phe slate blue target a\ncolor :tyr orchid target a\ncolor  byhetero target a\n')
 outcmx.write('show :thr,met,ala,leu,val,ile,phe,tyr\n')
 outcmx.write('hide H\n')
 outcmx.write('show #1.1 @H\n')
@@ -482,21 +458,33 @@ outcmx.write('cartoon suppress false\n')
 outcmx.write('label #1.1  text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n')
 outcmx.write('label ontop false\n')
 outcmx.write('ui tool show "Side View"')
-outpml.write(pmlphisel[:-1] + '\n')
-outpml.write('color purple,phi-psi\n')
-outpml.write(pmlchisel[:-1] + '\n')
-outpml.write('color marin, chi\n')
-outpml.write(pmlchiviol[:-1] + '\n')
-outpml.write('color magenta, viol_phi-psi \n')
-outpml.write(pmlphiviol[:-1] + '\n')
-outpml.write('color red, viol_chi\n')
-outpml.write("hide labels\n")
+outcmx.write('combine #1.1 modelId %s name phi-psi\nhide #%s target a\n'%(mn+1,mn+1))
+outcmx.write(cmxphisel[:-1] + '\n')
+outcmx.write('color phipsisel purple target ac\n')
+outcmx.write('combine #1.1 modelId %s name chi\nhide #%s target a\n'%(mn+2,mn+2))
+outcmx.write(cmxchisel[:-1] + '\n')
+outcmx.write('color chisel cornflower blue target ac \n')
+outcmx.write('show chisel\n')
+outcmx.write('combine #1.1 modelId %s name viol_phi-psi\nhide #%s target a\n'%(mn+3,mn+3))
+outcmx.write(cmxphiviol[:-1] + '\n')
+outcmx.write('color phipsiviol hot pink target ac \n')
+outcmx.write('combine #1.1 modelId %s name viol_chi\nhide #%s target a\n'%(mn+4,mn+4))
+outcmx.write(cmxchiviol[:-1] + '\n')
+outcmx.write('color chiviol mediumvioletred target ac\n')
+outcmx.write('show chiviol\n')
+
 outpml.write('show sticks, resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\n hide sticks, elem H\nhide sticks, name N+C\n')
 outpml.write('color violetpurple, resn MET\ncolor smudge, resn ALA\ncolor marine, resn ILE\ncolor magenta,  resn LEU\ncolor orange, resn VAL\ncolor gold, resn THR\ncolor pink, resn TYR\ncolor slate, resn PHE\n')
 outpml.write('color gold, elem S\ncolor red, elem O\ncolor blue, elem N\n')
 outpml.write('hide everything, %s\n' %pdbname)
+outpml.write('create phi-psi, %s_0001\ncolor gray60,phi-psi\nhide sticks, phi-psi\n' %pdbname)
+outpml.write(pmlphisel[:-1] + '\n')
+outpml.write('create chi, %s_0001\ncolor gray60, chi\nhide sticks, chi\n' %pdbname)
+outpml.write(pmlchisel[:-1] + '\n')
+outpml.write('create viol_phi-psi, %s_0001\ncolor gray60, viol_phi-psi\nhide sticks, viol_phi-psi\n' %pdbname)
+outpml.write(pmlchiviol[:-1] + '\n')
+outpml.write('create viol_chi, %s_0001\ncolor gray60, viol_chi\nhide sticks, viol_chi\n' %pdbname)
+outpml.write(pmlphiviol[:-1] + '\n')
+outpml.write("hide labels\n")
 outpml.close()
 outcmx.close()
-
-
-'''merge issue'''

@@ -89,14 +89,10 @@ for line in open(in_pdb).readlines():
 if Hasprot == False:
 	for aa in ['ALAH','CYSH','ASPH','GLUH','PHEH','GLYH','HISH','ILEH','LYSH','LEUH','METH','ASNH','GLNH','ARGH','SERH','THRH','VALH','TRPH','TYRH']:
 		replacements[aa] = 'N'
-
+pmlphisel, pmlchisel = 'color purple, phi-psi and resi ','color marin, chi and resi '
 print(mcount)
-if mcount > 2:
-	cmxn = '#1.1'
-	pmlphisel, pmlchisel = 'create phi-psi, %s_0001 and resi '%pdbname,'create chi, %s_0001 and resi ' %pdbname
-if mcount <= 1:
-	cmxn = '#1'
-	pmlphisel, pmlchisel = 'create phi-psi, %s and resi '%pdbname,'create chi, %s and resi ' %pdbname
+if mcount > 2: cmxn = '#1.1'
+if mcount <= 1: cmxn = '#1'
 
 u = 0
 x = 0
@@ -142,7 +138,7 @@ for uplfile in upls:
 				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 				pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
 	outpml.write(pmlgroup + '\n')
-	outpml.write('color %s, %s\n' %(uplfile.replace('.upl',''),colors[x]))
+	outpml.write('color %s, %s\n' %(colors[x],uplfile.replace('.upl','')))
 	mn+=1
 	outcmx.write('open ' + outdir + uplfile.replace('.upl','_cons.pb') + '\n')
 	outcmx.write('color #%s %s\n' %(str(mn),colors2[x]))
@@ -201,29 +197,16 @@ outcmx.write('color phipsisel purple target ac\n')
 outcmx.write('combine %s modelId %s name chi\n'%(cmxn, mn+2))
 outcmx.write(cmxchisel[:-1] + '\n')
 outcmx.write('color chisel cornflower blue target ac \n')
-outpml.write(pmlphisel[:-1] + '\n')
-outpml.write('color purple,phi-psi\n')
-outpml.write(pmlchisel[:-1] + '\n')
-outpml.write('color marin, chi\n')
-outpml.write("hide labels\n")
-outpml.write('color gray60, final\n')
-
-
+outpml.write('color gray60, %s\n' %pdbname)
+outpml.write('show sticks, resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\n hide sticks, elem H\nhide sticks, name N+C\n')
+outpml.write('color violetpurple, resn MET\ncolor smudge, resn ALA\ncolor marine, resn ILE\ncolor magenta,  resn LEU\ncolor orange, resn VAL\ncolor gold, resn THR\ncolor pink, resn TYR\ncolor slate, resn PHE\n')
+outpml.write('color gold, elem S\ncolor red, elem O\ncolor blue, elem N\n')
 if mcount > 2:
 	outpml.write('split_states ' + pdbname + '\n')
 	for y in range(2,21,1):
 		outcmx.write('match #1.%s to #1.1\n' %str(y))
 		outpml.write('align %s_%04d, %s_0001\n' %(pdbname,y, pdbname))
-
-outcmx.write('color :thr teal target a\n')
-outcmx.write('color :thr teal target a\n')
-outcmx.write('color :val orange  target a\n')
-outcmx.write('color :leu indian red  target a\n')
-outcmx.write('color :met purple  target a\n')
-outcmx.write('color :ala forest green  target a\n')
-outcmx.write('color :ile dodger blue  target a\n')
-outcmx.write('color :phe slate blue target a\n')
-outcmx.write('color :tyr orchid target a\n')
+outcmx.write('color :thr teal target a\ncolor :val orange  target a\ncolor :leu indian red  target a\ncolor :met purple  target a\ncolor :ala forest green  target a\ncolor :ile dodger blue  target a\ncolor :phe slate blue target a\ncolor :tyr orchid target a\n')
 outcmx.write('color  byhetero target a\n')
 outcmx.write('show :thr,met,ala,leu,val,ile,phe,tyr\n')
 outcmx.write('hide H\n')
@@ -233,6 +216,15 @@ outcmx.write('cartoon suppress false\n')
 outcmx.write('label %s  text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n' %cmxn)
 outcmx.write('label ontop false\n')
 outcmx.write('ui tool show "Side View"')
+if mcount > 2:
+	outpml.write('create phi-psi, %s_0001\ncolor gray60,phi-psi\nhide sticks, phi-psi\n' %pdbname)
+	outpml.write('create chi, %s_0001\ncolor gray60, chi\nhide sticks, chi\n' %pdbname)
+if mcount <= 1:
+	outpml.write('create phi-psi, %s\ncolor gray60,phi-psi\nhide sticks, phi-psi\n' %pdbname)
+	outpml.write('create chi, %s\ncolor gray60, chi\nhide sticks, chi\n' %pdbname)
+outpml.write(pmlphisel[:-1] + '\n')
+outpml.write(pmlchisel[:-1] + '\n')
+outpml.write("hide labels\n")
 outpml.close()
 outcmx.close()
 
