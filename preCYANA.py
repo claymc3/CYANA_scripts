@@ -25,28 +25,38 @@ replacements ={
 'TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRQD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH'}
 #'ALAH':'N','CYSH':'N','ASPH':'N','GLUH':'N','PHEH':'N','GLYH':'N','HISH':'N','ILEH':'N','LYSH':'N','LEUH':'N','METH':'N','ASNH':'N','GLNH':'N','ARGH':'N','SERH':'N','THRH':'N','VALH':'N','TRPH':'N','TYRH':'N',
 
-['ALAH','CYSH','ASPH','GLUH','PHEH','GLYH','HISH','ILEH','LYSH','LEUH','METH','ASNH','GLNH','ARGH','SERH','THRH','VALH','TRPH','TYRH']
+# ['ALAH','CYSH','ASPH','GLUH','PHEH','GLYH','HISH','ILEH','LYSH','LEUH','METH','ASNH','GLNH','ARGH','SERH','THRH','VALH','TRPH','TYRH']
 if len(sys.argv)==1:
 	print('''
 
 Usage: 
-	cyanapra [pdb]
+	precya [pdb] [TALOS]
+
+	precyana AF-FGFR3_KD.pdb ../TALOS2
 
 Required Input:
 
 	PDB			PDB to be used typically the final.pdb or pdb after CNS refinment
 				If this is not located in current directory provide path
 					CNS/refinePDB/r12_cya.pdb
+	TALOS		Path to the TALOS results directory, scipt will finde the predSS.tab
+				file it needs 
+				Chemical Shift based Helical Navy
+				Chemical Shift based Betta Strand Teal
+				Chemical Shift based Loop Strand goldenrod
+				Sequence based Helical royalblue
+				Sequence based Betta Strand turquoise
+				Sequence based Loop khaki
+
 OutPut:
 	name_pra.cxc
 	name_pra.pml
 	Pseudobond/Distance Groups from manual restraints:
 		input.upl
 		hbond.upl 
-	Anotated Constraints files 
 ''')
 	exit()
-colors = ['mediumvioletred','orange','forest','royalblue','purple','chocolate','cyan','PaleVioletRed','deepteal','gold','navy','darkcyan']
+colors = ['mediumvioletred','orange','forest','royalblue','purple','chocolate','cyan','palevioletred','deepteal','gold','navy','darkcyan']
 
 cwd = os.getcwd() + '/'
 outdir = cwd + 'pre_cyana/'
@@ -71,7 +81,7 @@ dihed = [con for con in manualongcons if 'aco' in con]
 
 outpml = open(outdir + 'CYANA_input.pml','w')
 outpml.write('load '+ cwd + in_pdb+'\n')
-outpml.write('set_color navy = [0,0,128]\nset_color royalblue = [65,105,225]\nset_color darkcyan = [0,139,139]\nset_color turquoise = [64,224,208]\nset_color goldenrod = [218,165,32]\nset_color khaki = [240,230,140]\nset_color mediumvioletred = [199,21,133]\nset_color gold = [255,215,0]\nset_color cornflowerblue = [100,149,237]\nset_color teal = [0,128,128]\nset_color PaleVioletRed = [219,112,147]\n')
+outpml.write('set_color navy = [0,0,128]\nset_color royalblue = [65,105,225]\nset_color darkcyan = [0,139,139]\nset_color turquoise = [64,224,208]\nset_color goldenrod = [218,165,32]\nset_color khaki = [240,230,140]\nset_color mediumvioletred = [199,21,133]\nset_color gold = [255,215,0]\nset_color cornflowerblue = [100,149,237]\nset_color teal = [0,128,128]\nset_color palevioletred = [219,112,147]\n')
 outpml.write('set dash_gap, 0.05\n')
 outpml.write('color gray60, all\n')
 outcmx = open(outdir + 'CYANA_input.cxc','w')
@@ -189,17 +199,24 @@ for uplfile in upls:
 
 
 
-
-mn+=1
 ### Color code secondar structure from TALOS analysis
 outpml.write('create predSS, %s\ncolor gray60,predSS\nhide sticks, predSS\n' %pmln)
-outcmx.write('combine %s modelId %s name predSS\n' %(cmxn,mn))
-CSHelix = 'name CSHelix #%s:' %mn
-CSStrand = 'name CSStrand #%s:' %mn
-CSLoop = 'name CSLoop #%s:' %mn
-SeqHelix = 'name SeqHelix #%s:' %mn
-SeqStrand = 'name SeqStrand #%s:' %mn
-SeqLoop = 'name SeqLoop #%s:' %mn
+outcmx.write('open '+ cwd + in_pdb+'\n')
+mn+=1
+if mcount > 2: 
+	hbcmxn = '#%s.1'%mn
+	outcmx.write('rename #%s predSS\n' %(mn))
+	outcmx.write('hide #%s.2-20 target ac\n'%mn)
+if mcount <= 1: 
+	hbcmxn = '#%s' %mn
+	outcmx.write('rename #%s predSS\n' %(mn))
+outcmx.write('label %s  text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\nlabel ontop false\n' %hbcmxn)
+CSHelix = 'name CSHelix %s:' %hbcmxn
+CSStrand = 'name CSStrand %s:' %hbcmxn
+CSLoop = 'name CSLoop %s:' %hbcmxn
+SeqHelix = 'name SeqHelix %s:' %hbcmxn
+SeqStrand = 'name SeqStrand %s:' %hbcmxn
+SeqLoop = 'name SeqLoop %s:' %hbcmxn
 talos_lines = [line.strip() for line in open(talosSS).readlines() if line.strip() and re.search(' *([0-9]*) [A-Z]', line)]
 for line in talos_lines:
 	if line.split()[-1] == 'H':CSHelix = CSHelix + line.split()[0] + ','
@@ -228,9 +245,9 @@ outpml.write('color khaki, predSS and resi ' + SeqLoop[SeqLoop.index(':'):-1].re
 selhbond = 'name hbond  #%s:'%mn
 hbonsl = []
 hbond = open(outdir + 'hbond_cons.pb','w')
-hbond.write("; halfbond = false\n; color = pink\n; radius = 0.2\n; dashes = 8\n")
+hbond.write("; halfbond = false\n; color = pink\n; radius = 0.2\n; dashes = 5\n")
 hbgroupline = 'group hbond , '
-h = -1
+h = 0
 for line in open('hbond.upl').readlines():
 	cns = line.split()
 	if "#" not in cns[0]:
@@ -238,7 +255,7 @@ for line in open('hbond.upl').readlines():
 			h+=1 
 			hbonsl.append((cns[0],cns[3]))
 			hbonsl.append((cns[3],cns[0]))
-			hbond.write('%s:%s@%s %s:%s@%s %s\n' %(cmxn, cns[0], cns[2], cmxn, cns[3],cns[5],'pink'))
+			hbond.write('%s:%s@%s %s:%s@%s\n' %(hbcmxn, cns[0], cns[2], hbcmxn, cns[3],cns[5]))
 			outpml.write('distance hbond%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(h), pmln, cns[0], cns[2].replace('H','N'), pmln, cns[3], cns[5].replace('H','N')))
 			hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
 			if cns[0] not in selhbond:
