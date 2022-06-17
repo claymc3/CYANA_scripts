@@ -46,9 +46,7 @@ OutPut:
 	Anotated Constraints files 
 ''')
 	exit()
-## Dictionaries for assigning color to pml and cxc scripts for the peak list restraints
-colors = ['white','raspberry','gold','forest','marine','purple','orange','cyan','pink','deepteal','gray']
-colors2 = ['white','mediumvioletred','orange','forest','royalblue','purple','chocolate','cyan','pink','deepteal','gray']
+colors = ['mediumvioletred','orange','forest','royalblue','purple','chocolate','cyan','pink','deepteal','gold','navy','darkcyan']
 
 cwd = os.getcwd() + '/'
 outdir = cwd + 'pre_cyana/'
@@ -73,6 +71,7 @@ dihed = [con for con in manualongcons if 'aco' in con]
 
 outpml = open(outdir + 'CYANA_input.pml','w')
 outpml.write('load '+ cwd + in_pdb+'\n')
+outpml.write('set_color navy = [0,0,128]\nset_color royalblue = [65,105,225]\nset_color darkcyan = [0,139,139]\nset_color turquoise = [64,224,208]\nset_color goldenrod = [218,165,32]\nset_color khaki = [240,230,140]\nset_color mediumvioletred = [199,21,133]\nset_color gold = [255,215,0]\nset_color cornflowerblue = [100,149,237]\nset_color teal = [0,128,128]\n')
 outpml.write('set dash_gap, 0.05\n')
 outpml.write('color gray60, all\n')
 outcmx = open(outdir + 'CYANA_input.cxc','w')
@@ -90,22 +89,26 @@ for line in open(in_pdb).readlines():
 if Hasprot == False:
 	for aa in ['ALAH','CYSH','ASPH','GLUH','PHEH','GLYH','HISH','ILEH','LYSH','LEUH','METH','ASNH','GLNH','ARGH','SERH','THRH','VALH','TRPH','TYRH']:
 		replacements[aa] = 'N'
-pmlphisel, pmlchisel = 'color purple, phi-psi and resi ','color marin, chi and resi '
-if mcount > 2: cmxn = '#1.1'
-if mcount <= 1: cmxn = '#1'
+
+if mcount > 2: 
+	cmxn = '#1.1'
+	pmln = '%s_0001' %pdbname
+if mcount <= 1: 
+	cmxn = '#1'
+	pmln = pdbname
 
 u = 0
-x = 0
+x = -1
 mn+=1
 for uplfile in upls:
 	x+=1
 	fin = open(uplfile,'r')
 	NNpb = open(outdir + uplfile.replace('.upl','_NN.pb'),'w')
-	NNpb.write("; halfbond = false\n; color = %s\n; radius = 0.1\n; dashes = 0\n" %colors2[x])
+	NNpb.write("; halfbond = false\n; color = %s\n; radius = 0.1\n; dashes = 0\n" %colors[x])
 	NCpb = open(outdir + uplfile.replace('.upl','_NC.pb'),'w')
-	NCpb.write("; halfbond = false\n; color = %s\n; radius = 0.1\n; dashes = 0\n" %colors2[x+1])
+	NCpb.write("; halfbond = false\n; color = %s\n; radius = 0.1\n; dashes = 0\n" %colors[x+1])
 	CCpb = open(outdir + uplfile.replace('.upl','_CC.pb'),'w')
-	CCpb.write("; halfbond = false\n; color = %s\n; radius = 0.1\n; dashes = 0\n" %colors2[x+2])
+	CCpb.write("; halfbond = false\n; color = %s\n; radius = 0.1\n; dashes = 0\n" %colors[x+2])
 	groupNN = 'group %s, ' %(uplfile.replace('.upl','_NN'))
 	groupNC = 'group %s, ' %(uplfile.replace('.upl','_NC'))
 	groupCC = 'group %s, ' %(uplfile.replace('.upl','_CC'))
@@ -135,23 +138,23 @@ for uplfile in upls:
 			if ',' in atom1 and ',' not in atom2:
 				outpb.write('%s:%s@%s %s:%s@%s\n' %(cmxn, cns[0], atom1.split(',')[0], cmxn,  cns[3],atom2))
 				outpb.write('%s:%s@%s %s:%s@%s\n' %(cmxn, cns[0], atom1.split(',')[1], cmxn, cns[3],atom2))
-				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1.split(',')[0], pdbname, cns[3], atom2))
+				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pmln, cns[0], atom1.split(',')[0], pmln, cns[3], atom2))
 				exec('group' + gid + '=' + 'group' + gid + '+"%s%s"' %(uplfile.replace('.upl',''),str(u)))
 				u+=1
-				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1.split(',')[1], pdbname, cns[3], atom2))
+				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pmln, cns[0], atom1.split(',')[1], pmln, cns[3], atom2))
 				exec('group' + gid + '=' + 'group' + gid + '+"%s%s"' %(uplfile.replace('.upl',''),str(u)))
 			if ',' in atom2 and ',' not in atom1:
 				outpb.write('%s:%s@%s %s:%s@%s\n' %(cmxn, cns[0], atom1, cmxn, cns[3],atom2.split(',')[0]))
 				outpb.write('%s:%s@%s %s:%s@%s\n' %(cmxn, cns[0], atom1, cmxn, cns[3],atom2.split(',')[1]))
-				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2.split(',')[0]))
+				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pmln, cns[0], atom1, pmln, cns[3], atom2.split(',')[0]))
 				exec('group' + gid + '=' + 'group' + gid + '+"%s%s"' %(uplfile.replace('.upl',''),str(u)))
 				u+=1
-				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2.split(',')[2]))
+				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pmln, cns[0], atom1, pmln, cns[3], atom2.split(',')[2]))
 				outpml.write('color pink, %s%s\n'%(uplfile.replace('.upl',''),str(u)))
 				exec('group' + gid + '=' + 'group' + gid + '+"%s%s"' %(uplfile.replace('.upl',''),str(u)))
 			if ',' not in atom1 and ',' not in atom2:
 				outpb.write('%s:%s@%s %s:%s@%s\n' %(cmxn, cns[0], atom1, cmxn, cns[3],atom2))
-				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pmln, cns[0], atom1, pmln, cns[3], atom2))
 				exec('group' + gid + '=' + 'group' + gid + '+"%s%s"' %(uplfile.replace('.upl',''),str(u)))
 	outpml.write(groupNN + '\n')
 	outpml.write('color %s, %s\n' %(colors[x],uplfile.replace('.upl','_NN')))
@@ -161,21 +164,21 @@ for uplfile in upls:
 	outpml.write('color %s, %s\n' %(colors[x+2],uplfile.replace('.upl','_CC')))
 	outcmx.write('open ' + outdir + uplfile.replace('.upl','_NN.pb') + '\n')
 	print('%s %s' %(mn,uplfile.replace('.upl','_NN.pb')))
-	outcmx.write('color #%s %s\n' %(str(mn),colors2[x]))
+	outcmx.write('color #%s %s\n' %(str(mn),colors[x]))
 	outcmx.write('open ' + outdir + uplfile.replace('.upl','_NC.pb') + '\n')
 	print('%s %s' %(mn+1,uplfile.replace('.upl','_NC.pb')))
-	outcmx.write('color #%s %s\n' %(str(mn+1),colors2[x+1]))
+	outcmx.write('color #%s %s\n' %(str(mn+1),colors[x+1]))
 	outcmx.write('open ' + outdir + uplfile.replace('.upl','_CC.pb') + '\n')
 	print('%s %s' %(mn+2,uplfile.replace('.upl','_CC.pb')))
-	outcmx.write('color #%s %s\n' %(str(mn+2),colors2[x+2]))
+	outcmx.write('color #%s %s\n' %(str(mn+2),colors[x+2]))
 	x+=2
 	mn+=3
 selhbond = 'name hbond  %s:'%cmxn
 hbonsl = []
 hbond = open(outdir + 'hbond_cons.pb','w')
-hbond.write("; halfbond = false\n; color = pink\n; radius = 0.2\n; dashes = 10\n")
+hbond.write("; halfbond = false\n; color = pink\n; radius = 0.2\n; dashes = 8\n")
 hbgroupline = 'group hbond , '
-h = 1
+h = -1
 mn+=1
 for line in open('hbond.upl').readlines():
 	cns = line.split()
@@ -185,7 +188,7 @@ for line in open('hbond.upl').readlines():
 			hbonsl.append((cns[0],cns[3]))
 			hbonsl.append((cns[3],cns[0]))
 			hbond.write('%s:%s@%s %s:%s@%s %s\n' %(cmxn, cns[0], cns[2], cmxn, cns[3],cns[5],'pink'))
-			outpml.write('distance hbond%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(h), pdbname, cns[0], cns[2].replace('H','N'), pdbname, cns[3], cns[5].replace('H','N')))
+			outpml.write('distance hbond%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(str(h), pmln, cns[0], cns[2].replace('H','N'), pmln, cns[3], cns[5].replace('H','N')))
 			hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
 			if cns[0] not in selhbond:
 				selhbond = selhbond +'%s,' %(cns[0])
@@ -199,7 +202,9 @@ outcmx.write('open ' + outdir + 'hbond_cons.pb\n')
 outcmx.write('color #%s %s\n' %(str(mn),'pink'))
 outcmx.write(selhbond)
 
+### Read in the dihed.aco file and color residues that have defined phi/psi angles purple, and defined chi angles cornflower blue
 cmxphisel, cmxchisel = 'name phipsisel #%s:'%(mn+1), 'name chisel #%s:'%(mn+2)
+pmlphisel, pmlchisel = 'color purple, phi-psi and resi ','color cornflowerblue, chi and resi '
 phir, chir = [],[]
 for angf in dihed:
 	for line in open(angf).readlines():
@@ -219,11 +224,18 @@ for angf in dihed:
 outcmx.write('combine %s modelId %s name phi-psi\n'%(cmxn, mn+1))
 outcmx.write(cmxphisel[:-1] + '\n')
 outcmx.write('color phipsisel purple target ac\n')
+outpml.write('create phi-psi, %s\ncolor gray60, phi-psi\nhide sticks, phi-psi\n' %pmln)
+
 if len(cmxchisel[:-1]) > 18:
 	outcmx.write('combine %s modelId %s name chi\n'%(cmxn, mn+2))
 	outcmx.write(cmxchisel[:-1] + '\n')
 	outcmx.write('color chisel cornflower blue target ac \n')
+	outpml.write('create chi, %s\ncolor gray60, chi\nhide sticks, chi\n' %pmln)
+	outpml.write(pmlphisel[:-1] + '\n')
+
 mn+=3
+### Color code secondar structure from TALOS analysis
+outpml.write('create predSS, %s\ncolor gray60,predSS\nhide sticks, predSS\n' %pmln)
 outcmx.write('combine %s modelId %s name predSS\n' %(cmxn,mn))
 CSHelix = 'name CSHelix #%s:' %mn
 CSStrand = 'name CSStrand #%s:' %mn
@@ -240,42 +252,39 @@ for line in talos_lines:
 	if line.split()[-1] == 'e':SeqStrand = SeqStrand + line.split()[0] + ','
 	if line.split()[-1] == 'c':SeqLoop = SeqLoop + line.split()[0] + ','
 
-# outcmx.write('combine #1.1 modelId %s name angles\n' %mns)
 outcmx.write(CSHelix[:-1]+ '\ncolor CSHelix navy target c\n')
 outcmx.write(SeqHelix[:-1]+ '\ncolor SeqHelix royal blue target c\n')
-outcmx.write(CSStrand[:-1]+ '\ncolor CSStrand dark cyan target c\n')
+outcmx.write(CSStrand[:-1]+ '\ncolor CSStrand teal target c\n')
 outcmx.write(SeqStrand[:-1]+ '\ncolor SeqStrand turquoise target c\n')
 outcmx.write(CSLoop[:-1]+ '\ncolor CSLoop goldenrod target c\n')
 outcmx.write(SeqLoop[:-1]+ '\ncolor SeqLoop khaki target c\n')
 
+outpml.write('color navy, predSS and resi ' + CSHelix[CSHelix.index(':'):-1].replace(',','+') + '\n')
+outpml.write('color royalblue, predSS and resi ' + SeqHelix[SeqHelix.index(':'):-1].replace(',','+') + '\n')
+outpml.write('color teal, predSS and resi ' + CSStrand[CSStrand.index(':'):-1].replace(',','+') + '\n')
+outpml.write('color turquoise, predSS and resi ' + SeqStrand[SeqStrand.index(':'):-1].replace(',','+') + '\n')
+outpml.write('color goldenrod, predSS and resi ' + CSLoop[CSLoop.index(':'):-1].replace(',','+') + '\n')
+outpml.write('color khaki, predSS and resi ' + SeqLoop[SeqLoop.index(':'):-1].replace(',','+') + '\n')
+
 outpml.write('color gray60, %s\n' %pdbname)
-outpml.write('show sticks, resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\n hide sticks, elem H\nhide sticks, name N+C\n')
+outpml.write('show sticks, %s and resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\n hide sticks, elem H\nhide sticks, name N+C\n' %pdbname)
 outpml.write('color violetpurple, resn MET\ncolor smudge, resn ALA\ncolor marine, resn ILE\ncolor magenta,  resn LEU\ncolor orange, resn VAL\ncolor gold, resn THR\ncolor pink, resn TYR\ncolor slate, resn PHE\n')
 outpml.write('color gold, elem S\ncolor red, elem O\ncolor blue, elem N\n')
+
+outcmx.write('color #1:thr teal target a\ncolor #1:val orange  target a\ncolor #1:leu indian red  target a\ncolor #1:met purple  target a\ncolor #1:ala forest green  target a\ncolor #1:ile dodger blue  target a\ncolor #1:phe slate blue target a\ncolor #1:tyr orchid target a\n')
+outcmx.write('color  byhetero target a\n')
+outcmx.write('show #1:thr,met,ala,leu,val,ile,phe,tyr\n')
+outcmx.write('hide H\nshow %s@N,H target a\n' %cmxn)
+outcmx.write('show hbond target a\n')
+outcmx.write('cartoon suppress false\nlabel %s  text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\nlabel ontop false\n' %cmxn)
+outcmx.write('ui tool show "Side View"\n')
+
+outpml.write("hide labels\n")
 if mcount > 2:
 	outpml.write('split_states ' + pdbname + '\n')
 	for y in range(2,21,1):
 		outcmx.write('match #1.%s to #1.1\n' %str(y))
 		outpml.write('align %s_%04d, %s_0001\n' %(pdbname,y, pdbname))
-outcmx.write('color #1:thr teal target a\ncolor #1:val orange  target a\ncolor #1:leu indian red  target a\ncolor #1:met purple  target a\ncolor #1:ala forest green  target a\ncolor #1:ile dodger blue  target a\ncolor #1:phe slate blue target a\ncolor #1:tyr orchid target a\n')
-outcmx.write('color  byhetero target a\n')
-outcmx.write('show #1:thr,met,ala,leu,val,ile,phe,tyr\n')
-outcmx.write('hide H\n')
-outcmx.write('show hbond target a\n')
-outcmx.write('show %s@N,H target a\n' %cmxn)
-outcmx.write('cartoon suppress false\n')
-outcmx.write('label %s  text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n' %cmxn)
-outcmx.write('label ontop false\n')
-outcmx.write('ui tool show "Side View"')
-if mcount > 2:
-	outpml.write('create phi-psi, %s_0001\ncolor gray60,phi-psi\nhide sticks, phi-psi\n' %pdbname)
-	outpml.write('create chi, %s_0001\ncolor gray60, chi\nhide sticks, chi\n' %pdbname)
-if mcount <= 1:
-	outpml.write('create phi-psi, %s\ncolor gray60,phi-psi\nhide sticks, phi-psi\n' %pdbname)
-	outpml.write('create chi, %s\ncolor gray60, chi\nhide sticks, chi\n' %pdbname)
-outpml.write(pmlphisel[:-1] + '\n')
-outpml.write(pmlchisel[:-1] + '\n')
-outpml.write("hide labels\n")
 outpml.close()
 outcmx.close()
 
