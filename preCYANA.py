@@ -68,7 +68,6 @@ upls = [con for con in manualongcons if 'upl' in con and 'hbond' not in con]
 lols = [con for con in manualongcons if 'lol' in con and 'hbond' not in con]
 dihed = [con for con in manualongcons if 'aco' in con]
 
-
 outpml = open(outdir + 'CYANA_input.pml','w')
 outpml.write('load '+ cwd + in_pdb+'\n')
 outpml.write('set dash_gap, 0.05\n')
@@ -78,8 +77,7 @@ outcmx.write('open '+ cwd + in_pdb+'\n')
 outcmx.write('color #1 gray(150)\n')
 pdbname = in_pdb.replace('.pdb','')
 
-
-mn = 2
+mn = 1
 mcount = 0
 Hasprot = False
 for line in open(in_pdb).readlines():
@@ -172,7 +170,6 @@ outcmx.write('open ' + outdir + 'hbond_cons.pb\n')
 outcmx.write('color #%s %s\n' %(str(mn),'pink'))
 outcmx.write(selhbond)
 
-print(mn)
 cmxphisel, cmxchisel = 'name phipsisel #%s:'%(mn+1), 'name chisel #%s:'%(mn+2)
 phir, chir = [],[]
 for angf in dihed:
@@ -194,9 +191,10 @@ for angf in dihed:
 outcmx.write('combine %s modelId %s name phi-psi\n'%(cmxn, mn+1))
 outcmx.write(cmxphisel[:-1] + '\n')
 outcmx.write('color phipsisel purple target ac\n')
-outcmx.write('combine %s modelId %s name chi\n'%(cmxn, mn+2))
-outcmx.write(cmxchisel[:-1] + '\n')
-outcmx.write('color chisel cornflower blue target ac \n')
+if len(cmxchisel[:-1]) > 18:
+	outcmx.write('combine %s modelId %s name chi\n'%(cmxn, mn+2))
+	outcmx.write(cmxchisel[:-1] + '\n')
+	outcmx.write('color chisel cornflower blue target ac \n')
 outpml.write('color gray60, %s\n' %pdbname)
 outpml.write('show sticks, resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\n hide sticks, elem H\nhide sticks, name N+C\n')
 outpml.write('color violetpurple, resn MET\ncolor smudge, resn ALA\ncolor marine, resn ILE\ncolor magenta,  resn LEU\ncolor orange, resn VAL\ncolor gold, resn THR\ncolor pink, resn TYR\ncolor slate, resn PHE\n')
@@ -206,12 +204,12 @@ if mcount > 2:
 	for y in range(2,21,1):
 		outcmx.write('match #1.%s to #1.1\n' %str(y))
 		outpml.write('align %s_%04d, %s_0001\n' %(pdbname,y, pdbname))
-outcmx.write('color :thr teal target a\ncolor :val orange  target a\ncolor :leu indian red  target a\ncolor :met purple  target a\ncolor :ala forest green  target a\ncolor :ile dodger blue  target a\ncolor :phe slate blue target a\ncolor :tyr orchid target a\n')
+outcmx.write('color #1:thr teal target a\ncolor #1:val orange  target a\ncolor #1:leu indian red  target a\ncolor #1:met purple  target a\ncolor #1:ala forest green  target a\ncolor #1:ile dodger blue  target a\ncolor #1:phe slate blue target a\ncolor #1:tyr orchid target a\n')
 outcmx.write('color  byhetero target a\n')
-outcmx.write('show :thr,met,ala,leu,val,ile,phe,tyr\n')
+outcmx.write('show #1:thr,met,ala,leu,val,ile,phe,tyr\n')
 outcmx.write('hide H\n')
-outcmx.write('show %s@H\n' %cmxn)
-outcmx.write('show %s@N target a\n' %cmxn)
+outcmx.write('show hbond target a\n')
+outcmx.write('show %s@N,H target a\n' %cmxn)
 outcmx.write('cartoon suppress false\n')
 outcmx.write('label %s  text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n' %cmxn)
 outcmx.write('label ontop false\n')
