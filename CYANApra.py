@@ -54,9 +54,8 @@ OutPut:
 	Anotated Constraints files 
 ''')
 	exit()
-## Dictionaries for assigning color to pml and cxc scripts for the peak list restraints
-colors = ['white','raspberry','gold','forest','marine','purple','orange','cyan','pink','deepteal','gray']
-colors2 = ['white','mediumvioletred','orange','forest','royalblue','purple','chocolate','cyan','pink','deepteal','gray']
+colors = ['white','mediumvioletred','orange','forest','royalblue','purple','chocolate','cyan','pink','deepteal','gold','navy','darkcyan']
+
 
 cwd = os.getcwd() + '/'
 outdir = cwd + 'post_cyana_ana/'
@@ -88,7 +87,7 @@ for x in range(len(cya_plists)):
 	plistn = cya_plists[x].replace('-cycle7.peaks','')
 	exec("pb%s = open('%s','w')" %(str(x+1), outdir + outname + '_'+ plistn + '.pb'))
 	pbout = eval('pb%s' %str(x+1))
-	pbout.write("; halfbond = false\n; color = " + colors2[x+1] + "\n; radius = 0.1\n; dashes = 0\n")
+	pbout.write("; halfbond = false\n; color = " + colors[x+1] + "\n; radius = 0.1\n; dashes = 0\n")
 	exec("group%s = '%s, '" %(str(x+1), 'group ' + cya_plists[x].replace('-cycle7.peaks','')))
 	plist = cya_plists[x]
 	upl = [line.strip() for line in open(fupl).readlines() if line.strip() and 'plist '+ str(x+1) in line]
@@ -106,6 +105,7 @@ checkcons.write('\n\n')
 outpml = open(outdir + fupl.replace('.upl','_pra.pml'),'w')
 outpml.write('load '+ cwd + in_pdb+'\n')
 outpml.write('set dash_gap, 0.05\n')
+outpml.write('set_color navy = [0,0,128]\nset_color royalblue = [65,105,225]\nset_color darkcyan = [0,139,139]\nset_color turquoise = [64,224,208]\nset_color goldenrod = [218,165,32]\nset_color khaki = [240,230,140]\nset_color mediumvioletred = [199,21,133]\nset_color gold = [255,215,0]\nset_color cornflowerblue = [100,149,237]\n')
 outpml.write('color gray60, all\n')
 outcmx = open(outdir + fupl.replace('.upl','_pra.cxc'),'w')
 outcmx.write('open '+ cwd + in_pdb+'\n')
@@ -308,7 +308,7 @@ for x in range(len(cya_plists)):
 	mn+=1
 	pbout = eval('pb%s' %str(x+1))
 	outcmx.write('open ' + outdir + outname + '_'+ cya_plists[x].replace('-cycle7.peaks','.pb\n'))
-	outcmx.write('color #%s %s\n' %(str(mn),colors2[mn]))
+	outcmx.write('color #%s %s\n' %(str(mn),colors[mn]))
 	groupstr = eval('group' + str(x+1))
 	outpml.write(groupstr + '\n')
 	outpml.write('color %s, %s\n' %(colors[x+1],cya_plists[x].replace('-cycle7.peaks','')))
@@ -473,8 +473,8 @@ outcmx.write(cmxchiviol[:-1] + '\n')
 outcmx.write('color chiviol mediumvioletred target ac\n')
 outcmx.write('show chiviol\n')
 
-outpml.write('show sticks, resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\n hide sticks, elem H\nhide sticks, name N+C\n')
-outpml.write('color violetpurple, resn MET\ncolor smudge, resn ALA\ncolor marine, resn ILE\ncolor magenta,  resn LEU\ncolor orange, resn VAL\ncolor gold, resn THR\ncolor pink, resn TYR\ncolor slate, resn PHE\n')
+outpml.write('show sticks, %s and resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\n hide sticks, elem H\nhide sticks, name N+C\n'%pdbname)
+outpml.write('color violetpurple, %s and resn MET\ncolor smudge, %s and resn ALA\ncolor marine, %s and resn ILE\ncolor magenta, %s and resn LEU\ncolor orange, %s and resn VAL\ncolor gold, %s and resn THR\ncolor pink, %s and resn TYR\ncolor slate, %s and resn PHE\n' %(pdbname,pdbname,pdbname,pdbname,pdbname,pdbname,pdbname,pdbname))
 outpml.write('color gold, elem S\ncolor red, elem O\ncolor blue, elem N\n')
 outpml.write('hide everything, %s\n' %pdbname)
 outpml.write('create phi-psi, %s_0001\ncolor gray60,phi-psi\nhide sticks, phi-psi\n' %pdbname)
