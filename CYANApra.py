@@ -443,21 +443,19 @@ for angf in dihed:
 					chir.append(ang[0])
 					cmxchisel = cmxchisel + ang[0] + ','
 					pmlchisel = pmlchisel  + ang[0] + '+'
-
 outpml.write('split_states ' + pdbname + '\n')
-
 for y in range(2,21,1):
-	outcmx.write('match #1.%s to #1.1\n' %str(y))
 	outpml.write('align %s_%04d, %s_0001\n' %(pdbname,y, pdbname))
+outcmx.write('match #1.2-20 to #1.1\n')
 outcmx.write('color :thr teal target a\ncolor :val orange  target a\ncolor :leu indian red  target a\ncolor :met purple  target a\ncolor :ala forest green  target a\ncolor :ile dodger blue  target a\ncolor :phe slate blue target a\ncolor :tyr orchid target a\ncolor  byhetero target a\n')
 outcmx.write('show :thr,met,ala,leu,val,ile,phe,tyr\n')
 outcmx.write('hide H\n')
-outcmx.write('show #1.1 @H\n')
+outcmx.write('show #1.1@H\n')
 outcmx.write('show #1.1@N target a\n')
 outcmx.write('cartoon suppress false\n')
-outcmx.write('label #1.1  text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n')
+outcmx.write('label #1.1 text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n')
 outcmx.write('label ontop false\n')
-outcmx.write('ui tool show "Side View"')
+outcmx.write('ui tool show "Side View"\n')
 outcmx.write('combine #1.1 modelId %s name phi-psi\nhide #%s target a\n'%(mn+1,mn+1))
 outcmx.write(cmxphisel[:-1] + '\n')
 outcmx.write('color phipsisel purple target ac\n')
