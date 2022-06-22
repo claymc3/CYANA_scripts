@@ -18,7 +18,7 @@ pdb_columns = ['name', 'resn', 'resid', 'X', 'Y', 'Z','nuc']
 # data frame, using the atome index int he PDB as the row index in the data frame. 
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "PTR":'Y', "TPO":"T", "SEP":'S' }
 A_dict = {'A': 'ALA', 'C': 'CYS', 'E': 'GLU', 'D': 'ASP', 'G': 'GLY', 'F': 'PHE', 'I': 'ILE', 'H': 'HIS', 'K': 'LYS', 'M': 'MET', 'L': 'LEU', 'N': 'ASN', 'Q': 'GLN', 'P': 'PRO', 'S': 'SER', 'R': 'ARG', 'T': 'THR', 'W': 'TRP', 'V': 'VAL', 'Y': 'TYR' }
-Atoms_dict = {'I':['CD1'], 'L':['CD1','CD2'], 'V':['CG1','CG2'], 'M':['CE'], 'A':['CB'], 'T':['CG2'], 'W':['NE1'], 'F':['CE1','CE2'], 'Y':['CE1','CE2']}
+Atoms_dict = {'I':['CD1'], 'L':['CD1','CD2'], 'V':['CG1','CG2'], 'M':['CE'], 'A':['CB'], 'T':['CG2'], 'W':['NE1','HE1'], 'F':['CE1','CE2','HE1','HE2'], 'Y':['CE1','CE2','HE1','HE2']}
 
 cwd = os.getcwd()
 #####
@@ -66,9 +66,9 @@ OutPut:
 	init.cya
 	name.seq
 	name.upl 
-	name_hbond.upl
-	name_hbond.lol
-	name_dihed.aco
+	hbond.upl
+	hbond.lol
+	dihed.aco
 ''')
 	exit()
 
@@ -182,7 +182,7 @@ for i in range(len(resn)):
 #------------------------------------------------------------------------------
 # Generate list of allowed atoms in addition to N and O used for hydrogen bond limit generation 
 #
-allowed_atoms =["ALA-O", "ALA-N", "ARG-O", "ARG-N", "ASN-O", "ASN-N", "ASP-O", "ASP-N", "CYS-O", "CYS-N", "GLU-O", "GLU-N", "GLN-O", "GLN-N", "GLY-O", "GLY-N", "HIS-O", "HIS-N", "ILE-O", "ILE-N", "LEU-O", "LEU-N", "LYS-O", "LYS-N", "MET-O", "MET-N", "PHE-O", "PHE-N", "PRO-O", "PRO-N", "SER-O", "SER-N", "THR-O", "THR-N", "TRP-O", "TRP-N", "TYR-O", "TYR-N", "VAL-O", "VAL-N"]
+allowed_atoms =["ALA-O", "ALA-N", "ALA-H", "ARG-O", "ARG-N", "ARG-H", "ASN-O", "ASN-N", "ASN-H", "ASP-O", "ASP-N", "ASP-H", "CYS-O", "CYS-N", "CYS-H", "GLU-O", "GLU-N", "GLU-H", "GLN-O", "GLN-N", "GLN-H", "GLY-O", "GLY-N", "GLY-H", "HIS-O", "HIS-N", "HIS-H", "ILE-O", "ILE-N", "ILE-H", "LEU-O", "LEU-N", "LEU-H", "LYS-O", "LYS-N", "LYS-H", "MET-O", "MET-N", "MET-H", "PHE-O", "PHE-N", "PHE-H", "PRO-O", "PRO-N", "SER-O", "SER-N", "SER-H", "THR-O", "THR-N", "THR-H", "TRP-O", "TRP-N", "TRP-H", "TYR-O", "TYR-N", "TYR-H", "VAL-O", "VAL-N", "VAL-H"]
 
 for i in range(len(atoms)):
 	for x in range(len(Atoms_dict[atoms[i]])):
