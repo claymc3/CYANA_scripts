@@ -171,6 +171,12 @@ for peak in peaks:
 	peaks_out = peaks_out + peak.split('/')[-1] + ','
 peaks_out=peaks_out[:-1]
 
+prots = glob.glob(os.path.join(cwd + '/*.prot'))
+prots_out = ''
+for prots in prots:
+	prots_out = prots_out + prot.split('/')[-1] + ','
+prots_out=prots_out[:-1]
+
 #------------------------------------------------------------------------------
 # Generate list of allowed residue numbers
 #
@@ -376,13 +382,13 @@ for i in range(len(CA_list)):
 print("Made %3.0f CC upl constraints " % (len(CC_used)))
 upl.close()
 
-ssa = open('ssa.cya'.'w')
+ssa = open('ssa.cya','w')
 ssa.close()
 
 CYANA = open('CALC.cya','w')
 clac_text = '''
 peaks       := %s      # names of NOESY peak lists
-prot        := %s.prot                   # names of chemical shift lists
+prot        := %s                   # names of chemical shift lists
 constraints := %s.upl,%s,%s,%s              # additional (non-NOE) constraints
 tolerance   := 0.01,0.01,0.01,0.01         # chemical shift tolerances
 calibration :=                          # NOE calibration parameters
@@ -401,7 +407,7 @@ upl_values  := 2.4,7.0
 
 ssa
 noeassign peaks=$peaks prot=$prot autoaco # keep=KEEP 
-''' % (peaks_out, name, name, 'hbond.lol', 'hbond.upl',name + '_dihed.aco',residues.replace("-",".."))
+''' % (peaks_out, prots_out, name, 'hbond.lol', 'hbond.upl','dihed.aco',residues.replace("-",".."))
 CYANA.write(clac_text)
 CYANA.close()
 
