@@ -36,6 +36,7 @@ replacements ={
 # cwd = os.getcwd() + '/'
 # calc = cwd + 'CALC.cya'
 cwd = '/Volumes/common/Kinases/FGFR3/FGFR3_459-755_C482A_C582S/Structure_Calc/cyana_23/'
+cwd = '/Users/mclay1/FGFR3_structure/cyana_23/'
 calc = cwd+'CALC.cya'
 seqfile = cwd+'FGFR3_AS_KD.seq'
 fupl = cwd+'final.upl'
@@ -55,7 +56,7 @@ print(plists)
 ### Read Log file and extract the calibration constants for each peaks list file. They will be connected by index not list file name
 Calibration_Cnsts = {}
 print(cya_plists)
-log = '/Volumes/common/Kinases/FGFR3/FGFR3_459-755_C482A_C582S/Structure_Calc/cyana_23/log'
+log = cwd+'log'
 for line in open(log).readlines():
 	if 'Calibration constant for peak list' in line:
 		print(line)
