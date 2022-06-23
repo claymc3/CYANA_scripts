@@ -52,8 +52,12 @@ DistancesDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
 
 cwd = '/Volumes/common/Kinases/FGFR3/FGFR3_459-755_C482A_C582S/Structure_Calc/cyana_23/'
 # cwd = '/Users/mclay1/FGFR3_structure/cyana_23/'
+
 in_pdb = cwd + 'final.pdb'
-in_upl = cwd + 'final.upl'
+fupl = cwd + 'final.upl'
+calc = cwd + 'CALC.cya'
+manualongcons = [line.strip() for line in open(calc).readlines() if line.strip() and '.upl' in line][0].split()[2].split(',')
+upls = [con for con in manualongcons if 'upl' in con and 'hbond' not in con]
 
 
 Starts = []
@@ -69,9 +73,9 @@ pdb = open(in_pdb).readlines()
 n = 0
 for (start,end) in zip(Starts,Ends):
 	n+=1
+	print('Reading coordinates for model %d' %n)
 	Coor = eval('Coor' + str(n))
 	for x in range(start,end,1):
-		print('Reading coordinates for model %d' %n)
 		line = pdb[x]
 		if line[0:4] == "ATOM" or line[0:4] == 'HETA':
 			index = '%3s %4s %-4s'%(line[17:20].strip(),line[22:26].strip(),line[12:16].strip())
@@ -106,13 +110,14 @@ for (start,end) in zip(Starts,Ends):
 					ycoor = (float(line[38:46]) + float(line2[38:46]))/2.0
 					zcoor = (float(line[46:54]) + float(line2[46:54]))/2.0
 					Coor[index] = [xcoor,ycoor,zcoor]
-
-for line in open(in_upl).readlines():
+pd.set_option("display.precision", 2)
+DistancesDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv','upl','plist','peak'])
+for line in open(fupl).readlines():
 	if 'SUP' not in line:
 		pass 
 	else:
 		cns = line.strip().split()
-		atom1 = '%3s %4s %-4s'%(cns[1].replace('HIST','HIS'), cns[0],cns[2])
+		atom1 = '%3s %4s %-4s'%(cns[1].replace('HIST','HIS'),cns[0],cns[2])
 		atom2 = '%3s %4s %-4s'%(cns[4].replace('HIST','HIS'),cns[3],cns[5])
 		for mnum in range(1,21,1):
 			Coor = eval('Coor' + str(mnum))
@@ -120,18 +125,52 @@ for line in open(in_upl).readlines():
 			(x2,y2,z2) = Coor[atom2]
 			d = np.round(np.sqrt((x1-x2)**2 + (y1-y2)**2+ (z1-z2)**2),2)
 			DistancesDF.loc[atom1 + ' ' + atom2,mnum] = d
-	DistancesDF['mean'] = np.round(DistancesDF.mean(axis=1),2)
-	DistancesDF['stdv'] = np.round(DistancesDF.std(axis=1),2)
-for line in open(in_upl).readlines():
+DistancesDF['mean'] = np.round(DistancesDF.mean(axis=1),2)
+DistancesDF['stdv'] = np.round(DistancesDF.std(axis=1),2)
+for line in open(fupl).readlines():
 	if 'SUP' not in line:
 		pass 
 	else:
 		cns = line.strip().split()
-		atom1 = '%3s %4s %-4s'%(cns[1].replace('HIST','HIS'), cns[0],cns[2])
+		atom1 = '%3s %4s %-4s'%(cns[1].replace('HIST','HIS'),cns[0],cns[2])
 		atom2 = '%3s %4s %-4s'%(cns[4].replace('HIST','HIS'),cns[3],cns[5])
 	DistancesDF.loc[atom1 + ' ' + atom2,'upl'] = cns[6]
 	DistancesDF.loc[atom1 + ' ' + atom2,'peak'] = cns[8]
 	DistancesDF.loc[atom1 + ' ' + atom2,'plist'] = cns[10]
-DistancesDF.to_csv('test.csf')
+DistancesDF.to_csv('final_distances.csv')
 print(DistancesDF)
 print(DistancesDF.shape)
+for upl in upls:
+	print(upl)
+	DistancesDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv','upl'])
+	for line in open(cwd+upl).readlines():
+		if '#'in line[0:4]:
+			pass 
+		else:
+			cns = line.strip().split()
+			atom1 = '%3s %4s %-4s'%(cns[1].replace('HIST','HIS'),cns[0],cns[2])
+			atom2 = '%3s %4s %-4s'%(cns[4].replace('HIST','HIS'),cns[3],cns[5])
+			for mnum in range(1,21,1):
+				Coor = eval('Coor' + str(mnum))
+				(x1,y1,z1) = Coor[atom1]
+				(x2,y2,z2) = Coor[atom2]
+				d = np.round(np.sqrt((x1-x2)**2 + (y1-y2)**2+ (z1-z2)**2),2)
+				DistancesDF.loc[atom1 + ' ' + atom2,mnum] = d
+		DistancesDF.to_csv(upl.replace('.upl','_early_distances.csv'))
+	DistancesDF['mean'] = np.round(DistancesDF.mean(axis=1),2)
+	DistancesDF['stdv'] = np.round(DistancesDF.std(axis=1),2)
+	for line in open(cwd+upl).readlines():
+		if '#'in line[0:4]:
+			pass 
+		else:
+			cns = line.strip().split()
+			atom1 = '%3s %4s %-4s'%(cns[1].replace('HIST','HIS'),cns[0],cns[2])
+			atom2 = '%3s %4s %-4s'%(cns[4].replace('HIST','HIS'),cns[3],cns[5])
+		DistancesDF.loc[atom1 + ' ' + atom2,'upl'] = cns[6]
+	DistancesDF.to_csv(upl.replace('.upl','_distances.csv'))
+	print(DistancesDF)
+	print(DistancesDF.shape)
+
+
+
+
