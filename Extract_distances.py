@@ -51,8 +51,8 @@ DistancesDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
 
 
 PseudoAtoms = {'ALAQB':['HB1', 'HB2', 'HB3'], 'ARGQB':['HB2', 'HB3'], 'ARGQG':['HG2', 'HG3'], 'ARGQD':['HD2', 'HD3'], 'ARGQH1':['HH11', 'HH12'], 'ARGQH2':['HH21', 'HH22'], 'ASNQB':['HB2', 'HB3'], 'ASNQD2':['HD21', 'HD22'], 'ASPQB':['HB2', 'HB3'], 'CYSQB':['HB2', 'HB3'], 'CYSSQB':['HB2', 'HB3'], 'GLNQB':['HB2', 'HB3'], 'GLNQG':['HG2', 'HG3'], 'GLNQE2':['HE21', 'HE22'], 'GLUQB':['HB2', 'HB3'], 'GLUQG':['HG2', 'HG3'], 'GLYQA':['HA2', 'HA3'], 'HISQB':['HB2', 'HB3'], 'ILEQG1':['HG11', 'HG12', 'HG13'], 'ILEQG2':['HG21', 'HG22', 'HG23'], 'ILEQD1':['HD11', 'HD12', 'HD13'], 'LEUQB':['HB2', 'HB3'], 'LEUQD1':['HD11', 'HD12', 'HD13'], 'LEUQD2':['HD21', 'HD22', 'HD23'], 'LEUQQD':['HD11', 'HD12', 'HD13','HD21', 'HD22', 'HD23'], 'LYSQG':['HG2', 'HG3'], 'LYSQD':['HD2', 'HD3'], 'LYSQE':['HE2', 'HE3'], 'LYSQZ':['HZ2', 'HZ3'], 'METQB':['HB2', 'HB3'], 'METQG':['HG2', 'HG3'], 'METQE':['HE1', 'HE2', 'HE3'], 'PHEQB':['HB2', 'HB3'], 'PHEQD':['HD1', 'HD2'], 'PHEQE':['HE1', 'HE2'],'PROQB':['HB2', 'HB3'], 'PROQG':['HG2', 'HG3'], 'PROQD':['HD2', 'HD3'], 'SERQB':['HB2', 'HB3'], 'THRQG2':['HG21', 'HG22', 'HG23'], 'TRPQB':['HB2', 'HB3'], 'TYRQB':['HB2', 'HB3'], 'TYRQD':['HD1', 'HD2'], 'TYRQE':['HE1', 'HE2'], 'VALQB':['HB2', 'HB3'], 'VALQG1':['HG11', 'HG12', 'HG13'], 'VALQG2':['HG21', 'HG22', 'HG23'], 'VALQQG':['HG11', 'HG12', 'HG13','HG21', 'HG22', 'HG23']}
-cwd = '/Volumes/common/Kinases/FGFR3/FGFR3_459-755_C482A_C582S/Structure_Calc/cyana_25/'
-# cwd = '/Users/mclay1/FGFR3_structure/cyana_23/'
+# cwd = '/Volumes/common/Kinases/FGFR3/FGFR3_459-755_C482A_C582S/Structure_Calc/cyana_25/'
+cwd = '/Users/mclay1/FGFR3_structure/cyana_23/'
 
 in_pdb = cwd + 'final.pdb'
 fupl = cwd + 'final.upl'
@@ -105,29 +105,52 @@ for (start,end) in zip(Starts,Ends):
 						ycoor = (float(line[38:46]) + float(line2[38:46]))/2.0
 						zcoor = (float(line[46:54]) + float(line2[46:54]))/2.0
 						Coor[index] = [xcoor,ycoor,zcoor]
+def dotProduct(u,v):
+	## Calculates the dot product between two vectors.
+	return u[0]*v[0] + u[1]*v[1] + u[2]*v[2]
+
+def calcdist(u,v):
+	return np.round(np.sqrt((u[0]-v[0])**2 + (u[1]-v[1])**2 + (u[2]-v[2])**2),2)
+
+# def summr6_methyl(methyl, nonmethyl,PDBdict):
+# 	i1 = PDBdict[methyl[0]]
+# 	i2 = PDBdict[methyl[1]]
+# 	i3 = PDBdict[methyl[2]]
+# 	S = PDBdict[nonmethyl]
+# 	ri1s = [(i1[0]-S[0]),(i1[1]-S[1]),(i1[2]-S[2])]
+# 	ri2s = [(i2[0]-S[0]),(i2[1]-S[1]),(i2[2]-S[2])]
+# 	ri3s = [(i3[0]-S[0]),(i3[1]-S[1]),(i3[2]-S[2])]
+# 	val = 0
+# 	for x in range(len(methyl)):
+# 		for y in range(len(methyl)):
+# 			val = val + ((3*(dotProduct(eval('ri'+str(x)+s),eval('ri'+str(y)+s)))**2 - (calcdist(eval('i'+str(x)),S)**2 * calcdist(eval('i'+str(y)),S)**2))\
+# 			/(calcdist(eval('i'+str(x)),S)**5 * calcdist(eval('i'+str(y)),S)**5))
+# 	reff = ((1/18)*val)**(-1/6)
+# 	return reff
 
 def getdistance(doner, acceptor,PDBdict):
 	resn1, resi1, name1 = doner.split()
 	resn2, resi2, name2 = acceptor.split()
 	distances = []
+	d = 0
 	if 'Q' in name1 and 'Q' not in name2:
 		atoms1list = ['%3s %4s %-4s'%(resn1.replace('HIST','HIS'),resi1,atom) for atom in PseudoAtoms[resn1.replace('HIST','HIS')+name1]]
 		atoms1list.append(doner)
 		for a1 in atoms1list:
 			(x1,y1,z1) = PDBdict[a1]
 			(x2,y2,z2) = PDBdict[acceptor]
-			distances.append(np.round(np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2),2))
+			d = d + np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)**-6
 			print('%s %s d=%1.2f' %(doner,acceptor, np.round(np.sqrt((x1-x2)**2 + (y1-y2)**2+ (z1-z2)**2),2)))
-		d = min(distances)
+		reff = np.round(d**(-1/6),2)
 	if 'Q' not in name1 and 'Q' in name2:
 		atoms2list = ['%3s %4s %-4s'%(resn2.replace('HIST','HIS'),resi2,atom) for atom in PseudoAtoms[resn2.replace('HIST','HIS')+name2]]
 		atoms2list.append(acceptor)
 		for a2 in atoms2list:
 			(x1,y1,z1) = PDBdict[doner]
 			(x2,y2,z2) = PDBdict[a2]
-			distances.append(np.round(np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2),2))
-			print('%s %s d=%1.2f' %(doner, a2,np.round(np.sqrt((x1-x2)**2 + (y1-y2)**2+ (z1-z2)**2),2)))
-		d = min(distances)
+			d = d + np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)**-6
+		reff = np.round(d**(-1/6),2)
+		# print('%s %s d=%1.2f' %(doner, a2,np.round(np.sqrt((x1-x2)**2 + (y1-y2)**2+ (z1-z2)**2),2)))
 	if 'Q' in name1 and 'Q' in name2:
 		atoms1list = ['%3s %4s %-4s'%(resn1.replace('HIST','HIS'),resi1,atom) for atom in PseudoAtoms[resn1.replace('HIST','HIS')+name1]]
 		atoms2list = ['%3s %4s %-4s'%(resn2.replace('HIST','HIS'),resi2,atom) for atom in PseudoAtoms[resn2.replace('HIST','HIS')+name2]]
@@ -137,20 +160,21 @@ def getdistance(doner, acceptor,PDBdict):
 			for a2 in atoms2list:
 				(x1,y1,z1) = PDBdict[a1]
 				(x2,y2,z2) = PDBdict[a2]
-				distances.append(np.round(np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2),2))
-				print('%s %s d=%1.2f' %(a1,a2,np.round(np.sqrt((x1-x2)**2 + (y1-y2)**2+ (z1-z2)**2),2)))
-		d = min(distances)
+				d = d + np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)**-6
+				# print('%s %s d=%1.2f' %(a1,a2,np.round(np.sqrt((x1-x2)**2 + (y1-y2)**2+ (z1-z2)**2),2)))
+		reff = np.round(d**(-1/6),2)
 	if 'Q' not in name1 and 'Q' not in name2:
 		(x1,y1,z1) = PDBdict[atom1]
 		(x2,y2,z2) = PDBdict[atom2]
-		d = np.round(np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2),2)
-	print('used %s %s d=%1.2f' %(doner, acceptor,d))
-	return d
+		reff = np.round(np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2),2)
+	print('used %s %s d=%1.2f' %(doner, acceptor,reff))
+	return reff
 
 
 
 pd.set_option("display.precision", 2)
 DistancesDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv','upl','plist','peak'])
+DiffDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
 for line in open(fupl).readlines():
 	if 'SUP' not in line:
 		pass 
@@ -180,13 +204,18 @@ for line in open(fupl).readlines():
 	if ovwent in open(fovw).read():
 		DistancesDF.loc[atom1 + ' ' + atom2,'violation'] = 'yes'
 
-DistancesDF['diff'] = DistancesDF['mean'] - DistancesDF['upl']
-DistancesDF.to_csv('final_distances.csv')
+for x in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]:
+	DiffDF[x] = DistancesDF[x] - DistancesDF['upl']
+
+DistancesDF['mean diff'] = np.round(DiffDF.mean(axis=1),2)
+DistancesDF['max diff'] = np.round(DiffDF.max(axis=1),2)
+DistancesDF.to_csv('final_distances_v2.csv')
 print(DistancesDF)
 print(DistancesDF.shape)
 
 for upl in upls:
 	print(upl)
+	DiffDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
 	DistancesDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv','upl'])
 	for line in open(cwd+upl).readlines():
 		if '#'in line[0:4]:
@@ -201,6 +230,7 @@ for upl in upls:
 				DistancesDF.loc[atom1 + ' ' + atom2,mnum] = d
 	DistancesDF['mean'] = np.round(DistancesDF.mean(axis=1),2)
 	DistancesDF['stdv'] = np.round(DistancesDF.std(axis=1),2)
+
 	for line in open(cwd+upl).readlines():
 		if '#'in line[0:4]:
 			pass 
@@ -213,8 +243,13 @@ for upl in upls:
 		print(ovwent)
 		if ovwent in open(fovw).read():
 			DistancesDF.loc[atom1 + ' ' + atom2,'violation'] = 'yes'
-	DistancesDF['diff'] = DistancesDF['mean'] - DistancesDF['upl']
-	DistancesDF.to_csv(upl.replace('.upl','_distances.csv'))
+	for x in [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]:
+		DiffDF[x] = DistancesDF[x] - DistancesDF['upl']
+
+	DistancesDF['mean diff'] = np.round(DiffDF.mean(axis=1),2)
+	DistancesDF['max diff'] = np.round(DiffDF.max(axis=1),2)
+	DistancesDF.to_csv(upl.replace('.upl','_distances_v2.csv'))
+
 	print(DistancesDF)
 	print(DistancesDF.shape)
 
