@@ -126,7 +126,6 @@ for uplfile in upls:
 	for line in fin.readlines():
 		cns = line.split()
 		if "#" not in cns[0]:
-			u+=1
 			atom1 = cns[2]
 			atom2 = cns[5]
 			if cns[1]+cns[2] in replacements.keys():
@@ -146,27 +145,14 @@ for uplfile in upls:
 			if atom1[0] == 'C' and atom2[0] == 'C':
 				outpb = CCpb
 				gid = 'CC'
-			if ',' in atom1 and ',' not in atom2:
-				outpb.write('%s:%s@%s %s:%s@%s\n' %(cmxn, cns[0], atom1.split(',')[0], cmxn,  cns[3],atom2))
-				outpb.write('%s:%s@%s %s:%s@%s\n' %(cmxn, cns[0], atom1.split(',')[1], cmxn, cns[3],atom2))
-				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pmln, cns[0], atom1.split(',')[0], pmln, cns[3], atom2))
-				exec('group' + gid + '=' + 'group' + gid + '+"%s%s "' %(uplfile.replace('.upl',''),str(u)))
-				u+=1
-				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pmln, cns[0], atom1.split(',')[1], pmln, cns[3], atom2))
-				exec('group' + gid + '=' + 'group' + gid + '+"%s%s "' %(uplfile.replace('.upl',''),str(u)))
-			if ',' in atom2 and ',' not in atom1:
-				outpb.write('%s:%s@%s %s:%s@%s\n' %(cmxn, cns[0], atom1, cmxn, cns[3],atom2.split(',')[0]))
-				outpb.write('%s:%s@%s %s:%s@%s\n' %(cmxn, cns[0], atom1, cmxn, cns[3],atom2.split(',')[1]))
-				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pmln, cns[0], atom1, pmln, cns[3], atom2.split(',')[0]))
-				exec('group' + gid + '=' + 'group' + gid + '+"%s%s "' %(uplfile.replace('.upl',''),str(u)))
-				u+=1
-				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pmln, cns[0], atom1, pmln, cns[3], atom2.split(',')[2]))
-				outpml.write('color pink, %s%s\n'%(uplfile.replace('.upl',''),str(u)))
-				exec('group' + gid + '=' + 'group' + gid + '+"%s%s "' %(uplfile.replace('.upl',''),str(u)))
-			if ',' not in atom1 and ',' not in atom2:
-				outpb.write('%s:%s@%s %s:%s@%s\n' %(cmxn, cns[0], atom1, cmxn, cns[3],atom2))
-				outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pmln, cns[0], atom1, pmln, cns[3], atom2))
-				exec('group' + gid + '=' + 'group' + gid + '+"%s%s "' %(uplfile.replace('.upl',''),str(u)))
+			atoms2 = atom2.split(',')
+			atoms1 = atom1.split(',')
+			for atom1 in atoms1:
+				for atom2 in atoms2:
+					u+=1
+					outpb.write('%s:%s@%s %s:%s@%s\n' %(cmxn, cns[0], atom1, cmxn, cns[3],atom2))
+					outpml.write('distance %s%s, %s and resi %s and name %s, %s and resi %s and name %s\n' %(uplfile.replace('.upl',''),str(u), pmln, cns[0], atom1, pmln, cns[3], atom2))
+					exec('group' + gid + '=' + 'group' + gid + '+"%s%s "' %(uplfile.replace('.upl',''),str(u)))
 
 	if re.search(uplfile.replace('.upl','')+'[0-9]*',groupNN):
 		outpml.write(groupNN + '\n')
