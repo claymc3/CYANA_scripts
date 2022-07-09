@@ -137,7 +137,7 @@ checkcons.write('\n\n')
 outpml = open(outdir + fupl.replace('.upl','_pra.pml'),'w')
 outpml.write('load '+ cwd + in_pdb+'\n')
 outpml.write('set dash_gap, 0.05\n')
-outpml.write('set_color palevioletred = [219,112,147]\nset_color darkturquoise = [0,206,209]\nset_color purple = [128,0,128]\nset_color dodgerblue = [30,144,255]\n)set_color indianred = [205,92,92]\nset_color forest = [34,139,34]\nset_color navy = [0,0,128]\nset_color royalblue = [65,105,225]\nset_color darkcyan = [0,139,139]\nset_color turquoise = [64,224,208]\nset_color goldenrod = [218,165,32]\nset_color khaki = [240,230,140]\nset_color mediumvioletred = [199,21,133]\nset_color gold = [255,215,0]\nset_color cornflowerblue = [100,149,237]\nset_color lightcoral = [240,128,128]\nset_color firebrick = [178,34,34]\nset_Color deepping = [255,20,147]\nset_color hotpink = [255,105,180]\n')
+outpml.write('set_color palevioletred = [219,112,147]\nset_color darkturquoise = [0,206,209]\nset_color purple = [128,0,128]\nset_color dodgerblue = [30,144,255]\n)set_color indianred = [205,92,92]\nset_color forest = [34,139,34]\nset_color navy = [0,0,128]\nset_color royalblue = [65,105,225]\nset_color darkcyan = [0,139,139]\nset_color turquoise = [64,224,208]\nset_color goldenrod = [218,165,32]\nset_color khaki = [240,230,140]\nset_color mediumvioletred = [199,21,133]\nset_color gold = [255,215,0]\nset_color cornflowerblue = [100,149,237]\nset_color lightcoral = [240,128,128]\nset_color firebrick = [178,34,34]\nset_Color deeppink = [255,20,147]\nset_color hotpink = [255,105,180]\nset_Color mediumpurple = [147,112,219]\n')
 outpml.write('color gray60, all\n')
 outpml.write('show sticks, {:} and resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\n hide sticks, elem H\nhide sticks, name N+C\n'.format(pdbname))
 outpml.write('color purple, {:} and resn MET\ncolor forest, {:} and resn ALA\ncolor dodgerblue, {:} and resn ILE\ncolor indianred, {:} and resn LEU\ncolor orange, {:} and resn VAL\ncolor teal, {:} and resn THR\ncolor orchid, {:} and resn TYR\ncolor slate, {:} and resn PHE\n'.format(pdbname,pdbname,pdbname,pdbname,pdbname,pdbname,pdbname,pdbname))
@@ -147,22 +147,22 @@ outcmx.write('open '+ cwd + in_pdb+'\n')
 outcmx.write('color #1 gray(150)\n')
 pdbname = in_pdb.replace('.pdb','')
 
-mns = len(cya_plists) + 8 + len(upls)
+angmn = len(cya_plists) + 8 + len(upls)
 
-cmxphisel, cmxchisel, cmxphiviol, cmxchiviol = 'name phipsisel #{:}:'.format(mns), 'name chisel #{:}:'.format(mns+1), 'name phipsiviol #{:}:'.format(mns+2), 'name chiviol #{:}:'.format(mns+3)
-pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'color purple, phi-psi and resi ','color marin, chi and resi ', 'color magenta, viol_phi-psi and resi ', 'create red, viol_chi and resi '
+cmxphisel, cmxchisel, cmxphiviol, cmxchiviol = 'name phipsisel #{:}:'.format(angmn), 'name chisel #{:}:'.format(angmn), 'name phipsiviol #{:}:'.format(angmn), 'name chiviol #{:}:'.format(angmn)
+pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'color purple, phi-psi and resi ','color navy, chi and resi ', 'color mediumpurple, viol_phi-psi and resi ', 'color cornflowerblue, viol_chi and resi '
 
 
 poorpbout = open(outdir + outname + '_poor_cons.pb','w')
-poorpbout.write("; halfbond = false\n; color = mediumvioletred\n; radius = 0.15\n; dashes = 0\n")
+poorpbout.write("; halfbond = false\n; color = mediumvioletred\n; radius = 0.1\n; dashes = 0\n")
 longpbout = open(outdir + outname + '_long_cons.pb','w')
-longpbout.write("; halfbond = false\n; color = firebrick\n; radius = 0.15\n; dashes = 0\n")
+longpbout.write("; halfbond = false\n; color = firebrick\n; radius = 0.1\n; dashes = 0\n")
 shortpbout = open(outdir + outname + '_short_cons.pb','w')
-shortpbout.write("; halfbond = false\n; color = lightcoral\n; radius = 0.15\n; dashes = 0\n")
+shortpbout.write("; halfbond = false\n; color = lightcoral\n; radius = 0.1\n; dashes = 0\n")
 pviolpbout = open(outdir + outname + '_viol_peaks_cons.pb','w')
-pviolpbout.write("; halfbond = false\n; color = deeppink\n; radius = 0.15\n; dashes = 0\n")
+pviolpbout.write("; halfbond = false\n; color = deeppink\n; radius = 0.1\n; dashes = 0\n")
 uviolpbout = open(outdir + outname + '_viol_upls_cons.pb','w')
-uviolpbout.write("; halfbond = false\n; color = hotpink\n; radius = 0.15\n; dashes = 0\n")
+uviolpbout.write("; halfbond = false\n; color = hotpink\n; radius = 0.1\n; dashes = 0\n")
 
 i = 1
 Filtered = []
@@ -454,7 +454,7 @@ outpml.write('split_states ' + pdbname + '\n')
 for y in range(2,21,1):
 	outpml.write('align {:}_%04d, {:}_0001\n'.format(pdbname,y, pdbname))
 outcmx.write('match #1.2-20 to #1.1\n')
-outcmx.write('color #1:thr teal target a\ncolor :val orange  target a\ncolor :leu indian red  target a\ncolor :met purple  target a\ncolor :ala forest green  target a\ncolor :ile dodger blue  target a\ncolor :phe slate blue target a\ncolor :tyr orchid target a\ncolor  byhetero target a\n')
+outcmx.write('color #1:thr teal target a\ncolor :val orange  target a\ncolor :leu indian red  target a\ncolor :met purple  target a\ncolor :ala forest green  target a\ncolor :ile dodger blue  target a\ncolor :phe slate blue target a\ncolor :tyr orchid target a\n')
 outcmx.write('show #1:thr,met,ala,leu,val,ile,phe,tyr\n')
 outcmx.write('hide H\n')
 outcmx.write('show #1.1@H\n')
@@ -463,26 +463,18 @@ outcmx.write('cartoon suppress false\n')
 outcmx.write('label #1.1 text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n')
 outcmx.write('label ontop false\n')
 outcmx.write('ui tool show "Side View"\n')
-
-outcmx.write('combine #1.1 modelId {:} name phi-psi\nhide #{:} target a\n'.format(mn+1,mn+1))
+outcmx.write('combine #1.1 modelId {:} name angles\nhide #{:} target a\n'.format(angmn,angmn))
 outcmx.write(cmxphisel[:-1] + '\n')
-outcmx.write('color phipsisel purple target ac\n')
-
-outcmx.write('combine #1.1 modelId {:} name chi\nhide #{:} target a\n'.format(mn+2,mn+2))
+outcmx.write('color phipsisel purple target c\n')
 outcmx.write(cmxchisel[:-1] + '\n')
-outcmx.write('color chisel cornflower blue target ac \n')
-outcmx.write('show chisel\n')
-
-outcmx.write('combine #1.1 modelId {:} name viol_phi-psi\nhide #{:} target a\n'.format(mn+3,mn+3))
+outcmx.write('color chisel navy target a \n')
+outcmx.write('show chisel target a\n')
 outcmx.write(cmxphiviol[:-1] + '\n')
-outcmx.write('color phipsiviol hot pink target ac \n')
-
-outcmx.write('combine #1.1 modelId {:} name viol_chi\nhide #{:} target a\n'.format(mn+4,mn+4))
+outcmx.write('color phipsiviol mediumpurple target c \n')
 outcmx.write(cmxchiviol[:-1] + '\n')
-outcmx.write('color chiviol mediumvioletred target ac\n')
-outcmx.write('show chiviol\n')
-
-
+outcmx.write('color chiviol cornflower blue target a\n')
+outcmx.write('show chiviol target a\n')
+outcmx.write('hide #{:}@H*,N,O target a\ncolor  byhetero target a\n'.format(angmn))
 outpml.write('hide everything, {:}\n'.format(pdbname))
 outpml.write('create phi-psi, {:}_0001\ncolor gray60,phi-psi\nhide sticks, phi-psi\n'.format(pdbname))
 outpml.write(pmlphisel[:-1] + '\n')
