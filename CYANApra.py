@@ -194,7 +194,7 @@ for line in open(fovw).readlines():
 					Upperdict[cons] = cons2
 				if line[4:9] == 'lower':
 					Lowerdict[cons] = cons2
-			if 'peak' in line and 'QQ' not in line:
+			if 'peak' in line and 'list' in line and 'QQ' not in line:
 				pbout = pviolpbout
 				# grpout = 'viol_peakscons'
 				grpstr = "peakviol"
@@ -452,7 +452,7 @@ for angf in dihed:
 					pmlchisel = pmlchisel  + ang[0] + '+'
 outpml.write('split_states ' + pdbname + '\n')
 for y in range(2,21,1):
-	outpml.write('align {:}_%04d, {:}_0001\n'.format(pdbname,y, pdbname))
+	outpml.write('align {:}_{:04d}, {:}_0001\n'.format(pdbname,y, pdbname))
 outcmx.write('match #1.2-20 to #1.1\n')
 outcmx.write('color #1:ile paleturquoise target a\ncolor #1:leu lightsalmon  target a\ncolor #1:val khaki target a\ncolor #1:ala yellowgreen  target a\ncolor #1:met thistle target a\ncolor #1:thr aquamarine target a\ncolor #1:phe plum target a\ncolor #1:tyr lightpink target a\n')
 outcmx.write('show #1:thr,met,ala,leu,val,ile,phe,tyr\n')
