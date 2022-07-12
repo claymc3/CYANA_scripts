@@ -83,6 +83,7 @@ for x in range(max(lengths)):
 checkcons.write('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl\n'.format(pad,pad))
 manualongcons = [line.strip() for line in open(calc).readlines() if line.strip() and '.upl' in line][0].split()[2].split(',')
 upls = [con for con in manualongcons if 'upl' in con and 'hbond' not in con]
+hbonds = [con for con in manualongcons if 'upl' in con and 'hbond' in con]
 lols = [con for con in manualongcons if 'lol' in con and 'hbond' not in con]
 dihed = [con for con in manualongcons if 'aco' in con]
 noa = cwd + 'cycle7.noa'
@@ -182,14 +183,17 @@ for line in open(fovw).readlines():
 		atom2 = dviol[5]
 		if dviol[6]+dviol[5] in replacements.keys():
 			atom2 = replacements[dviol[6]+dviol[5]]
+		atoms1 = atom1.split(',')
+		atoms2 = atom2.split(',')
 		if dviol[9] >= '10':
 			v+=1
-			if 'peak' not in line:
+			if 'list' not in line:
 				pbout = uviolpbout
 				# grpout = 'viol_uplscons'
 				grpstr = "uplviol"
-				cons = '{:4} {:}  {:<4}  {:4} {:}  {:<4}  {:6.2f}\n'.format(dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]))
-				cons2 = '{:4} {:}  {:<4}  {:4} {:}  {:<4}  {:6.2f}  # {:} {:}\n'.format(dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]), dviol[9], dviol[10])
+				cons = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}\n'.format(dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]))
+				print(cons)
+				cons2 = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}  # {:} {:}\n'.format(dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]), dviol[9], dviol[10])
 				if line[4:9] == 'Upper':
 					Upperdict[cons] = cons2
 				if line[4:9] == 'lower':
@@ -204,31 +208,14 @@ for line in open(fovw).readlines():
 						checkcons.write(line2.replace('\n',' #Violated ' + line[50:88]+ '\n'))
 						finalupls[0].append(line2)
 						Filtered.append(line2)
-			if ',' in atom1 and ',' not in atom2:
-				pbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(dviol[3], atom1.split(',')[0], dviol[7],atom2))
-				outpml.write('distance viol{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(v), pdbname, dviol[3], atom1.split(',')[0], pdbname, dviol[7], atom2))
-				if 'peak' in line: viol_uplscons = viol_uplscons + "viol"+str(v) + ' '
-				if 'peak' not in line: viol_peakscons = viol_peakscons + "viol"+str(v) + ' '
-				v+=1
-				pbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(dviol[3], atom1.split(',')[1], dviol[7],atom2))
-				outpml.write('distance viol{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(v), pdbname, dviol[3], atom1.split(',')[1], pdbname, dviol[7], atom2))
-				if 'peak' in line: viol_uplscons = viol_uplscons + "viol"+str(v) + ' '
-				if 'peak' not in line: viol_peakscons = viol_peakscons + "viol"+str(v) + ' '
-			if ',' in atom2 and ',' not in atom1:
-				pbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(dviol[3], atom1, dviol[7],atom2.split(',')[0]))
-				outpml.write('distance viol{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(v), pdbname, dviol[3], atom1, pdbname, dviol[7], atom2.split(',')[0]))
-				if 'peak' in line: viol_uplscons = viol_uplscons + "viol"+str(v) + ' '
-				if 'peak' not in line: viol_peakscons = viol_peakscons + "viol"+str(v) + ' '
-				v+=1
-				pbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(dviol[3], atom1, dviol[7],atom2.split(',')[1]))
-				outpml.write('distance viol{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(v), pdbname, dviol[3], atom1, pdbname, dviol[7], atom2.split(',')[1]))
-				if 'peak' in line: viol_uplscons = viol_uplscons + "viol"+str(v) + ' '
-				if 'peak' not in line: viol_peakscons = viol_peakscons + "viol"+str(v) + ' '
-			if ',' not in atom1 and ',' not in atom2:
-				pbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(dviol[3], atom1, dviol[7],atom2))
-				outpml.write('distance viol{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(v), pdbname, dviol[3], atom1, pdbname, dviol[7], atom2))
-				if 'peak' in line: viol_uplscons = viol_uplscons + "viol"+str(v) + ' '
-				if 'peak' not in line: viol_peakscons = viol_peakscons + "viol"+str(v) + ' '
+			for atom1 in atoms1:
+				for atom2 in atoms2: 
+					v+=1
+					pbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(dviol[3], atom1, dviol[7],atom2))
+					outpml.write('distance viol{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(v), pdbname, dviol[3], atom1, pdbname, dviol[7], atom2))
+					if 'peak' in line: viol_uplscons = viol_uplscons + "viol"+str(v) + ' '
+					if 'peak' not in line: viol_peakscons = viol_peakscons + "viol"+str(v) + ' '
+
 	if line[4:9] == 'Angle':
 		dang = line.split()
 		if dang[1] == 'PHI' or dang[1] == 'PSI':
@@ -355,6 +342,7 @@ for uplfile in upls:
 	fin = open(uplfile,'r')
 	for line in fin.readlines():
 		if line in Upperdict.keys():
+			print('Found violated upl')
 			newlines.append(Upperdict[line])
 		if line not in Upperdict.keys():
 			newlines.append(line)
@@ -414,20 +402,22 @@ hbond.write("; halfbond = false\n; color = pink\n; radius = 0.2\n; dashes = 10\n
 hbgroupline = 'group hbond , '
 h = 1
 mn+=1
-for line in open('hbond.upl').readlines():
-	cns = line.split()
-	if line.strip() and "#" not in cns[0]:
-		if (cns[0],cns[3]) not in hbonsl:
-			h+=1 
-			hbonsl.append((cns[0],cns[3]))
-			hbonsl.append((cns[3],cns[0]))
-			hbond.write('#1.1:{:}@{:} #1.1:{:}@{:} {:}\n'.format(cns[0], cns[2], cns[3],cns[5],'pink'))
-			outpml.write('distance hbond{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(h), pdbname, cns[0], cns[2].replace('H','N'), pdbname, cns[3], cns[5].replace('H','N')))
-			hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
-			if cns[0] not in selhbond:
-				selhbond = selhbond +'{:},'.format(cns[0])
-			if cns[3] not in selhbond:
-				selhbond = selhbond +'{:},'.format(cns[3])
+hbonds
+for hbondf in hbonds:
+	for line in open(hbondf).readlines():
+		cns = line.split()
+		if line.strip() and "#" not in cns[0]:
+			if (cns[0],cns[3]) not in hbonsl:
+				h+=1 
+				hbonsl.append((cns[0],cns[3]))
+				hbonsl.append((cns[3],cns[0]))
+				hbond.write('#1.1:{:}@{:} #1.1:{:}@{:} {:}\n'.format(cns[0], cns[2], cns[3],cns[5],'pink'))
+				outpml.write('distance hbond{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(h), pdbname, cns[0], cns[2].replace('H','N'), pdbname, cns[3], cns[5].replace('H','N')))
+				hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
+				if cns[0] not in selhbond:
+					selhbond = selhbond +'{:},'.format(cns[0])
+				if cns[3] not in selhbond:
+					selhbond = selhbond +'{:},'.format(cns[3])
 hbond.close()
 outpml.write(hbgroupline + '\n')
 outpml.write('color pink, hbond\n')
