@@ -69,6 +69,9 @@ outname = fupl.split('.')[0]
 ## Check for the output directory if it does not exist make it
 if not os.path.exists(outdir):
 	os.makedirs(outdir)
+if not os.path.exists(outdir +'pseudobonds/'):
+	os.makedirs(outdir +'pseudobonds/')
+
 
 checkcons = open(outdir + outname + '_summary.txt','w')
 
@@ -95,7 +98,7 @@ tpeak,tsingle,tamb,tnotused,tnota,tdia,tincr  = 0, 0, 0, 0, 0, 0, 0
 tupl,tviol = 0,0
 for x in range(len(cya_plists)):
 	plistn = cya_plists[x].replace('-cycle7.peaks','')
-	exec("pb{:} = open('{:}','w')".format(str(x+1), outdir + outname + '_'+ plistn + '.pb'))
+	exec("pb{:} = open('{:}','w')".format(str(x+1), outdir +'pseudobonds/' + outname + '_'+ plistn + '.pb'))
 	pbout = eval('pb{:}'.format(str(x+1)))
 	pbout.write("; halfbond = false\n; color = " + colors[x+1] + "\n; radius = 0.1\n; dashes = 0\n")
 	exec("group{:} = '{:}, '".format(str(x+1), 'group ' + cya_plists[x].replace('-cycle7.peaks','')))
@@ -154,15 +157,15 @@ cmxphisel, cmxchisel, cmxphiviol, cmxchiviol = 'name phipsisel #{:}:'.format(ang
 pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'color purple, phi-psi and resi ','color navy, chi and resi ', 'color mediumpurple, viol_phi-psi and resi ', 'color cornflowerblue, viol_chi and resi '
 
 
-poorpbout = open(outdir + outname + '_poor_cons.pb','w')
+poorpbout = open(outdir +'pseudobonds/' + outname + '_poor_cons.pb','w')
 poorpbout.write("; halfbond = false\n; color = mediumvioletred\n; radius = 0.1\n; dashes = 0\n")
-longpbout = open(outdir + outname + '_long_cons.pb','w')
+longpbout = open(outdir +'pseudobonds/' + outname + '_long_cons.pb','w')
 longpbout.write("; halfbond = false\n; color = firebrick\n; radius = 0.1\n; dashes = 0\n")
-shortpbout = open(outdir + outname + '_short_cons.pb','w')
+shortpbout = open(outdir +'pseudobonds/' + outname + '_short_cons.pb','w')
 shortpbout.write("; halfbond = false\n; color = lightcoral\n; radius = 0.1\n; dashes = 0\n")
-pviolpbout = open(outdir + outname + '_viol_peaks_cons.pb','w')
+pviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_peaks_cons.pb','w')
 pviolpbout.write("; halfbond = false\n; color = deeppink\n; radius = 0.1\n; dashes = 0\n")
-uviolpbout = open(outdir + outname + '_viol_upls_cons.pb','w')
+uviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_upls_cons.pb','w')
 uviolpbout.write("; halfbond = false\n; color = hotpink\n; radius = 0.1\n; dashes = 0\n")
 
 i = 1
@@ -316,7 +319,7 @@ mn = 1
 for x in range(len(cya_plists)):
 	mn+=1
 	pbout = eval('pb{:}'.format(str(x+1)))
-	outcmx.write('open ' + outdir + outname + '_'+ cya_plists[x].replace('-cycle7.peaks','.pb\n'))
+	outcmx.write('open ' + outdir +'pseudobonds/' + outname + '_'+ cya_plists[x].replace('-cycle7.peaks','.pb\n'))
 	outcmx.write('color #{:} {:}\n'.format(str(mn),colors[mn]))
 	groupstr = eval('group' + str(x+1))
 	outpml.write(groupstr + '\n')
@@ -324,7 +327,7 @@ for x in range(len(cya_plists)):
 
 for (group, color) in [('poor','mediumvioletred'),('long','firebrick'),('short', 'lightcoral'),('viol_peaks', 'deeppink'),('viol_upls', 'hotpink')]:
 	mn+=1
-	outcmx.write('open ' + outdir + outname + '_' + group + '_cons.pb\n')
+	outcmx.write('open ' + outdir +'pseudobonds/' + outname + '_' + group + '_cons.pb\n')
 	outcmx.write('color #{:} {:}\n'.format(str(mn),color))
 	grpstr = eval(group + 'cons')
 	outpml.write(grpstr + '\n')
