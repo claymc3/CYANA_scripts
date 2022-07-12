@@ -168,7 +168,7 @@ uviolpbout.write("; halfbond = false\n; color = hotpink\n; radius = 0.1\n; dashe
 i = 1
 Filtered = []
 
-Upperdict, Lowerdict,= {}, {}
+Upperdict, Lowerdict = [], []
 viol_peakscons,viol_uplscons= 'group viol_peaks, ', 'group viol_upls, '
 finalupls = [["###Violated Restraints\n"],["###Poor/Low Support\n"],["###Long Distance Restraints (d >= 6.0)\n"],["###Short Distance Restraints (d <= 3.0)\n"],["###Good Restraints\n"]]
 checkcons.write('### Violated Distance Constraints from {:} \n'.format(str(fovw)))
@@ -185,19 +185,20 @@ for line in open(fovw).readlines():
 			atom2 = replacements[dviol[6]+dviol[5]]
 		atoms1 = atom1.split(',')
 		atoms2 = atom2.split(',')
-		if dviol[9] >= '10':
+		if int(dviol[9]) >= 10:
 			v+=1
-			if 'list' not in line:
+			if 'peak' not in line:
 				pbout = uviolpbout
 				# grpout = 'viol_uplscons'
 				grpstr = "uplviol"
-				cons = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}\n'.format(dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]))
-				print(cons)
-				cons2 = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}  # {:} {:}\n'.format(dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]), dviol[9], dviol[10])
+				cons1 = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}  ,# {:} {:}\n'.format(dviol[7],dviol[6],dviol[5],dviol[3],dviol[2],dviol[1],float(dviol[8]), dviol[9], dviol[10])
+				cons2 = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}  ,# {:} {:}\n'.format(dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]), dviol[9], dviol[10])
 				if line[4:9] == 'Upper':
-					Upperdict[cons] = cons2
+					Upperdict.append(cons1)
+					Upperdict.append(cons2)
 				if line[4:9] == 'lower':
-					Lowerdict[cons] = cons2
+					Lowerdict.append(cons1)
+					Lowerdict.append(cons2)
 			if 'peak' in line and 'list' in line and 'QQ' not in line:
 				pbout = pviolpbout
 				# grpout = 'viol_peakscons'
@@ -336,28 +337,35 @@ for upllist in finalupls:
 	for upl in upllist:
 		filtered_upl.write(upl)
 filtered_upl.close()
-
+upls = [con for con in manualongcons if 'upl' in con]
+lols = [con for con in manualongcons if 'lol' in con]
 for uplfile in upls:
 	newlines = []
 	fin = open(uplfile,'r')
-	for line in fin.readlines():
-		if line in Upperdict.keys():
-			print('Found violated upl')
-			newlines.append(Upperdict[line])
-		if line not in Upperdict.keys():
-			newlines.append(line)
+	for line in open(uplfile).readlines():
+		newline = ''
+		for viol in Upperdict:
+			if line.split()[0:6] == viol.split()[0:6]:
+				newline = line.replace('\n', viol.split(',')[-1])
+		if len(newline) < 1:
+			newline = line
+		newlines.append(newline)
 	fout = open(outdir + uplfile,'w')
 	fout.writelines(newlines)
 fin.close()
 fout.close()
+
 for lolfile in lols:
 	newlines = []
 	fin = open(lolfile,'r')
 	for line in fin.readlines():
-		if line in Lowerdict.keys():
-			newlines.append(Lowerdict[line])
-		if line not in Lowerdict.keys():
-			newlines.append(line)
+		newline = ''
+		for viol in Lowerdict:
+			if line.split()[0:6] == viol.split()[0:6]:
+				newline = line.replace('\n', viol.split(',')[-1])
+		if len(newline) < 1:
+			newline = line
+		newlines.append(newline)
 	fout = open(outdir + lolfile,'w')
 	fout.writelines(newlines)
 fin.close()
@@ -402,7 +410,6 @@ hbond.write("; halfbond = false\n; color = pink\n; radius = 0.2\n; dashes = 10\n
 hbgroupline = 'group hbond , '
 h = 1
 mn+=1
-hbonds
 for hbondf in hbonds:
 	for line in open(hbondf).readlines():
 		cns = line.split()
