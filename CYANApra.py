@@ -58,7 +58,7 @@ colors = ['white','palevioletred','orange','forest','royalblue','purple','chocol
 
 
 cwd = os.getcwd() + '/'
-outdir = cwd + 'post_cyana_ana/'
+outdir = cwd + 'post_cyana_analysis/'
 in_pdb = sys.argv[1]
 fupl = sys.argv[2]
 pdbname = in_pdb.split('.')[0]
