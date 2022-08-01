@@ -21,7 +21,8 @@ replacements ={
 'THRHA':'CA','THRHB':'CB','THRHG1':'OG1','THRHG21':'CG2','THRHG22':'CG2','THRHG23':'CG2','THRQG2':'CG2',
 'VALHA':'CA','VALHB':'CB','VALHG11':'CG1','VALHG12':'CG1','VALHG13':'CG1','VALQG1':'CG1','VALHG21':'CG2','VALHG22':'CG2','VALHG23':'CG2','VALQG2':'CG2','VALQQG':'CG1,CG2',
 'TRPHA':'CA','TRPHB2':'CB','TRPHB3':'CB','TRPQB':'CB','TRPHD1':'CD1','TRPHE3':'CE3','TRPHE1':'NE1','TRPHZ3':'CZ3','TRPHZ2':'CZ2','TRPHH2':'CH2',
-'TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRQD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH'}
+'TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRQD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH',
+'PTRHA':'CA','PTRHB2':'CB','PTRHB3':'CB','PTRQB':'CB','PTRQD':'CD1,CD2','PTRQE':'CE1,CE2','PTRHD1':'CD1','PTRHE1':'CE1','PTRHE2':'CE2','PTRHD2':'CD2','PTRHH':'OH'}
 #'ALAH':'N','CYSH':'N','ASPH':'N','GLUH':'N','PHEH':'N','GLYH':'N','HISH':'N','ILEH':'N','LYSH':'N','LEUH':'N','METH':'N','ASNH':'N','GLNH':'N','ARGH':'N','SERH':'N','THRH':'N','VALH':'N','TRPH':'N','TYRH':'N',
 if len(sys.argv)==1:
 	print('''
@@ -194,8 +195,8 @@ for line in open(fovw).readlines():
 				pbout = uviolpbout
 				# grpout = 'viol_uplscons'
 				grpstr = "uplviol"
-				cons1 = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}  ,# {:} {:}\n'.format(dviol[7],dviol[6],dviol[5],dviol[3],dviol[2],dviol[1],float(dviol[8]), dviol[9], dviol[10])
-				cons2 = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}  ,# {:} {:}\n'.format(dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]), dviol[9], dviol[10])
+				cons1 = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}  ,  # {:} {:}\n'.format(dviol[7],dviol[6],dviol[5],dviol[3],dviol[2],dviol[1],float(dviol[8]), dviol[9], dviol[10])
+				cons2 = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}  ,  # {:} {:}\n'.format(dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]), dviol[9], dviol[10])
 				if line[4:9] == 'Upper':
 					Upperdict.append(cons1)
 					Upperdict.append(cons2)
@@ -240,7 +241,7 @@ poorcons, shortcons, longcons = 'group poor_cons, ', 'group short_cons, ', 'grou
 
 for line in open(fupl).readlines():
 	if line not in Filtered:
-		if 'QQ' in line.split()[2] or 'QQ' in line.split()[5]:
+		if '#SUP' not in line:
 			pass 
 		else:
 			cns = line.split()
