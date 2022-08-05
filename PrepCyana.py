@@ -1,9 +1,11 @@
 ## 03/12/2020 Mary Clay PhD
+## Updated to python 3 06/27/2022 Mary Clay PhD
 ## Script for preparing cyana input files 
 ## name.seq
-## name_dihed.aco
+## dihed.aco
 ## hbond.upl/hbond.lol
 ## name.upl
+
 
 import pandas as pd 
 import numpy as np
@@ -22,11 +24,12 @@ Atoms_dict = {'I':['CD1'], 'L':['CD1','CD2'], 'V':['CG1','CG2'], 'M':['CE'], 'A'
 
 cwd = os.getcwd()
 #####
-if len(sys.argv)==1:
+print(len(sys.argv))
+if len(sys.argv) <= 8:
 	print('''
 
 Usage: 
-	PrepCyan [Sequence] [index(s)] [pdb] [upl_extras] [residues] [TALOS] 
+	PrepCyana [Sequence] [index(s)] [pdb] [upl_extras] [residues] [TALOS] 
 
 Required Input:
 	Sequence 		Fasta style or three letter code formats accepted no need to
@@ -55,6 +58,10 @@ Required Input:
 					will be used to filter out unstructured regions from the 
 					upl, hbond.lol, and hbond.upl files 
 
+	dref			One or several comma-separated values for dref
+
+	sys_info		Valid values are: chap, chap2, chap3, chap4
+
 
 Assuming you have saved your .prot and .peak files are in current location
 
@@ -80,6 +87,22 @@ in_pdb  = sys.argv[3]
 atoms = sys.argv[4]
 residues = sys.argv[5]
 TALOSdir = sys.argv[6]
+dref_val = sys.argv[7]
+sys_info = sys.argv[8]
+
+if float(dref_val) > 6:
+	print("Incorrect value for dref\nTypical values for dref are 4.0 - 4.5. If unsure, use 4.25.")
+	exit(1)
+
+if sys_info == 'chap' or sys_info == 'chap2':
+	ncpu = 40
+	print("Using %d threads" %ncpu)
+elif sys_info == 'chap3' or sys_info == 'chap4':
+	ncpu = 80
+	print("Using %d threads" %ncpu)
+else:
+	print("Incorrect input provided. Options are one of chap, chap2, chap3, chap4\n")
+	exit(1)
 
 prot = glob.glob('*.prot')[0]
 name = prot.split('.')[0]
@@ -173,7 +196,7 @@ peaks_out=peaks_out[:-1]
 
 prots = glob.glob(os.path.join(cwd + '/*.prot'))
 prots_out = ''
-for prots in prots:
+for prot in prots:
 	prots_out = prots_out + prot.split('/')[-1] + ','
 prots_out=prots_out[:-1]
 
@@ -363,7 +386,7 @@ for i in range(len(C_list)):
 				constraint = C_list[x] + '-' + C_list[i]
 				if constraint not in CC_used:
 					CC_used.append(C_list[i] + '-' + C_list[x])
-					CC_out = "%4s %s  %-3s   %4s %s  %-3s   %6.2f\n" % (PDB_df.loc[C_list[i],'resid'],PDB_df.loc[C_list[i],'resn'],PDB_df.loc[C_list[i],'name'], PDB_df.loc[C_list[x],'resid'],PDB_df.loc[C_list[x],'resn'],PDB_df.loc[C_list[x],'name'],dist)
+					CC_out = "%4s %s  %-4s  %4s %s  %-4s  %6.2f\n" % (PDB_df.loc[C_list[i],'resid'],PDB_df.loc[C_list[i],'resn'],PDB_df.loc[C_list[i],'name'], PDB_df.loc[C_list[x],'resid'],PDB_df.loc[C_list[x],'resn'],PDB_df.loc[C_list[x],'name'],dist)
 					upl.write(CC_out)
 upl.write('## C-C distances from UNstructured regions\n')
 for i in range(len(CA_list)):
@@ -376,7 +399,7 @@ for i in range(len(CA_list)):
 					constraint = CA_list[x] + '-' + CA_list[i]
 					if constraint not in CC_used:
 						CC_used.append(CA_list[i] + '-' + CA_list[x])
-						CC_out = "%4s %s  %-3s   %4s %s  %-3s   %6.2f\n" % (PDB_df.loc[CA_list[i],'resid'],PDB_df.loc[CA_list[i],'resn'],PDB_df.loc[CA_list[i],'name'], PDB_df.loc[CA_list[x],'resid'],PDB_df.loc[CA_list[x],'resn'],PDB_df.loc[CA_list[x],'name'],dist)
+						CC_out = "%4s %s  %-4s  %4s %s  %-4s  %6.2f\n" % (PDB_df.loc[CA_list[i],'resid'],PDB_df.loc[CA_list[i],'resn'],PDB_df.loc[CA_list[i],'name'], PDB_df.loc[CA_list[x],'resid'],PDB_df.loc[CA_list[x],'resn'],PDB_df.loc[CA_list[x],'name'],dist)
 						upl.write(CC_out)
 
 print("Made %3.0f CC upl constraints " % (len(CC_used)))
@@ -391,6 +414,7 @@ peaks       := %s      # names of NOESY peak lists
 prot        := %s                   # names of chemical shift lists
 constraints := %s.upl,%s,%s,%s              # additional (non-NOE) constraints
 tolerance   := 0.01,0.01,0.01,0.01         # chemical shift tolerances
+dref        := %s
 calibration :=                          # NOE calibration parameters
 structures  := 100,20                   # number of initial, final structures
 steps       := 20000                    # number of torsion angle dynamics steps
@@ -407,7 +431,7 @@ upl_values  := 2.4,7.0
 
 ssa
 noeassign peaks=$peaks prot=$prot autoaco # keep=KEEP 
-''' % (peaks_out, prots_out, name, 'hbond.lol', 'hbond.upl','dihed.aco',residues.replace("-",".."))
+''' % (peaks_out, prots_out, name, 'hbond.lol', 'hbond.upl','dihed.aco',dref_val,residues.replace("-",".."))
 CYANA.write(clac_text)
 CYANA.close()
 
@@ -417,14 +441,14 @@ rmsdrange:=%s
 cyanalib
 read lib special.lib append
 #read lib cyana_Zn2.lib append
-nproc:=20
+nproc:=%d
 read seq $name.seq
 #molecules define 1..146 201..346
 #molecule identity
 #weight_ide=0.09
 #molecule symdist "CA 1..146" "CA 201..346"
 #weight_sym=0.025
-#rdcdistances        # default bond lengths for dipole types''' % (name,residues.replace('-','...'))
+#rdcdistances        # default bond lengths for dipole types''' % (name,residues.replace('-','...'),ncpu)
 Init_Cyana.write(init_text)
 Init_Cyana.close()
 
