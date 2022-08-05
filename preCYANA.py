@@ -56,7 +56,7 @@ OutPut:
 		hbond.upl 
 ''')
 	exit()
-colors = ['white','palevioletred','orange','forest','royalblue','purple','chocolate','teal','gold','navy','darkturquoise','pink','cyan']
+colors = ['palevioletred','orange','forest','royalblue','purple','chocolate','teal','gold','navy','darkturquoise','pink','cyan']
 
 cwd = os.getcwd() + '/'
 outdir = cwd + 'pre_cyana/'
@@ -124,35 +124,36 @@ for uplfile in upls:
 	groupNC = 'group {:}, '.format(uplfile.replace('.upl','_NC'))
 	groupCC = 'group {:}, '.format(uplfile.replace('.upl','_CC'))
 	for line in fin.readlines():
-		cns = line.split()
-		if "#" not in cns[0]:
-			atom1 = cns[2]
-			atom2 = cns[5]
-			if cns[1]+cns[2] in replacements.keys():
-				atom1 = atom1.replace(cns[2], replacements[cns[1]+cns[2]])
-			if cns[4]+cns[5] in replacements.keys():
-				atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
-			if cns[1]+cns[5] not in replacements.keys():
-				atom1 = atom1
-			if cns[4]+cns[5] not in replacements.keys():
-				atom2=atom2
-			if atom1[0] == 'N' and atom2[0] == 'N':
-				outpb = NNpb
-				gid = 'NN'
-			if atom1[0] == 'N' and atom2[0] == 'C':
-				outpb = NCpb
-				gid = 'NC'
-			if atom1[0] == 'C' and atom2[0] == 'C':
-				outpb = CCpb
-				gid = 'CC'
-			atoms2 = atom2.split(',')
-			atoms1 = atom1.split(',')
-			for atom1 in atoms1:
-				for atom2 in atoms2:
-					u+=1
-					outpb.write('{:}:{:}@{:} {:}:{:}@{:}\n'.format(cmxn, cns[0], atom1, cmxn, cns[3],atom2))
-					outpml.write('distance {:}{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(uplfile.replace('.upl',''),str(u), pmln, cns[0], atom1, pmln, cns[3], atom2))
-					exec('group' + gid + '=' + 'group' + gid + '+"{:}{:} "'.format(uplfile.replace('.upl',''),str(u)))
+		if line.split():
+			cns = line.split()
+			if "#" not in cns[0]:
+				atom1 = cns[2]
+				atom2 = cns[5]
+				if cns[1]+cns[2] in replacements.keys():
+					atom1 = atom1.replace(cns[2], replacements[cns[1]+cns[2]])
+				if cns[4]+cns[5] in replacements.keys():
+					atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
+				if cns[1]+cns[5] not in replacements.keys():
+					atom1 = atom1
+				if cns[4]+cns[5] not in replacements.keys():
+					atom2=atom2
+				if atom1[0] == 'N' and atom2[0] == 'N':
+					outpb = NNpb
+					gid = 'NN'
+				if atom1[0] == 'N' and atom2[0] == 'C':
+					outpb = NCpb
+					gid = 'NC'
+				if atom1[0] == 'C' and atom2[0] == 'C':
+					outpb = CCpb
+					gid = 'CC'
+				atoms2 = atom2.split(',')
+				atoms1 = atom1.split(',')
+				for atom1 in atoms1:
+					for atom2 in atoms2:
+						u+=1
+						outpb.write('{:}:{:}@{:} {:}:{:}@{:}\n'.format(cmxn, cns[0], atom1, cmxn, cns[3],atom2))
+						outpml.write('distance {:}{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(uplfile.replace('.upl',''),str(u), pmln, cns[0], atom1, pmln, cns[3], atom2))
+						exec('group' + gid + '=' + 'group' + gid + '+"{:}{:} "'.format(uplfile.replace('.upl',''),str(u)))
 
 	if re.search(uplfile.replace('.upl','')+'[0-9]*',groupNN):
 		outpml.write(groupNN + '\n')
@@ -236,18 +237,19 @@ hbgroupline = 'group hbond , '
 h = 0
 for line in open('hbond.upl').readlines():
 	cns = line.split()
-	if "#" not in cns[0]:
-		if (cns[0],cns[3]) not in hbonsl:
-			h+=1 
-			hbonsl.append((cns[0],cns[3]))
-			hbonsl.append((cns[3],cns[0]))
-			hbond.write('{:}:{:}@{:} {:}:{:}@{:}\n'.format(hbcmxn, cns[0], cns[2], hbcmxn, cns[3],cns[5]))
-			outpml.write('distance hbond{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(h), pmln, cns[0], cns[2].replace('H','N'), pmln, cns[3], cns[5].replace('H','N')))
-			hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
-			if cns[0] not in selhbond:
-				selhbond = selhbond +'{:},'.format(cns[0])
-			if cns[3] not in selhbond:
-				selhbond = selhbond +'{:},'.format(cns[3])
+	if line.split():
+		if "#" not in cns[0]:
+			if (cns[0],cns[3]) not in hbonsl:
+				h+=1 
+				hbonsl.append((cns[0],cns[3]))
+				hbonsl.append((cns[3],cns[0]))
+				hbond.write('{:}:{:}@{:} {:}:{:}@{:}\n'.format(hbcmxn, cns[0], cns[2], hbcmxn, cns[3],cns[5]))
+				outpml.write('distance hbond{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(h), pmln, cns[0], cns[2].replace('H','N'), pmln, cns[3], cns[5].replace('H','N')))
+				hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
+				if cns[0] not in selhbond:
+					selhbond = selhbond +'{:},'.format(cns[0])
+				if cns[3] not in selhbond:
+					selhbond = selhbond +'{:},'.format(cns[3])
 hbond.close()
 outpml.write(hbgroupline + '\n')
 outpml.write('color pink, hbond\n')
