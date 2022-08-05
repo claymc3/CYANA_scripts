@@ -99,7 +99,7 @@ tpeak,tsingle,tamb,tnotused,tnota,tdia,tincr  = 0, 0, 0, 0, 0, 0, 0
 tupl,tviol = 0,0
 for x in range(len(cya_plists)):
 	plistn = cya_plists[x].replace('-cycle7.peaks','')
-	exec("pb{:} = open('{:}','w')".format(str(x+1), outdir +'pseudobonds/' + outname + '_'+ plistn + '.pb'))
+	exec("pb{:} = open('{:}','w')".format(str(x+1), outdir +'pseudobonds/' + plistn + '.pb'))
 	pbout = eval('pb{:}'.format(str(x+1)))
 	pbout.write("; halfbond = false\n; color = " + colors[x+1] + "\n; radius = 0.1\n; dashes = 0\n")
 	exec("group{:} = '{:}, '".format(str(x+1), 'group ' + cya_plists[x].replace('-cycle7.peaks','')))
@@ -320,7 +320,7 @@ mn = 1
 for x in range(len(cya_plists)):
 	mn+=1
 	pbout = eval('pb{:}'.format(str(x+1)))
-	outcmx.write('open ' + outdir +'pseudobonds/' + outname + '_'+ cya_plists[x].replace('-cycle7.peaks','.pb\n'))
+	outcmx.write('open ' + outdir +'pseudobonds/' + cya_plists[x].replace('-cycle7.peaks','.pb\n'))
 	outcmx.write('color #{:} {:}\n'.format(str(mn),colors[mn]))
 	groupstr = eval('group' + str(x+1))
 	outpml.write(groupstr + '\n')
@@ -341,11 +341,8 @@ for upllist in finalupls:
 	for upl in upllist:
 		filtered_upl.write(upl)
 filtered_upl.close()
-upls = [con for con in manualongcons if 'upl' in con]
-lols = [con for con in manualongcons if 'lol' in con]
 for uplfile in upls:
 	newlines = []
-	fin = open(uplfile,'r')
 	for line in open(uplfile).readlines():
 		newline = ''
 		for viol in Upperdict:
@@ -356,13 +353,11 @@ for uplfile in upls:
 		newlines.append(newline)
 	fout = open(outdir + uplfile,'w')
 	fout.writelines(newlines)
-fin.close()
-fout.close()
+	fout.close()
 
 for lolfile in lols:
 	newlines = []
-	fin = open(lolfile,'r')
-	for line in fin.readlines():
+	for line in open(lolfile).readlines():
 		newline = ''
 		for viol in Lowerdict:
 			if line.split()[0:6] == viol.split()[0:6]:
@@ -372,12 +367,11 @@ for lolfile in lols:
 		newlines.append(newline)
 	fout = open(outdir + lolfile,'w')
 	fout.writelines(newlines)
-fin.close()
-fout.close()
+	fout.close()
 u = 1
 for uplfile in upls:
 	fin = open(uplfile,'r')
-	outpb = open(outdir + uplfile.replace('.upl','_cons.pb'),'w')
+	outpb = open(outdir +'pseudobonds/' + uplfile.replace('.upl','.pb'),'w')
 	pmlgroup = 'group {:}, '.format(uplfile.replace('.upl',''))
 	outpb.write("; halfbond = false\n; color = blue\n; radius = 0.1\n; dashes = 10\n")
 	for line in fin.readlines():
@@ -409,7 +403,7 @@ for uplfile in upls:
 
 selhbond = 'name hbond  #1.1:'
 hbonsl = []
-hbond = open(outdir + 'hbond_cons.pb','w')
+hbond = open(outdir +'pseudobonds/' + 'hbond.pb','w')
 hbond.write("; halfbond = false\n; color = pink\n; radius = 0.2\n; dashes = 10\n")
 hbgroupline = 'group hbond , '
 h = 1
@@ -422,7 +416,7 @@ for hbondf in hbonds:
 				h+=1 
 				hbonsl.append((cns[0],cns[3]))
 				hbonsl.append((cns[3],cns[0]))
-				hbond.write('#1.1:{:}@{:} #1.1:{:}@{:} {:}\n'.format(cns[0], cns[2], cns[3],cns[5],'pink'))
+				hbond.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], cns[2], cns[3],cns[5]))
 				outpml.write('distance hbond{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(h), pdbname, cns[0], cns[2].replace('H','N'), pdbname, cns[3], cns[5].replace('H','N')))
 				hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
 				if cns[0] not in selhbond:
@@ -433,7 +427,7 @@ hbond.close()
 outpml.write(hbgroupline + '\n')
 outpml.write('color pink, hbond\n')
 selhbond = selhbond[:-1] + '@O,N\nshow hbond target a\n'
-outcmx.write('open ' + outdir + 'hbond_cons.pb\n')
+outcmx.write('open ' + outdir + 'hbond.pb\n')
 outcmx.write('color #{:} {:}\n'.format(str(mn),'pink'))
 outcmx.write(selhbond)
 phir, chir = [],[]
