@@ -85,11 +85,11 @@ pad = ''
 for x in range(max(lengths)):
 	pad = pad + ' '
 checkcons.write('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl\n'.format(pad,pad))
-manualongcons = [line.strip() for line in open(calc).readlines() if line.strip() and '.upl' in line][0].split()[2].split(',')
-upls = [con for con in manualongcons if 'upl' in con and 'hbond' not in con]
-hbonds = [con for con in manualongcons if 'upl' in con and 'hbond' in con]
-lols = [con for con in manualongcons if 'lol' in con and 'hbond' not in con]
-dihed = [con for con in manualongcons if 'aco' in con]
+manualcons = [line.strip() for line in open(calc).readlines() if line.strip() and '.upl' in line][0].split()[2].split(',')
+upls = [con for con in manualcons if 'upl' in con and 'hbond' not in con]
+hbonds = [con for con in manualcons if 'upl' in con and 'hbond' in con]
+lols = [con for con in manualcons if 'lol' in con and 'hbond' not in con]
+dihed = [con for con in manualcons if 'aco' in con]
 noa = cwd + 'cycle7.noa'
 noalines = open(noa).readlines()
 print('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl'.format(pad,pad))
@@ -133,10 +133,10 @@ for x in range(len(cya_plists)):
 				dia+=1
 				tdia+=1
 	linepad = pad[len(plist.replace('-cycle7.peaks','')):]
-	checkcons.write("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}\n".format(plist.replace('-cycle7.peaks',''),linepad,peak,len(upl),len(viol),single,amb,notused,nota,dia,incr))
-	print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}".format(plist.replace('-cycle7.peaks',''),linepad, peak,len(upl),len(viol),single,amb,notused,nota,dia,incr))
-checkcons.write("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}\n".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr))
-print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr))
+	checkcons.write("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%\n".format(plist.replace('-cycle7.peaks',''),linepad,peak,len(upl),len(viol), single,amb,notused,nota,dia,incr, 100*((single+amb+dia)/peak)))
+	print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%".format(plist.replace('-cycle7.peaks',''),linepad, peak,len(upl),len(viol),single,amb,notused,nota,dia,incr, 100*((single+amb+dia)/peak)))
+checkcons.write("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%\n".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr,100*((tsingle+ tamb+ tdia)/tpeak)))
+print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr, 100*((tsingle+ tamb+ tdia)/tpeak)))
 checkcons.write('\n\n')
 
 outpml = open(outdir + fupl.replace('.upl','_pra.pml'),'w')
@@ -237,7 +237,7 @@ for line in open(fovw).readlines():
 
 checkcons.write('\n\n')
 finalupl,poorcons2, show, shortcons2,longcons2 = [],[],[],[],[]
-poorcons, shortcons, longcons = 'group poor_cons, ', 'group short_cons, ', 'group long_cons, '
+poorcons, shortcons, longcons = 'group poor, ', 'group short, ', 'group long, '
 
 for line in open(fupl).readlines():
 	if line not in Filtered:
@@ -396,9 +396,9 @@ for uplfile in upls:
 					outpml.write('distance {:}{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 					pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
 	outpml.write(pmlgroup + '\n')
-	outpml.write('color blue,' + uplfile.replace('.upl','') + '\n')
+	outpml.write('color cyan,' + uplfile.replace('.upl','') + '\n')
 	mn+=1
-	outcmx.write('open ' + outdir + uplfile.replace('.upl','_cons.pb') + '\n')
+	outcmx.write('open ' + outdir +'pseudobonds/' + uplfile.replace('.upl','.pb') + '\n')
 	outcmx.write('color #{:} {:}\n'.format(str(mn),'cyan'))
 
 selhbond = 'name hbond  #1.1:'
@@ -427,7 +427,7 @@ hbond.close()
 outpml.write(hbgroupline + '\n')
 outpml.write('color pink, hbond\n')
 selhbond = selhbond[:-1] + '@O,N\nshow hbond target a\n'
-outcmx.write('open ' + outdir + 'hbond.pb\n')
+outcmx.write('open ' + outdir +'pseudobonds/' + 'hbond.pb\n')
 outcmx.write('color #{:} {:}\n'.format(str(mn),'pink'))
 outcmx.write(selhbond)
 phir, chir = [],[]
