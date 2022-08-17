@@ -14,7 +14,6 @@ import sys
 import glob
 import re
 
-
 pdb_columns = ['name', 'resn', 'resid', 'X', 'Y', 'Z','nuc']
 # Read in PDB file one line at a time, if the first four letter ar ATOM or HETA then it will parse the data into the 
 # data frame, using the atome index int he PDB as the row index in the data frame. 
@@ -29,7 +28,7 @@ if len(sys.argv) <= 8:
 	print('''
 
 Usage: 
-	PrepCyana [Sequence] [index(s)] [pdb] [upl_extras] [residues] [TALOS] 
+	PrepCyana [Sequence] [index(s)] [pdb] [upl_extras] [residues] [TALOS] [dref] [sys_info]
 
 Required Input:
 	Sequence 		Fasta style or three letter code formats accepted no need to
@@ -60,7 +59,8 @@ Required Input:
 
 	dref			One or several comma-separated values for dref
 
-	sys_info		Valid values are: chap, chap2, chap3, chap4
+	sys_info		specify which chaperone you want to run on 
+					Valid values are: chap, chap2, chap3, chap4
 
 
 Assuming you have saved your .prot and .peak files are in current location
@@ -72,7 +72,7 @@ OutPut:
 	CYAN.calc
 	init.cya
 	name.seq
-	name.upl 
+	name.upl
 	hbond.upl
 	hbond.lol
 	dihed.aco
@@ -107,10 +107,11 @@ else:
 prot = glob.glob('*.prot')[0]
 name = prot.split('.')[0]
 talosSS = os.path.join(TALOSdir +'/predSS.tab')
-
+talosS2 = os.path.join(TALOSdir +'/predS2.tab')
 indihed = os.path.join(TALOSdir +'/pred.tab')
 print("Using " + talosSS)
 print("Using " + indihed)
+print("Using " + talosS2)
 # Indexes = [int(x) for x in index.split(',')]
 
 #------------------------------------------------------------------------------
@@ -150,20 +151,31 @@ seqfile.close()
 # Read in predSS.tab from TALOS run and great dictionary indicating secondary
 # structure of residue to use for preparation of hbond and manual upl/lol 
 #
-talos_lines = [line.strip() for line in open(talosSS).readlines() if line.strip() and re.search(' *([0-9]*) [A-Z]', line)]
+talos_lines = [line.strip() for line in open(talosSS).readlines() if line.strip() and not re.search('[A-Z]', line[0])]
 SecStrDict = {}
 for line in talos_lines:
 	res = line.split()[1] + line.split()[0]
 	SecStrDict[res] = line.split()[-1].upper().replace('C','L')
 
 #------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+# Read in predSS.tab from TALOS run and great dictionary indicating secondary
+# structure of residue to use for preparation of hbond and manual upl/lol 
+#
+talosS2_lines = [line.strip() for line in open(talosS2).readlines() if line.strip() and not re.search('[A-Z]', line[0])]
+S2Dict = {}
+for line in talosS2_lines:
+	res = line.split()[1] + line.split()[0]
+	S2Dict[res] = float(line.split()[-1].replace('9999.0000','0.600'))
 
+
+#------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
 # Read in TALOS pred.tab and create dihed.aco file 
 
 # dihed = glob.glob("*.aco")[0]
-dihed_lines = [line.strip() for line in open(indihed).readlines() if line.strip() and re.search(' *([0-9]*) [A-Z]', line)]
+dihed_lines = [line.strip() for line in open(indihed).readlines() if line.strip() and not re.search('[A-Z]', line[0])]
 # (resid, slc, phi, psi, dphi, dpsi, s2, count, cs_cound, Class)
 aco = open('dihed.aco','w')
 aco.write("\n")
@@ -238,7 +250,8 @@ with open(in_pdb) as In_pdb:
 					PDB_df.loc[index, 'chain'] = line[21]
 					if AAA_dict[line[17:20].strip()] + line[22:26].strip() in SecStrDict.keys():
 						PDB_df.loc[index, 'SecStr'] = SecStrDict[AAA_dict[line[17:20].strip()] + line[22:26].strip()]
-
+					if AAA_dict[line[17:20].strip()] + line[22:26].strip() in S2Dict.keys():
+						PDB_df.loc[index, 'S2'] = S2Dict[AAA_dict[line[17:20].strip()] + line[22:26].strip()]
 #------------------------------------------------------------------------------
 # Find Hydrogen bonding connections 
 #
@@ -318,9 +331,9 @@ print("Generated hbond.upl and hbond.lol")
 NN_used = []
 upl = open(name + '.upl','w')
 upl.write('## N-N distances from structured regions\n')
-N_list = PDB_df[(PDB_df['nuc'] == 'N') & (PDB_df['SecStr'] != 'L')].index.tolist()
+N_list = PDB_df[(PDB_df['nuc'] == 'N') & (PDB_df['S2'] >= 0.6)].index.tolist()
 NA_list = PDB_df[(PDB_df['nuc'] == 'N')].index.tolist()
-C_list = PDB_df[(PDB_df['nuc'] == 'C') & (PDB_df['SecStr'] != 'L')].index.tolist()
+C_list = PDB_df[(PDB_df['nuc'] == 'C') & (PDB_df['S2'] >= 0.6)].index.tolist()
 CA_list = PDB_df[(PDB_df['nuc'] == 'C')].index.tolist()
 for i in range(len(N_list)):
 	for x in range(len(N_list)):
