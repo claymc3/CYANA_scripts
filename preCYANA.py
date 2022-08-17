@@ -204,7 +204,7 @@ CSLoop = 'name CSLoop {:}:'.format(hbcmxn)
 SeqHelix = 'name SeqHelix {:}:'.format(hbcmxn)
 SeqStrand = 'name SeqStrand {:}:'.format(hbcmxn)
 SeqLoop = 'name SeqLoop {:}:'.format(hbcmxn)
-talos_lines = [line.strip() for line in open(talosSS).readlines() if line.strip() and re.search(' *([0-9]*) [A-Z]', line)]
+talos_lines = [line.strip() for line in open(talosSS).readlines() if line.strip() and not re.search('[A-Z]', line[0])]
 for line in talos_lines:
 	if line.split()[-1] == 'H':CSHelix = CSHelix + line.split()[0] + ','
 	if line.split()[-1] == 'E':CSStrand = CSStrand + line.split()[0] + ','
