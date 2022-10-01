@@ -150,13 +150,20 @@ outpml.write('color gold, elem S\ncolor red, elem O\ncolor blue, elem N\n')
 outcmx = open(outdir + fupl.replace('.upl','_pra.cxc'),'w')
 outcmx.write('open '+ cwd + in_pdb+'\n')
 outcmx.write('color #1 gray(150)\n')
+outcmx.write('match #1.2-20 to #1.1\n')
+outcmx.write('color #1:ile paleturquoise target a\ncolor #1:leu lightsalmon  target a\ncolor #1:val khaki target a\ncolor #1:ala yellowgreen  target a\ncolor #1:met thistle target a\ncolor #1:thr aquamarine target a\ncolor #1:phe plum target a\ncolor #1:tyr lightpink target a\n')
+outcmx.write('show #1:thr,met,ala,leu,val,ile,phe,tyr\n')
+outcmx.write('name meyfside #1:thr,met,ala,leu,val,ile,phe,tyr\n')
+outcmx.write('hide H\n''show #1.1@H\n''show #1.1@N target a\n')
+outcmx.write('cartoon suppress false\n')
+outcmx.write('label #1.1 text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n''label ontop false\n')
+outcmx.write('ui tool show "Side View"\nui mousemode right distance\n')
+
 pdbname = in_pdb.replace('.pdb','')
 
 angmn = len(cya_plists) + 8 + len(upls)
-
 cmxphisel, cmxchisel, cmxphiviol, cmxchiviol = 'name phipsisel #{:}:'.format(angmn), 'name chisel #{:}:'.format(angmn), 'name phipsiviol #{:}:'.format(angmn), 'name chiviol #{:}:'.format(angmn)
 pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'color purple, phi-psi and resi ','color navy, chi and resi ', 'color mediumpurple, viol_phi-psi and resi ', 'color cornflowerblue, viol_chi and resi '
-
 
 poorpbout = open(outdir +'pseudobonds/' + outname + '_poor_cons.pb','w')
 poorpbout.write("; halfbond = false\n; color = mediumvioletred\n; radius = 0.1\n; dashes = 0\n")
@@ -367,7 +374,7 @@ for uplfile in upls:
 	fin = open(uplfile,'r')
 	outpb = open(outdir +'pseudobonds/' + uplfile.replace('.upl','.pb'),'w')
 	pmlgroup = 'group {:}, '.format(uplfile.replace('.upl',''))
-	outpb.write("; halfbond = false\n; color = blue\n; radius = 0.1\n; dashes = 10\n")
+	outpb.write("; halfbond = false\n; color = blue\n; radius = 0.15\n; dashes = 10\n")
 	for line in fin.readlines():
 		cns = line.split()
 		if line.strip() and "#" not in cns[0]:
@@ -474,15 +481,8 @@ for angf in dihed:
 outpml.write('split_states ' + pdbname + '\n')
 for y in range(2,21,1):
 	outpml.write('align {:}_{:04d}, {:}_0001\n'.format(pdbname,y, pdbname))
-outcmx.write('match #1.2-20 to #1.1\n')
-outcmx.write('color #1:ile paleturquoise target a\ncolor #1:leu lightsalmon  target a\ncolor #1:val khaki target a\ncolor #1:ala yellowgreen  target a\ncolor #1:met thistle target a\ncolor #1:thr aquamarine target a\ncolor #1:phe plum target a\ncolor #1:tyr lightpink target a\n')
-outcmx.write('show #1:thr,met,ala,leu,val,ile,phe,tyr\n')
-outcmx.write('name meyfside #1:thr,met,ala,leu,val,ile,phe,tyr\n')
-outcmx.write('hide H\n''show #1.1@H\n''show #1.1@N target a\n')
-outcmx.write('cartoon suppress false\n')
-outcmx.write('label #1.1 text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n''label ontop false\n')
-outcmx.write('ui tool show "Side View"\n')
-outcmx.write('combine #1.1 modelId {:} name angles\nhide #{:} target a\n'.format(angmn,angmn))
+
+outcmx.write('open '+ cwd + in_pdb+ ' maxModels 1\nrename #{:} angles\nhide #{:} target a\n color #{:} gray(150)\n'.format(angmn,angmn,angmn))
 outcmx.write(cmxphisel[:-1] + '\n')
 outcmx.write('color phipsisel purple target c\n')
 if cmxchisel[-1] != ':':
