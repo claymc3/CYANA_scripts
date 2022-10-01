@@ -184,8 +184,6 @@ for uplfile in upls:
 	if not re.search(uplfile.replace('.upl','')+'[0-9]*',groupCC):
 		os.remove(outdir + uplfile.replace('.upl','_CC.pb'))
 
-
-
 ### Color code secondar structure from TALOS analysis
 outpml.write('create predSS, {:}\ncolor gray60,predSS\nhide sticks, predSS\n'.format(pmln))
 outcmx.write('open '+ cwd + in_pdb+'\n')
@@ -219,7 +217,6 @@ outcmx.write(CSStrand[:-1]+ '\ncolor CSStrand teal target c\n')
 outcmx.write(SeqStrand[:-1]+ '\ncolor SeqStrand turquoise target c\n')
 outcmx.write(CSLoop[:-1]+ '\ncolor CSLoop goldenrod target c\n')
 outcmx.write(SeqLoop[:-1]+ '\ncolor SeqLoop khaki target c\n')
-
 outpml.write('color navy, predSS and resi ' + CSHelix[CSHelix.index(':')+1:-1].replace(',','+') + '\n')
 outpml.write('color royalblue, predSS and resi ' + SeqHelix[SeqHelix.index(':')+1:-1].replace(',','+') + '\n')
 outpml.write('color teal, predSS and resi ' + CSStrand[CSStrand.index(':')+1:-1].replace(',','+') + '\n')
@@ -231,7 +228,7 @@ outpml.write('color khaki, predSS and resi ' + SeqLoop[SeqLoop.index(':')+1:-1].
 
 selhbond = 'name hbond  #{:}:'.format(mn)
 hbonsl = []
-hbond = open(outdir + 'hbond_cons.pb','w')
+hbond = open(outdir + 'hbond.pb','w')
 hbond.write("; halfbond = false\n; color = pink\n; radius = 0.2\n; dashes = 5\n")
 hbgroupline = 'group hbond , '
 h = 0
@@ -254,11 +251,10 @@ hbond.close()
 outpml.write(hbgroupline + '\n')
 outpml.write('color pink, hbond\n')
 selhbond = selhbond[:-1] + '@O,N\n'
-outcmx.write('open ' + outdir + 'hbond_cons.pb\n')
+outcmx.write('open ' + outdir + 'hbond.pb\n')
 mn+=1
 outcmx.write('color #{:} {:}\n'.format(str(mn),'pink'))
 outcmx.write(selhbond)
-
 
 ### Read in the dihed.aco file and color residues that have defined phi/psi angles purple, and defined chi angles cornflower blue
 cmxphisel, cmxchisel = 'name phipsisel #{:}:'.format(mn+1), 'name chisel #{:}:'.format(mn+2)
@@ -282,22 +278,17 @@ for angf in dihed:
 outcmx.write('combine {:} modelId {:} name phi-psi\n'.format(cmxn, mn+1))
 outcmx.write(cmxphisel[:-1] + '\n')
 outcmx.write('color phipsisel purple target ac\n')
-outpml.write('create phi-psi, {:}\ncolor gray60, phi-psi\nhide sticks, phi-psi\n' .format(pmln))
+outpml.write('create phi-psi, {:}\ncolor gray60, phi-psi\nhide sticks, phi-psi\n'.format(pmln))
 
 if len(cmxchisel[:-1]) > 18:
 	outcmx.write('combine {:} modelId {:} name chi\n'.format(cmxn, mn+2))
-	outcmx.write(cmxchisel[:-1] + '\n')
-	outcmx.write('color chisel cornflower blue target ac \n')
+	outcmx.write(cmxchisel[:-1] + '\n''color chisel cornflower blue target ac \n')
 	outpml.write('create chi, {:}\ncolor gray60, chi\nhide sticks, chi\n'.format(pmln))
 	outpml.write(pmlphisel[:-1] + '\n')
-
-
-
 outpml.write('color gray60, {:}\n'.format(pdbname))
 outpml.write('show sticks, {:} and resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\n hide sticks, elem H\nhide sticks, name N+C\n'.format(pdbname))
 outpml.write('color paleturquoise, {:} and resn ILE\ncolor lightsalmon, {:} and resn LEU\ncolor khaki, {:} and resn VAL\ncolor yellowgreen, {:} and resn ALA\ncolor thistle, {:} and resn MET\ncolor aquamarine, {:} and resn THR\ncolor lightpink, {:} and resn TYR\ncolor plum, {:} and resn PHE\n'.format(pdbname,pdbname,pdbname,pdbname,pdbname,pdbname,pdbname,pdbname))
 outpml.write('color gold, elem S\ncolor red, elem O\ncolor blue, elem N\n')
-
 outcmx.write('color #1:ile paleturquoise target a\ncolor #1:leu lightsalmon  target a\ncolor #1:val khaki target a\ncolor #1:ala yellowgreen  target a\ncolor #1:met thistle target a\ncolor #1:thr aquamarine target a\ncolor #1:phe plum target a\ncolor #1:tyr lightpink target a\n')
 outcmx.write('color  byhetero target a\n')
 outcmx.write('show #1:thr,met,ala,leu,val,ile,phe,tyr\n')
