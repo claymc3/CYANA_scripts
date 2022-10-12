@@ -1,0 +1,83 @@
+name.upl:
+546 THR  H     546 THR  QG2     4.23  #peak 2405 #plist 6 #SUP 1.00
+711 HIS  H     733 ALA  QB      5.89  #peak 2414 #plist 6 #SUP 0.74 #QF 0.74
+459 LEU  QD1   522 LEU  QQD     4.59  #peak 212 #plist 5
+
+cns[0] = residue number 1 (w2/w3)
+cns[1] = residue name 1
+cns[2] = atom1
+cns[3] = residue number 2
+cns[4] = residue name 2
+cns[5] = atom2
+cns[6] = distance (%f1.2)
+## for final.upl or cycle*.upl
+cns[7] = 
+cns[8] = peak number * not always presidue name t
+cns[9] = 
+cns[10] = peak list number * not always presidue name t
+cns[11] = 
+cns[12] = Support value * not always presidue name t
+cns[13] = 
+cns[14] = Quality factor value * not always presidue name t
+
+
+
+Overview fiels (*.ovw)
+
+violated distance restraints ()
+    Upper CD1   LEU  703 - N     LEU  707   5.02   6   0.09   0.28     +   + + +    *+
+    Lower O     LEU  703 - H     LEU  707   1.80  15   0.11   0.13   ++++++++*+++ ++  +
+    Upper QG2   VAL  700 - HE2   PHE  704   4.27  16   0.18   0.30   ++++++++++*++ ++ +   peak 133 list 3
+violated van der Waals restraints
+    VdW   N     THR  689 - H     LEU  690   2.40   8   0.19   0.22    +   +  +  +* +++  
+
+Manual restraint violation line will be 87 characters long, but length of violations tied to a peak list entry are of variable length. Line can be split to derive most of the infromation but not all. Following paring is recommened:
+dviol = line.split()
+dviol[0] = Upper/Lower line[4:9]
+dviol[1] = atom1 line[10:15]
+dviol[2] = residue name 1 line[16:20]
+dviol[3] = residue number 1 line[20:24]
+dviol[5] = atom1 line[27:32]
+dviol[6] = residue name 2 line[33:37]
+dviol[7] = residue number 2 line[37:41]
+dviol[8] = distance line[44:48]
+dviol[9] = number of models with violation line[50:52]
+dviol[10] = mean value of distance violation (dobs - d) line[55:59]
+dviol[11] = max value of distance violation (dobs - d) line[62:66]
+if 'peak' in line:
+pnum = line[]
+
+violated angle restraints ()
+    Lower O     LEU  703 - H     LEU  707   1.80  15   0.11   0.13   ++++++++*+++ ++  +
+    Angle PSI   ASP  513           -2.20   19.30  20   5.73   6.44  +++++++++++++++++++*
+
+dang[0] = Angle
+dang[1] = dihedral name (phi, psi, chi*)
+dang[2] = residue name 
+dang[3] = residue number  
+dang[4] = lower bound 
+dang[5] = upper bound
+dang[6] = number of models with violation line[50:52]
+dang[7] = mean value of violation
+dang[8] = max value of violation
+
+
+Dihedral constraints *.aco:
+ 459   LEU  CHI1    280.0   320.0
+
+ang[0] = residue number  
+ang[1] = residue name  
+ang[2] = dihedral name (PHI, PSI, CHI*)
+ang[3] = lower bound
+ang[4] = upper bound
+
+Distance constraints *.upl/*.lol:
+ 466 GLU  N      544 ALA  N       4.71
+
+dist[0] = residue number 1
+dist[1] = residue name 1
+dist[2] = atom1
+dist[3] = residue number 2
+dist[4] = residue name 2
+dist[5] = atom2
+dist[6] = distance 
