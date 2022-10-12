@@ -27,6 +27,7 @@ import re
 ##			 	Setting controlling plot appearance: Font, line widths, ticks, and legend  			##
 ##																									##
 ####----------------------------------------------------------------------------------------------####
+AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 
 linewidths = 1.5
 mpl.rcParams['pdf.fonttype'] = 42
@@ -59,9 +60,36 @@ mpl.mathtext.FontConstantsBase.sup1 = 0.25
 # cwd = '/Volumes/common/Kinases/FGFR3/FGFR3_459-755_C482A_C582S/Structure_Calc/cyana_25/'
 cwd = '/Volumes/common/Kinases/FGFR2/FGFR2_467-768_C491A/Structure_Calc/cyana_21/'
 calc = cwd + 'CALC.cya'
+prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line][0].split()[2].split(',')
+print(prots)
+init = cwd + 'init.cya'
+print(open(init).readlines()[0].strip().split(':=')[-1])
+seq = [line.strip().split() for line in open(cwd + open(init).readlines()[0].strip().split(':=')[-1] + '.seq').readlines() if '#' != line[0]]
+Seqdict = {}
+Sequence = []
+for resn,resi in seq:
+	Seqdict[resi] = AAA_dict[resn] + resi
+	Sequence.append(AAA_dict[resn] + resi)
+Assignments = []
+for prot in prots:
+	for line in open(cwd + prot.replace('.prot','-final.prot')).readlines():
+		if '#' != line[0] and line.strip():
+			resi = line.strip().split()[4]
+			atom = line.strip().split()[3]
+			assign = Seqdict[resi] + '-' + atom
+			if assign not in Assignments:
+				Assignments.append(assign)
+
+print(Assignments)
+print(len(Assignments))
+exit()
 cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
 noa = cwd + 'cycle7.noa'
 
+cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
+
+for x in range(len(cya_plists)):
+	exec("plist{:}_unused = []".format(str(x+1)))
 print(cya_plists)
 
 noalines = open(noa).readlines()
@@ -123,6 +151,13 @@ for noelist in cya_plists:
 						Used_upls.extend([upl,upl2])
 						unusedupl.write('{:<4d} {:^4s} {:^4s} {:<4d} {:^4s} {:^4s}    {:}  #peak {:} #plist {:} #Pshift {:0.2f} out of {:}\n'.format(resi1, resn1, atom1, resi2, resn2, atom2, dist, peakn, pl, pshift,noalines[x+1].split()[3]))
 						unusedupls.append('{:<4d} {:^4s} {:^4s} {:<4d} {:^4s} {:^4s}   #plist {:} #options {:}'.format(resi1, resn1, atom1, resi2, resn2, atom2, pl,noalines[x+1].split()[3]))
+						unplist = eval('plist{:}_unused'.format(pl))
+						unplist.append('{:}{:d}-{:} {:}{:d}-{:}   #plist {:} #options {:}'.format( AAA_dict[resn1],resi1 , atom1, AAA_dict[resn2],resi2, atom2, pl,noalines[x+1].split()[3]))
+
+
+
+
+
 
 	print(noelist)
 	print("Total number of peaks %d" %peak)
@@ -136,4 +171,7 @@ for noelist in cya_plists:
 	print('total %d' %(nota+notused+single+amb+dia+ndia))
 	print()
 unusedupl.close()
+print(plist1_unused)
+print(len(plist1_unused))
+
 
