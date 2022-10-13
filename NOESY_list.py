@@ -72,25 +72,33 @@ for resn,resi in seq:
 	Sequence.append(AAA_dict[resn] + resi)
 Assignments = []
 for prot in prots:
+	exec("{:}_list = []".format(prot.replace('.prot','')))
+	protlist = eval("{:}_list".format(prot.replace('.prot','')))
+	Assignlist = eval("{:}_list".format(prot.replace('.prot','')))
 	for line in open(cwd + prot.replace('.prot','-final.prot')).readlines():
 		if '#' != line[0] and line.strip():
 			resi = line.strip().split()[4]
 			atom = line.strip().split()[3]
 			assign = Seqdict[resi] + '-' + atom
+			protlist.append(assign)
 			if assign not in Assignments:
 				Assignments.append(assign)
 
-print(Assignments)
-print(len(Assignments))
-exit()
 cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
 noa = cwd + 'cycle7.noa'
 
 cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
 
+protdict = {}
 for x in range(len(cya_plists)):
+	exec("plist{:}_unused_w1 = []".format(str(x+1)))
+	exec("plist{:}_unused_w2 = []".format(str(x+1)))
 	exec("plist{:}_unused = []".format(str(x+1)))
-print(cya_plists)
+	if x < len(prots):
+		protlist = eval("{:}_list".format(prots[x].replace('.prot','')))
+	if x > len(prots):
+		protlist = eval("{:}_list".format(prots[-1].replace('.prot','')))
+	protdict[x+1] = [eval("plist{:}_unused_w1".format(str(x+1))), eval("plist{:}_unused_w2".format(str(x+1))),eval("plist{:}_unused".format(str(x+1))),protlist]
 
 noalines = open(noa).readlines()
 pl = 0
@@ -148,30 +156,107 @@ for noelist in cya_plists:
 					upl2 = '%4d %-4s %-4s %4d %-4s %-4s' %(resi2, resn2, atom2, resi1, resn1, atom1)
 					if upl not in Used_upls and pshift > 0.9 and maxd < 9.0:
 						# print(upl)
-						Used_upls.extend([upl,upl2])
+						Used_upls.extend(upl)
 						unusedupl.write('{:<4d} {:^4s} {:^4s} {:<4d} {:^4s} {:^4s}    {:}  #peak {:} #plist {:} #Pshift {:0.2f} out of {:}\n'.format(resi1, resn1, atom1, resi2, resn2, atom2, dist, peakn, pl, pshift,noalines[x+1].split()[3]))
 						unusedupls.append('{:<4d} {:^4s} {:^4s} {:<4d} {:^4s} {:^4s}   #plist {:} #options {:}'.format(resi1, resn1, atom1, resi2, resn2, atom2, pl,noalines[x+1].split()[3]))
-						unplist = eval('plist{:}_unused'.format(pl))
-						unplist.append('{:}{:d}-{:} {:}{:d}-{:}   #plist {:} #options {:}'.format( AAA_dict[resn1],resi1 , atom1, AAA_dict[resn2],resi2, atom2, pl,noalines[x+1].split()[3]))
+						w1unplist, w2unplist, unplist, protlist =protdict[pl]
+						unplist.append('{:}{:d}-{:} {:}{:d}-{:}   #plist {:} #options {:}'.format(AAA_dict[resn1],resi1 , atom1, AAA_dict[resn2],resi2, atom2, pl,noalines[x+1].split()[3]))
+						w1unplist.append('{:}{:d}-{:}'.format(AAA_dict[resn1],resi1 , atom1))
+						w2unplist.append('{:}{:d}-{:}'.format(AAA_dict[resn2],resi2, atom2))
 
 
+pdf = PdfPages('plist_test_plots.pdf')
+for x in range(len(cya_plists)):
+	w1list,w2list, w1w2list,prot = protdict[x+1]
+	df = pd.DataFrame(index=prot)
+	print(cya_plists[x])
+	print(len(w1list))
+	for atom in prot:
+		if w1list.count(atom) != 0: df.loc[atom,'atom1'] = w1list.count(atom)
+		if w2list.count(atom) != 0:df.loc[atom,'atom2'] = w2list.count(atom)
+	df['total'] = df['atom1'] + df['atom2']
+	df1 = df[(df['atom1'] > 1.0) ].copy(deep=True)
+	if len(df1.index.tolist()) > 0:
+		nsubplots = round(len(df1.index.tolist())/30,0)
+		if round(len(df1.index.tolist())/30,1) - nsubplots > 0.0:
+			nsubplots = nsubplots + 1
+		if nsubplots == 0 : nsubplots = 1
+		print(nsubplots)
+		fig_height = 3.0 * nsubplots
+		if fig_height <= 2.0: 
+			fig_height = 3.0
+		fig=plt.figure(figsize=(7.28,fig_height))
+		spi = 0
+		for i in range(0,len(df1.index.tolist()),30):
+			spi = spi + 1
+			z = i
+			temp = []
+			for y in range(30):
+				temp.append(df1.index.tolist()[z])
+				z = z +1 
+				if z == len(df1.index.tolist()):
+					break
+			dfp = df1.reindex(temp)
+			ax = fig.add_subplot(int(nsubplots),1,spi)
+			ax.bar(dfp.index.tolist(), dfp['atom1'],0.9, edgecolor='none', label = 'atom1')
+			ax.set_title(cya_plists[x])
+			ax.set_xlabel('Residue Number')
+			ax.tick_params(axis='x', labelrotation = 90)
+			plt.tight_layout(pad = 0.4, w_pad = 0.4, h_pad = 0.4)
+		pdf.savefig(transparent=True)
+		plt.close()
+	df2 = df[(df['atom2'] > 1.0) ].copy(deep=True)
+	if len(df2.index.tolist()) > 0:
+		nsubplots = round(len(df2.index.tolist())/30,0)
+		if round(len(df2.index.tolist())/30,1) - nsubplots > 0.0:
+			nsubplots = nsubplots + 1
+		if nsubplots == 0: nsubplots = 1
+		fig_height = 3.0 * nsubplots
+		if fig_height <= 2.0: 
+			fig_height = 3.0
+		fig=plt.figure(figsize=(7.28,fig_height))
+		spi = 0
+		for i in range(0,len(df2.index.tolist()),30):
+			spi = spi + 1
+			temp = []
+			z = i
+			for y in range(30):
+				temp.append(df2.index.tolist()[z])
+				z = z + 1 
+				if z == len(df2.index.tolist()):
+					break
+			dfp = df2.reindex(temp)
+			ax = fig.add_subplot(int(nsubplots),1,spi)
+			ax.bar(dfp.index.tolist(), dfp['atom2'],0.9, edgecolor='none', label = 'atom2')
+			ax.set_title(cya_plists[x])
+			ax.set_xlabel('Residue Number')
+			ax.tick_params(axis='x', labelrotation = 90)
+			plt.tight_layout(pad = 0.4, w_pad = 0.4, h_pad = 0.4)
+		pdf.savefig(transparent=True)
+		plt.close()
+pdf.close()
 
+	# print(df2)
+	# print(df.dropna(inplace=True).shape)
+# sx = range(0,len(Isolated2),4)[-1]
+# PDBiso = '   '
+# for x in range(0, len(Isolated2),4)[:-1]:
+# 	self.summary_list.append('   %s %s %s %s' %(Isolated2[x],Isolated2[x+1],Isolated2[x+2],Isolated2[x+3]))
+# lx = len(Isolated2) - sx
 
-
-
-	print(noelist)
-	print("Total number of peaks %d" %peak)
-	print('Number with single assignment %d'%single)
-	print('Number ambigious assignment %d'%amb)
-	print('Number assigned but unused %d'%notused)
-	print('Number never assinged %d'%nota)
-	print('Number of diagonal assignments %d' %dia)
-	print('Number of diagonal not assignmened %d' %ndia)
-	print('Number of peaks with increase distacne cut off %d' %incr)
-	print('total %d' %(nota+notused+single+amb+dia+ndia))
-	print()
+	# print(noelist)
+	# print("Total number of peaks %d" %peak)
+	# print('Number with single assignment %d'%single)
+	# print('Number ambigious assignment %d'%amb)
+	# print('Number assigned but unused %d'%notused)
+	# print('Number never assinged %d'%nota)
+	# print('Number of diagonal assignments %d' %dia)
+	# print('Number of diagonal not assignmened %d' %ndia)
+	# print('Number of peaks with increase distacne cut off %d' %incr)
+	# print('total %d' %(nota+notused+single+amb+dia+ndia))
+	# print()
 unusedupl.close()
-print(plist1_unused)
-print(len(plist1_unused))
+# print(plist1_unused)
+# print(len(plist1_unused))
 
 
