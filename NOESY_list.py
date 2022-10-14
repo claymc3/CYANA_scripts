@@ -173,8 +173,8 @@ for x in range(len(cya_plists)):
 	print(len(w1list))
 	for atom in prot:
 		if w1list.count(atom) != 0: df.loc[atom,'atom1'] = w1list.count(atom)
-		if w2list.count(atom) != 0:df.loc[atom,'atom2'] = w2list.count(atom)
-	df['total'] = df['atom1'] + df['atom2']
+		if w2list.count(atom) != 0: df.loc[atom,'atom2'] = w2list.count(atom)
+	df['total'] =df['atom1']+df['atom2']
 	df1 = df[(df['atom1'] > 1.0) ].copy(deep=True)
 	if len(df1.index.tolist()) > 0:
 		nsubplots = round(len(df1.index.tolist())/30,0)
@@ -183,9 +183,13 @@ for x in range(len(cya_plists)):
 		if nsubplots == 0 : nsubplots = 1
 		print(nsubplots)
 		fig_height = 3.0 * nsubplots
+		entry_width = 5.0/30
+		fig_width = 0.78 + entry_width * 30
+		if fig_width < 3.0: 
+			fig_width = 3.0
 		if fig_height <= 2.0: 
 			fig_height = 3.0
-		fig=plt.figure(figsize=(7.28,fig_height))
+		fig=plt.figure(figsize=(fig_width,fig_height))
 		spi = 0
 		for i in range(0,len(df1.index.tolist()),30):
 			spi = spi + 1
@@ -194,15 +198,14 @@ for x in range(len(cya_plists)):
 			for y in range(30):
 				temp.append(df1.index.tolist()[z])
 				z = z +1 
-				if z == len(df1.index.tolist()):
-					break
+				if z == len(df1.index.tolist()):break
 			dfp = df1.reindex(temp)
 			ax = fig.add_subplot(int(nsubplots),1,spi)
-			ax.bar(dfp.index.tolist(), dfp['atom1'],0.9, edgecolor='none', label = 'atom1')
-			ax.set_title(cya_plists[x])
-			ax.set_xlabel('Residue Number')
+			ax.bar(dfp.index.tolist(), dfp['atom1'],0.9, color = 'blue', edgecolor='none', label = 'atom1')
 			ax.tick_params(axis='x', labelrotation = 90)
-			plt.tight_layout(pad = 0.4, w_pad = 0.4, h_pad = 0.4)
+		ax.set_title(cya_plists[x] + ' atom1')
+		ax.set_xlabel('Residue Number')
+		plt.tight_layout(pad = 0.4, w_pad = 0.4, h_pad = 0.4)
 		pdf.savefig(transparent=True)
 		plt.close()
 	df2 = df[(df['atom2'] > 1.0) ].copy(deep=True)
@@ -214,7 +217,11 @@ for x in range(len(cya_plists)):
 		fig_height = 3.0 * nsubplots
 		if fig_height <= 2.0: 
 			fig_height = 3.0
-		fig=plt.figure(figsize=(7.28,fig_height))
+		entry_width = 5.0/30
+		fig_width = 0.78 + entry_width * 30
+		if fig_width < 3.0: 
+			fig_width = 3.0
+		fig=plt.figure(figsize=(fig_width,fig_height))
 		spi = 0
 		for i in range(0,len(df2.index.tolist()),30):
 			spi = spi + 1
@@ -223,17 +230,48 @@ for x in range(len(cya_plists)):
 			for y in range(30):
 				temp.append(df2.index.tolist()[z])
 				z = z + 1 
-				if z == len(df2.index.tolist()):
-					break
+				if z == len(df2.index.tolist()):break
 			dfp = df2.reindex(temp)
 			ax = fig.add_subplot(int(nsubplots),1,spi)
-			ax.bar(dfp.index.tolist(), dfp['atom2'],0.9, edgecolor='none', label = 'atom2')
-			ax.set_title(cya_plists[x])
-			ax.set_xlabel('Residue Number')
+			ax.bar(dfp.index.tolist(), dfp['atom2'],0.9,color = 'purple', edgecolor='none', label = 'atom2')
 			ax.tick_params(axis='x', labelrotation = 90)
-			plt.tight_layout(pad = 0.4, w_pad = 0.4, h_pad = 0.4)
+		ax.set_title(cya_plists[x] + ' atom2')
+		ax.set_xlabel('Residue Number')
+		plt.tight_layout(pad = 0.4, w_pad = 0.4, h_pad = 0.4)
 		pdf.savefig(transparent=True)
 		plt.close()
+	df3 = df[(df['total'] > 1.0) ].copy(deep=True)
+	if len(df3.index.tolist()) > 0:
+		nsubplots = round(len(df3.index.tolist())/30,0)
+		if round(len(df3.index.tolist())/30,1) - nsubplots > 0.0:
+			nsubplots = nsubplots + 1
+		if nsubplots == 0: nsubplots = 1
+		fig_height = 3.0 * nsubplots
+		if fig_height <= 2.0: 
+			fig_height = 3.0
+		entry_width = 5.0/30
+		fig_width = 0.78 + entry_width * 30
+		if fig_width < 3.0: 
+			fig_width = 3.0
+		fig=plt.figure(figsize=(fig_width,fig_height))
+		spi = 0
+		for i in range(0,len(df3.index.tolist()),30):
+			spi = spi + 1
+			temp = []
+			z = i
+			for y in range(30):
+				temp.append(df3.index.tolist()[z])
+				z = z + 1 
+				if z == len(df3.index.tolist()):break
+			dfp = df3.reindex(temp)
+			ax = fig.add_subplot(int(nsubplots),1,spi)
+			ax.bar(dfp.index.tolist(), dfp['atom2'],0.9,color='orange', edgecolor='none', label = 'atom2')
+			ax.tick_params(axis='x', labelrotation = 90)
+		ax.set_title(cya_plists[x] + ' total')
+		ax.set_xlabel('Residue Number')
+		plt.tight_layout(pad = 0.4, w_pad = 0.4, h_pad = 0.4)
+		pdf.savefig(transparent=True)
+	plt.close()
 pdf.close()
 
 	# print(df2)
