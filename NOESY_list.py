@@ -172,10 +172,12 @@ for x in range(len(cya_plists)):
 	print(cya_plists[x])
 	print(len(w1list))
 	for atom in prot:
-		if w1list.count(atom) != 0: df.loc[atom,'atom1'] = w1list.count(atom)
-		if w2list.count(atom) != 0: df.loc[atom,'atom2'] = w2list.count(atom)
+		df.loc[atom,'atom1'] = w1list.count(atom)
+		df.loc[atom,'atom2'] = w2list.count(atom)
 	df['total'] =df['atom1']+df['atom2']
+	df.to_csv(cya_plists[x]+'_test.csv')
 	df1 = df[(df['atom1'] > 1.0) ].copy(deep=True)
+
 	if len(df1.index.tolist()) > 0:
 		nsubplots = round(len(df1.index.tolist())/30,0)
 		if round(len(df1.index.tolist())/30,1) - nsubplots > 0.0:
@@ -265,7 +267,7 @@ for x in range(len(cya_plists)):
 				if z == len(df3.index.tolist()):break
 			dfp = df3.reindex(temp)
 			ax = fig.add_subplot(int(nsubplots),1,spi)
-			ax.bar(dfp.index.tolist(), dfp['atom2'],0.9,color='orange', edgecolor='none', label = 'atom2')
+			ax.bar(dfp.index.tolist(), dfp['total'],0.9,color='orange', edgecolor='none', label = 'total')
 			ax.tick_params(axis='x', labelrotation = 90)
 		ax.set_title(cya_plists[x] + ' total')
 		ax.set_xlabel('Residue Number')
