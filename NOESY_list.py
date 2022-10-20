@@ -63,7 +63,7 @@ calc = cwd + 'CALC.cya'
 prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line][0].split()[2].split(',')
 print(prots)
 init = cwd + 'init.cya'
-print(open(init).readlines()[0].strip().split(':=')[-1])
+# print(open(init).readlines()[0].strip().split(':=')[-1])
 seq = [line.strip().split() for line in open(cwd + open(init).readlines()[0].strip().split(':=')[-1] + '.seq').readlines() if '#' != line[0]]
 Seqdict = {}
 Sequence = []
@@ -91,14 +91,12 @@ cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines
 
 protdict = {}
 for x in range(len(cya_plists)):
-	exec("plist{:}_unused_w1 = []".format(str(x+1)))
-	exec("plist{:}_unused_w2 = []".format(str(x+1)))
 	exec("plist{:}_unused = []".format(str(x+1)))
 	if x < len(prots):
 		protlist = eval("{:}_list".format(prots[x].replace('.prot','')))
 	if x > len(prots):
 		protlist = eval("{:}_list".format(prots[-1].replace('.prot','')))
-	protdict[x+1] = [eval("plist{:}_unused_w1".format(str(x+1))), eval("plist{:}_unused_w2".format(str(x+1))),eval("plist{:}_unused".format(str(x+1))),protlist]
+	protdict[x+1] = [eval("plist{:}_unused".format(str(x+1))),protlist]
 
 noalines = open(noa).readlines()
 pl = 0
@@ -133,9 +131,9 @@ for noelist in cya_plists:
 						atom1,resn1, resi1, atom2, resn2, resi2,pshift, maxd = cns[0],cns[1],int(cns[2]), cns[4],cns[5],int(cns[6]), float(cns[9])/100, float(cns[12].split('-')[0])
 					upl = '%4d %-4s %-4s %4d %-4s %-4s' %(resi1, resn1, atom1, resi2, resn2, atom2)
 					upl2 = '%4d %-4s %-4s %4d %-4s %-4s' %(resi2, resn2, atom2, resi1, resn1, atom1)
-					if upl not in Used_upls and pshift > 0.9 and maxd < 8.0:
+					if pshift > 0.9 and maxd < 8.0:
 						# print(upl)
-						Used_aupls.extend([upl,upl2])
+						Used_aupls.append('{:}{:d} {:^4s} {:}{:d} {:^4s}   #plist {:} #options {:}'.format(AAA_dict[resn1],resi1, atom1, AAA_dict[resn2],resi2, atom2, pl,noalines[x+1].split()[3]))
 						usedupl.write('%4d %-4s %-4s %4d %-4s %-4s    %s  #peak %s #plist %d #Pshift %0.2f\n' %(resi1, resn1, atom1, resi2, resn2, atom2, dist, peakn, pl, pshift ))
 			if noalines[x+1].strip().split()[0] > '1' and 'diagonal' not in line:
 				amb+=1
@@ -153,137 +151,133 @@ for noelist in cya_plists:
 					if noalines[x+y].strip()[0] not in ['!','*']:
 						atom1,resn1, resi1, atom2, resn2, resi2,pshift, maxd = cns[0],cns[1],int(cns[2]), cns[4],cns[5],int(cns[6]), float(cns[9])/100, float(cns[12].split('-')[0])
 					upl = '%4d %-4s %-4s %4d %-4s %-4s' %(resi1, resn1, atom1, resi2, resn2, atom2)
-					upl2 = '%4d %-4s %-4s %4d %-4s %-4s' %(resi2, resn2, atom2, resi1, resn1, atom1)
-					if upl not in Used_upls and pshift > 0.9 and maxd < 9.0:
+					# upl2 = '%4d %-4s %-4s %4d %-4s %-4s' %(resi2, resn2, atom2, resi1, resn1, atom1)
+					if pshift > 0.9 and maxd < 9.0:
 						# print(upl)
 						Used_upls.extend(upl)
 						unusedupl.write('{:<4d} {:^4s} {:^4s} {:<4d} {:^4s} {:^4s}    {:}  #peak {:} #plist {:} #Pshift {:0.2f} out of {:}\n'.format(resi1, resn1, atom1, resi2, resn2, atom2, dist, peakn, pl, pshift,noalines[x+1].split()[3]))
-						unusedupls.append('{:<4d} {:^4s} {:^4s} {:<4d} {:^4s} {:^4s}   #plist {:} #options {:}'.format(resi1, resn1, atom1, resi2, resn2, atom2, pl,noalines[x+1].split()[3]))
-						w1unplist, w2unplist, unplist, protlist =protdict[pl]
-						unplist.append('{:}{:d}-{:} {:}{:d}-{:}   #plist {:} #options {:}'.format(AAA_dict[resn1],resi1 , atom1, AAA_dict[resn2],resi2, atom2, pl,noalines[x+1].split()[3]))
-						w1unplist.append('{:}{:d}-{:}'.format(AAA_dict[resn1],resi1 , atom1))
-						w2unplist.append('{:}{:d}-{:}'.format(AAA_dict[resn2],resi2, atom2))
+						unusedupls.append('{:}{:d} {:^4s} {:}{:d} {:^4s}   #plist {:} #options {:}'.format(AAA_dict[resn1],resi1, atom1, AAA_dict[resn2],resi2, atom2, pl,noalines[x+1].split()[3]))
+						unplist, protlist =protdict[pl]
+						unplist.append('{:}{:d} {:} {:}{:d} {:}   #plist {:} #options {:}'.format(AAA_dict[resn1],resi1 , atom1, AAA_dict[resn2],resi2, atom2, pl,noalines[x+1].split()[3]))
+
+# # pdf = PdfPages('plist_test_plots.pdf')
+# for x in range(len(cya_plists)):
+# 	print(cya_plists[x])
+# 	upllist,prot = protdict[x+1]
+# 	df = pd.DataFrame(index=Sequence, columns = Sequence)
+# 	for upl in upllist:
+# 		tvalue = df.loc[upl.split()[0],upl.split()[2]]
+# 		if pd.isna(tvalue): tvalue = 0.0
+# 		df.loc[upl.split()[0],upl.split()[2]] = tvalue + 1
+# 	df2 = df.dropna(axis=0, how= 'all')
+# 	df3 = df2.dropna(axis=1, how= 'all')
+# 	df3.to_csv(cya_plists[x] + '_test.csv')
+# 	fig1=plt.figure(figsize=(5.3,5))
+# 	ax = fig1.add_subplot(111)
+# 	cmap = plt.get_cmap('viridis')
+# 	cmap.set_under(color='white')
+# 	ax = sb.heatmap(df3.fillna(0.0), cmap=cmap, vmin = 1.0,square=True, xticklabels=df3.columns.to_list(),yticklabels=df3.index.to_list(),cbar_kws=dict(shrink = 0.5))
+# 	ax.spines['right'].set_visible(True)
+# 	ax.spines['top'].set_visible(True)
+# 	ax.spines['bottom'].set_visible(True)
+# 	ax.spines['left'].set_visible(True)
+# 	ax.set_ylabel('Atom 1')
+# 	ax.set_xlabel('Atom 2')
+# 	ax.set_title(cya_plists[x])
+# 	print(df.shape)
+# 	print(df2.shape)
+# 	print(df3.shape)
+# 	print()
+# 	plt.show()
 
 
-pdf = PdfPages('plist_test_plots.pdf')
-for x in range(len(cya_plists)):
-	w1list,w2list, w1w2list,prot = protdict[x+1]
-	df = pd.DataFrame(index=prot)
-	print(cya_plists[x])
-	print(len(w1list))
-	for atom in prot:
-		df.loc[atom,'atom1'] = w1list.count(atom)
-		df.loc[atom,'atom2'] = w2list.count(atom)
-	df['total'] =df['atom1']+df['atom2']
-	df.to_csv(cya_plists[x]+'_test.csv')
-	df1 = df[(df['atom1'] > 1.0) ].copy(deep=True)
 
-	if len(df1.index.tolist()) > 0:
-		nsubplots = round(len(df1.index.tolist())/30,0)
-		if round(len(df1.index.tolist())/30,1) - nsubplots > 0.0:
-			nsubplots = nsubplots + 1
-		if nsubplots == 0 : nsubplots = 1
-		print(nsubplots)
-		fig_height = 3.0 * nsubplots
-		entry_width = 5.0/30
-		fig_width = 0.78 + entry_width * 30
-		if fig_width < 3.0: 
-			fig_width = 3.0
-		if fig_height <= 2.0: 
-			fig_height = 3.0
-		fig=plt.figure(figsize=(fig_width,fig_height))
-		spi = 0
-		for i in range(0,len(df1.index.tolist()),30):
-			spi = spi + 1
-			z = i
-			temp = []
-			for y in range(30):
-				temp.append(df1.index.tolist()[z])
-				z = z +1 
-				if z == len(df1.index.tolist()):break
-			dfp = df1.reindex(temp)
-			ax = fig.add_subplot(int(nsubplots),1,spi)
-			ax.bar(dfp.index.tolist(), dfp['atom1'],0.9, color = 'blue', edgecolor='none', label = 'atom1')
-			ax.tick_params(axis='x', labelrotation = 90)
-		ax.set_title(cya_plists[x] + ' atom1')
-		ax.set_xlabel('Residue Number')
-		plt.tight_layout(pad = 0.4, w_pad = 0.4, h_pad = 0.4)
-		pdf.savefig(transparent=True)
-		plt.close()
-	df2 = df[(df['atom2'] > 1.0) ].copy(deep=True)
-	if len(df2.index.tolist()) > 0:
-		nsubplots = round(len(df2.index.tolist())/30,0)
-		if round(len(df2.index.tolist())/30,1) - nsubplots > 0.0:
-			nsubplots = nsubplots + 1
-		if nsubplots == 0: nsubplots = 1
-		fig_height = 3.0 * nsubplots
-		if fig_height <= 2.0: 
-			fig_height = 3.0
-		entry_width = 5.0/30
-		fig_width = 0.78 + entry_width * 30
-		if fig_width < 3.0: 
-			fig_width = 3.0
-		fig=plt.figure(figsize=(fig_width,fig_height))
-		spi = 0
-		for i in range(0,len(df2.index.tolist()),30):
-			spi = spi + 1
-			temp = []
-			z = i
-			for y in range(30):
-				temp.append(df2.index.tolist()[z])
-				z = z + 1 
-				if z == len(df2.index.tolist()):break
-			dfp = df2.reindex(temp)
-			ax = fig.add_subplot(int(nsubplots),1,spi)
-			ax.bar(dfp.index.tolist(), dfp['atom2'],0.9,color = 'purple', edgecolor='none', label = 'atom2')
-			ax.tick_params(axis='x', labelrotation = 90)
-		ax.set_title(cya_plists[x] + ' atom2')
-		ax.set_xlabel('Residue Number')
-		plt.tight_layout(pad = 0.4, w_pad = 0.4, h_pad = 0.4)
-		pdf.savefig(transparent=True)
-		plt.close()
-	df3 = df[(df['total'] > 1.0) ].copy(deep=True)
-	if len(df3.index.tolist()) > 0:
-		nsubplots = round(len(df3.index.tolist())/30,0)
-		if round(len(df3.index.tolist())/30,1) - nsubplots > 0.0:
-			nsubplots = nsubplots + 1
-		if nsubplots == 0: nsubplots = 1
-		fig_height = 3.0 * nsubplots
-		if fig_height <= 2.0: 
-			fig_height = 3.0
-		entry_width = 5.0/30
-		fig_width = 0.78 + entry_width * 30
-		if fig_width < 3.0: 
-			fig_width = 3.0
-		fig=plt.figure(figsize=(fig_width,fig_height))
-		spi = 0
-		for i in range(0,len(df3.index.tolist()),30):
-			spi = spi + 1
-			temp = []
-			z = i
-			for y in range(30):
-				temp.append(df3.index.tolist()[z])
-				z = z + 1 
-				if z == len(df3.index.tolist()):break
-			dfp = df3.reindex(temp)
-			ax = fig.add_subplot(int(nsubplots),1,spi)
-			ax.bar(dfp.index.tolist(), dfp['total'],0.9,color='orange', edgecolor='none', label = 'total')
-			ax.tick_params(axis='x', labelrotation = 90)
-		ax.set_title(cya_plists[x] + ' total')
-		ax.set_xlabel('Residue Number')
-		plt.tight_layout(pad = 0.4, w_pad = 0.4, h_pad = 0.4)
-		pdf.savefig(transparent=True)
-	plt.close()
-pdf.close()
+# df = pd.DataFrame(index=Sequence, columns = Sequence)
+# for upl in unusedupls:
+# 	print(upl.split()[0],upl.split()[2])
+# 	tvalue = df.loc[upl.split()[0],upl.split()[2]]
+# 	if pd.isna(tvalue): tvalue = 0.0
+# 	df.loc[upl.split()[0],upl.split()[2]] = tvalue + 1
+# df2 = df.dropna(axis=0, how= 'all')
+# df3 = df2.dropna(axis=1, how= 'all')
+# fig1=plt.figure()
+# ax = fig1.add_subplot(111)
+# cmap = plt.get_cmap('viridis')
+# cmap.set_under(color='white')
+# ax = sb.heatmap(df3.fillna(0.0), cmap=cmap, vmin = 1.0,square=True, xticklabels=df3.columns.to_list(),yticklabels=df3.index.to_list(),cbar_kws=dict(shrink = 0.5))
+# ax.spines['right'].set_visible(True)
+# ax.spines['top'].set_visible(True)
+# ax.spines['bottom'].set_visible(True)
+# ax.spines['left'].set_visible(True)
+# ax.set_ylabel('Atom 1')
+# ax.set_xlabel('Atom 2')
+# ax.set_title('Total')
+# print(df.shape)
+# print(df2.shape)
+# print(df3.shape)
+# print()
+# plt.show()
 
-	# print(df2)
-	# print(df.dropna(inplace=True).shape)
-# sx = range(0,len(Isolated2),4)[-1]
-# PDBiso = '   '
-# for x in range(0, len(Isolated2),4)[:-1]:
-# 	self.summary_list.append('   %s %s %s %s' %(Isolated2[x],Isolated2[x+1],Isolated2[x+2],Isolated2[x+3]))
-# lx = len(Isolated2) - sx
 
+df = pd.DataFrame(index=Sequence, columns = Sequence)
+for upl in Used_aupls:
+	print(upl.split()[0],upl.split()[2])
+	tvalue = df.loc[upl.split()[0],upl.split()[2]]
+	if pd.isna(tvalue): tvalue = 0.0
+	df.loc[upl.split()[0],upl.split()[2]] = tvalue + 1
+df2 = df.dropna(axis=0, how= 'all')
+df3 = df2.dropna(axis=1, how= 'all')
+fig1=plt.figure()
+ax = fig1.add_subplot(111)
+cmap = plt.get_cmap('viridis')
+cmap.set_under(color='white')
+ax = sb.heatmap(df3.fillna(0.0), cmap=cmap, vmin = 1.0,square=True, xticklabels=df3.columns.to_list(),yticklabels=df3.index.to_list(),cbar_kws=dict(shrink = 0.5))
+ax.spines['right'].set_visible(True)
+ax.spines['top'].set_visible(True)
+ax.spines['bottom'].set_visible(True)
+ax.spines['left'].set_visible(True)
+ax.set_ylabel('Atom 1')
+ax.set_xlabel('Atom 2')
+ax.set_title('Total')
+print(df.shape)
+print(df2.shape)
+print(df3.shape)
+print()
+plt.show()
+# pdf.close()
+
+	# df3 = df[(df['total'] > 1.0) ].copy(deep=True)
+	# if len(df3.index.tolist()) > 0:
+	# 	nsubplots = round(len(df3.index.tolist())/30,0)
+	# 	if round(len(df3.index.tolist())/30,1) - nsubplots > 0.0:
+	# 		nsubplots = nsubplots + 1
+	# 	if nsubplots == 0: nsubplots = 1
+	# 	fig_height = 3.0 * nsubplots
+	# 	if fig_height <= 2.0: 
+	# 		fig_height = 3.0
+	# 	entry_width = 5.0/30
+	# 	fig_width = 0.78 + entry_width * 30
+	# 	if fig_width < 3.0: 
+	# 		fig_width = 3.0
+	# 	fig=plt.figure(figsize=(fig_width,fig_height))
+	# 	spi = 0
+	# 	for i in range(0,len(df3.index.tolist()),30):
+	# 		spi = spi + 1
+	# 		temp = []
+	# 		z = i
+	# 		for y in range(30):
+	# 			temp.append(df3.index.tolist()[z])
+	# 			z = z + 1 
+	# 			if z == len(df3.index.tolist()):break
+	# 		dfp = df3.reindex(temp)
+	# 		ax = fig.add_subplot(int(nsubplots),1,spi)
+	# 		ax.bar(dfp.index.tolist(), dfp['total'],0.9,color='orange', edgecolor='none', label = 'total')
+	# 		ax.tick_params(axis='x', labelrotation = 90)
+	# 	ax.set_title(cya_plists[x] + ' total')
+	# 	ax.set_xlabel('Residue Number')
+	# 	plt.tight_layout(pad = 0.4, w_pad = 0.4, h_pad = 0.4)
+	# 	pdf.savefig(transparent=True)
+	# plt.close()
 	# print(noelist)
 	# print("Total number of peaks %d" %peak)
 	# print('Number with single assignment %d'%single)
