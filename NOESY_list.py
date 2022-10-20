@@ -123,18 +123,18 @@ for noelist in cya_plists:
 			if '0 out of' not in noalines[x+1] and 'diagonal' not in line:
 				single+= 1
 				# print(noalines[x+ int(noalines[x+1].split()[3])+2])
-				for y in range(2,int(noalines[x+1].split()[3])+2,1):
+				for y in range(2,int(noalines[x+1].split()[0])+2,1):
 					cns = noalines[x+y].strip().split()
-					if noalines[x+y].strip()[0] in ['!','*'] and cns[4] == '+':
+					if cns[4] == '+':
 						atom1,resn1, resi1, atom2, resn2, resi2, pshift, maxd = cns[1],cns[2],int(cns[3]), cns[5],cns[6],int(cns[7]), float(cns[10])/100, float(cns[13].split('-')[0])
-					if noalines[x+y].strip()[0] not in ['!','*'] and cns[3] == '+':
+					if cns[3] == '+':
 						atom1,resn1, resi1, atom2, resn2, resi2,pshift, maxd = cns[0],cns[1],int(cns[2]), cns[4],cns[5],int(cns[6]), float(cns[9])/100, float(cns[12].split('-')[0])
-					upl = '%4d %-4s %-4s %4d %-4s %-4s' %(resi1, resn1, atom1, resi2, resn2, atom2)
-					upl2 = '%4d %-4s %-4s %4d %-4s %-4s' %(resi2, resn2, atom2, resi1, resn1, atom1)
-					if pshift > 0.9 and maxd < 8.0:
+					# upl = '%4d %-4s %-4s %4d %-4s %-4s' %(resi1, resn1, atom1, resi2, resn2, atom2)
+					# upl2 = '%4d %-4s %-4s %4d %-4s %-4s' %(resi2, resn2, atom2, resi1, resn1, atom1)
+					#if pshift > 0.9 and maxd < 8.0:
 						# print(upl)
-						Used_aupls.append('{:}{:d} {:^4s} {:}{:d} {:^4s}   #plist {:} #options {:}'.format(AAA_dict[resn1],resi1, atom1, AAA_dict[resn2],resi2, atom2, pl,noalines[x+1].split()[3]))
-						usedupl.write('%4d %-4s %-4s %4d %-4s %-4s    %s  #peak %s #plist %d #Pshift %0.2f\n' %(resi1, resn1, atom1, resi2, resn2, atom2, dist, peakn, pl, pshift ))
+					Used_aupls.append('{:}{:d} {:^4s} {:}{:d} {:^4s}   #plist {:} #options {:}'.format(AAA_dict[resn1],resi1, atom1, AAA_dict[resn2],resi2, atom2, pl,noalines[x+1].split()[3]))
+					usedupl.write('%4d %-4s %-4s %4d %-4s %-4s    %s  #peak %s #plist %d #Pshift %0.2f\n' %(resi1, resn1, atom1, resi2, resn2, atom2, dist, peakn, pl, pshift ))
 			if noalines[x+1].strip().split()[0] > '1' and 'diagonal' not in line:
 				amb+=1
 			if 'increased' in line:
@@ -192,31 +192,31 @@ for noelist in cya_plists:
 
 
 
-# df = pd.DataFrame(index=Sequence, columns = Sequence)
-# for upl in unusedupls:
-# 	print(upl.split()[0],upl.split()[2])
-# 	tvalue = df.loc[upl.split()[0],upl.split()[2]]
-# 	if pd.isna(tvalue): tvalue = 0.0
-# 	df.loc[upl.split()[0],upl.split()[2]] = tvalue + 1
-# df2 = df.dropna(axis=0, how= 'all')
-# df3 = df2.dropna(axis=1, how= 'all')
-# fig1=plt.figure()
-# ax = fig1.add_subplot(111)
-# cmap = plt.get_cmap('viridis')
-# cmap.set_under(color='white')
-# ax = sb.heatmap(df3.fillna(0.0), cmap=cmap, vmin = 1.0,square=True, xticklabels=df3.columns.to_list(),yticklabels=df3.index.to_list(),cbar_kws=dict(shrink = 0.5))
-# ax.spines['right'].set_visible(True)
-# ax.spines['top'].set_visible(True)
-# ax.spines['bottom'].set_visible(True)
-# ax.spines['left'].set_visible(True)
-# ax.set_ylabel('Atom 1')
-# ax.set_xlabel('Atom 2')
-# ax.set_title('Total')
-# print(df.shape)
-# print(df2.shape)
-# print(df3.shape)
-# print()
-# plt.show()
+df = pd.DataFrame(index=Sequence, columns = Sequence)
+for upl in unusedupls:
+	print(upl.split()[0],upl.split()[2])
+	tvalue = df.loc[upl.split()[0],upl.split()[2]]
+	if pd.isna(tvalue): tvalue = 0.0
+	df.loc[upl.split()[0],upl.split()[2]] = tvalue + 1
+df2 = df.dropna(axis=0, how= 'all')
+df3 = df2.dropna(axis=1, how= 'all')
+fig1=plt.figure()
+ax = fig1.add_subplot(111)
+cmap = sb.color_palette("coolwarm", as_cmap=True)
+cmap.set_under(color='white')
+ax = sb.heatmap(df3.fillna(0.0), cmap=cmap, vmin = 1.0,square=True, xticklabels=df3.columns.to_list(),yticklabels=df3.index.to_list(),cbar_kws=dict(shrink = 0.5))
+ax.spines['right'].set_visible(True)
+ax.spines['top'].set_visible(True)
+ax.spines['bottom'].set_visible(True)
+ax.spines['left'].set_visible(True)
+ax.set_ylabel('Atom 1')
+ax.set_xlabel('Atom 2')
+ax.set_title('Total unused')
+print(df.shape)
+print(df2.shape)
+print(df3.shape)
+print()
+plt.show()
 
 
 df = pd.DataFrame(index=Sequence, columns = Sequence)
@@ -229,7 +229,7 @@ df2 = df.dropna(axis=0, how= 'all')
 df3 = df2.dropna(axis=1, how= 'all')
 fig1=plt.figure()
 ax = fig1.add_subplot(111)
-cmap = plt.get_cmap('viridis')
+cmap = sb.color_palette("coolwarm", as_cmap=True)
 cmap.set_under(color='white')
 ax = sb.heatmap(df3.fillna(0.0), cmap=cmap, vmin = 1.0,square=True, xticklabels=df3.columns.to_list(),yticklabels=df3.index.to_list(),cbar_kws=dict(shrink = 0.5))
 ax.spines['right'].set_visible(True)
@@ -238,7 +238,7 @@ ax.spines['bottom'].set_visible(True)
 ax.spines['left'].set_visible(True)
 ax.set_ylabel('Atom 1')
 ax.set_xlabel('Atom 2')
-ax.set_title('Total')
+ax.set_title('Total Used peaks')
 print(df.shape)
 print(df2.shape)
 print(df3.shape)
