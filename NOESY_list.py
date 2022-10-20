@@ -40,8 +40,8 @@ mpl.rcParams['xtick.major.size'] = mpl.rcParams['ytick.major.size'] = 5
 mpl.rcParams['xtick.major.width'] = mpl.rcParams['ytick.major.width']=linewidths
 mpl.rcParams['xtick.minor.size'] = 2
 mpl.rcParams['xtick.minor.width'] = linewidths
-mpl.rcParams['axes.spines.right'] = False
-mpl.rcParams['axes.spines.top'] = False
+# mpl.rcParams['axes.spines.right'] = False
+# mpl.rcParams['axes.spines.top'] = False
 mpl.rcParams['legend.fontsize'] = 10
 mpl.rcParams['legend.loc'] = 'best'
 mpl.rcParams['legend.borderpad'] = 0.01
@@ -55,7 +55,7 @@ mpl.rcParams['mathtext.sf'] = 'sans\\-serif'
 plt.rcParams['mathtext.default'] = 'regular'
 mpl.rcParams['xtick.major.pad']=mpl.rcParams['ytick.major.pad']= 2
 mpl.rcParams['axes.labelpad'] = 3
-mpl.mathtext.FontConstantsBase.sup1 = 0.25
+# mpl.mathtext.FontConstantsBase.sup1 = 0.25
 
 # cwd = '/Volumes/common/Kinases/FGFR3/FGFR3_459-755_C482A_C582S/Structure_Calc/cyana_25/'
 cwd = '/Volumes/common/Kinases/FGFR2/FGFR2_467-768_C491A/Structure_Calc/cyana_21/'
@@ -198,11 +198,13 @@ for upl in unusedupls:
 	tvalue = df.loc[upl.split()[0],upl.split()[2]]
 	if pd.isna(tvalue): tvalue = 0.0
 	df.loc[upl.split()[0],upl.split()[2]] = tvalue + 1
+df = df[df > 2]
 df2 = df.dropna(axis=0, how= 'all')
 df3 = df2.dropna(axis=1, how= 'all')
+
 fig1=plt.figure()
 ax = fig1.add_subplot(111)
-cmap = sb.color_palette("coolwarm", as_cmap=True)
+cmap = sb.color_palette("inferno_r", as_cmap=True)
 cmap.set_under(color='white')
 ax = sb.heatmap(df3.fillna(0.0), cmap=cmap, vmin = 1.0,square=True, xticklabels=df3.columns.to_list(),yticklabels=df3.index.to_list(),cbar_kws=dict(shrink = 0.5))
 ax.spines['right'].set_visible(True)
@@ -215,8 +217,8 @@ ax.set_title('Total unused')
 print(df.shape)
 print(df2.shape)
 print(df3.shape)
-print()
-plt.show()
+print(df3)
+plt.draw()
 
 
 df = pd.DataFrame(index=Sequence, columns = Sequence)
@@ -225,17 +227,18 @@ for upl in Used_aupls:
 	tvalue = df.loc[upl.split()[0],upl.split()[2]]
 	if pd.isna(tvalue): tvalue = 0.0
 	df.loc[upl.split()[0],upl.split()[2]] = tvalue + 1
+df = df[df > 2]
 df2 = df.dropna(axis=0, how= 'all')
 df3 = df2.dropna(axis=1, how= 'all')
-fig1=plt.figure()
-ax = fig1.add_subplot(111)
-cmap = sb.color_palette("coolwarm", as_cmap=True)
+fig1, ax = plt.subplots()
+cmap = sb.color_palette("inferno_r", as_cmap=True)
 cmap.set_under(color='white')
-ax = sb.heatmap(df3.fillna(0.0), cmap=cmap, vmin = 1.0,square=True, xticklabels=df3.columns.to_list(),yticklabels=df3.index.to_list(),cbar_kws=dict(shrink = 0.5))
-ax.spines['right'].set_visible(True)
-ax.spines['top'].set_visible(True)
-ax.spines['bottom'].set_visible(True)
-ax.spines['left'].set_visible(True)
+im = ax.imshow(df3.fillna(0.0), cmap=cmap, vmin = 1.0)
+ax.set_xticks(np.arange(len(df3.columns.to_list())), labels=df3.columns.to_list())
+ax.set_yticks(np.arange(len(df3.index.to_list())), labels=df3.index.to_list())
+ax.tick_params(axis='x', labelrotation = 90)
+cbar = ax.figure.colorbar(im, ax=ax, shrink=0.5,pad=0.01)
+cbar.set_label(label='test',labelpad=1)
 ax.set_ylabel('Atom 1')
 ax.set_xlabel('Atom 2')
 ax.set_title('Total Used peaks')
@@ -243,6 +246,10 @@ print(df.shape)
 print(df2.shape)
 print(df3.shape)
 print()
+print(mpl.__version__)
+plt.subplots_adjust(bottom=0.2, right=0.85, top= 0.85)
+plt.tight_layout()
+plt.draw()
 plt.show()
 # pdf.close()
 
