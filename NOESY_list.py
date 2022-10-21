@@ -16,12 +16,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib.backends.backend_pdf import PdfPages
+from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 from scipy.stats import trim_mean
 from scipy.stats import tstd
 from matplotlib.ticker import FormatStrFormatter
 import matplotlib.ticker as ticker 
 import seaborn as sb
 import re
+import mplcursors
 ####----------------------------------------------------------------------------------------------####
 ##																									##
 ##			 	Setting controlling plot appearance: Font, line widths, ticks, and legend  			##
@@ -194,59 +196,53 @@ for noelist in cya_plists:
 
 df = pd.DataFrame(index=Sequence, columns = Sequence)
 for upl in unusedupls:
-	print(upl.split()[0],upl.split()[2])
 	tvalue = df.loc[upl.split()[0],upl.split()[2]]
 	if pd.isna(tvalue): tvalue = 0.0
 	df.loc[upl.split()[0],upl.split()[2]] = tvalue + 1
 df = df[df > 2]
 df2 = df.dropna(axis=0, how= 'all')
 df3 = df2.dropna(axis=1, how= 'all')
-
 fig1=plt.figure()
 ax = fig1.add_subplot(111)
-cmap = sb.color_palette("inferno_r", as_cmap=True)
-cmap.set_under(color='white')
-ax = sb.heatmap(df3.fillna(0.0), cmap=cmap, vmin = 1.0,square=True, xticklabels=df3.columns.to_list(),yticklabels=df3.index.to_list(),cbar_kws=dict(shrink = 0.5))
-ax.spines['right'].set_visible(True)
-ax.spines['top'].set_visible(True)
-ax.spines['bottom'].set_visible(True)
-ax.spines['left'].set_visible(True)
-ax.set_ylabel('Atom 1')
-ax.set_xlabel('Atom 2')
-ax.set_title('Total unused')
-print(df.shape)
-print(df2.shape)
-print(df3.shape)
-print(df3)
-plt.draw()
-
-
-df = pd.DataFrame(index=Sequence, columns = Sequence)
-for upl in Used_aupls:
-	print(upl.split()[0],upl.split()[2])
-	tvalue = df.loc[upl.split()[0],upl.split()[2]]
-	if pd.isna(tvalue): tvalue = 0.0
-	df.loc[upl.split()[0],upl.split()[2]] = tvalue + 1
-df = df[df > 2]
-df2 = df.dropna(axis=0, how= 'all')
-df3 = df2.dropna(axis=1, how= 'all')
-fig1, ax = plt.subplots()
 cmap = sb.color_palette("inferno_r", as_cmap=True)
 cmap.set_under(color='white')
 im = ax.imshow(df3.fillna(0.0), cmap=cmap, vmin = 1.0)
 ax.set_xticks(np.arange(len(df3.columns.to_list())), labels=df3.columns.to_list())
 ax.set_yticks(np.arange(len(df3.index.to_list())), labels=df3.index.to_list())
 ax.tick_params(axis='x', labelrotation = 90)
-cbar = ax.figure.colorbar(im, ax=ax, shrink=0.5,pad=0.01)
-cbar.set_label(label='test',labelpad=1)
+divider = make_axes_locatable(ax)
+cax = divider.append_axes("right", size="5%", pad=0.05)
+cbar = ax.figure.colorbar(im, cax=cax, shrink=0.5,pad=0.01)
+cbar.set_label(label='Number of Observations',labelpad=1)
+cursor = mplcursors.cursor(hover=True).connect("add", lambda sel: sel.annotation.set_text(df3.columns.to_list()[sel.index[0]]+'-'+df3.columns.to_list()[sel.index[1]]))
+ax.set_ylabel('Atom 1')
+ax.set_xlabel('Atom 2')
+ax.set_title('Total Unused Peaks')
+plt.draw()
+
+df = pd.DataFrame(index=Sequence, columns = Sequence)
+for upl in Used_aupls:
+	tvalue = df.loc[upl.split()[0],upl.split()[2]]
+	if pd.isna(tvalue): tvalue = 0.0
+	df.loc[upl.split()[0],upl.split()[2]] = tvalue + 1
+df = df[df > 2]
+df2 = df.dropna(axis=0, how= 'all')
+df3 = df2.dropna(axis=1, how= 'all')
+fig1, ax = plt.subplots(figsize=(22,20))
+cmap = sb.color_palette("inferno_r", as_cmap=True)
+cmap.set_under(color='white')
+im = ax.imshow(df3.fillna(0.0), cmap=cmap, vmin = 1.0)
+ax.set_xticks(np.arange(len(df3.columns.to_list())), labels=df3.columns.to_list())
+ax.set_yticks(np.arange(len(df3.index.to_list())), labels=df3.index.to_list())
+ax.tick_params(axis='x', labelrotation = 90)
+divider = make_axes_locatable(ax)
+cax = divider.append_axes("right", size="2%", pad=0.05)
+cbar = ax.figure.colorbar(im, cax=cax, shrink=0.2,pad=0.01)
+cbar.set_label(label='Number of Observations',labelpad=1)
 ax.set_ylabel('Atom 1')
 ax.set_xlabel('Atom 2')
 ax.set_title('Total Used peaks')
-print(df.shape)
-print(df2.shape)
-print(df3.shape)
-print()
-print(mpl.__version__)
+cursor = mplcursors.cursor(hover=True).connect("add", lambda sel: sel.annotation.set_text(df3.columns.to_list()[sel.index[0]]+'-'+df3.columns.to_list()[sel.index[1]]))
 plt.subplots_adjust(bottom=0.2, right=0.85, top= 0.85)
 plt.tight_layout()
 plt.draw()
