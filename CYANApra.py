@@ -217,7 +217,8 @@ for line in open(fovw).readlines():
 					cns = line2.split()
 					if cns[8] == line[90:].split()[1] and cns[10] == line[90:].split()[3] and cns[2] == dviol[1] and cns[5] == dviol[5]:
 						violpeaks.append(line2.replace('\n',' #Violated ' + line[44:88]+ '\n'))
-						finalupls[0].append(line2)
+						if cns[0] != cns[3]:
+							finalupls[0].append(line2)
 						Filtered.append(line2)
 			for atom1 in atoms1:
 				for atom2 in atoms2: 
@@ -247,13 +248,15 @@ checkcons.write('\n\n')
 finalupl,poorcons2, show, shortcons2,longcons2 = [],[],[],[],[]
 poorcons, shortcons, longcons = 'group poor, ', 'group short, ', 'group long, '
 sidelist = []
+intra = 0 
 for line in open(fupl).readlines():
 	if line not in Filtered:
 		if '#SUP' not in line:
 			pass 
 		else:
 			cns = line.split()
-			if cns[0] == cns[3]: intra+= 1
+			if cns[0] == cns[3]: 
+				pass
 			if cns[0] != cns[3]:
 				pblist = eval('pb' + cns[10])
 				atom1 = cns[2]
@@ -324,6 +327,7 @@ for line in open(fupl).readlines():
 								poorcons = poorcons + 'poor{:} '.format(i)
 						Filtered.append(line)
 						finalupls[1].append(line)
+print(intra)
 poorpbout.close()
 longpbout.close()
 shortpbout.close()
