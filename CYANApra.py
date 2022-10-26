@@ -154,7 +154,6 @@ outcmx.write('match #1.2-20 to #1.1\n')
 outcmx.write('color #1:ile paleturquoise target a\ncolor #1:leu lightsalmon  target a\ncolor #1:val khaki target a\ncolor #1:ala yellowgreen  target a\ncolor #1:met thistle target a\ncolor #1:thr aquamarine target a\ncolor #1:phe plum target a\ncolor #1:tyr lightpink target a\n')
 outcmx.write('show #1:thr,met,ala,leu,val,ile,phe,tyr\n')
 outcmx.write('name meyfside #1:thr,met,ala,leu,val,ile,phe,tyr\n')
-outcmx.write('hide H\n''show #1.1@H\n''show #1.1@N target a\n')
 outcmx.write('cartoon suppress false\n')
 outcmx.write('label #1.1 text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n''label ontop false\n')
 outcmx.write('ui tool show "Side View"\nui mousemode right distance\n')
@@ -247,80 +246,84 @@ checkcons.write('\n\n')
 
 finalupl,poorcons2, show, shortcons2,longcons2 = [],[],[],[],[]
 poorcons, shortcons, longcons = 'group poor, ', 'group short, ', 'group long, '
-
+sidelist = []
 for line in open(fupl).readlines():
 	if line not in Filtered:
 		if '#SUP' not in line:
 			pass 
 		else:
 			cns = line.split()
-			pblist = eval('pb' + cns[10])
-			atom1 = cns[2]
-			atom2 = cns[5]
-			if cns[1]+cns[2] in replacements.keys():
-				atom1 = atom1.replace(cns[2], replacements[cns[1]+cns[2]])
-			if cns[4]+cns[5] in replacements.keys():
-				atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
-			if cns[1]+cns[5] not in replacements.keys():
-				atom1 = atom1
-			if cns[4]+cns[5] not in replacements.keys():
-				atom2=atom2
-			atoms1 = atom1.split(',')
-			atoms2 = atom2.split(',')
-			
-			if len(line.split()) < 12: ## do not have QU vaules, entries usually have SUP = 1.0 
-				Filtered.append(line)
-				finalupls[4].append(line)
-				for atom1 in atoms1:
-					for atom2 in atoms2: 
-						i+=1
-						outpml.write('distance UPL{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-						pblist.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-						exec('group' + cns[10] + '=' + 'group' + cns[10] + '+ "UPL{:} "'.format(str(i)))
-
-			if len(line.split()) >= 12:
-				if float(cns[12]) > 0.5:
-					if float(cns[6]) >= 6.0:
-						for atom1 in atoms1:
-							for atom2 in atoms2:
-								i+=1
-								longpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-								longcons2.append(line)
-								outpml.write('distance long{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-								longcons = longcons + 'long{:} '.format(i)
-						Filtered.append(line)
-						finalupls[2].append(line)
-					if float(cns[6]) <= 3.00:
-						if abs(int(cns[0])- int(cns[3])) > 1:
-							# if atom1 != 'H' or atom2 != 'H':
+			if cns[0] == cns[3]: intra+= 1
+			if cns[0] != cns[3]:
+				pblist = eval('pb' + cns[10])
+				atom1 = cns[2]
+				atom2 = cns[5]
+				if cns[1]+cns[2] in replacements.keys():
+					atom1 = atom1.replace(cns[2], replacements[cns[1]+cns[2]])
+				if cns[4]+cns[5] in replacements.keys():
+					atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
+				if cns[1]+cns[5] not in replacements.keys():
+					atom1 = atom1
+				if cns[4]+cns[5] not in replacements.keys():
+					atom2=atom2
+				atoms1 = atom1.split(',')
+				atoms2 = atom2.split(',')
+				if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
+					sidelist.append(cns[0])
+				if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
+					sidelist.append(cns[3])
+				if len(line.split()) < 12: ## do not have QU vaules, entries usually have SUP = 1.0 
+					Filtered.append(line)
+					finalupls[4].append(line)
+					for atom1 in atoms1:
+						for atom2 in atoms2: 
+							i+=1
+							outpml.write('distance UPL{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+							pblist.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+							exec('group' + cns[10] + '=' + 'group' + cns[10] + '+ "UPL{:} "'.format(str(i)))
+				if len(line.split()) >= 12:
+					if float(cns[12]) > 0.5:
+						if float(cns[6]) >= 6.0:
 							for atom1 in atoms1:
 								for atom2 in atoms2:
 									i+=1
-									shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:} {:}\n'.format(cns[0], atom1, cns[3],atom2, 'light coral'))
-									shortcons2.append(line)
-									outpml.write('distance short{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-									shortcons = shortcons + 'short{:} '.format(i)
-								finalupls[3].append(line)
-								Filtered.append(line)
-					else:
+									longpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+									longcons2.append(line)
+									outpml.write('distance long{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+									longcons = longcons + 'long{:} '.format(i)
+							Filtered.append(line)
+							finalupls[2].append(line)
+						if float(cns[6]) <= 3.00:
+							if abs(int(cns[0])- int(cns[3])) > 1:
+								# if atom1 != 'H' or atom2 != 'H':
+								for atom1 in atoms1:
+									for atom2 in atoms2:
+										i+=1
+										shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:} {:}\n'.format(cns[0], atom1, cns[3],atom2, 'light coral'))
+										shortcons2.append(line)
+										outpml.write('distance short{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+										shortcons = shortcons + 'short{:} '.format(i)
+									finalupls[3].append(line)
+									Filtered.append(line)
+						if float(cns[6]) > 3.00 and float(cns[6]) < 6.0:
+							for atom1 in atoms1:
+								for atom2 in atoms2:
+									i+=1
+									outpml.write('distance UPL{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+									pblist.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+									exec('group' + cns[10] + '=' + 'group' + cns[10] + '+ "UPL{:} "'.format(i))
+							Filtered.append(line)
+							finalupls[4].append(line)
+					if float(cns[12]) < 0.5:
 						for atom1 in atoms1:
 							for atom2 in atoms2:
 								i+=1
-								outpml.write('distance UPL{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-								pblist.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-								exec('group' + cns[10] + '=' + 'group' + cns[10] + '+ "UPL{:} "'.format(i))
+								poorpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+								poorcons2.append(line)
+								outpml.write('distance poor{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+								poorcons = poorcons + 'poor{:} '.format(i)
 						Filtered.append(line)
-						finalupls[4].append(line)
-				if float(cns[12]) < 0.5:
-					for atom1 in atoms1:
-						for atom2 in atoms2:
-							i+=1
-							poorpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-							poorcons2.append(line)
-							outpml.write('distance poor{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-							poorcons = poorcons + 'poor{:} '.format(i)
-					Filtered.append(line)
-					finalupls[1].append(line)
+						finalupls[1].append(line)
 poorpbout.close()
 longpbout.close()
 shortpbout.close()
@@ -396,11 +399,20 @@ for uplfile in upls:
 					outpb.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 					outpml.write('distance {:}{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 					pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
+			if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
+				sidelist.append(cns[0])
+			if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
+				sidelist.append(cns[3])
 	outpml.write(pmlgroup + '\n')
 	outpml.write('color cyan,' + uplfile.replace('.upl','') + '\n')
 	mn+=1
 	outcmx.write('open ' + outdir +'pseudobonds/' + uplfile.replace('.upl','.pb') + '\n')
 	outcmx.write('color #{:} {:}\n'.format(str(mn),'cyan'))
+sidechains = 'show #1:'
+for res in sidelist:
+	sidechains = sidechains + res + ','
+outcmx.write(sidechains[:-1] + '\n')
+outcmx.write('hide H\n''show #1.1@H,N target a\n')
 
 selhbond = 'name hbond  #1.1:'
 hbonsl = []
@@ -416,7 +428,7 @@ for hbondf in hbonds:
 			if (cns[0],cns[3]) not in hbonsl:
 				h+=1 
 				hbonsl.append((cns[0],cns[3]))
-				hbonsl.append((cns[3],cns[0]))
+				# hbonsl.append((cns[3],cns[0]))
 				hbond.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], cns[2], cns[3],cns[5]))
 				outpml.write('distance hbond{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(h), pdbname, cns[0], cns[2].replace('H','N'), pdbname, cns[3], cns[5].replace('H','N')))
 				hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
@@ -481,7 +493,6 @@ for angf in dihed:
 outpml.write('split_states ' + pdbname + '\n')
 for y in range(2,21,1):
 	outpml.write('align {:}_{:04d}, {:}_0001\n'.format(pdbname,y, pdbname))
-
 outcmx.write('open '+ cwd + in_pdb+ ' maxModels 1\nrename #{:} angles\nhide #{:} target a\n color #{:} gray(150)\n'.format(angmn,angmn,angmn))
 outcmx.write(cmxphisel[:-1] + '\n')
 outcmx.write('color phipsisel purple target c\n')
