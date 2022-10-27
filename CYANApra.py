@@ -25,7 +25,7 @@ replacements ={
 'TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRQD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH',
 'PTRHA':'CA','PTRHB2':'CB','PTRHB3':'CB','PTRQB':'CB','PTRQD':'CD1,CD2','PTRQE':'CE1,CE2','PTRHD1':'CD1','PTRHE1':'CE1','PTRHE2':'CE2','PTRHD2':'CD2','PTRHH':'OH'}
 #'ALAH':'N','CYSH':'N','ASPH':'N','GLUH':'N','PHEH':'N','GLYH':'N','HISH':'N','ILEH':'N','LYSH':'N','LEUH':'N','METH':'N','ASNH':'N','GLNH':'N','ARGH':'N','SERH':'N','THRH':'N','VALH':'N','TRPH':'N','TYRH':'N',
-AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
+AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "CYSS":"C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P","cPRO":"P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 
 if len(sys.argv)==1:
 	print('''
@@ -336,7 +336,6 @@ for line in open(fupl).readlines():
 								poorcons = poorcons + 'poor{:} '.format(i)
 						Filtered.append(line)
 						finalupls[1].append(line)
-print(intra)
 poorpbout.close()
 longpbout.close()
 shortpbout.close()
@@ -398,17 +397,18 @@ for resi in Sequence:
 import matplotlib as mpl 
 import matplotlib.pyplot as plt
 import mplcursors
+import numpy as np
 fig1=plt.figure()
 ax = fig1.add_subplot(111)
-ax.bar(Sequence, ConsCount)
-cursors = mplcursors.cursor(hover=True)
-plt.draw()
-fig2=plt.figure()
-ax2= fig2.add_subplot(111)
-ax2.bar(Sequence, longCount)
+index = np.arange(len(Sequence))
+#ax.bar(resid + x * width, df2[DataSets[x]], width, color=ColorsDict[DataSets[x]], edgecolor='none', label = Legend_dict[DataSets[x]])
+ax.bar(index, ConsCount, 0.45, color = 'green', ecolor='none', label='CYANA UPL')
+ax.bar(index + 0.45, longCount, 0.45, color = 'orange', edgecolor='none', label='long UPL')
+ax.set_xticks(np.arange(len(Sequence))+0.45, labels=Sequence)
+ax.tick_params(axis='x', labelrotation = 90)
+ax.legend(loc='best', frameon=False, markerscale=0.000001)
 cursors = mplcursors.cursor(hover=True)
 plt.show()
-print(ConsCount)
 for upllist in finalupls:
 	for upl in upllist:
 		filtered_upl.write(upl)
