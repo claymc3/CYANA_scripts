@@ -91,7 +91,7 @@ for fnam in sys.argv[1].split(','):
 				if opt_arg.upper() in aa_list:
 					regex = r".*"+re.escape(res_num)+r"\s"+re.escape(opt_arg.upper())
 				else:
-					regex = r".*"+re.escape(res_num)+r"\s*[A-Z]{3}\s{2}"+re.escape(opt_arg.upper())+r".*"
+					regex = r".*"+re.escape(res_num)+r"\s*[A-Z]{3}\s{2}"+re.escape(opt_arg.upper() + ' ')+r".*"
 
 				if re.findall(regex, line):
 					print(line.strip())
