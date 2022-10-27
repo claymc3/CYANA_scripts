@@ -1,6 +1,7 @@
 ### Mary Clay
 import os
 import sys
+import re
 replacements ={
 'ALAHA':'CA','ALAQB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'CB',
 'CYSHA':'CA','CYSHB2':'CB','CYSHB3':'CB','CYSQB':'CB',
@@ -24,6 +25,8 @@ replacements ={
 'TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRQD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH',
 'PTRHA':'CA','PTRHB2':'CB','PTRHB3':'CB','PTRQB':'CB','PTRQD':'CD1,CD2','PTRQE':'CE1,CE2','PTRHD1':'CD1','PTRHE1':'CE1','PTRHE2':'CE2','PTRHD2':'CD2','PTRHH':'OH'}
 #'ALAH':'N','CYSH':'N','ASPH':'N','GLUH':'N','PHEH':'N','GLYH':'N','HISH':'N','ILEH':'N','LYSH':'N','LEUH':'N','METH':'N','ASNH':'N','GLNH':'N','ARGH':'N','SERH':'N','THRH':'N','VALH':'N','TRPH':'N','TYRH':'N',
+AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
+
 if len(sys.argv)==1:
 	print('''
 
@@ -66,6 +69,14 @@ pdbname = in_pdb.split('.')[0]
 fovw = fupl.replace('.upl','.ovw')
 calc = cwd + 'CALC.cya'
 outname = fupl.split('.')[0]
+init = cwd + 'init.cya'
+# print(open(init).readlines()[0].strip().split(':=')[-1])
+seq = [line.strip().split() for line in open(cwd + open(init).readlines()[0].strip().split(':=')[-1] + '.seq').readlines() if '#' != line[0]]
+Seqdict = {}
+Sequence = []
+for resn,resi in seq:
+	Seqdict[resi] = AAA_dict[resn] + resi
+	Sequence.append(resi)
 
 ## Check for the output directory if it does not exist make it
 if not os.path.exists(outdir):
@@ -199,7 +210,6 @@ for line in open(fovw).readlines():
 			v+=1
 			if 'peak' not in line:
 				pbout = uviolpbout
-				# grpout = 'viol_uplscons'
 				grpstr = "uplviol"
 				cons1 = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}  ,  # {:} {:}\n'.format(dviol[7],dviol[6],dviol[5],dviol[3],dviol[2],dviol[1],float(dviol[8]), dviol[9], dviol[10])
 				cons2 = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}  ,  # {:} {:}\n'.format(dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]), dviol[9], dviol[10])
@@ -217,7 +227,7 @@ for line in open(fovw).readlines():
 					cns = line2.split()
 					if cns[8] == line[90:].split()[1] and cns[10] == line[90:].split()[3] and cns[2] == dviol[1] and cns[5] == dviol[5]:
 						violpeaks.append(line2.replace('\n',' #Violated ' + line[44:88]+ '\n'))
-						if cns[0] != cns[3]:
+						if cns[0] != cns[3] and '#SUP' in line2:
 							finalupls[0].append(line2)
 						Filtered.append(line2)
 			for atom1 in atoms1:
@@ -227,7 +237,6 @@ for line in open(fovw).readlines():
 					outpml.write('distance viol{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(v), pdbname, dviol[3], atom1, pdbname, dviol[7], atom2))
 					if 'peak' in line: viol_uplscons = viol_uplscons + "viol"+str(v) + ' '
 					if 'peak' not in line: viol_peakscons = viol_peakscons + "viol"+str(v) + ' '
-
 	if line[4:9] == 'Angle':
 		dang = line.split()
 		if dang[1] == 'PHI' or dang[1] == 'PSI':
@@ -371,11 +380,39 @@ for (group, color) in [('poor','mediumvioletred'),('long','firebrick'),('short',
 #### and has sorted the restrints into 5 labeled catagories
 
 filtered_upl = open(outdir + fupl.replace('.upl','4cns.upl'),'w')
+ConsCount = []
+longCount = []
+total = 0
+for resi in Sequence:
+	count = 0
+	longcount = 0 
+	for upllist in finalupls:
+		for upl in upllist:
+			regex = r".*"+re.escape(resi)+r"\s*[A-Z]{3}.*"
+			if re.findall(regex, upl):
+				count+=1
+				if float(upl.split()[6]) >= 6.0:
+					longcount+=1
+	ConsCount.append(count)
+	longCount.append(longcount)
+import matplotlib as mpl 
+import matplotlib.pyplot as plt
+import mplcursors
+fig1=plt.figure()
+ax = fig1.add_subplot(111)
+ax.bar(Sequence, ConsCount)
+cursors = mplcursors.cursor(hover=True)
+plt.draw()
+fig2=plt.figure()
+ax2= fig2.add_subplot(111)
+ax2.bar(Sequence, longCount)
+cursors = mplcursors.cursor(hover=True)
+plt.show()
+print(ConsCount)
 for upllist in finalupls:
 	for upl in upllist:
 		filtered_upl.write(upl)
 filtered_upl.close()
-
 u = 1
 for uplfile in upls:
 	fin = open(uplfile,'r')
