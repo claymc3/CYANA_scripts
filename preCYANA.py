@@ -239,7 +239,7 @@ for line in open('hbond.upl').readlines():
 			if (cns[0],cns[3]) not in hbonsl:
 				h+=1 
 				hbonsl.append((cns[0],cns[3]))
-				hbonsl.append((cns[3],cns[0]))
+				#hbonsl.append((cns[3],cns[0]))
 				hbond.write('{:}:{:}@{:} {:}:{:}@{:}\n'.format(hbcmxn, cns[0], cns[2], hbcmxn, cns[3],cns[5]))
 				outpml.write('distance hbond{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(h), pmln, cns[0], cns[2].replace('H','N'), pmln, cns[3], cns[5].replace('H','N')))
 				hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
