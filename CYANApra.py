@@ -2,6 +2,9 @@
 import os
 import sys
 import re
+import pandas as pd
+import numpy as np
+
 replacements ={
 'ALAHA':'CA','ALAQB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'CB',
 'CYSHA':'CA','CYSHB2':'CB','CYSHB3':'CB','CYSQB':'CB',
@@ -77,13 +80,17 @@ Sequence = []
 for resn,resi in seq:
 	Seqdict[resi] = AAA_dict[resn] + resi
 	Sequence.append(resi)
+upldf = pd.DataFrame(index = Sequence, columns=['cya','long','viol','input','vdihed'])
+upldf['cya'] = np.zeros(len(Sequence))
+upldf['long'] = np.zeros(len(Sequence))
+upldf['viol'] = np.zeros(len(Sequence))
+upldf['input'] = np.zeros(len(Sequence))
 
 ## Check for the output directory if it does not exist make it
 if not os.path.exists(outdir):
 	os.makedirs(outdir)
 if not os.path.exists(outdir +'pseudobonds/'):
 	os.makedirs(outdir +'pseudobonds/')
-
 
 checkcons = open(outdir + outname + '_summary.txt','w')
 
@@ -104,10 +111,9 @@ dihed = [con for con in manualcons if 'aco' in con]
 noa = cwd + 'cycle7.noa'
 noalines = open(noa).readlines()
 print('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl'.format(pad,pad))
-## Open Summary fiel and check the peak list files, upl, and ovw to determine the number of assignments and violations and write out the summary file 
+## Open Summary file and check the peak list files, upl, and ovw to determine the number of assignments and violations and write out the summary file 
 ## Creating the pseudobond files and group strings for rendering the constraints in chimera/pymol
-tpeak,tsingle,tamb,tnotused,tnota,tdia,tincr  = 0, 0, 0, 0, 0, 0, 0
-tupl,tviol = 0,0
+tpeak,tsingle,tamb,tnotused,tnota,tdia,tincr,tupl,tviol  = 0, 0, 0, 0, 0, 0, 0, 0, 0
 for x in range(len(cya_plists)):
 	plistn = cya_plists[x].replace('-cycle7.peaks','')
 	exec("pb{:} = open('{:}','w')".format(str(x+1), outdir +'pseudobonds/' + plistn + '.pb'))
@@ -167,7 +173,7 @@ outcmx.write('show #1:thr,met,ala,leu,val,ile,phe,tyr\n')
 outcmx.write('name meyfside #1:thr,met,ala,leu,val,ile,phe,tyr\n')
 outcmx.write('cartoon suppress false\n')
 outcmx.write('label #1.1 text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n''label ontop false\n')
-outcmx.write('ui tool show "Side View"\nui mousemode right distance\n')
+outcmx.write('ui tool show "Side View"\n#ui mousemode right distance\n')
 
 pdbname = in_pdb.replace('.pdb','')
 
@@ -187,9 +193,7 @@ uviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_upls_cons.pb','w')
 uviolpbout.write("; halfbond = false\n; color = hotpink\n; radius = 0.1\n; dashes = 0\n")
 
 i = 1
-Filtered = []
-
-Upperdict, Lowerdict = [], []
+Filtered, Upperdict, Lowerdict = [], [], []
 viol_peakscons,viol_uplscons= 'group viol_peaks, ', 'group viol_upls, '
 finalupls = [["###Violated Restraints\n"],["###Poor/Low Support\n"],["###Long Distance Restraints (d >= 6.0)\n"],["###Short Distance Restraints (d <= 3.0)\n"],["###Good Restraints\n"]]
 checkcons.write('### Violated Distance Constraints from {:} \n'.format(str(fovw)))
@@ -221,15 +225,16 @@ for line in open(fovw).readlines():
 					Lowerdict.append(cons2)
 			if 'peak' in line and 'list' in line:
 				pbout = pviolpbout
-				# grpout = 'viol_peakscons'
 				grpstr = "peakviol"
 				for line2 in open(fupl).readlines():
 					cns = line2.split()
 					if cns[8] == line[90:].split()[1] and cns[10] == line[90:].split()[3] and cns[2] == dviol[1] and cns[5] == dviol[5]:
 						violpeaks.append(line2.replace('\n',' #Violated ' + line[44:88]+ '\n'))
 						if cns[0] != cns[3] and '#SUP' in line2:
+							upldf.loc[cns[0],'viol'] = upldf.loc[cns[0],'viol'] + 1
+							upldf.loc[cns[3],'viol'] = upldf.loc[cns[3],'viol'] + 1
 							finalupls[0].append(line2)
-						Filtered.append(line2)
+							Filtered.append(line2)
 			for atom1 in atoms1:
 				for atom2 in atoms2: 
 					v+=1
@@ -253,18 +258,15 @@ violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
 for viol in violpeaks:
 	checkcons.write(viol)
 checkcons.write('\n\n')
-
-finalupl,poorcons2, show, shortcons2,longcons2 = [],[],[],[],[]
+finalupl,poorcons2, show, shortcons2,longcons2,sidelist = [],[],[],[],[],[]
 poorcons, shortcons, longcons = 'group poor, ', 'group short, ', 'group long, '
-sidelist = []
-intra = 0 
 for line in open(fupl).readlines():
 	if line not in Filtered:
-		if '#SUP' not in line:
+		if '#SUP' not in line: ## exclude ambiguous restraints
 			pass 
 		else:
 			cns = line.split()
-			if cns[0] == cns[3]: 
+			if cns[0] == cns[3]: ## exclude intramolecular restraints
 				pass
 			if cns[0] != cns[3]:
 				pblist = eval('pb' + cns[10])
@@ -274,68 +276,58 @@ for line in open(fupl).readlines():
 					atom1 = atom1.replace(cns[2], replacements[cns[1]+cns[2]])
 				if cns[4]+cns[5] in replacements.keys():
 					atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
-				if cns[1]+cns[5] not in replacements.keys():
-					atom1 = atom1
-				if cns[4]+cns[5] not in replacements.keys():
-					atom2=atom2
 				atoms1 = atom1.split(',')
 				atoms2 = atom2.split(',')
+				upldf.loc[cns[0],'cya'] = upldf.loc[cns[0],'cya'] + 1
+				upldf.loc[cns[3],'cya'] = upldf.loc[cns[3],'cya'] + 1
 				if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
 					sidelist.append(cns[0])
 				if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
 					sidelist.append(cns[3])
-				if len(line.split()) < 12: ## do not have QU vaules, entries usually have SUP = 1.0 
-					Filtered.append(line)
-					finalupls[4].append(line)
+				if float(cns[12]) < 0.5:
 					for atom1 in atoms1:
-						for atom2 in atoms2: 
+						for atom2 in atoms2:
 							i+=1
-							outpml.write('distance UPL{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-							pblist.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-							exec('group' + cns[10] + '=' + 'group' + cns[10] + '+ "UPL{:} "'.format(str(i)))
-				if len(line.split()) >= 12:
-					if float(cns[12]) > 0.5:
-						if float(cns[6]) >= 6.0:
-							for atom1 in atoms1:
-								for atom2 in atoms2:
-									i+=1
-									longpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-									longcons2.append(line)
-									outpml.write('distance long{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-									longcons = longcons + 'long{:} '.format(i)
-							Filtered.append(line)
-							finalupls[2].append(line)
-						if float(cns[6]) <= 3.00:
-							if abs(int(cns[0])- int(cns[3])) > 1:
-								# if atom1 != 'H' or atom2 != 'H':
-								for atom1 in atoms1:
-									for atom2 in atoms2:
-										i+=1
-										shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:} {:}\n'.format(cns[0], atom1, cns[3],atom2, 'light coral'))
-										shortcons2.append(line)
-										outpml.write('distance short{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-										shortcons = shortcons + 'short{:} '.format(i)
-									finalupls[3].append(line)
-									Filtered.append(line)
-						if float(cns[6]) > 3.00 and float(cns[6]) < 6.0:
-							for atom1 in atoms1:
-								for atom2 in atoms2:
-									i+=1
-									outpml.write('distance UPL{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-									pblist.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-									exec('group' + cns[10] + '=' + 'group' + cns[10] + '+ "UPL{:} "'.format(i))
-							Filtered.append(line)
-							finalupls[4].append(line)
-					if float(cns[12]) < 0.5:
+							poorpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+							poorcons2.append(line)
+							outpml.write('distance poor{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+							poorcons = poorcons + 'poor{:} '.format(i)
+					Filtered.append(line)
+					finalupls[1].append(line)
+				if float(cns[12]) > 0.5:
+					if float(cns[6]) >= 6.0:
+						upldf.loc[cns[0],'long'] = upldf.loc[cns[0],'long'] + 1
+						upldf.loc[cns[3],'long'] = upldf.loc[cns[3],'long'] + 1
 						for atom1 in atoms1:
 							for atom2 in atoms2:
 								i+=1
-								poorpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-								poorcons2.append(line)
-								outpml.write('distance poor{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-								poorcons = poorcons + 'poor{:} '.format(i)
+								longpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+								longcons2.append(line)
+								outpml.write('distance long{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+								longcons = longcons + 'long{:} '.format(i)
 						Filtered.append(line)
-						finalupls[1].append(line)
+						finalupls[2].append(line)
+					if float(cns[6]) <= 3.00:
+						if abs(int(cns[0])- int(cns[3])) > 1:
+							for atom1 in atoms1:
+								for atom2 in atoms2:
+									i+=1
+									shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:} {:}\n'.format(cns[0], atom1, cns[3],atom2, 'light coral'))
+									shortcons2.append(line)
+									outpml.write('distance short{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+									shortcons = shortcons + 'short{:} '.format(i)
+							finalupls[3].append(line)
+							Filtered.append(line)
+					if float(cns[6]) > 3.00 and float(cns[6]) < 6.0:
+						for atom1 in atoms1:
+							for atom2 in atoms2:
+								i+=1
+								outpml.write('distance UPL{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+								pblist.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+								exec('group' + cns[10] + '=' + 'group' + cns[10] + '+ "UPL{:} "'.format(i))
+						Filtered.append(line)
+						finalupls[4].append(line)
+print(len(Filtered))
 poorpbout.close()
 longpbout.close()
 shortpbout.close()
@@ -379,40 +371,11 @@ for (group, color) in [('poor','mediumvioletred'),('long','firebrick'),('short',
 #### and has sorted the restrints into 5 labeled catagories
 
 filtered_upl = open(outdir + fupl.replace('.upl','4cns.upl'),'w')
-ConsCount = []
-longCount = []
-total = 0
-for resi in Sequence:
-	count = 0
-	longcount = 0 
-	for upllist in finalupls:
-		for upl in upllist:
-			regex = r".*"+re.escape(resi)+r"\s*[A-Z]{3}.*"
-			if re.findall(regex, upl):
-				count+=1
-				if float(upl.split()[6]) >= 6.0:
-					longcount+=1
-	ConsCount.append(count)
-	longCount.append(longcount)
-import matplotlib as mpl 
-import matplotlib.pyplot as plt
-import mplcursors
-import numpy as np
-fig1=plt.figure()
-ax = fig1.add_subplot(111)
-index = np.arange(len(Sequence))
-#ax.bar(resid + x * width, df2[DataSets[x]], width, color=ColorsDict[DataSets[x]], edgecolor='none', label = Legend_dict[DataSets[x]])
-ax.bar(index, ConsCount, 0.45, color = 'green', ecolor='none', label='CYANA UPL')
-ax.bar(index + 0.45, longCount, 0.45, color = 'orange', edgecolor='none', label='long UPL')
-ax.set_xticks(np.arange(len(Sequence))+0.45, labels=Sequence)
-ax.tick_params(axis='x', labelrotation = 90)
-ax.legend(loc='best', frameon=False, markerscale=0.000001)
-cursors = mplcursors.cursor(hover=True)
-plt.show()
 for upllist in finalupls:
 	for upl in upllist:
 		filtered_upl.write(upl)
 filtered_upl.close()
+
 u = 1
 for uplfile in upls:
 	fin = open(uplfile,'r')
@@ -428,12 +391,10 @@ for uplfile in upls:
 				atom1 = atom1.replace(cns[2], replacements[cns[1]+cns[2]])
 			if cns[4]+cns[5] in replacements.keys():
 				atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
-			if cns[1]+cns[5] not in replacements.keys():
-				atom1 = atom1
-			if cns[4]+cns[5] not in replacements.keys():
-				atom2=atom2
 			atoms2 = atom2.split(',')
 			atoms1 = atom1.split(',')
+			upldf.loc[cns[0],'input'] = upldf.loc[cns[0],'input'] + 1
+			upldf.loc[cns[3],'input'] = upldf.loc[cns[3],'input'] + 1
 			for atom1 in atoms1:
 				for atom2 in atoms2:
 					u+=1
@@ -561,3 +522,23 @@ outpml.write(pmlphiviol[:-1] + '\n')
 outpml.write("hide labels\n")
 outpml.close()
 outcmx.close()
+
+import matplotlib as mpl 
+import matplotlib.pyplot as plt
+import mplcursors
+import numpy as np
+fig1=plt.figure()
+ax = fig1.add_subplot(111)
+index = np.arange(len(Sequence))
+#ax.bar(resid + x * width, df2[DataSets[x]], width, color=ColorsDict[DataSets[x]], edgecolor='none', label = Legend_dict[DataSets[x]])
+ax.bar(index, upldf['cya'], 0.225, color = '#9acd32', ecolor='none', label='CYANA UPL')
+ax.bar(index + 0.225, upldf['long'], 0.225, color = '#800080', edgecolor='none', label='long UPL')
+ax.bar(index + 2 * 0.225, upldf['viol'], 0.225, color = '#ffa500', edgecolor='none', label='Violated UPL')
+ax.bar(index + 3 * 0.225, upldf['input'], 0.225, color = '#6495ed', edgecolor='none', label='Input UPL')
+ax.set_xticks(np.arange(len(Sequence))+0.3375, labels=Sequence)
+ax.tick_params(axis='x', labelrotation = 90)
+ax.legend(loc='best', frameon=False, markerscale=0.000001)
+ax.set_ylabel('Number of UPL Entries')
+ax.set_xlabel('Residue')
+cursors = mplcursors.cursor(hover=True)
+plt.show()
