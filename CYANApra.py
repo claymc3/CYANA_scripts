@@ -76,16 +76,17 @@ init = cwd + 'init.cya'
 # print(open(init).readlines()[0].strip().split(':=')[-1])
 seq = [line.strip().split() for line in open(cwd + open(init).readlines()[0].strip().split(':=')[-1] + '.seq').readlines() if '#' != line[0]]
 Seqdict = {}
-Sequence = []
+Sequence, ASequence = [],[]
 for resn,resi in seq:
 	Seqdict[resi] = AAA_dict[resn] + resi
+	ASequence.append(AAA_dict[resn] + resi)
 	Sequence.append(resi)
-upldf = pd.DataFrame(index = Sequence, columns=['cya','long','viol','input','vdihed'])
+upldf = pd.DataFrame(index = Sequence, columns=['cya','long','viol','input','viol input','vdihed'])
 upldf['cya'] = np.zeros(len(Sequence))
 upldf['long'] = np.zeros(len(Sequence))
 upldf['viol'] = np.zeros(len(Sequence))
 upldf['input'] = np.zeros(len(Sequence))
-
+upldf['viol input'] = np.zeros(len(Sequence))
 ## Check for the output directory if it does not exist make it
 if not os.path.exists(outdir):
 	os.makedirs(outdir)
@@ -169,9 +170,7 @@ outcmx.write('open '+ cwd + in_pdb+'\n')
 outcmx.write('color #1 gray(150)\n')
 outcmx.write('match #1.2-20 to #1.1\n')
 outcmx.write('color #1:ile paleturquoise target a\ncolor #1:leu lightsalmon  target a\ncolor #1:val khaki target a\ncolor #1:ala yellowgreen  target a\ncolor #1:met thistle target a\ncolor #1:thr aquamarine target a\ncolor #1:phe plum target a\ncolor #1:tyr lightpink target a\n')
-outcmx.write('show #1:thr,met,ala,leu,val,ile,phe,tyr\n')
-outcmx.write('name meyfside #1:thr,met,ala,leu,val,ile,phe,tyr\n')
-outcmx.write('cartoon suppress false\n')
+outcmx.write('show #1:thr,met,ala,leu,val,ile,phe,tyr\nname meyfside #1:thr,met,ala,leu,val,ile,phe,tyr\ncartoon suppress false\n')
 outcmx.write('label #1.1 text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n''label ontop false\n')
 outcmx.write('ui tool show "Side View"\n#ui mousemode right distance\n')
 
@@ -180,7 +179,6 @@ pdbname = in_pdb.replace('.pdb','')
 angmn = len(cya_plists) + 8 + len(upls)
 cmxphisel, cmxchisel, cmxphiviol, cmxchiviol = 'name phipsisel #{:}:'.format(angmn), 'name chisel #{:}:'.format(angmn), 'name phipsiviol #{:}:'.format(angmn), 'name chiviol #{:}:'.format(angmn)
 pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'color purple, phi-psi and resi ','color navy, chi and resi ', 'color mediumpurple, viol_phi-psi and resi ', 'color cornflowerblue, viol_chi and resi '
-
 poorpbout = open(outdir +'pseudobonds/' + outname + '_poor_cons.pb','w')
 poorpbout.write("; halfbond = false\n; color = mediumvioletred\n; radius = 0.1\n; dashes = 0\n")
 longpbout = open(outdir +'pseudobonds/' + outname + '_long_cons.pb','w')
@@ -215,6 +213,8 @@ for line in open(fovw).readlines():
 			if 'peak' not in line:
 				pbout = uviolpbout
 				grpstr = "uplviol"
+				upldf.loc[dviol[7],'viol input'] = upldf.loc[dviol[7],'viol input'] + 1
+				upldf.loc[dviol[3],'viol input'] = upldf.loc[dviol[3],'viol input'] + 1
 				cons1 = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}  ,  # {:} {:}\n'.format(dviol[7],dviol[6],dviol[5],dviol[3],dviol[2],dviol[1],float(dviol[8]), dviol[9], dviol[10])
 				cons2 = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}  ,  # {:} {:}\n'.format(dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]), dviol[9], dviol[10])
 				if line[4:9] == 'Upper':
@@ -244,6 +244,10 @@ for line in open(fovw).readlines():
 					if 'peak' not in line: viol_peakscons = viol_peakscons + "viol"+str(v) + ' '
 	if line[4:9] == 'Angle':
 		dang = line.split()
+		angle = upldf.loc[dang[3],'vdihed']
+		if pd.isna(angle): angle = ''
+		angle = angle + '{:} {:}\n'.format(dang[1],dang[7])
+		upldf.loc[dang[3],'vdihed'] = angle
 		if dang[1] == 'PHI' or dang[1] == 'PSI':
 			if dang[3] not in phiv:
 				phiv.append(dang[3])
@@ -258,6 +262,7 @@ violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
 for viol in violpeaks:
 	checkcons.write(viol)
 checkcons.write('\n\n')
+usedupls = []
 finalupl,poorcons2, show, shortcons2,longcons2,sidelist = [],[],[],[],[],[]
 poorcons, shortcons, longcons = 'group poor, ', 'group short, ', 'group long, '
 for line in open(fupl).readlines():
@@ -280,6 +285,16 @@ for line in open(fupl).readlines():
 				atoms2 = atom2.split(',')
 				upldf.loc[cns[0],'cya'] = upldf.loc[cns[0],'cya'] + 1
 				upldf.loc[cns[3],'cya'] = upldf.loc[cns[3],'cya'] + 1
+				usedupls.append('{:>4} {:}  {:<4}  {:>4} {:}  {:<4},  #{:6.2f} #peak {:} #plist {:}\n'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5],float(cns[6]),cns[8],cns[10]))
+				usedupls.append('{:>4} {:}  {:<4}  {:>4} {:}  {:<4},  #{:6.2f} #peak {:} #plist {:}\n'.format(cns[3],cns[4],cns[5],cns[0],cns[1],cns[2],float(cns[6]),cns[8],cns[10]))
+				for atom1 in atoms1:
+					if atom1 == 'H': atom1 = 'N'
+					for atom2 in atoms2:
+						if atom2 == 'H': atom2 = 'N'
+						if '{:>4} {:}  {:<4}  {:>4} {:}  {:<4},  # #peak {:} #plist {:}\n'.format(cns[0],cns[1],atom1,cns[3],cns[4],atom2,cns[8],cns[10]) not in usedupls:
+							usedupls.append('{:>4} {:}  {:<4}  {:>4} {:}  {:<4},  #{:6.2f} #peak {:} #plist {:}\n'.format(cns[0],cns[1],atom1,cns[3],cns[4],atom2,float(cns[6]),cns[8],cns[10]))
+						if '{:>4} {:}  {:<4}  {:>4} {:}  {:<4},  # #peak {:} #plist {:}\n'.format(cns[3],cns[4],atom2,cns[0],cns[1],atom1,cns[8],cns[10]) not in usedupls:
+							usedupls.append('{:>4} {:}  {:<4}  {:>4} {:}  {:<4},  #{:6.2f} #peak {:} #plist {:}\n'.format(cns[3],cns[4],atom2,cns[0],cns[1],atom1,float(cns[6]),cns[8],cns[10]))
 				if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
 					sidelist.append(cns[0])
 				if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
@@ -327,7 +342,7 @@ for line in open(fupl).readlines():
 								exec('group' + cns[10] + '=' + 'group' + cns[10] + '+ "UPL{:} "'.format(i))
 						Filtered.append(line)
 						finalupls[4].append(line)
-print(len(Filtered))
+
 poorpbout.close()
 longpbout.close()
 shortpbout.close()
@@ -446,15 +461,23 @@ outcmx.write('open ' + outdir +'pseudobonds/' + 'hbond.pb\n')
 outcmx.write('color #{:} {:}\n'.format(str(mn),'pink'))
 outcmx.write(selhbond)
 upls.extend(hbonds)
+## Examin input upl files and update lines for entries which are violated 10 or more times. 
 for uplfile in upls:
 	newlines = []
 	violupl = open(outdir + uplfile.replace('.upl','_viol.upl'),'w')
+	matchedupl = open(outdir + uplfile.replace('.upl','_found.upl'),'w')
 	for line in open(uplfile).readlines():
 		newline = ''
 		for viol in Upperdict:
 			if line.split()[0:6] == viol.split()[0:6]:
 				newline = line.replace('\n', viol.split(',')[-1])
 				violupl.write(newline)
+		for mupl in usedupls:
+			if line.split()[0:6] == mupl.split()[0:6]:
+				if len(newline) > 1: newline = newline.replace('\n', mupl.split(',')[-1])
+				if len(newline) < 1: newline = line.replace('\n', mupl.split(',')[-1])
+				matchedline = line.replace('\n', mupl.split(',')[-1])
+				matchedupl.write(matchedline)
 		if len(newline) < 1:
 			newline = line
 		newlines.append(newline)
@@ -462,6 +485,7 @@ for uplfile in upls:
 	fout.writelines(newlines)
 	fout.close()
 	violupl.close()
+	matchedupl.close()
 
 for lolfile in lols:
 	newlines = []
@@ -527,18 +551,33 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import mplcursors
 import numpy as np
-fig1=plt.figure()
-ax = fig1.add_subplot(111)
+from matplotlib.widgets import Slider
+fig, ax = plt.subplots()
 index = np.arange(len(Sequence))
+width = 0.18
 #ax.bar(resid + x * width, df2[DataSets[x]], width, color=ColorsDict[DataSets[x]], edgecolor='none', label = Legend_dict[DataSets[x]])
-ax.bar(index, upldf['cya'], 0.225, color = '#9acd32', ecolor='none', label='CYANA UPL')
-ax.bar(index + 0.225, upldf['long'], 0.225, color = '#800080', edgecolor='none', label='long UPL')
-ax.bar(index + 2 * 0.225, upldf['viol'], 0.225, color = '#ffa500', edgecolor='none', label='Violated UPL')
-ax.bar(index + 3 * 0.225, upldf['input'], 0.225, color = '#6495ed', edgecolor='none', label='Input UPL')
-ax.set_xticks(np.arange(len(Sequence))+0.3375, labels=Sequence)
+ax.bar(index, upldf['cya'], width, color = '#9acd32', ecolor='none', label='CYANA UPL')
+ax.bar(index + width, upldf['long'], width, color = '#800080', edgecolor='none', label='long UPL')
+ax.bar(index + 2 * width, upldf['viol'], width, color = '#ffa500', edgecolor='none', label='Violated UPL')
+ax.bar(index + 3 * width, upldf['input'], width, color = '#6495ed', edgecolor='none', label='Input UPL')
+ax.bar(index + 4 * width, upldf['viol input'], width, color = '#db7093', edgecolor='none', label='Input UPL')
+#cell_text = [[]]
+for res in index:
+	angle = upldf.loc[Sequence[res],'vdihed']
+	if not pd.isna(angle):
+		# cell_text[0].append(angle)
+		text = ax.text(res+0.1, -1.0, angle,ha='center', va='top')
+#	if pd.isna(angle):
+#		cell_text[0].append('')
+#cell_text.reverse()
+#the_table = plt.table(cellText=cell_text,rowLabels=['Dihed'],colLabels=ASequence,loc='bottom')
+
+ax.set_xticks(np.arange(len(Sequence))+2*width, labels=Sequence)
+ax.set_ylim([-5,max(upldf['cya'])])
 ax.tick_params(axis='x', labelrotation = 90)
 ax.legend(loc='best', frameon=False, markerscale=0.000001)
 ax.set_ylabel('Number of UPL Entries')
 ax.set_xlabel('Residue')
 cursors = mplcursors.cursor(hover=True)
 plt.show()
+plt.ion()
