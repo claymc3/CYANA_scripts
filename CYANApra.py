@@ -555,25 +555,22 @@ from matplotlib.widgets import Slider
 fig, ax = plt.subplots()
 index = np.arange(len(Sequence))
 width = 0.18
-#ax.bar(resid + x * width, df2[DataSets[x]], width, color=ColorsDict[DataSets[x]], edgecolor='none', label = Legend_dict[DataSets[x]])
 ax.bar(index, upldf['cya'], width, color = '#9acd32', ecolor='none', label='CYANA UPL')
 ax.bar(index + width, upldf['long'], width, color = '#800080', edgecolor='none', label='long UPL')
 ax.bar(index + 2 * width, upldf['viol'], width, color = '#ffa500', edgecolor='none', label='Violated UPL')
 ax.bar(index + 3 * width, upldf['input'], width, color = '#6495ed', edgecolor='none', label='Input UPL')
 ax.bar(index + 4 * width, upldf['viol input'], width, color = '#db7093', edgecolor='none', label='Input UPL')
-#cell_text = [[]]
+angelidx, angelh = [], []
 for res in index:
 	angle = upldf.loc[Sequence[res],'vdihed']
 	if not pd.isna(angle):
-		# cell_text[0].append(angle)
-		text = ax.text(res+0.1, -1.0, angle,ha='center', va='top')
-#	if pd.isna(angle):
-#		cell_text[0].append('')
-#cell_text.reverse()
-#the_table = plt.table(cellText=cell_text,rowLabels=['Dihed'],colLabels=ASequence,loc='bottom')
-
+		angelidx.append(res+2*width)
+		angelh.append(max(upldf['cya']))
+		text = ax.text(res+0.1, max(upldf['cya']), angle,ha='center', va='top')
+ax.bar(angelidx, angelh, 0.9, color='gray',alpha = 0.5, zorder = 0.0,edgecolor='none' )
 ax.set_xticks(np.arange(len(Sequence))+2*width, labels=Sequence)
-ax.set_ylim([-5,max(upldf['cya'])])
+ax.set_ylim([0,max(upldf['cya'])])
+ax.set_xlim([(min(index) - 1.0 * width), (max(index) + 5 * width)])
 ax.tick_params(axis='x', labelrotation = 90)
 ax.legend(loc='best', frameon=False, markerscale=0.000001)
 ax.set_ylabel('Number of UPL Entries')
