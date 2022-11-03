@@ -213,11 +213,11 @@ for line in open(fovw).readlines():
 			if 'peak' not in line:
 				pbout = uviolpbout
 				grpstr = "uplviol"
-				upldf.loc[dviol[7],'viol input'] = upldf.loc[dviol[7],'viol input'] + 1
-				upldf.loc[dviol[3],'viol input'] = upldf.loc[dviol[3],'viol input'] + 1
 				cons1 = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}  ,  # {:} {:}\n'.format(dviol[7],dviol[6],dviol[5],dviol[3],dviol[2],dviol[1],float(dviol[8]), dviol[9], dviol[10])
 				cons2 = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}  ,  # {:} {:}\n'.format(dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]), dviol[9], dviol[10])
 				if line[4:9] == 'Upper':
+					upldf.loc[dviol[7],'viol input'] = upldf.loc[dviol[7],'viol input'] + 1
+					upldf.loc[dviol[3],'viol input'] = upldf.loc[dviol[3],'viol input'] + 1
 					Upperdict.append(cons1)
 					Upperdict.append(cons2)
 				if line[4:9] == 'lower':
@@ -549,17 +549,19 @@ outcmx.close()
 
 import matplotlib as mpl 
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 import mplcursors
 import numpy as np
 from matplotlib.widgets import Slider
-fig, ax = plt.subplots()
+pdf=PdfPages('{:}_upl_overview.pdf'.format(pdbname))
 index = np.arange(len(Sequence))
+fig, ax = plt.subplots(figsize=(0.5*len(index),7))
 width = 0.18
 ax.bar(index, upldf['cya'], width, color = '#9acd32', ecolor='none', label='CYANA UPL')
 ax.bar(index + width, upldf['long'], width, color = '#800080', edgecolor='none', label='long UPL')
 ax.bar(index + 2 * width, upldf['viol'], width, color = '#ffa500', edgecolor='none', label='Violated UPL')
 ax.bar(index + 3 * width, upldf['input'], width, color = '#6495ed', edgecolor='none', label='Input UPL')
-ax.bar(index + 4 * width, upldf['viol input'], width, color = '#db7093', edgecolor='none', label='Input UPL')
+ax.bar(index + 4 * width, upldf['viol input'], width, color = '#db7093', edgecolor='none', label='Violate Input UPL')
 angelidx, angelh = [], []
 for res in index:
 	angle = upldf.loc[Sequence[res],'vdihed']
@@ -568,13 +570,16 @@ for res in index:
 		angelh.append(max(upldf['cya']))
 		text = ax.text(res+0.1, max(upldf['cya']), angle,ha='center', va='top')
 ax.bar(angelidx, angelh, 0.9, color='gray',alpha = 0.5, zorder = 0.0,edgecolor='none' )
-ax.set_xticks(np.arange(len(Sequence))+2*width, labels=Sequence)
+ax.set_xticks(np.arange(len(Sequence))+2*width, labels=ASequence)
 ax.set_ylim([0,max(upldf['cya'])])
 ax.set_xlim([(min(index) - 1.0 * width), (max(index) + 5 * width)])
 ax.tick_params(axis='x', labelrotation = 90)
 ax.legend(loc='best', frameon=False, markerscale=0.000001)
 ax.set_ylabel('Number of UPL Entries')
 ax.set_xlabel('Residue')
-cursors = mplcursors.cursor(hover=True)
-plt.show()
-plt.ion()
+# cursors = mplcursors.cursor(hover=True)
+plt.tight_layout()
+pdf.savefig()
+# plt.show()
+plt.close()
+pdf.close()
