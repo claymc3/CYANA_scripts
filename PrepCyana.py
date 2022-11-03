@@ -196,8 +196,10 @@ for line in chi1_lines:
 		dchi = float(cline[-1])
 		if dchi<10: dchi = 10.0
 		if dchi>35: dchi = 35
+		chi1 = float(cline[7])
+		if chi1 < 0: chi1 = chi1 + 360.0
 		aco.write("#  " + line + "\n")
-		aco.write("{:>4s}  {:<4s} CHI1  {:8.1f}{:8.1f}\n\n".format(cline[0], A_dict[cline[1]], float(cline[7])-dchi, float(cline[7])+dchi))
+		aco.write("{:>4s}  {:<4s} CHI1  {:8.1f}{:8.1f}\n\n".format(cline[0], A_dict[cline[1]], chi1-dchi, chi1+dchi))
 
 aco.write('## Phi/Psi values from TALOS\n')
 for line in dihed_lines:
@@ -364,6 +366,7 @@ for i in range(len(N_list)):
 print("Made %3.0f NN upl constraints " % (len(NN_used)))
 NC_used = []
 NC_lines = []
+NC_ids = []
 for i in range(len(N_list)):
 	for x in range(len(C_list)):
 		diff = abs(int(PDB_df.loc[N_list[i],'resid']) - int(PDB_df.loc[C_list[x],'resid']))
@@ -380,11 +383,10 @@ for i in range(len(N_list)):
 				if atom2 not in Assignments:
 					NC_out = NC_out.replace('\n',' # missing {:}\n'.format(C_list[x]))
 				NC_lines.append(NC_out)
+				if (str(PDB_df.loc[N_list[i],'resid']),str(PDB_df.loc[C_list[x],'resid'])) not in NC_ids:
+					NC_ids.append((str(PDB_df.loc[N_list[i],'resid']),str(PDB_df.loc[C_list[x],'resid'])))
 
-print("Made %3.0f NC upl constraints " % (len(NC_used)))
-CC_used = []
-CC_Lines = []
-upl.write('### C-C distances\n')
+CC_used,CC_lines,CC_ids = [],[],[]
 for i in range(len(C_list)):
 	for x in range(len(C_list)):
 		diff = abs(int(PDB_df.loc[C_list[i],'resid']) - int(PDB_df.loc[C_list[x],'resid']))
@@ -403,17 +405,46 @@ for i in range(len(C_list)):
 					if atom2 not in Assignments:
 						CC_out = CC_out.replace('\n',' # missing {:}\n'.format(C_list[x]))
 					CC_Lines.append(CC_out)
+					if (str(PDB_df.loc[C_list[i],'resid']),str(PDB_df.loc[C_list[x],'resid'])) not in CC_ids:
+						CC_ids.append((str(PDB_df.loc[C_list[i],'resid']),str(PDB_df.loc[C_list[x],'resid'])))
 
 upl.write('### N-N Distances\n')
 upl.writelines(NN_lines)
 
-for line1 in NC_lines[0:-2]:
-	la1 = line1.split()[3] + line1.split()[5][0:2]
-	d1 = float(line1.split()[6])
-	for line2 in NC_lines[0:-2]:
-
-
-print("Made %3.0f CC upl constraints " % (len(CC_used)))
+NC_outlines = []
+for (nid,cid) in NC_ids:
+	temp,temp2 = [],[]
+	for line in NC_lines:
+		if line.split()[0] == str(nid) and line.split()[3] == str(cid):
+			temp.append(line)
+			temp2.append(float(line.split()[6]))
+	if len(temp) >= 1:
+		print(temp)
+		print(temp2)
+		print(min(temp2))
+		print(temp2.index(min(temp2)))
+		print(temp[temp2.index(min(temp2))])
+		NC_outlines.append(temp[temp2.index(min(temp2))])
+upl.write('### N-C Distances\n')
+upl.writelines(NC_outlines)
+print("Made %3.0f NC upl constraints " % (len(NC_outlines)))
+CC_outlines = []
+for (cid1,cid2) in CC_ids:
+	temp,temp2 = [],[]
+	for line in CC_lines:
+		if line.split()[0] == str(cid1) and line.split()[3] == str(cid2):
+			temp.append(line)
+			temp2.append(float(line.split()[6]))
+	if len(temp) >= 1:
+		print(temp)
+		print(temp2)
+		print(min(temp2))
+		print(temp2.index(min(temp2)))
+		print(temp[temp2.index(min(temp2))])
+		CC_outlines.append(temp[temp2.index(min(temp2))])
+upl.write('### C-C Distances\n')
+upl.writelines(CC_outlines)
+print("Made %3.0f CC upl constraints " % (len(CC_outlines)))
 upl.close()
 
 ssa = open('ssa.cya','w')
