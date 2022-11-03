@@ -337,12 +337,11 @@ print("Generated hbond.upl and hbond.lol")
 # based on TALOS predSS.tab
 #
 NN_used = []
+NN_lines = []
 upl = open(name + '.upl','w')
-upl.write('## N-N distances from structured regions\n')
-N_list = PDB_df[(PDB_df['nuc'] == 'N') & (PDB_df['S2'] >= 0.6) & (PDB_df['resn'] != 'PRO')].index.tolist()
-NA_list = PDB_df[(PDB_df['nuc'] == 'N') & (PDB_df['resn'] != 'PRO')].index.tolist()
-C_list = PDB_df[(PDB_df['nuc'] == 'C') & (PDB_df['S2'] >= 0.6)].index.tolist()
-CA_list = PDB_df[(PDB_df['nuc'] == 'C')].index.tolist()
+# upl.write('### N-N distances\n')
+N_list = PDB_df[(PDB_df['nuc'] == 'N')  & (PDB_df['resn'] != 'PRO')].index.tolist()
+C_list = PDB_df[(PDB_df['nuc'] == 'C')].index.tolist()
 for i in range(len(N_list)):
 	for x in range(len(N_list)):
 		diff = abs(int(PDB_df.loc[N_list[i],'resid']) - int(PDB_df.loc[N_list[x],'resid']))
@@ -360,32 +359,11 @@ for i in range(len(N_list)):
 						NN_out = NN_out.replace('\n',' # missing {:}\n'.format(N_list[i]))
 					if atom2 not in Assignments:
 						NN_out = NN_out.replace('\n',' # missing {:}\n'.format(N_list[x]))
-					upl.write(NN_out)
-upl.write('## N-N distances from Unstructured regions\n')
-for i in range(len(NA_list)):
-	for x in range(len(NA_list)):
-		if NA_list[i] + '-' + NA_list[x] not in NN_used:
-			diff = abs(int(PDB_df.loc[NA_list[i],'resid']) - int(PDB_df.loc[NA_list[x],'resid']))
-			if diff >= 3:
-				dist = np.sqrt(((PDB_df.loc[NA_list[i],'X'] - PDB_df.loc[NA_list[x],'X'])**2) + ((PDB_df.loc[NA_list[i],'Y'] - PDB_df.loc[NA_list[x],'Y'])**2) + ((PDB_df.loc[NA_list[i],'Z'] - PDB_df.loc[NA_list[x],'Z'])**2))
-				if dist < 5.0:
-					constraint = NA_list[x] + '-' + NA_list[i]
-					atom1 = str(PDB_df.loc[NA_list[i],'resid']) + '-' + PDB_df.loc[NA_list[i],'name']
-					atom2 = str(PDB_df.loc[NA_list[x],'resid']) + '-' + PDB_df.loc[NA_list[x],'name']
-					if constraint not in NN_used:
-						constraint2 = NA_list[i] + '-' + NA_list[x]
-						NN_used.append(constraint2)
-						NN_out = "{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:>3}   {:6.2f}\n".format(PDB_df.loc[NA_list[i],'resid'],PDB_df.loc[NA_list[i],'resn'],PDB_df.loc[NA_list[i],'name'], PDB_df.loc[NA_list[x],'resid'],PDB_df.loc[NA_list[x],'resn'],PDB_df.loc[NA_list[x],'name'],dist)
-						if atom1 in Assignments and atom2 in Assignments: pass
-						if atom1 not in Assignments:
-							NN_out = NN_out.replace('\n',' # missing {:}\n'.format(NA_list[i]))
-						if atom2 not in Assignments:
-							NN_out = NN_out.replace('\n',' # missing {:}\n'.format(NA_list[x]))
-						upl.write(NN_out)
+					NN_lines.append(NN_out)
 
 print("Made %3.0f NN upl constraints " % (len(NN_used)))
 NC_used = []
-upl.write('## N-C distances from structured regions\n')
+NC_lines = []
 for i in range(len(N_list)):
 	for x in range(len(C_list)):
 		diff = abs(int(PDB_df.loc[N_list[i],'resid']) - int(PDB_df.loc[C_list[x],'resid']))
@@ -401,29 +379,12 @@ for i in range(len(N_list)):
 					NC_out = NC_out.replace('\n',' # missing {:}\n'.format(N_list[i]))
 				if atom2 not in Assignments:
 					NC_out = NC_out.replace('\n',' # missing {:}\n'.format(C_list[x]))
-				upl.write(NC_out)
+				NC_lines.append(NC_out)
 
-upl.write('## N-C distances from Unstructured regions\n')
-for i in range(len(NA_list)):
-	for x in range(len(CA_list)):
-		if NA_list[i] + '-' + CA_list[x] not in NC_used:
-			diff = abs(int(PDB_df.loc[NA_list[i],'resid']) - int(PDB_df.loc[CA_list[x],'resid']))
-			if diff >= 3:
-				dist = np.sqrt(((PDB_df.loc[NA_list[i],'X'] - PDB_df.loc[CA_list[x],'X'])**2) + ((PDB_df.loc[NA_list[i],'Y'] - PDB_df.loc[CA_list[x],'Y'])**2) + ((PDB_df.loc[NA_list[i],'Z'] - PDB_df.loc[CA_list[x],'Z'])**2))
-				if dist < 6.0:
-					NC_used.append(NA_list[i] + '-' + CA_list[x])
-					NC_out = "{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:>3}   {:6.2f}\n".format(PDB_df.loc[NA_list[i],'resid'],PDB_df.loc[NA_list[i],'resn'],PDB_df.loc[NA_list[i],'name'], PDB_df.loc[CA_list[x],'resid'],PDB_df.loc[CA_list[x],'resn'],PDB_df.loc[CA_list[x],'name'],dist)
-					atom1 = str(PDB_df.loc[N_list[i],'resid']) + '-' + PDB_df.loc[NA_list[i],'name']
-					atom2 = str(PDB_df.loc[C_list[x],'resid']) + '-' + PDB_df.loc[CA_list[x],'name']
-					if atom1 in Assignments and atom2 in Assignments: pass
-					if atom1 not in Assignments:
-						NC_out = NC_out.replace('\n',' # missing {:}\n'.format(NA_list[i]))
-					if atom2 not in Assignments:
-						NC_out = NC_out.replace('\n',' # missing {:}\n'.format(CA_list[x]))
-					upl.write(NC_out)
 print("Made %3.0f NC upl constraints " % (len(NC_used)))
 CC_used = []
-upl.write('## C-C distances from structured regions\n')
+CC_Lines = []
+upl.write('### C-C distances\n')
 for i in range(len(C_list)):
 	for x in range(len(C_list)):
 		diff = abs(int(PDB_df.loc[C_list[i],'resid']) - int(PDB_df.loc[C_list[x],'resid']))
@@ -436,34 +397,21 @@ for i in range(len(C_list)):
 				if constraint not in CC_used:
 					CC_used.append(C_list[i] + '-' + C_list[x])
 					CC_out = "{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:>3}   {:6.2f}\n".format(PDB_df.loc[C_list[i],'resid'],PDB_df.loc[C_list[i],'resn'],PDB_df.loc[C_list[i],'name'], PDB_df.loc[C_list[x],'resid'],PDB_df.loc[C_list[x],'resn'],PDB_df.loc[C_list[x],'name'],dist)
-					upl.write(CC_out)
 					if atom1 in Assignments and atom2 in Assignments: pass
 					if atom1 not in Assignments:
 						CC_out = CC_out.replace('\n',' # missing {:}\n'.format(C_list[i]))
 					if atom2 not in Assignments:
 						CC_out = CC_out.replace('\n',' # missing {:}\n'.format(C_list[x]))
-					upl.write(CC_out)
+					CC_Lines.append(CC_out)
 
-upl.write('## C-C distances from UNstructured regions\n')
-for i in range(len(CA_list)):
-	for x in range(len(CA_list)):
-		if CA_list[i] + '-' + CA_list[x] not in CC_used:
-			diff = abs(int(PDB_df.loc[CA_list[i],'resid']) - int(PDB_df.loc[CA_list[x],'resid']))
-			if diff >= 3:
-				dist = np.sqrt(((PDB_df.loc[CA_list[i],'X'] - PDB_df.loc[CA_list[x],'X'])**2) + ((PDB_df.loc[CA_list[i],'Y'] - PDB_df.loc[CA_list[x],'Y'])**2) + ((PDB_df.loc[CA_list[i],'Z'] - PDB_df.loc[CA_list[x],'Z'])**2))
-				if dist < 6.0:
-					constraint = CA_list[x] + '-' + CA_list[i]
-					atom1 = str(PDB_df.loc[CA_list[i],'resid']) + '-' + PDB_df.loc[CA_list[i],'name']
-					atom2 = str(PDB_df.loc[CA_list[x],'resid']) + '-' + PDB_df.loc[CA_list[x],'name']
-					if constraint not in CC_used:
-						CC_used.append(CA_list[i] + '-' + CA_list[x])
-						CC_out = "{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:>3}   {:6.2f}\n".format(PDB_df.loc[CA_list[i],'resid'],PDB_df.loc[CA_list[i],'resn'],PDB_df.loc[CA_list[i],'name'], PDB_df.loc[CA_list[x],'resid'],PDB_df.loc[CA_list[x],'resn'],PDB_df.loc[CA_list[x],'name'],dist)
-						if atom1 in Assignments and atom2 in Assignments: pass
-						if atom1 not in Assignments:
-							CC_out = CC_out.replace('\n',' # missing {:}\n'.format(CA_list[i]))
-						if atom2 not in Assignments:
-							CC_out = CC_out.replace('\n',' # missing {:}\n'.format(CA_list[x]))
-						upl.write(CC_out)
+upl.write('### N-N Distances\n')
+upl.writelines(NN_lines)
+
+for line1 in NC_lines[0:-2]:
+	la1 = line1.split()[3] + line1.split()[5][0:2]
+	d1 = float(line1.split()[6])
+	for line2 in NC_lines[0:-2]:
+
 
 print("Made %3.0f CC upl constraints " % (len(CC_used)))
 upl.close()
