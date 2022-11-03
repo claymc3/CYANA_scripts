@@ -404,7 +404,7 @@ for i in range(len(C_list)):
 						CC_out = CC_out.replace('\n',' # missing {:}\n'.format(C_list[i]))
 					if atom2 not in Assignments:
 						CC_out = CC_out.replace('\n',' # missing {:}\n'.format(C_list[x]))
-					CC_Lines.append(CC_out)
+					CC_lines.append(CC_out)
 					if (str(PDB_df.loc[C_list[i],'resid']),str(PDB_df.loc[C_list[x],'resid'])) not in CC_ids:
 						CC_ids.append((str(PDB_df.loc[C_list[i],'resid']),str(PDB_df.loc[C_list[x],'resid'])))
 
