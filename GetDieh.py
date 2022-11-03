@@ -67,26 +67,31 @@ def calcDihedrals(A,B,C,D):
 # return phi, psi
 #MODEL        1
 #
-
-SideDihe = {'R':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD' ], ['chi3', 'CB', 'CG', 'CD', 'NE'], ['chi4', 'CG', 'CD', 'NE', 'CZ'], ['chi5', 'CD', 'NE', 'CZ' ,'NH1']],
- 'N':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'OD1']],
- 'D':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'OD1']],
- 'C':[['chi1', 'N', 'CA', 'CB','SG']],
- 'Q':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD'], ['chi3','CB', 'CG', 'CD', 'OE1']],
- 'E':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD'], ['chi3', 'CB', 'CG', 'CD', 'OE1']],
- 'H':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2','CA', 'CB', 'CG', 'ND1']],
+#SideDihe = {
+# 'R':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD' ], ['chi3', 'CB', 'CG', 'CD', 'NE'], ['chi4', 'CG', 'CD', 'NE', 'CZ'], ['chi5', 'CD', 'NE', 'CZ' ,'NH1']],
+# 'N':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'OD1']],
+# 'D':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'OD1']],
+# 'C':[['chi1', 'N', 'CA', 'CB','SG']],
+# 'Q':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD'], ['chi3','CB', 'CG', 'CD', 'OE1']],
+# 'E':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD'], ['chi3', 'CB', 'CG', 'CD', 'OE1']],
+# 'H':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2','CA', 'CB', 'CG', 'ND1']],
+# 'I':[['chi1', 'N', 'CA', 'CB','CG1'], ['chi2', 'CA', 'CB', 'CG1', 'CD1']],
+# 'L':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
+# 'K':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD'],['chi3', 'CB', 'CG', 'CD', 'CE'],['chi4', 'CG', 'CD', 'CE', 'NZ']],
+# 'M':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'SD'],['chi3', 'CB', 'CG', 'SD', 'CE']],
+# 'F':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
+# 'P':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD']],
+# 'S':[['chi1', 'N', 'CA', 'CB','OG']],
+# 'T':[['chi1', 'N', 'CA', 'CB','OG1']],
+# 'W':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
+# 'Y':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
+# 'V':[['chi1', 'N', 'CA', 'CB','CG1']]}
+SideDihe = {
  'I':[['chi1', 'N', 'CA', 'CB','CG1'], ['chi2', 'CA', 'CB', 'CG1', 'CD1']],
  'L':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
- 'K':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD'],['chi3', 'CB', 'CG', 'CD', 'CE'],['chi4', 'CG', 'CD', 'CE', 'NZ']],
- 'M':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'SD'],['chi3', 'CB', 'CG', 'SD', 'CE']],
+ 'M':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'SD']],
  'F':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
- 'P':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD']],
- 'S':[['chi1', 'N', 'CA', 'CB','OG']],
- 'T':[['chi1', 'N', 'CA', 'CB','OG1']],
- 'W':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
- 'Y':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
- 'V':[['chi1', 'N', 'CA', 'CB','CG1']]}
-
+ 'Y':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']]}
 
 
 Dihedrals = pd.DataFrame(columns=['phi','psi','chi1','chi2'])
@@ -100,59 +105,107 @@ in_pdb = sys.argv[1]
 chains = sys.argv[2]
 # in_pdb = '4k33.pdb'
 # chains = 'A'
-Coords = {}
-Sequence = []
-PDB_df = pd.DataFrame(columns=pdb_columns)
-Starts = []
-
-if 'MODEL        1' not in open(in_pdb).read():
-	for line in open(in_pdb):
+Sequence, Starts, Ends = [], [], []
+for mnum in range(1,21,1):
+	start = open(in_pdb).readlines().index('MODEL' + '%9s\n' %str(mnum))
+	exec('Coor' + str(mnum) + ' = {}')
+	Starts.append(start)
+	Ends.append(start-1)
+Ends.append(open(in_pdb).readlines().index('END\n'))
+Ends = Ends[1:]
+pdb = open(in_pdb).readlines()
+n = 0
+for (start,end) in zip(Starts,Ends):
+	n+=1
+	print('Reading coordinates for model %d' %n)
+	Coor = eval('Coor' + str(n))
+	for x in range(start,end,1):
+		line = pdb[x]
 		if line[0:4] == "ATOM" or line[0:4] == 'HETA':
-			if  line[17:20].strip() in AAA_dict.keys():
-				index =  AAA_dict[line[17:20].strip()] + line[22:26].strip() + '-' + line[12:16].strip()
-				if AAA_dict[line[17:20].strip()] + line[22:26].strip() not in Sequence:
-					Sequence.append(AAA_dict[line[17:20].strip()] + line[22:26].strip())
-				Coords[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
+			index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
+			Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
+			if AAA_dict[line[17:20].strip()] + line[22:26].strip() not in Sequence:
+				Sequence.append(AAA_dict[line[17:20].strip()] + line[22:26].strip())
 
+PhiDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
+PsiDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
+chi1DF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
+chi2DF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
+chi3DF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
+chi4DF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
+chi5DF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
+for mnum in range(1,21,1):
+	Coords = eval('Coor' + str(mnum))
 	for i in range(1,len(Sequence)-1,1):
 		phi = calcDihedrals(Coords[Sequence[i-1]+ '-C'],Coords[Sequence[i]+ '-N'],Coords[Sequence[i]+ '-CA'],Coords[Sequence[i]+ '-C'])
+		PhiDF.loc[Sequence[i],mnum] = np.round(phi,1)
 		psi = calcDihedrals(Coords[Sequence[i]+ '-N'],Coords[Sequence[i]+ '-CA'],Coords[Sequence[i]+ '-C'],Coords[Sequence[i+1]+ '-N'])
-		Dihedrals.loc[Sequence[i].split('-')[0],'phi'] = np.round(phi,1)
-		Dihedrals.loc[Sequence[i].split('-')[0],'psi'] = np.round(psi,1)
+		PsiDF.loc[Sequence[i],mnum] = np.round(psi,1)
 	for res in Sequence: 
 		if res[0] in SideDihe.keys():
 			for dihe in SideDihe[res[0]]:
+				diheDF = eval(dihe[0] + 'DF')
 				if res+ '-' + dihe[1] in Coords.keys() and res+ '-' + dihe[2] in Coords.keys() and res+ '-' + dihe[3] in Coords.keys() and res+ '-' + dihe[4] in Coords.keys():
 					ang = calcDihedrals(Coords[res+ '-' + dihe[1]],Coords[res+ '-' + dihe[2]],Coords[res+ '-' + dihe[3]],Coords[res+ '-' + dihe[4]])
 					if ang < 0: ang = ang + 360.0
-					Dihedrals.loc[res.split('-')[0],dihe[0]] = np.round(ang,1)
-	Dihedrals.to_csv(in_pdb.replace('.pdb', '_dihedrals.csv'))
+					diheDF.loc[res,mnum] = np.round(ang,1)
 
-# if 'MODEL        1' not in open(in_pdb).read():
-# 	for mnum in range(1,21,1):
-# 		start = open(in_pdb).readlines().index('MODEL' + '%9s\n' %str(mnum))
-# 		exec('Coor' + str(mnum) + ' = {}')
-# 		Coor = eval('Coor' + str(mnum))
-# 		Starts.append(start)
-# 		for line in open(in_pdb).readlines()[start:]:
-# 			if line == 'ENDMDL\n': break
-# 			if line[0:4] == "ATOM" or line[0:4] == 'HETA':
-# 				index =  line[17:20].strip() + line[22:26].strip() + '-' + line[12:16].strip()
-# 				if line[17:20].strip() + line[22:26].strip() not in Sequence:
-# 					Sequence.append(line[17:20].strip() + line[22:26].strip())
-# 				Coords[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
+PhiDF['mean'] = np.round(PhiDF.mean(axis=1),2)
+PhiDF['stdv'] = np.round(PhiDF.std(axis=1),2)
+PsiDF['mean'] = np.round(PsiDF.mean(axis=1),2)
+PsiDF['stdv'] = np.round(PsiDF.std(axis=1),2)
+chi1DF['mean'] = np.round(chi1DF.mean(axis=1),2)
+chi1DF['stdv'] = np.round(chi1DF.std(axis=1),2)
+chi2DF['mean'] = np.round(chi2DF.mean(axis=1),2)
+chi2DF['stdv'] = np.round(chi2DF.std(axis=1),2)
 
-# 	print(Coords)
-# 	for i in range(1,len(Sequence)-1,1):
-# 	    phi = calcDihedrals(Coords[Sequence[i-1]+ '-C'],Coords[Sequence[i]+ '-N'],Coords[Sequence[i]+ '-CA'],Coords[Sequence[i]+ '-C'])
-# 	    psi = calcDihedrals(Coords[Sequence[i]+ '-N'],Coords[Sequence[i]+ '-CA'],Coords[Sequence[i]+ '-C'],Coords[Sequence[i+1]+ '-N'])
-# 	    Dihedrals.loc[Sequence[i].split('-')[0],'phi'] = np.round(phi,1)
-# 	    Dihedrals.loc[Sequence[i].split('-')[0],'psi'] = np.round(psi,1)
-# 	for res in Sequence: 
-# 	    if res[0] in SideDihe.keys():
-# 	        for dihe in SideDihe[res[0]]:
-# 	            if res+ '-' + dihe[1] in Coords.keys() and res+ '-' + dihe[2] in Coords.keys() and res+ '-' + dihe[3] in Coords.keys() and res+ '-' + dihe[4] in Coords.keys():
-# 	                ang = calcDihedrals(Coords[res+ '-' + dihe[1]],Coords[res+ '-' + dihe[2]],Coords[res+ '-' + dihe[3]],Coords[res+ '-' + dihe[4]])
-# 	                Dihedrals.loc[res.split('-')[0],dihe[0]] = np.round(ang,1)
 
-print(Dihedrals)
+PhiDF.to_csv(in_pdb.replace('.pdb', '_phi.csv'))
+PsiDF.to_csv(in_pdb.replace('.pdb', '_psi.csv'))
+chi1DF.to_csv(in_pdb.replace('.pdb', '_chi1.csv'))
+chi2DF.to_csv(in_pdb.replace('.pdb', '_chi2.csv'))
+chi3DF.to_csv(in_pdb.replace('.pdb', '_chi3.csv'))
+chi4DF.to_csv(in_pdb.replace('.pdb', '_chi4.csv'))
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+from matplotlib.backends.backend_pdf import PdfPages
+from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
+from scipy.stats import trim_mean
+from scipy.stats import tstd
+from matplotlib.ticker import FormatStrFormatter
+import matplotlib.ticker as ticker 
+
+pdf = PdfPages(in_pdb.replace('.pdb', '_phi-psi.pdf'))
+for res in PhiDF.index.to_list():
+	fig, ax = plt.subplots(figsize=(3,3))
+	ax.scatter(PhiDF.loc[res][:-2],PsiDF.loc[res][:-2],marker='o')
+	ax.set_xlabel('Phi')
+	ax.set_ylabel('Psi')
+	ax.set_title(res)
+	ax.set_xlim([-180,180])
+	ax.set_xticks([-180,-120,-60,0,60,120,180], labels=[-180,-120,-60,0,60,120,180])
+	ax.set_yticks([-180,-120,-60,0,60,120,180], labels=[-180,-120,-60,0,60,120,180])
+	ax.set_ylim([-180,180])
+	ax.grid(visible=True, which='major', axis='both')
+	plt.tight_layout()
+	pdf.savefig()
+	plt.close()
+pdf.close()
+
+pdf = PdfPages(in_pdb.replace('.pdb', '_chi1-chi2.pdf'))
+for res in chi1DF.index.to_list():
+	fig, ax = plt.subplots(figsize=(3,3))
+	ax.scatter(chi1DF.loc[res][:-2],chi2DF.loc[res][:-2],marker='o')
+	ax.set_xlabel('Chi1')
+	ax.set_ylabel('Chi2')
+	ax.set_title(res)
+	ax.set_xlim([0,360])
+	ax.set_xticks([0,60,120,180,240,300,360], labels=[0,60,120,180,240,300,360])
+	ax.set_yticks([0,60,120,180,240,300,360], labels=[0,60,120,180,240,300,360])
+	ax.set_ylim([0,360])
+	ax.grid(visible=True, which='major', axis='both')
+	plt.tight_layout()
+	pdf.savefig()
+	plt.close()
+pdf.close()
+
