@@ -283,7 +283,7 @@ with open(in_pdb) as In_pdb:
 					index =  AAA_dict[line[17:20].strip()] + line[22:26].strip() + "-" + line[12:16].strip()
 					PDB_df.loc[index, 'name'] = line[12:16].strip()
 					PDB_df.loc[index, 'resn'] = line[16:20].strip()
-					PDB_df.loc[index, 'resid'] = int(line[22:26].strip())
+					PDB_df.loc[index, 'resid'] = line[22:26].strip()
 					PDB_df.loc[index, 'X'] = float(line[30:38])
 					PDB_df.loc[index, 'Y'] = float(line[38:46])
 					PDB_df.loc[index, 'Z'] = float(line[46:54])
@@ -306,7 +306,7 @@ hblol.write("## Helical residues from TALOS \n")
 hbupl.write("## Helical residues from TALOS \n")
 for O in hbond_O:
 	for N in hbond_N:
-		if abs(PDB_df.loc[O,'resid'] - PDB_df.loc[N,'resid']) == 4: 
+		if abs(int(PDB_df.loc[O,'resid']) - int(PDB_df.loc[N,'resid'])) == 4: 
 			dist = round(np.sqrt(((PDB_df.loc[O,'X'] - PDB_df.loc[N,'X'])**2) + ((PDB_df.loc[O,'Y'] - PDB_df.loc[N,'Y'])**2) + ((PDB_df.loc[O,'Z'] - PDB_df.loc[N,'Z'])**2)),1)
 			if dist >= 2.7 and dist <= 3.3: 
 				constrained.append(str(PDB_df.loc[O,'resid']) + '-' + str(PDB_df.loc[N,'resid']))
@@ -321,7 +321,7 @@ hbond_N = PDB_df[(PDB_df['nuc'] == 'N') & (PDB_df['SecStr'] == 'E')].index.tolis
 hbond_O = PDB_df[(PDB_df['nuc'] == 'O') & (PDB_df['SecStr'] == 'E')].index.tolist()
 for O in hbond_O:
 	for N in hbond_N:
-		if abs(PDB_df.loc[O,'resid'] - PDB_df.loc[N,'resid']) != 0: 
+		if abs(int(PDB_df.loc[O,'resid']) - int(PDB_df.loc[N,'resid'])) > 3: 
 			dist = round(np.sqrt(((PDB_df.loc[O,'X'] - PDB_df.loc[N,'X'])**2) + ((PDB_df.loc[O,'Y'] - PDB_df.loc[N,'Y'])**2) + ((PDB_df.loc[O,'Z'] - PDB_df.loc[N,'Z'])**2)),1)
 			if dist >= 2.7 and dist <= 3.3: 
 				constrained.append(str(PDB_df.loc[O,'resid']) + '-' + str(PDB_df.loc[N,'resid']))
@@ -408,9 +408,20 @@ for i in range(len(C_list)):
 					if (str(PDB_df.loc[C_list[i],'resid']),str(PDB_df.loc[C_list[x],'resid'])) not in CC_ids:
 						CC_ids.append((str(PDB_df.loc[C_list[i],'resid']),str(PDB_df.loc[C_list[x],'resid'])))
 
+#------------------------------------------------------------------------------
+# Filter the NC and CC distance restraints so that only the shortest connection
+# to geminal methyls and Aromatic CE1/CE2 is kept. 
+# This means that 
+#		712 LEU   CD1   716  LEU   CD1     4.20
+#		712 LEU   CD1   716  LEU   CD2     4.29
+#		712 LEU   CD2   716  LEU   CD1     4.46
+#		712 LEU   CD2   716  LEU   CD2     5.50
+# becomes 
+#		712 LEU   CD1   716  LEU   CD1     4.20
+#------------------------------------------------------------------------------
+
 upl.write('### N-N Distances\n')
 upl.writelines(NN_lines)
-
 NC_outlines = []
 for (nid,cid) in NC_ids:
 	temp,temp2 = [],[]
@@ -419,14 +430,11 @@ for (nid,cid) in NC_ids:
 			temp.append(line)
 			temp2.append(float(line.split()[6]))
 	if len(temp) >= 1:
-		print(temp)
-		print(temp2)
-		print(min(temp2))
-		print(temp2.index(min(temp2)))
-		print(temp[temp2.index(min(temp2))])
 		NC_outlines.append(temp[temp2.index(min(temp2))])
+
 upl.write('### N-C Distances\n')
 upl.writelines(NC_outlines)
+print("Original %3.0f NC upl constraints " % (len(NC_lines)))
 print("Made %3.0f NC upl constraints " % (len(NC_outlines)))
 CC_outlines = []
 for (cid1,cid2) in CC_ids:
@@ -436,14 +444,10 @@ for (cid1,cid2) in CC_ids:
 			temp.append(line)
 			temp2.append(float(line.split()[6]))
 	if len(temp) >= 1:
-		print(temp)
-		print(temp2)
-		print(min(temp2))
-		print(temp2.index(min(temp2)))
-		print(temp[temp2.index(min(temp2))])
 		CC_outlines.append(temp[temp2.index(min(temp2))])
 upl.write('### C-C Distances\n')
 upl.writelines(CC_outlines)
+print("Original %3.0f CC upl constraints " % (len(CC_lines)))
 print("Made %3.0f CC upl constraints " % (len(CC_outlines)))
 upl.close()
 
