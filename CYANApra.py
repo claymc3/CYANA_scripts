@@ -4,7 +4,7 @@ import sys
 import re
 import pandas as pd
 import numpy as np
-
+import GetDihe as Dihed 
 replacements ={
 'ALAHA':'CA','ALAQB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'CB',
 'CYSHA':'CA','CYSHB2':'CB','CYSHB3':'CB','CYSQB':'CB',
@@ -547,13 +547,15 @@ outpml.write("hide labels\n")
 outpml.close()
 outcmx.close()
 
+Dihed.extract(in_pdb, ASequence, outdir)
+
 import matplotlib as mpl 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import mplcursors
 import numpy as np
 from matplotlib.widgets import Slider
-pdf=PdfPages('{:}_upl_overview.pdf'.format(pdbname))
+pdf=PdfPages(outdir + '{:}_upl_overview.pdf'.format(pdbname))
 index = np.arange(len(Sequence))
 fig, ax = plt.subplots(figsize=(0.5*len(index),7))
 width = 0.18
