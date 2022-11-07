@@ -556,32 +556,88 @@ import mplcursors
 import numpy as np
 from matplotlib.widgets import Slider
 pdf=PdfPages(outdir + '{:}_upl_overview.pdf'.format(pdbname))
-index = np.arange(len(Sequence))
-fig, ax = plt.subplots(figsize=(0.5*len(index),7))
-width = 0.18
-ax.bar(index, upldf['cya'], width, color = '#9acd32', ecolor='none', label='CYANA UPL')
-ax.bar(index + width, upldf['long'], width, color = '#800080', edgecolor='none', label='long UPL')
-ax.bar(index + 2 * width, upldf['viol'], width, color = '#ffa500', edgecolor='none', label='Violated UPL')
-ax.bar(index + 3 * width, upldf['input'], width, color = '#6495ed', edgecolor='none', label='Input UPL')
-ax.bar(index + 4 * width, upldf['viol input'], width, color = '#db7093', edgecolor='none', label='Violate Input UPL')
-angelidx, angelh = [], []
-for res in index:
-	angle = upldf.loc[Sequence[res],'vdihed']
-	if not pd.isna(angle):
-		angelidx.append(res+2*width)
-		angelh.append(max(upldf['cya']))
-		text = ax.text(res+0.1, max(upldf['cya']), angle,ha='center', va='top')
-ax.bar(angelidx, angelh, 0.9, color='gray',alpha = 0.5, zorder = 0.0,edgecolor='none' )
-ax.set_xticks(np.arange(len(Sequence))+2*width, labels=ASequence)
-ax.set_ylim([0,max(upldf['cya'])])
-ax.set_xlim([(min(index) - 1.0 * width), (max(index) + 5 * width)])
-ax.tick_params(axis='x', labelrotation = 90)
-ax.legend(loc='best', frameon=False, markerscale=0.000001)
-ax.set_ylabel('Number of UPL Entries')
-ax.set_xlabel('Residue')
-# cursors = mplcursors.cursor(hover=True)
-plt.tight_layout()
+nsubplots = round(len(Sequence)/25,0)
+if round(len(Sequence)/25,1) - nsubplots > 0.0:
+	nsubplots = nsubplots + 1
+if nsubplots == 0: nsubplots = 1
+fig_height = 3.0 * nsubplots
+if fig_height <= 2.0: 
+	fig_height = 3.0
+fig=plt.figure(figsize=(10.0,fig_height))
+spi = 0
+for i in range(0,len(upldf.index.tolist()),25):
+	spi = spi + 1
+	temp, resid = [], []
+	z = i
+	for y in range(25):
+		temp.append(upldf.index.tolist()[z])
+		resid.append(ASequence[z])
+		z = z + 1 
+		if z == len(upldf.index.tolist()):break
+	index = np.arange(i,z,1)
+	dfp = upldf.reindex(temp)
+	width = 0.18
+	ax = fig.add_subplot(int(nsubplots),1,spi)
+	ax.bar(index, dfp['cya'], width, color = '#9acd32', ecolor='none', label='CYANA UPL')
+	ax.bar(index + width, dfp['long'], width, color = '#800080', edgecolor='none', label='long UPL')
+	ax.bar(index + 2 * width, dfp['viol'], width, color = '#ffa500', edgecolor='none', label='Violated UPL')
+	ax.bar(index + 3 * width, dfp['input'], width, color = '#6495ed', edgecolor='none', label='Input UPL')
+	ax.bar(index + 4 * width, dfp['viol input'], width, color = '#db7093', edgecolor='none', label='Violate Input UPL')
+	angelidx, angelh = [], []
+	for n in range(len(index)):
+		res = temp[n]
+		angle = dfp.loc[res,'vdihed']
+		if not pd.isna(angle):
+			angelidx.append(index[n]+2*width)
+			angelh.append(max(upldf['cya']))
+			text = ax.text(index[n]+0.1, max(upldf['cya']), angle,ha='center', va='top',fontsize=6)
+	ax.bar(angelidx, angelh, 0.9, color='gray',alpha = 0.5, zorder = 0.0,edgecolor='none' )
+	ax.set_xticks(index +2*width, labels=resid)
+	ax.set_ylim([0,max(upldf['cya'])])
+	ax.set_xlim([(min(index) - 1.0 * width), (max(index) + 5 * width)])
+	ax.tick_params(axis='x', labelrotation = 90)
+	ax.legend(loc='best', frameon=False, markerscale=0.000001)
+	ax.set_ylabel('Number of UPL Entries')
+	ax.set_xlabel('Residue')
+	# cursors = mplcursors.cursor(hover=True)
+	plt.tight_layout(pad = 0.4, w_pad = 0.4, h_pad = 0.4)
 pdf.savefig()
 # plt.show()
 plt.close()
 pdf.close()
+
+
+
+
+	# df3 = df[(df['total'] > 1.0) ].copy(deep=True)
+	# if len(df3.index.tolist()) > 0:
+	# 	nsubplots = round(len(df3.index.tolist())/30,0)
+	# 	if round(len(df3.index.tolist())/30,1) - nsubplots > 0.0:
+	# 		nsubplots = nsubplots + 1
+	# 	if nsubplots == 0: nsubplots = 1
+	# 	fig_height = 3.0 * nsubplots
+	# 	if fig_height <= 2.0: 
+	# 		fig_height = 3.0
+	# 	entry_width = 5.0/30
+	# 	fig_width = 0.78 + entry_width * 30
+	# 	if fig_width < 3.0: 
+	# 		fig_width = 3.0
+	# 	fig=plt.figure(figsize=(fig_width,fig_height))
+	# 	spi = 0
+	# 	for i in range(0,len(df3.index.tolist()),30):
+	# 		spi = spi + 1
+	# 		temp = []
+	# 		z = i
+	# 		for y in range(30):
+	# 			temp.append(df3.index.tolist()[z])
+	# 			z = z + 1 
+	# 			if z == len(df3.index.tolist()):break
+	# 		dfp = df3.reindex(temp)
+	# 		ax = fig.add_subplot(int(nsubplots),1,spi)
+	# 		ax.bar(dfp.index.tolist(), dfp['total'],0.9,color='orange', edgecolor='none', label = 'total')
+	# 		ax.tick_params(axis='x', labelrotation = 90)
+	# 	ax.set_title(cya_plists[x] + ' total')
+	# 	ax.set_xlabel('Residue Number')
+	# 	plt.tight_layout(pad = 0.4, w_pad = 0.4, h_pad = 0.4)
+	# 	pdf.savefig(transparent=True)
+	# plt.close()
