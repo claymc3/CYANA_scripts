@@ -108,7 +108,7 @@ manualcons = [line.strip() for line in open(calc).readlines() if line.strip() an
 upls = [con for con in manualcons if 'upl' in con and 'hbond' not in con]
 hbonds = [con for con in manualcons if 'upl' in con and 'hbond' in con]
 lols = [con for con in manualcons if 'lol' in con and 'hbond' not in con]
-dihed = [con for con in manualcons if 'aco' in con]
+dihed = [con for con in manualcons if 'aco' in con if con != 'inital.aco']
 noa = cwd + 'cycle7.noa'
 noalines = open(noa).readlines()
 print('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl'.format(pad,pad))
