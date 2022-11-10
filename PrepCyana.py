@@ -310,10 +310,10 @@ for O in hbond_O:
 			dist = round(np.sqrt(((PDB_df.loc[O,'X'] - PDB_df.loc[N,'X'])**2) + ((PDB_df.loc[O,'Y'] - PDB_df.loc[N,'Y'])**2) + ((PDB_df.loc[O,'Z'] - PDB_df.loc[N,'Z'])**2)),1)
 			if dist >= 2.7 and dist <= 3.3: 
 				constrained.append(str(PDB_df.loc[O,'resid']) + '-' + str(PDB_df.loc[N,'resid']))
-				hbupl.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:>3}     3.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
-				hbupl.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:>3}     2.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
-				hblol.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:>3}     2.70\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
-				hblol.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:>3}     1.80\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
+				hbupl.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}     3.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
+				hbupl.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}     2.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
+				hblol.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}     2.70\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
+				hblol.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}     1.80\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
 ### For Betta Sheet residues from TALOS
 hblol.write("## Betta Sheet residues from TALOS \n")
 hbupl.write("## Betta Sheet residues from TALOS \n")				
@@ -325,10 +325,10 @@ for O in hbond_O:
 			dist = round(np.sqrt(((PDB_df.loc[O,'X'] - PDB_df.loc[N,'X'])**2) + ((PDB_df.loc[O,'Y'] - PDB_df.loc[N,'Y'])**2) + ((PDB_df.loc[O,'Z'] - PDB_df.loc[N,'Z'])**2)),1)
 			if dist >= 2.7 and dist <= 3.3: 
 				constrained.append(str(PDB_df.loc[O,'resid']) + '-' + str(PDB_df.loc[N,'resid']))
-				hbupl.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:>3}     3.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
-				hbupl.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:>3}     2.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
-				hblol.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:>3}     2.70\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
-				hblol.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:>3}     1.80\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
+				hbupl.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}     3.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
+				hbupl.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}     2.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
+				hblol.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}     2.70\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
+				hblol.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}     1.80\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
 hblol.close()
 hbupl.close()
 hblol.close()
@@ -348,14 +348,14 @@ for i in range(len(N_list)):
 	for x in range(len(N_list)):
 		diff = abs(int(PDB_df.loc[N_list[i],'resid']) - int(PDB_df.loc[N_list[x],'resid']))
 		if diff >= 3:
-			dist = np.sqrt(((PDB_df.loc[N_list[i],'X'] - PDB_df.loc[N_list[x],'X'])**2) + ((PDB_df.loc[N_list[i],'Y'] - PDB_df.loc[N_list[x],'Y'])**2) + ((PDB_df.loc[N_list[i],'Z'] - PDB_df.loc[N_list[x],'Z'])**2))
+			dist = np.round(np.sqrt(((PDB_df.loc[N_list[i],'X'] - PDB_df.loc[N_list[x],'X'])**2) + ((PDB_df.loc[N_list[i],'Y'] - PDB_df.loc[N_list[x],'Y'])**2) + ((PDB_df.loc[N_list[i],'Z'] - PDB_df.loc[N_list[x],'Z'])**2)),1)
 			if dist < 5.0:
 				constraint = N_list[x] + '-' + N_list[i]
 				atom1 = str(PDB_df.loc[N_list[i],'resid']) + '-' + PDB_df.loc[N_list[i],'name']
 				atom2 = str(PDB_df.loc[N_list[x],'resid']) + '-' + PDB_df.loc[N_list[x],'name']
 				if constraint not in NN_used:
 					NN_used.append(N_list[i] + '-' + N_list[x])
-					NN_out = "{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:>3}   {:6.2f}\n".format(PDB_df.loc[N_list[i],'resid'],PDB_df.loc[N_list[i],'resn'],PDB_df.loc[N_list[i],'name'], PDB_df.loc[N_list[x],'resid'],PDB_df.loc[N_list[x],'resn'],PDB_df.loc[N_list[x],'name'],dist)
+					NN_out = "{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}   {:6.2f}\n".format(PDB_df.loc[N_list[i],'resid'],PDB_df.loc[N_list[i],'resn'],PDB_df.loc[N_list[i],'name'], PDB_df.loc[N_list[x],'resid'],PDB_df.loc[N_list[x],'resn'],PDB_df.loc[N_list[x],'name'],dist)
 					if atom1 in Assignments and atom2 in Assignments: pass
 					if atom1 not in Assignments:
 						NN_out = NN_out.replace('\n',' # missing {:}\n'.format(N_list[i]))
@@ -371,12 +371,12 @@ for i in range(len(N_list)):
 	for x in range(len(C_list)):
 		diff = abs(int(PDB_df.loc[N_list[i],'resid']) - int(PDB_df.loc[C_list[x],'resid']))
 		if diff >= 3:
-			dist = np.sqrt(((PDB_df.loc[N_list[i],'X'] - PDB_df.loc[C_list[x],'X'])**2) + ((PDB_df.loc[N_list[i],'Y'] - PDB_df.loc[C_list[x],'Y'])**2) + ((PDB_df.loc[N_list[i],'Z'] - PDB_df.loc[C_list[x],'Z'])**2))
+			dist = np.rount(np.sqrt(((PDB_df.loc[N_list[i],'X'] - PDB_df.loc[C_list[x],'X'])**2) + ((PDB_df.loc[N_list[i],'Y'] - PDB_df.loc[C_list[x],'Y'])**2) + ((PDB_df.loc[N_list[i],'Z'] - PDB_df.loc[C_list[x],'Z'])**2)),1)
 			if dist < 6.0:
 				atom1 = str(PDB_df.loc[N_list[i],'resid']) + '-' + PDB_df.loc[N_list[i],'name']
 				atom2 = str(PDB_df.loc[C_list[x],'resid']) + '-' + PDB_df.loc[C_list[x],'name']
 				NC_used.append(N_list[i] + '-' + C_list[x])
-				NC_out = "{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:>3}   {:6.2f}\n".format(PDB_df.loc[N_list[i],'resid'],PDB_df.loc[N_list[i],'resn'],PDB_df.loc[N_list[i],'name'], PDB_df.loc[C_list[x],'resid'],PDB_df.loc[C_list[x],'resn'],PDB_df.loc[C_list[x],'name'],dist)
+				NC_out = "{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}   {:6.2f}\n".format(PDB_df.loc[N_list[i],'resid'],PDB_df.loc[N_list[i],'resn'],PDB_df.loc[N_list[i],'name'], PDB_df.loc[C_list[x],'resid'],PDB_df.loc[C_list[x],'resn'],PDB_df.loc[C_list[x],'name'],dist)
 				if atom1 in Assignments and atom2 in Assignments: pass
 				if atom1 not in Assignments:
 					NC_out = NC_out.replace('\n',' # missing {:}\n'.format(N_list[i]))
@@ -391,14 +391,14 @@ for i in range(len(C_list)):
 	for x in range(len(C_list)):
 		diff = abs(int(PDB_df.loc[C_list[i],'resid']) - int(PDB_df.loc[C_list[x],'resid']))
 		if diff >= 3:
-			dist = np.sqrt(((PDB_df.loc[C_list[i],'X'] - PDB_df.loc[C_list[x],'X'])**2) + ((PDB_df.loc[C_list[i],'Y'] - PDB_df.loc[C_list[x],'Y'])**2) + ((PDB_df.loc[C_list[i],'Z'] - PDB_df.loc[C_list[x],'Z'])**2))
+			dist = np.round(np.sqrt(((PDB_df.loc[C_list[i],'X'] - PDB_df.loc[C_list[x],'X'])**2) + ((PDB_df.loc[C_list[i],'Y'] - PDB_df.loc[C_list[x],'Y'])**2) + ((PDB_df.loc[C_list[i],'Z'] - PDB_df.loc[C_list[x],'Z'])**2)),1)
 			if dist < 6.0:
 				constraint = C_list[x] + '-' + C_list[i]
 				atom1 = str(PDB_df.loc[C_list[i],'resid']) + '-' + PDB_df.loc[C_list[i],'name']
 				atom2 = str(PDB_df.loc[C_list[x],'resid']) + '-' + PDB_df.loc[C_list[x],'name']
 				if constraint not in CC_used:
 					CC_used.append(C_list[i] + '-' + C_list[x])
-					CC_out = "{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:>3}   {:6.2f}\n".format(PDB_df.loc[C_list[i],'resid'],PDB_df.loc[C_list[i],'resn'],PDB_df.loc[C_list[i],'name'], PDB_df.loc[C_list[x],'resid'],PDB_df.loc[C_list[x],'resn'],PDB_df.loc[C_list[x],'name'],dist)
+					CC_out = "{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}   {:6.2f}\n".format(PDB_df.loc[C_list[i],'resid'],PDB_df.loc[C_list[i],'resn'],PDB_df.loc[C_list[i],'name'], PDB_df.loc[C_list[x],'resid'],PDB_df.loc[C_list[x],'resn'],PDB_df.loc[C_list[x],'name'],dist)
 					if atom1 in Assignments and atom2 in Assignments: pass
 					if atom1 not in Assignments:
 						CC_out = CC_out.replace('\n',' # missing {:}\n'.format(C_list[i]))
