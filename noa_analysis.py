@@ -39,6 +39,22 @@ cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() an
 prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line][0].split()[2].split(',')
 init = cwd + 'init.cya'
 # print(open(init).readlines()[0].strip().split(':=')[-1])
+plist_dict = {}
+for x in range(len(cya_plists)):
+	plist = cya_plists[x].replace('.peaks','')
+	plist_dict[plist] = str(x)
+	exec("unused{:} = open('{:}{:}','w')".format(str(x), plist, '_unused.list'))
+	exec("no_assign{:} = open('{:}{:}','w')".format(str(x), plist ,'_no_assign.list'))
+	exec("questionable{:} = open('{:}{:}','w')".format(str(x), plist,'_questionable.list'))
+	exec("peaks{:} = {{}}".format(str(x)))
+for x in range(len(cya_plists)):
+	pdict = eval('peaks' + str(x))
+	for line in open(cwd + cya_plists[x]):
+		if line.strip():
+			if line.strip()[0] != '#':
+				pdict[int(line.split()[0])] = [float(line.split()[1]),float(line.split()[2]),float(line.split()[3])]
+
+print(plist_dict)
 seq = [line.strip().split() for line in open(cwd + open(init).readlines()[0].strip().split(':=')[-1] + '.seq').readlines() if '#' != line[0]]
 Seqdict = {}
 Sequence = []
@@ -59,10 +75,9 @@ for prot in prots:
 				# 	exceptions.append(assign)
 				if assign[0] in ['F','Y'] and atom in ['HB2','HB3']:
 					exceptions.append(assign)
-print(exceptions)
 assigndict = {}
 from itertools import combinations
-ADpairs = [ '{:} - {:}'.format(comb[0],comb[1]) for comb in combinations(Assignments,2)]
+ADpairs = [ '{:}-{:}'.format(comb[0],comb[1]) for comb in combinations(Assignments,2)]
 for comb in ADpairs:
 	assigndict[comb] = []
 
@@ -76,7 +91,7 @@ for x in range(len(noalines)):
 	if 'Peak' in noalines[x] and 'out of' in noalines[x+1]:
 		if '0 out of' not in noalines[x+1] and 'diagonal' not in noalines[x]:
 			peak = int(noalines[x].strip().split()[1])
-			plist = noalines[x].strip().split()[3]
+			plist = noalines[x].strip().split()[3].replace('.peaks','')
 			for y in range(2,int(noalines[x+1].split()[0])+2,1):
 				cns = noalines[x+y].strip().split()
 				if cns[4] == '+':
@@ -85,23 +100,27 @@ for x in range(len(noalines)):
 					atom1,resn1, resi1, atom2, resn2, resi2,pshift,drange = cns[0],cns[1],int(cns[2]), cns[4],cns[5],int(cns[6]), float(cns[9])/100, cns[12]
 				group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
 				group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
-				outline = '    {:>10} - {:<10}   {:<9}  Peak {:} from {:}  pshift {:0.2f}\n'.format(group1, group2,drange,peak,plist,pshift)
-				if '{:} - {:}'.format(group1,group2)in ADpairs:
-					assigndict['{:} - {:}'.format(group1,group2)].append(outline)
-				if '{:} - {:}'.format(group2,group1)in ADpairs:
-					assigndict['{:} - {:}'.format(group2,group1)].append(outline)
+				conect = '{:}-{:}'.format(group1,group2)
+				outline = '{:^28}   {:<9}  Peak {:} from {:}  pshift {:3.2f}\n'.format(conect,drange,peak,plist,pshift)
+				if '{:}-{:}'.format(group1,group2)in ADpairs:
+					assigndict['{:}-{:}'.format(group1,group2)].append(outline)
+				if '{:}-{:}'.format(group2,group1)in ADpairs:
+					assigndict['{:}-{:}'.format(group2,group1)].append(outline)
 print('finised good')
 ADpairs2 = []
 for con in ADpairs:
-	if len(assigndict[con]) > 1:
+	if len(assigndict[con]) >= 1:
 		ADpairs2.append(con)
 for x in range(len(noalines)):
 	line = noalines[x]
-	if 'Peak' in noalines[x] and 'out of' in noalines[x+1]:
-		if '0 out of' in noalines[x+1] and '0 out of 0' not in noalines[x+1]:
-			peak = int(noalines[x].strip().split()[1])
-			plist = noalines[x].strip().split()[3]
-			unused_assignment.write(noalines[x])
+	if 'Peak' in noalines[x] and '0 out of' in noalines[x+1]:
+		peak = int(noalines[x].strip().split()[1])
+		plist = noalines[x].strip().split()[3].replace('.peaks','')
+		pdict = eval('peaks' + plist_dict[plist])
+		noassingmnet = eval('no_assign' + plist_dict[plist])
+		unused = eval('unused' + plist_dict[plist])
+		if '0 out of 0' not in noalines[x+1]:
+			nopt = int(noalines[x+1].split()[3])
 			for y in range(2,int(noalines[x+1].split()[3])+2,1):
 				cns = noalines[x+y].strip().split()
 				if noalines[x+y].strip()[0] in ['!','*']:
@@ -110,38 +129,56 @@ for x in range(len(noalines)):
 					atom1,resn1, resi1, atom2, resn2, resi2,pshift, drange = cns[0],cns[1],int(cns[2]), cns[4],cns[5],int(cns[6]), float(cns[9])/100, cns[12]
 				group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
 				group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
-				outline = '#    {:>10} - {:<10}   {:<9}  Peak {:} from {:}  pshift {:0.2f} unused\n'.format(group1, group2,drange,peak,plist,pshift)
-				if '{:} - {:}'.format(group1,group2)in ADpairs2:
-					assigndict['{:} - {:}'.format(group1,group2)].append(outline)
-				if '{:} - {:}'.format(group2,group1)in ADpairs2:
-					assigndict['{:} - {:}'.format(group2,group1)].append(outline)
-				if pshift > 0.75 :
-					unused_assignment.write(noalines[x+y])
-			if 'Violated' in noalines[x+y+1]:
-				unused_assignment.write(noalines[x+y+1])
-			unused_assignment.write('\n')
+				conect = '{:}-{:}'.format(group1,group2)
+				outline = '#{:^28}   {:<9}  Peak {:} from {:}  pshift {:0.2f} unused\n'.format(conect,drange,peak,plist,pshift)
+				if '{:}-{:}'.format(group1,group2)in ADpairs2:
+					assigndict['{:}-{:}'.format(group1,group2)].append(outline)
+				if '{:}-{:}'.format(group2,group1)in ADpairs2:
+					assigndict['{:}-{:}'.format(group2,group1)].append(outline)
+				if pshift > 0.75:
+					unused.write("{:>4}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:<3.2f}  #{:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,noalines[x+nopt+2].strip()[:-1]))
+				if pshift < 0.75 and int(noalines[x+1].split()[3]) == 1:
+					noassingmnet.write("{:>4}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:<3.2f}  #{:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,noalines[x+nopt+2].strip()[:-1]))
 		if '0 out of 0' in noalines[x+1]:
-			noassignment.write(noalines[x])
-noassignment.close()
+			pdict = eval('peaks' + plist_dict[plist])
+			noassingmnet.write("{:>4}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],'none',noalines[x].strip().split()[-2],'na'))
+
 unused_assignment.close()
 assigned = open('assinged.list','w')
 questionable = open('Q_assinged.list','w')
 qpeaks = []
+print(len(ADpairs2))
+
 for con in ADpairs:
 	if len(assigndict[con]) > 1:
 		assigned.write('{:}  {:}:\n'.format(con,len(assigndict[con])))
 		assigned.writelines(assigndict[con])
 		assigned.write('\n')
 	if len(assigndict[con]) == 1:
-		print(con.split('-'))
-		if (con.split(' - ')[0] in exceptions) and (con.split(' - ')[1] in exceptions):
-			assigned.write('{:}  {:}:\n'.format(con,len(assigndict[con])))
-			assigned.writelines(assigndict[con])
-			assigned.write('\n')
-		if (con.split(' - ')[0] not in exceptions) and (con.split(' - ')[1] not in exceptions):
-			qpeaks.append(assigndict[con][0])
-qpeaks = sorted(qpeaks,key = lambda x: (x.split()[7],x.split()[5]))
-assigned.close()
-questionable.writelines(qpeaks)
-questionable.close()
+		pline = assigndict[con][0].split()
+		peak = int(pline[3])
+		plist = pline[5]
+		pshift = pline[7]
+		pdict = eval('peaks' + plist_dict[plist])
+		questout =  eval('questionable' + plist_dict[plist])
+		# if con.split(' - ')[0] or con.split(' - ')[1] in exceptions:
+		# 	assigned.write('{:}  {:}:\n'.format(con,len(assigndict[con])))
+		# 	assigned.writelines(assigndict[con])
+		# 	assigned.write('\n')
+		# if con.split(' - ')[0] or con.split(' - ')[1] not in exceptions:
+		questout.write("{:>4}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],pline[0],pline[1],pline[7]))
+# 			qpeaks.append(assigndict[con][0])
+# qpeaks = sorted(qpeaks,key = lambda x: (x.split()[7],x.split()[5]))
+# assigned.close()
+# questionable.writelines(qpeaks)
+# questionable.close()
+
+
+
+for x in range(len(cya_plists)):
+	eval("unused{:}.close()".format(str(x)))
+	eval("no_assign{:}.close()".format(str(x)))
+	eval("questionable{:}.close()".format(str(x)))
+
+
 
