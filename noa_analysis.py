@@ -35,6 +35,7 @@ AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "
 # cwd = '/Volumes/common/Kinases/FGFR3/FGFR3_459-755_C482A_C582S/Structure_Calc/cyana_25/'
 cwd = '/Volumes/common/Kinases/FGFR2/FGFR2_467-768_C491A/Structure_Calc/cyana_46/'
 calc = cwd + 'CALC.cya'
+cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
 prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line][0].split()[2].split(',')
 init = cwd + 'init.cya'
 # print(open(init).readlines()[0].strip().split(':=')[-1])
@@ -44,24 +45,27 @@ Sequence = []
 for resn,resi in seq:
 	Seqdict[resi] = AAA_dict[resn] + resi
 	Sequence.append(AAA_dict[resn] + resi)
-Assignments = []
+Assignments,exceptions = [], []
 for prot in prots:
-	exec("{:}_list = []".format(prot.replace('.prot','')))
-	protlist = eval("{:}_list".format(prot.replace('.prot','')))
-	Assignlist = eval("{:}_list".format(prot.replace('.prot','')))
 	for line in open(cwd + prot.replace('.prot','-final.prot')).readlines():
-		if '#' != line[0] and line.strip():
-			resi = line.strip().split()[4]
-			atom = line.strip().split()[3]
-			assign = Seqdict[resi] + '-' + atom
-			protlist.append(assign)
-			if assign not in Assignments and atom[0] in ['H','Q']:
-				Assignments.append(assign)
+		if line.strip():
+			if '#' != line.strip()[0]:
+				resi = line.strip().split()[4]
+				atom = line.strip().split()[3]
+				assign = Seqdict[resi] + '-' + atom
+				if assign not in Assignments and atom[0] in ['H','Q']:
+					Assignments.append(assign)
+				# if assign[0] in ['T','G','M'] and atom == 'H':
+				# 	exceptions.append(assign)
+				if assign[0] in ['F','Y'] and atom in ['HB2','HB3']:
+					exceptions.append(assign)
+print(exceptions)
 assigndict = {}
 from itertools import combinations
-ADpairs = [ '{:}-{:}'.format(comb[0],comb[1]) for comb in combinations(Assignments,2)]
+ADpairs = [ '{:} - {:}'.format(comb[0],comb[1]) for comb in combinations(Assignments,2)]
 for comb in ADpairs:
 	assigndict[comb] = []
+
 noa7 = cwd + 'cycle7.noa'
 noalines = open(noa7).readlines()
 noassignment = open('no_assignment.noa','w')
@@ -82,10 +86,10 @@ for x in range(len(noalines)):
 				group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
 				group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
 				outline = '    {:>10} - {:<10}   {:<9}  Peak {:} from {:}  pshift {:0.2f}\n'.format(group1, group2,drange,peak,plist,pshift)
-				if '{:}-{:}'.format(group1,group2)in ADpairs:
-					assigndict['{:}-{:}'.format(group1,group2)].append(outline)
-				if '{:}-{:}'.format(group2,group1)in ADpairs:
-					assigndict['{:}-{:}'.format(group2,group1)].append(outline)
+				if '{:} - {:}'.format(group1,group2)in ADpairs:
+					assigndict['{:} - {:}'.format(group1,group2)].append(outline)
+				if '{:} - {:}'.format(group2,group1)in ADpairs:
+					assigndict['{:} - {:}'.format(group2,group1)].append(outline)
 print('finised good')
 ADpairs2 = []
 for con in ADpairs:
@@ -107,10 +111,10 @@ for x in range(len(noalines)):
 				group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
 				group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
 				outline = '#    {:>10} - {:<10}   {:<9}  Peak {:} from {:}  pshift {:0.2f} unused\n'.format(group1, group2,drange,peak,plist,pshift)
-				if '{:}-{:}'.format(group1,group2)in ADpairs2:
-					assigndict['{:}-{:}'.format(group1,group2)].append(outline)
-				if '{:}-{:}'.format(group2,group1)in ADpairs2:
-					assigndict['{:}-{:}'.format(group2,group1)].append(outline)
+				if '{:} - {:}'.format(group1,group2)in ADpairs2:
+					assigndict['{:} - {:}'.format(group1,group2)].append(outline)
+				if '{:} - {:}'.format(group2,group1)in ADpairs2:
+					assigndict['{:} - {:}'.format(group2,group1)].append(outline)
 				if pshift > 0.75 :
 					unused_assignment.write(noalines[x+y])
 			if 'Violated' in noalines[x+y+1]:
@@ -118,8 +122,6 @@ for x in range(len(noalines)):
 			unused_assignment.write('\n')
 		if '0 out of 0' in noalines[x+1]:
 			noassignment.write(noalines[x])
-			noassignment.write(noalines[x+1])
-			noassignment.write('\n')
 noassignment.close()
 unused_assignment.close()
 assigned = open('assinged.list','w')
@@ -131,7 +133,13 @@ for con in ADpairs:
 		assigned.writelines(assigndict[con])
 		assigned.write('\n')
 	if len(assigndict[con]) == 1:
-		qpeaks.append(assigndict[con][0])
+		print(con.split('-'))
+		if (con.split(' - ')[0] in exceptions) and (con.split(' - ')[1] in exceptions):
+			assigned.write('{:}  {:}:\n'.format(con,len(assigndict[con])))
+			assigned.writelines(assigndict[con])
+			assigned.write('\n')
+		if (con.split(' - ')[0] not in exceptions) and (con.split(' - ')[1] not in exceptions):
+			qpeaks.append(assigndict[con][0])
 qpeaks = sorted(qpeaks,key = lambda x: (x.split()[7],x.split()[5]))
 assigned.close()
 questionable.writelines(qpeaks)
