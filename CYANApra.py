@@ -4,7 +4,8 @@ import sys
 import re
 import pandas as pd
 import numpy as np
-import GetDihe as Dihed 
+import GetDihe as Dihed
+import noa_analysis as noaa
 replacements ={
 'ALAHA':'CA','ALAQB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'CB',
 'CYSHA':'CA','CYSHB2':'CB','CYSHB3':'CB','CYSQB':'CB',
@@ -66,6 +67,7 @@ colors = ['white','palevioletred','orange','forest','royalblue','purple','chocol
 
 cwd = os.getcwd() + '/'
 outdir = cwd + 'post_cyana_analysis/'
+noadir = cwd  +'noa_analysis/'
 in_pdb = sys.argv[1]
 fupl = sys.argv[2]
 pdbname = in_pdb.split('.')[0]
@@ -92,14 +94,14 @@ if not os.path.exists(outdir):
 	os.makedirs(outdir)
 if not os.path.exists(outdir +'pseudobonds/'):
 	os.makedirs(outdir +'pseudobonds/')
-
+if not os.path.exists(noadir):
+	os.makedirs(noadir)
 checkcons = open(outdir + outname + '_summary.txt','w')
-
 ## open the CALC.cya file to get the peaks list and additonal constraint files used in the calculation. 
-cya_plists = [line.strip().replace('.peaks','-cycle7.peaks') for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
+cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
 lengths = []
 for plist in cya_plists:
-	lengths.append(len(plist.replace('-cycle7.peaks','')))
+	lengths.append(len(plist))
 pad = ''
 for x in range(max(lengths)):
 	pad = pad + ' '
@@ -116,7 +118,7 @@ print('{:}                                         Assignments \n{:}#peaks   upl
 ## Creating the pseudobond files and group strings for rendering the constraints in chimera/pymol
 tpeak,tsingle,tamb,tnotused,tnota,tdia,tincr,tupl,tviol  = 0, 0, 0, 0, 0, 0, 0, 0, 0
 for x in range(len(cya_plists)):
-	plistn = cya_plists[x].replace('-cycle7.peaks','')
+	plistn = cya_plists[x]
 	exec("pb{:} = open('{:}','w')".format(str(x+1), outdir +'pseudobonds/' + plistn + '.pb'))
 	pbout = eval('pb{:}'.format(str(x+1)))
 	pbout.write("; halfbond = false\n; color = " + colors[x+1] + "\n; radius = 0.1\n; dashes = 0\n")
@@ -190,8 +192,11 @@ pviolpbout.write("; halfbond = false\n; color = deeppink\n; radius = 0.1\n; dash
 uviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_upls_cons.pb','w')
 uviolpbout.write("; halfbond = false\n; color = hotpink\n; radius = 0.1\n; dashes = 0\n")
 
+### Go through the final overview file and extract information about violated distance and angle restraints 
+
 i = 1
-Filtered, Upperdict, Lowerdict = [], [], []
+Filtered = []
+violdict, Upperdict, Lowerdict = {}, {}, {}
 viol_peakscons,viol_uplscons= 'group viol_peaks, ', 'group viol_upls, '
 finalupls = [["###Violated Restraints\n"],["###Poor/Low Support\n"],["###Long Distance Restraints (d >= 6.0)\n"],["###Short Distance Restraints (d <= 3.0)\n"],["###Good Restraints\n"]]
 checkcons.write('### Violated Distance Constraints from {:} \n'.format(str(fovw)))
@@ -208,24 +213,29 @@ for line in open(fovw).readlines():
 			atom2 = replacements[dviol[6]+dviol[5]]
 		atoms1 = atom1.split(',')
 		atoms2 = atom2.split(',')
+		cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[2]],dviol[3],dviol[1],AAA_dict[dviol[6]],dviol[7],dviol[5])
+		cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[2]],dviol[3],dviol[1],AAA_dict[dviol[6]],dviol[7],dviol[5])
 		if int(dviol[9]) >= 10:
 			v+=1
 			if 'peak' not in line:
 				pbout = uviolpbout
 				grpstr = "uplviol"
-				cons1 = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}  ,  # {:} {:}\n'.format(dviol[7],dviol[6],dviol[5],dviol[3],dviol[2],dviol[1],float(dviol[8]), dviol[9], dviol[10])
-				cons2 = '{:>4} {:}  {:<4}  {:>4} {:}  {:<4}  {:6.2f}  ,  # {:} {:}\n'.format(dviol[3],dviol[2],dviol[1],dviol[7],dviol[6],dviol[5],float(dviol[8]), dviol[9], dviol[10])
 				if line[4:9] == 'Upper':
+					outline = ' #viol in {:} by +{:}\n'.format(dviol[9],dviol[10])
 					upldf.loc[dviol[7],'viol input'] = upldf.loc[dviol[7],'viol input'] + 1
 					upldf.loc[dviol[3],'viol input'] = upldf.loc[dviol[3],'viol input'] + 1
-					Upperdict.append(cons1)
-					Upperdict.append(cons2)
+					Upperdict[cons1] = outline
+					Upperdict[cons2] = outline
 				if line[4:9] == 'lower':
-					Lowerdict.append(cons1)
-					Lowerdict.append(cons2)
+					outline = ' #viol in {:} by -{:}\n'.format(dviol[9],dviol[10])
+					Lowerdict[cons1] = outline
+					Lowerdict[cons2] = outline
 			if 'peak' in line and 'list' in line:
 				pbout = pviolpbout
 				grpstr = "peakviol"
+				outline = ' #viol in {:} by {:}\n'.format(dviol[9],dviol[10])
+				violdict[cons1] = outline
+				violdict[cons2] = outline
 				for line2 in open(fupl).readlines():
 					cns = line2.split()
 					if cns[8] == line[90:].split()[1] and cns[10] == line[90:].split()[3] and cns[2] == dviol[1] and cns[5] == dviol[5]:
@@ -262,7 +272,7 @@ violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
 for viol in violpeaks:
 	checkcons.write(viol)
 checkcons.write('\n\n')
-usedupls = []
+usedupls,qupldict = {}, {}
 finalupl,poorcons2, show, shortcons2,longcons2,sidelist = [],[],[],[],[],[]
 poorcons, shortcons, longcons = 'group poor, ', 'group short, ', 'group long, '
 for line in open(fupl).readlines():
@@ -285,16 +295,19 @@ for line in open(fupl).readlines():
 				atoms2 = atom2.split(',')
 				upldf.loc[cns[0],'cya'] = upldf.loc[cns[0],'cya'] + 1
 				upldf.loc[cns[3],'cya'] = upldf.loc[cns[3],'cya'] + 1
-				usedupls.append('{:>4} {:}  {:<4}  {:>4} {:}  {:<4},  #{:6.2f} #peak {:} #plist {:}\n'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5],float(cns[6]),cns[8],cns[10]))
-				usedupls.append('{:>4} {:}  {:<4}  {:>4} {:}  {:<4},  #{:6.2f} #peak {:} #plist {:}\n'.format(cns[3],cns[4],cns[5],cns[0],cns[1],cns[2],float(cns[6]),cns[8],cns[10]))
+				cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+				cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5],AAA_dict[cns[1]],cns[0],cns[2])
+				outline = ' #{:3.2f} #peak {:} #plist {:}\n'.format(float(cns[6]),cns[8],cns[10])
+				usedupls[cons1] = outline 
+				usedupls[cons1] = outline
 				for atom1 in atoms1:
 					if atom1 == 'H': atom1 = 'N'
 					for atom2 in atoms2:
 						if atom2 == 'H': atom2 = 'N'
-						if '{:>4} {:}  {:<4}  {:>4} {:}  {:<4},  # #peak {:} #plist {:}\n'.format(cns[0],cns[1],atom1,cns[3],cns[4],atom2,cns[8],cns[10]) not in usedupls:
-							usedupls.append('{:>4} {:}  {:<4}  {:>4} {:}  {:<4},  #{:6.2f} #peak {:} #plist {:}\n'.format(cns[0],cns[1],atom1,cns[3],cns[4],atom2,float(cns[6]),cns[8],cns[10]))
-						if '{:>4} {:}  {:<4}  {:>4} {:}  {:<4},  # #peak {:} #plist {:}\n'.format(cns[3],cns[4],atom2,cns[0],cns[1],atom1,cns[8],cns[10]) not in usedupls:
-							usedupls.append('{:>4} {:}  {:<4}  {:>4} {:}  {:<4},  #{:6.2f} #peak {:} #plist {:}\n'.format(cns[3],cns[4],atom2,cns[0],cns[1],atom1,float(cns[6]),cns[8],cns[10]))
+						cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atom1,AAA_dict[cns[4]],cns[3],atom2)
+						cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],atom2,AAA_dict[cns[1]],cns[0],atom1)
+						usedupls[cons1] = outline
+						usedupls[cons1] = outline
 				if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
 					sidelist.append(cns[0])
 				if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
@@ -313,6 +326,10 @@ for line in open(fupl).readlines():
 					if float(cns[6]) >= 6.0:
 						upldf.loc[cns[0],'long'] = upldf.loc[cns[0],'long'] + 1
 						upldf.loc[cns[3],'long'] = upldf.loc[cns[3],'long'] + 1
+						cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+						cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5],AAA_dict[cns[1]],cns[0],cns[2])
+						qupldict[cons1] = " #long distance\n"
+						qupldict[cons2] = " #long distance\n"
 						for atom1 in atoms1:
 							for atom2 in atoms2:
 								i+=1
@@ -342,7 +359,6 @@ for line in open(fupl).readlines():
 								exec('group' + cns[10] + '=' + 'group' + cns[10] + '+ "UPL{:} "'.format(i))
 						Filtered.append(line)
 						finalupls[4].append(line)
-
 poorpbout.close()
 longpbout.close()
 shortpbout.close()
@@ -468,15 +484,16 @@ for uplfile in upls:
 	matchedupl = open(outdir + uplfile.replace('.upl','_found.upl'),'w')
 	for line in open(uplfile).readlines():
 		newline = ''
-		for viol in Upperdict:
-			if line.split()[0:6] == viol.split()[0:6]:
-				newline = line.replace('\n', viol.split(',')[-1])
+		if '#' not in line.split()[0]:
+			cns = line.split()
+			cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+			if cons in Upperdict.keys():
+				newline = line.replace('\n', Upperdict[cons])
 				violupl.write(newline)
-		for mupl in usedupls:
-			if line.split()[0:6] == mupl.split()[0:6]:
-				if len(newline) > 1: newline = newline.replace('\n', mupl.split(',')[-1])
-				if len(newline) < 1: newline = line.replace('\n', mupl.split(',')[-1])
-				matchedline = line.replace('\n', mupl.split(',')[-1])
+			if cons in usedupls.keys():
+				if len(newline) > 1: newline = newline.replace('\n', usedupls[cons])
+				if len(newline) < 1: newline = line.replace('\n', usedupls[cons])
+				matchedline = line.replace('\n', usedupls[cons])
 				matchedupl.write(matchedline)
 		if len(newline) < 1:
 			newline = line
@@ -486,20 +503,24 @@ for uplfile in upls:
 	fout.close()
 	violupl.close()
 	matchedupl.close()
-
 for lolfile in lols:
 	newlines = []
 	for line in open(lolfile).readlines():
 		newline = ''
-		for viol in Lowerdict:
-			if line.split()[0:6] == viol.split()[0:6]:
-				newline = line.replace('\n', viol.split(',')[-1])
+		if '#' not in line.split()[0]:
+			cns = line.split()
+			cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+			if cons in Lowerdict.keys():
+				newline = line.replace('\n', Lowerdict[cons])
 		if len(newline) < 1:
 			newline = line
 		newlines.append(newline)
 	fout = open(outdir + lolfile,'w')
 	fout.writelines(newlines)
 	fout.close()
+print('finished finding upls')
+
+noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict)
 
 phir, chir = [],[]
 for angf in dihed:
@@ -548,7 +569,7 @@ outpml.close()
 outcmx.close()
 
 Dihed.extract(in_pdb, ASequence, outdir)
-
+print('finished plotting dihedrals')
 import matplotlib as mpl 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
@@ -605,39 +626,5 @@ pdf.savefig()
 # plt.show()
 plt.close()
 pdf.close()
+print('finished')
 
-
-
-
-	# df3 = df[(df['total'] > 1.0) ].copy(deep=True)
-	# if len(df3.index.tolist()) > 0:
-	# 	nsubplots = round(len(df3.index.tolist())/30,0)
-	# 	if round(len(df3.index.tolist())/30,1) - nsubplots > 0.0:
-	# 		nsubplots = nsubplots + 1
-	# 	if nsubplots == 0: nsubplots = 1
-	# 	fig_height = 3.0 * nsubplots
-	# 	if fig_height <= 2.0: 
-	# 		fig_height = 3.0
-	# 	entry_width = 5.0/30
-	# 	fig_width = 0.78 + entry_width * 30
-	# 	if fig_width < 3.0: 
-	# 		fig_width = 3.0
-	# 	fig=plt.figure(figsize=(fig_width,fig_height))
-	# 	spi = 0
-	# 	for i in range(0,len(df3.index.tolist()),30):
-	# 		spi = spi + 1
-	# 		temp = []
-	# 		z = i
-	# 		for y in range(30):
-	# 			temp.append(df3.index.tolist()[z])
-	# 			z = z + 1 
-	# 			if z == len(df3.index.tolist()):break
-	# 		dfp = df3.reindex(temp)
-	# 		ax = fig.add_subplot(int(nsubplots),1,spi)
-	# 		ax.bar(dfp.index.tolist(), dfp['total'],0.9,color='orange', edgecolor='none', label = 'total')
-	# 		ax.tick_params(axis='x', labelrotation = 90)
-	# 	ax.set_title(cya_plists[x] + ' total')
-	# 	ax.set_xlabel('Residue Number')
-	# 	plt.tight_layout(pad = 0.4, w_pad = 0.4, h_pad = 0.4)
-	# 	pdf.savefig(transparent=True)
-	# plt.close()
