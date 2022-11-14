@@ -43,9 +43,9 @@ plist_dict = {}
 for x in range(len(cya_plists)):
 	plist = cya_plists[x].replace('.peaks','')
 	plist_dict[plist] = str(x)
-	exec("unused{:} = open('{:}{:}','w')".format(str(x), plist, '_unused.list'))
-	exec("no_assign{:} = open('{:}{:}','w')".format(str(x), plist ,'_no_assign.list'))
-	exec("questionable{:} = open('{:}{:}','w')".format(str(x), plist,'_questionable.list'))
+	exec("unused{:} = open('{:}noa_analysis/{:}_unused.list','w')".format(str(x), cwd, plist))
+	exec("no_assign{:} = open('{:}noa_analysis/{:}_no_assign.list','w')".format(str(x), cwd, plist))
+	exec("questionable{:} = open('{:}noa_analysis/{:}_questionable.list','w')".format(str(x), cwd, plist,))
 	exec("peaks{:} = {{}}".format(str(x)))
 for x in range(len(cya_plists)):
 	pdict = eval('peaks' + str(x))
