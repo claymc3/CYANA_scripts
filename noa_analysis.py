@@ -91,7 +91,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict):
 					if '{:}-{:}'.format(group2,group1)in ADpairs:
 						assigndict['{:}-{:}'.format(group2,group1)].append(outline)
 					if float(QF) <= 0.6:
-						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:<3.2f}  #poor/low support\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,float(QF),'poor constraint'))
+						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:<3.2f}   #poor/low support\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,float(QF),'poor constraint'))
 					if conect in violdict.keys():
 						print(conect)
 						print(violdict[conect])
