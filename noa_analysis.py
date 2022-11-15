@@ -91,16 +91,12 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict):
 					if '{:}-{:}'.format(group2,group1)in ADpairs:
 						assigndict['{:}-{:}'.format(group2,group1)].append(outline)
 					if float(QF) <= 0.6:
-						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:<3.2f}   #poor/low support\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,float(QF),'poor constraint'))
+						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}   #poor/low support\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,float(QF),'poor constraint'))
 					if conect in violdict.keys():
-						print(conect)
-						print(violdict[conect])
-						print(pdict[peak])
-						outline = "{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:<3.2f}  {:}".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,violdict[conect])
+						outline = "{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}  {:}".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,violdict[conect])
 						questionable.append(outline)
 					if conect in qupldict.keys():
-						print(conect)
-						outline = "{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:<3.2f}  {:}".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,qupldict[conect])
+						outline = "{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}  {:}".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,qupldict[conect])
 						questionable.append(outline)
 	print('finished assinged')
 
@@ -133,9 +129,9 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict):
 					if '{:}-{:}'.format(group2,group1)in ADpairs2:
 						assigndict['{:}-{:}'.format(group2,group1)].append(outline)
 					if pshift > 0.75:
-						unused.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:<3.2f}  #{:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures','')))
+						unused.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}  #{:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures','')))
 					if pshift < 0.75 and int(noalines[x+1].split()[3]) == 1:
-						noassingmnet.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:<3.2f}  #{:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures','')))
+						noassingmnet.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}  #{:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures','')))
 			if '0 out of 0' in noalines[x+1]:
 				pdict = eval('peaks' + plist_dict[plist])
 				noassingmnet.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],'none',noalines[x].strip().split()[-2],'na'))
@@ -152,7 +148,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict):
 			pshift = pline[7]
 			pdict = eval('peaks' + plist_dict[plist])
 			questout =  eval('questlist' + plist_dict[plist])
-			questout.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],pline[0],pline[1],pline[7]))
+			questout.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],pline[0],pline[1],pline[7]))
 
 	for x in range(len(cya_plists)):
 		eval("unused{:}.close()".format(str(x)))
