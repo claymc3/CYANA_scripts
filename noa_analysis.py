@@ -43,6 +43,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict):
 		exec("no_assign{:} = open('{:}{:}_no_assign.list','w')".format(str(x), outdir, plist))
 		#exec("questionable{:} = open('{:}{:}_questionable.list','w')".format(str(x), outdir, plist))
 		exec("questlist{:} = []".format(str(x)))
+		exec("usedquestlist{:} = []".format(str(x)))
 		exec("peaks{:} = {{}}".format(str(x)))
 	for x in range(len(cya_plists)):
 		pdict = eval('peaks' + str(x))
@@ -75,6 +76,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict):
 				plist = noalines[x].strip().split()[3].replace('.peaks','')
 				pdict = eval('peaks' + plist_dict[plist])
 				questionable = eval('questlist' + plist_dict[plist])
+				used =eval('usedquestlist' + plist_dict[plist])
 				QF = noalines[x+1].split()[-1].replace(':','')
 				for y in range(2,int(noalines[x+1].split()[0])+2,1):
 					cns = noalines[x+y].strip().split()
@@ -92,12 +94,15 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict):
 						assigndict['{:}-{:}'.format(group2,group1)].append(outline)
 					if float(QF) <= 0.6:
 						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}   #poor/low support\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,float(QF),'poor constraint'))
+						used.append(peak)
 					if conect in violdict.keys():
 						outline = "{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}  {:}".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,violdict[conect])
 						questionable.append(outline)
+						used.append(peak)
 					if conect in qupldict.keys():
 						outline = "{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}  {:}".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,qupldict[conect])
 						questionable.append(outline)
+						used.append(peak)
 	print('finished assinged')
 
 	ADpairs2 = []
@@ -148,7 +153,9 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict):
 			pshift = pline[7]
 			pdict = eval('peaks' + plist_dict[plist])
 			questout =  eval('questlist' + plist_dict[plist])
-			questout.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],pline[0],pline[1],pline[7]))
+			used =eval('usedquestlist' + plist_dict[plist])
+			if peak not in used:
+				questout.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],pline[0],pline[1],pline[7]))
 
 	for x in range(len(cya_plists)):
 		eval("unused{:}.close()".format(str(x)))
