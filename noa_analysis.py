@@ -103,6 +103,9 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict):
 						outline = "{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}  {:}".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,qupldict[conect])
 						questionable.append(outline)
 						used.append(peak)
+					if pshift < 0.75 and peak not in used:
+						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}   #poor/low support\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,'poor constraint'))
+						used.append(peak)
 	print('finished assinged')
 
 	ADpairs2 = []
