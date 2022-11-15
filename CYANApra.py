@@ -122,7 +122,7 @@ for x in range(len(cya_plists)):
 	exec("pb{:} = open('{:}','w')".format(str(x+1), outdir +'pseudobonds/' + plistn + '.pb'))
 	pbout = eval('pb{:}'.format(str(x+1)))
 	pbout.write("; halfbond = false\n; color = " + colors[x+1] + "\n; radius = 0.1\n; dashes = 0\n")
-	exec("group{:} = '{:}, '".format(str(x+1), 'group ' + cya_plists[x].replace('-cycle7.peaks','')))
+	exec("group{:} = '{:}, '".format(str(x+1), 'group ' + cya_plists[x]))
 	plist = cya_plists[x]
 	upl = [line.strip() for line in open(fupl).readlines() if line.strip() and 'plist '+ str(x+1) in line]
 	tupl = tupl + len(upl)
@@ -152,9 +152,9 @@ for x in range(len(cya_plists)):
 			if 'diagonal' in line and '0 out of' not in noalines[y+1]:
 				dia+=1
 				tdia+=1
-	linepad = pad[len(plist.replace('-cycle7.peaks','')):]
-	checkcons.write("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%\n".format(plist.replace('-cycle7.peaks',''),linepad,peak,len(upl),len(viol), single,amb,notused,nota,dia,incr, 100*((single+amb+dia)/peak)))
-	print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%".format(plist.replace('-cycle7.peaks',''),linepad, peak,len(upl),len(viol),single,amb,notused,nota,dia,incr, 100*((single+amb+dia)/peak)))
+	linepad = pad[len(plist):]
+	checkcons.write("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%\n".format(plist,linepad,peak,len(upl),len(viol), single,amb,notused,nota,dia,incr, 100*((single+amb+dia)/peak)))
+	print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%".format(plist,linepad, peak,len(upl),len(viol),single,amb,notused,nota,dia,incr, 100*((single+amb+dia)/peak)))
 checkcons.write("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%\n".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr,100*((tsingle+ tamb+ tdia)/tpeak)))
 print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr, 100*((tsingle+ tamb+ tdia)/tpeak)))
 checkcons.write('\n\n')
@@ -385,11 +385,11 @@ mn = 1
 for x in range(len(cya_plists)):
 	mn+=1
 	pbout = eval('pb{:}'.format(str(x+1)))
-	outcmx.write('open ' + outdir +'pseudobonds/' + cya_plists[x].replace('-cycle7.peaks','.pb\n'))
+	outcmx.write('open ' + outdir +'pseudobonds/' + cya_plists[x] +'.pb\n')
 	outcmx.write('color #{:} {:}\n'.format(str(mn),colors[mn]))
 	groupstr = eval('group' + str(x+1))
 	outpml.write(groupstr + '\n')
-	outpml.write('color {:}, {:}\n'.format(colors[x+1],cya_plists[x].replace('-cycle7.peaks','')))
+	outpml.write('color {:}, {:}\n'.format(colors[x+1],cya_plists[x]))
 
 for (group, color) in [('poor','mediumvioletred'),('long','firebrick'),('short', 'lightcoral'),('viol_peaks', 'deeppink'),('viol_upls', 'hotpink')]:
 	mn+=1
