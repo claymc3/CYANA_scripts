@@ -31,7 +31,7 @@ import mplcursors
 ####----------------------------------------------------------------------------------------------####
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 
-def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict):
+def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict):
 	cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
 	prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line][0].split()[2].split(',')
 
@@ -88,6 +88,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict):
 					group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
 					conect = '{:}-{:}'.format(group1,group2)
 					outline = '{:^28}   {:<9}  Peak {:} from {:}  pshift {:3.2f}\n'.format(conect,drange,peak,plist,pshift)
+					if conect in upldict.keys(): drange = upldict[conect]
 					if '{:}-{:}'.format(group1,group2)in ADpairs:
 						assigndict['{:}-{:}'.format(group1,group2)].append(outline)
 					if '{:}-{:}'.format(group2,group1)in ADpairs:
@@ -145,7 +146,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict):
 				noassingmnet.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],'none',noalines[x].strip().split()[-2],'na'))
 	assigned = open(outdir + 'Assigned.list','w')
 	for con in ADpairs:
-		if len(assigndict[con]) > 1:
+		if len(assigndict[con]) >= 1:
 			assigned.write('{:}  {:}:\n'.format(con,len(assigndict[con])))
 			assigned.writelines(assigndict[con])
 			assigned.write('\n')
