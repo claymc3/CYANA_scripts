@@ -31,6 +31,8 @@ replacements ={
 #'ALAH':'N','CYSH':'N','ASPH':'N','GLUH':'N','PHEH':'N','GLYH':'N','HISH':'N','ILEH':'N','LYSH':'N','LEUH':'N','METH':'N','ASNH':'N','GLNH':'N','ARGH':'N','SERH':'N','THRH':'N','VALH':'N','TRPH':'N','TYRH':'N',
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "CYSS":"C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P","cPRO":"P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 
+Ambiguous = {'ARGQB':'HB2,HB3','ARGQG':'HG2,HG3','ARGQG':'HG2,HG3','ARGQH1':'HH11,HH12','ARGQH2':'HH21,HH22','ASNQB':'HB2,HB3','ASNQD2':'HD21,HD22','ASPQB':'HB2,HB3','CYSQB':'HB2,HB3','CYSSQB':'HB2,HB3','GLNQB':'HB2,HB3','GLNQG':'HG2,HG3','GLNQE2':'HE21,HE22','GLUQB':'HB2,HB3','GLUQG':'HG2,HG3','GLYQA':'HA2,HA3','HISQB':'HB2,HB3','HISTQB':'HB2,HB3','ILEQG1':'HG12,HG13','LEUQB':'HB2,HB3','LEUQQD':'QD1,QD2','LYSQB':'HB2,HB3','LYSQG':'HG2,HG3','LYSQD':'HD2,HD3','LYSQE':'HE2,HE3','METQB':'HB2,HB3','METQG':'HG2,HG3','PHEQB':'HB2,HB3','PHEQG':'HG2,HG3','PHEQD':'HD2,HD3','PHEQE':'HE1,HE2','PROQB':'HB2,HB3','PROQG':'HG2,HG3','PROQD':'HD2,HD3','SERQB':'HB2,HB3','TRPQB':'HB2,HB3','TYRQB':'HB2,HB3','TYRQG':'HG2,HG3','TYRQD':'HD2,HD3','TYRQE':'HE1,HE2','VALQQG':'QG1,QG2'}
+
 if len(sys.argv)==1:
 	print('''
 
@@ -272,9 +274,28 @@ violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
 for viol in violpeaks:
 	checkcons.write(viol)
 checkcons.write('\n\n')
-usedupls,qupldict = {}, {}
+usedupls,qupldict, upldict = {}, {}, {}
 finalupl,poorcons2, show, shortcons2,longcons2,sidelist = [],[],[],[],[],[]
 poorcons, shortcons, longcons = 'group poor, ', 'group short, ', 'group long, '
+
+for line in open(fupl).readlines():
+	if line.split():
+		cns = line.split()
+		atom1 = cns[2]
+		atom2 = cns[5]
+		if cns[1]+cns[2] in Ambiguous.keys():
+			atom1 = atom1.replace(cns[2], Ambiguous[cns[1]+cns[2]])
+		if cns[4]+cns[5] in Ambiguous.keys():
+			atom2 = atom2.replace(cns[5], Ambiguous[cns[4]+cns[5]])
+		atoms1 = atom1.split(',')
+		atoms2 = atom2.split(',')
+		for atom1 in atoms1:
+			for atom2 in atoms2:
+				cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atom1,AAA_dict[cns[4]],cns[3],atom2)
+				cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],atom2,AAA_dict[cns[1]],cns[0],atom1)
+				upldict[cons1] = "{:3.2f}".format(float(cns[6]))
+				upldict[cons2] = "{:3.2f}".format(float(cns[6]))
+
 for line in open(fupl).readlines():
 	if line not in Filtered:
 		if '#SUP' not in line: ## exclude ambiguous restraints
@@ -298,7 +319,7 @@ for line in open(fupl).readlines():
 				cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
 				cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5],AAA_dict[cns[1]],cns[0],cns[2])
 				outline = ' #{:3.2f} #peak {:} #plist {:}\n'.format(float(cns[6]),cns[8],cns[10])
-				usedupls[cons1] = outline 
+				usedupls[cons1] = outline
 				usedupls[cons1] = outline
 				for atom1 in atoms1:
 					if atom1 == 'H': atom1 = 'N'
@@ -519,9 +540,6 @@ for lolfile in lols:
 	fout.writelines(newlines)
 	fout.close()
 print('finished finding upls')
-
-noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict)
-
 phir, chir = [],[]
 for angf in dihed:
 	for line in open(angf).readlines():
@@ -568,8 +586,22 @@ outpml.write("hide labels\n")
 outpml.close()
 outcmx.close()
 
+# ---------------------------------------------------------------------------
+# Run the cycle7.noa analysis and generate peak list identifying peaks as 
+# unused, no assingment, and questionable
+
+noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict,upldict)
+# ---------------------------------------------------------------------------
+# Run the GetDihed.py to determine phi, psi, chi1 and chi2 and plot them
+# for all 20 structures
+
 Dihed.extract(in_pdb, ASequence, outdir)
 print('finished plotting dihedrals')
+
+# ---------------------------------------------------------------------------
+# Plot the upl counts for each residue 
+# 
+
 import matplotlib as mpl 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
