@@ -5,7 +5,7 @@
 # e-mail: mary.clay@stjude.org
 # St Jude Children's Research Hospital 
 # Department of Structural Biology Memphis, TN 
-# 06/28/2022
+# 11/10/2022
 # ------------------------------------------------------------------------------
 
 '''
@@ -13,17 +13,7 @@ import pandas as pd
 import os
 import sys
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-from matplotlib.backends.backend_pdf import PdfPages
-from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
-from scipy.stats import trim_mean
-from scipy.stats import tstd
-from matplotlib.ticker import FormatStrFormatter
-import matplotlib.ticker as ticker 
-import seaborn as sb
 import re
-import mplcursors
 ####----------------------------------------------------------------------------------------------####
 ##																									##
 ##			 	Setting controlling plot appearance: Font, line widths, ticks, and legend  			##
