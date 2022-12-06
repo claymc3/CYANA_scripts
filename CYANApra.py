@@ -72,7 +72,8 @@ outdir = cwd + 'post_cyana_analysis/'
 noadir = cwd  +'noa_analysis/'
 in_pdb = sys.argv[1]
 fupl = sys.argv[2]
-pdbname = in_pdb.split('.')[0]
+pdbname = in_pdb.split('/')[-1].split('.')[0]
+print(pdbname)
 fovw = fupl.replace('.upl','.ovw')
 calc = cwd + 'CALC.cya'
 outname = fupl.split('.')[0]
@@ -178,8 +179,6 @@ outcmx.write('color #1:ile paleturquoise target a\ncolor #1:leu lightsalmon  tar
 outcmx.write('show #1:thr,met,ala,leu,val,ile,phe,tyr\nname meyfside #1:thr,met,ala,leu,val,ile,phe,tyr\ncartoon suppress false\n')
 outcmx.write('label #1.1 text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n''label ontop false\n')
 outcmx.write('ui tool show "Side View"\n#ui mousemode right distance\n')
-
-pdbname = in_pdb.replace('.pdb','')
 
 angmn = len(cya_plists) + 8 + len(upls)
 cmxphisel, cmxchisel, cmxphiviol, cmxchiviol = 'name phipsisel #{:}:'.format(angmn), 'name chisel #{:}:'.format(angmn), 'name phipsiviol #{:}:'.format(angmn), 'name chiviol #{:}:'.format(angmn)
@@ -609,6 +608,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 import mplcursors
 import numpy as np
 from matplotlib.widgets import Slider
+print(pdbname)
 pdf=PdfPages(outdir + '{:}_upl_overview.pdf'.format(pdbname))
 nsubplots = round(len(Sequence)/25,0)
 if round(len(Sequence)/25,1) - nsubplots > 0.0:
