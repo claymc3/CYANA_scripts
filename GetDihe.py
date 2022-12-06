@@ -17,7 +17,6 @@ Aromatics = ['PHE', 'TYR']
 Aromatic_groups = {"PHE" : ['CE1', 'CE2'], "TYR": ['CE1','CHE2']}
 Pass_Atoms = ['N   ALA', 'H   ALA', 'N   ARG', 'H   ARG', 'N   ASN', 'H   ASN', 'N   ASP', 'H   ASP', 'N   CYS', 'H   CYS', 'N   GLU', 'H   GLU', 'N   GLN', 'H   GLN', 'N   GLY', 'H   GLY', 'N   HIS', 'H   HIS', 'N   ILE', 'H   ILE', 'N   LEU', 'H   LEU', 'N   LYS', 'H   LYS', 'N   MET', 'H   MET', 'N   PHE', 'H   PHE', 'N   SER', 'H   SER', 'N   THR', 'H   THR', 'N   TRP', 'H   TRP', 'N   TYR', 'H   TYR', 'N   VAL', 'H   VAL']
 
-
 if len(sys.argv) == 1:
 	print('Usage: GetDieh pdb chain')
 	exit()
@@ -101,6 +100,7 @@ in_pdb = sys.argv[1]
 ##	where A# is the residue single letter code and index 						##
 ###----------------------------------------------------------------------------###
 def extract(in_pdb, Sequence, outdir):
+	outname = in_pdb.split('/')[-1]
 	Starts, Ends = [], []
 	for mnum in range(1,21,1):
 		start = open(in_pdb).readlines().index('MODEL' + '%9s\n' %str(mnum))
@@ -108,9 +108,10 @@ def extract(in_pdb, Sequence, outdir):
 		Starts.append(start)
 		Ends.append(start-1)
 	Ends.append(open(in_pdb).readlines().index('END\n'))
-	Ends = Ends[1:]
+	Ends = sorted(Ends)[1:]
 	pdb = open(in_pdb).readlines()
 	n = 0
+	Starts = (sorted(Starts))
 	for (start,end) in zip(Starts,Ends):
 		n+=1
 		# print('Reading coordinates for model %d' %n)
@@ -120,7 +121,6 @@ def extract(in_pdb, Sequence, outdir):
 			if line[0:4] == "ATOM" or line[0:4] == 'HETA':
 				index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
 				Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
-
 	PhiDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
 	PsiDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
 	chi1DF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
@@ -131,6 +131,8 @@ def extract(in_pdb, Sequence, outdir):
 
 	for mnum in range(1,21,1):
 		Coords = eval('Coor' + str(mnum))
+		# print('Coor' + str(mnum))
+		# print(Coords)
 		for i in range(1,len(Sequence)-1,1):
 			phi = calcDihedrals(Coords[Sequence[i-1]+ '-C'],Coords[Sequence[i]+ '-N'],Coords[Sequence[i]+ '-CA'],Coords[Sequence[i]+ '-C'])
 			PhiDF.loc[Sequence[i],mnum] = np.round(phi,1)
@@ -154,14 +156,14 @@ def extract(in_pdb, Sequence, outdir):
 	chi2DF['mean'] = np.round(chi2DF.mean(axis=1),2)
 	chi2DF['stdv'] = np.round(chi2DF.std(axis=1),2)
 
-	PhiDF.to_csv(outdir + in_pdb.replace('.pdb', '_phi.csv'))
-	PsiDF.to_csv(outdir + in_pdb.replace('.pdb', '_psi.csv'))
-	chi1DF.to_csv(outdir + in_pdb.replace('.pdb', '_chi1.csv'))
-	chi2DF.to_csv(outdir + in_pdb.replace('.pdb', '_chi2.csv'))
+	PhiDF.to_csv(outdir + outname.replace('.pdb', '_phi.csv'))
+	PsiDF.to_csv(outdir + outname.replace('.pdb', '_psi.csv'))
+	chi1DF.to_csv(outdir + outname.replace('.pdb', '_chi1.csv'))
+	chi2DF.to_csv(outdir + outname.replace('.pdb', '_chi2.csv'))
 	#chi3DF.to_csv(outdir + in_pdb.replace('.pdb', '_chi3.csv'))
 	#chi4DF.to_csv(outdir + in_pdb.replace('.pdb', '_chi4.csv'))
 
-	pdf = PdfPages(outdir + in_pdb.replace('.pdb', '_phi-psi.pdf'))
+	pdf = PdfPages(outdir + outname.replace('.pdb', '_phi-psi.pdf'))
 	for res in PhiDF.index.to_list():
 		fig, ax =plt.subplots(figsize=(3,3))
 		ax.scatter(PhiDF.loc[res][:-2],PsiDF.loc[res][:-2],marker='o',s= 30,facecolors='none', edgecolors= 'blue', linewidth=1.0)
@@ -178,7 +180,7 @@ def extract(in_pdb, Sequence, outdir):
 		plt.close()
 	pdf.close()
 
-	pdf = PdfPages(outdir + in_pdb.replace('.pdb', '_chi1-chi2.pdf'))
+	pdf = PdfPages(outdir + outname.replace('.pdb', '_chi1-chi2.pdf'))
 	for res in chi1DF.index.to_list():
 		fig, ax = plt.subplots(figsize=(3,3))
 		ax.scatter(chi1DF.loc[res][:-2],chi2DF.loc[res][:-2],marker='o',s= 30,facecolors='none', edgecolors= 'blue', linewidth=1.0)
@@ -194,4 +196,3 @@ def extract(in_pdb, Sequence, outdir):
 		pdf.savefig()
 		plt.close()
 	pdf.close()
-
