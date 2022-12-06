@@ -104,8 +104,8 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict):
 						outline = "{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}  {:}".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,qupldict[conect])
 						questionable.append(outline)
 						used.append(peak)
-					if pshift < 0.75 and peak not in used:
-						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}   #poor/low support\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,'poor constraint'))
+					if pshift <= 0.60 and peak not in used:
+						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}   #poor chem shift\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,'poor constraint'))
 						used.append(peak)
 	print('finished assinged')
 
@@ -125,26 +125,27 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict):
 				nopt = int(noalines[x+1].split()[3])
 				for y in range(2,int(noalines[x+1].split()[3])+2,1):
 					cns = noalines[x+y].strip().split()
-					if noalines[x+y].strip()[0] in ['!','*']:
-						atom1,resn1, resi1, atom2, resn2, resi2, pshift, drange = cns[1],cns[2],int(cns[3]), cns[5],cns[6],int(cns[7]), float(cns[10])/100, cns[13]
-					if noalines[x+y].strip()[0] not in ['!','*']:
-						atom1,resn1, resi1, atom2, resn2, resi2,pshift, drange = cns[0],cns[1],int(cns[2]), cns[4],cns[5],int(cns[6]), float(cns[9])/100, cns[12]
-					group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
-					group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
-					conect = '{:}-{:}'.format(group1,group2)
-					if conect in upldict.keys(): drange = upldict[conect]
-					outline = '#{:^28}   {:<9}A  Peak {:} from {:}  pshift {:0.2f} unused\n'.format(conect,drange,peak,plist,pshift)
-					if '{:}-{:}'.format(group1,group2)in ADpairs2:
-						assigndict['{:}-{:}'.format(group1,group2)].append(outline)
-					if '{:}-{:}'.format(group2,group1)in ADpairs2:
-						assigndict['{:}-{:}'.format(group2,group1)].append(outline)
-					if conect in upldict.keys(): drange = upldict[conect]
-					if pshift > 0.75 and conect in upldict.keys():
-						unused.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}  #{:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,upldict[conect],pshift,noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures ','')))
-					if pshift > 0.75 and conect not in upldict.keys():
-						unused.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}    \n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift))
-					if pshift < 0.75 and int(noalines[x+1].split()[3]) == 1:
-						noassingmnet.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}  #{:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures ','')))
+					if len(cns) > 8:
+						if noalines[x+y].strip()[0] in ['!','*']:
+							atom1,resn1, resi1, atom2, resn2, resi2, pshift, drange = cns[1],cns[2],int(cns[3]), cns[5],cns[6],int(cns[7]), float(cns[10])/100, cns[13]
+						if noalines[x+y].strip()[0] not in ['!','*']:
+							atom1,resn1, resi1, atom2, resn2, resi2,pshift, drange = cns[0],cns[1],int(cns[2]), cns[4],cns[5],int(cns[6]), float(cns[9])/100, cns[12]
+						group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
+						group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
+						conect = '{:}-{:}'.format(group1,group2)
+						if conect in upldict.keys(): drange = upldict[conect]
+						outline = '#{:^28}   {:<9}A  Peak {:} from {:}  pshift {:0.2f} unused\n'.format(conect,drange,peak,plist,pshift)
+						if '{:}-{:}'.format(group1,group2)in ADpairs2:
+							assigndict['{:}-{:}'.format(group1,group2)].append(outline)
+						if '{:}-{:}'.format(group2,group1)in ADpairs2:
+							assigndict['{:}-{:}'.format(group2,group1)].append(outline)
+						if conect in upldict.keys(): drange = upldict[conect]
+						if pshift > 0.75 and conect in upldict.keys():
+							unused.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}  #{:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,upldict[conect],pshift,noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures ','')))
+						if pshift > 0.75 and conect not in upldict.keys():
+							unused.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}    \n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift))
+						if pshift < 0.75 and int(noalines[x+1].split()[3]) == 1:
+							noassingmnet.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}  #{:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,pshift,noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures ','')))
 			if '0 out of 0' in noalines[x+1]:
 				pdict = eval('peaks' + plist_dict[plist])
 				noassingmnet.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],'none',noalines[x].strip().split()[-2],'na'))
