@@ -321,7 +321,7 @@ for line in open(fupl).readlines():
 				cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5],AAA_dict[cns[1]],cns[0],cns[2])
 				outline = ' #{:3.2f} #peak {:} #plist {:}\n'.format(float(cns[6]),cns[8],cns[10])
 				usedupls[cons1] = outline
-				usedupls[cons1] = outline
+				usedupls[cons2] = outline
 				for atom1 in atoms1:
 					if atom1 == 'H': atom1 = 'N'
 					for atom2 in atoms2:
@@ -329,7 +329,7 @@ for line in open(fupl).readlines():
 						cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atom1,AAA_dict[cns[4]],cns[3],atom2)
 						cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],atom2,AAA_dict[cns[1]],cns[0],atom1)
 						usedupls[cons1] = outline
-						usedupls[cons1] = outline
+						usedupls[cons2] = outline
 				if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
 					sidelist.append(cns[0])
 				if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
@@ -506,17 +506,18 @@ for uplfile in upls:
 	matchedupl = open(outdir + uplfile.replace('.upl','_found.upl'),'w')
 	for line in open(uplfile).readlines():
 		newline = ''
-		if '#' not in line.split()[0]:
-			cns = line.split()
-			cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
-			if cons in Upperdict.keys():
-				newline = line.replace('\n', Upperdict[cons])
-				violupl.write(newline)
-			if cons in usedupls.keys():
-				if len(newline) > 1: newline = newline.replace('\n', usedupls[cons])
-				if len(newline) < 1: newline = line.replace('\n', usedupls[cons])
-				matchedline = line.replace('\n', usedupls[cons])
-				matchedupl.write(matchedline)
+		if line.strip():
+			if '#' not in line.split()[0]:
+				cns = line.split()
+				cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+				if cons in Upperdict.keys():
+					newline = line.replace('\n', Upperdict[cons])
+					violupl.write(newline)
+				if cons in usedupls.keys():
+					if len(newline) > 1: newline = newline.replace('\n', usedupls[cons])
+					if len(newline) < 1: newline = line.replace('\n', usedupls[cons])
+					matchedline = line.replace('\n', usedupls[cons])
+					matchedupl.write(matchedline)
 		if len(newline) < 1:
 			newline = line
 		newlines.append(newline)
@@ -529,11 +530,12 @@ for lolfile in lols:
 	newlines = []
 	for line in open(lolfile).readlines():
 		newline = ''
-		if '#' not in line.split()[0]:
-			cns = line.split()
-			cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
-			if cons in Lowerdict.keys():
-				newline = line.replace('\n', Lowerdict[cons])
+		if line.strip():
+			if '#' not in line.split()[0]:
+				cns = line.split()
+				cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+				if cons in Lowerdict.keys():
+					newline = line.replace('\n', Lowerdict[cons])
 		if len(newline) < 1:
 			newline = line
 		newlines.append(newline)
