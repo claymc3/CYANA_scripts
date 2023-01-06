@@ -107,7 +107,7 @@ def extract(in_pdb, Sequence, outdir):
 		exec('Coor' + str(mnum) + ' = {}')
 		Starts.append(start)
 		Ends.append(start-1)
-	Ends.append(open(in_pdb).readlines().index('END\n'))
+	Ends.append(len(open(in_pdb).readlines()))
 	Ends = sorted(Ends)[1:]
 	pdb = open(in_pdb).readlines()
 	n = 0
