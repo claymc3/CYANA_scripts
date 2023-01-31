@@ -6,6 +6,9 @@ import pandas as pd
 import numpy as np
 import GetDihe as Dihed
 import noa_analysis as noaa
+
+## HIST is his protonated on NE2
+## HIS+ is his protonated on both ND1 and NE2 
 replacements ={
 'ALAHA':'CA','ALAQB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'CB',
 'CYSHA':'CA','CYSHB2':'CB','CYSHB3':'CB','CYSQB':'CB',
@@ -14,6 +17,8 @@ replacements ={
 'PHEHA':'CA','PHEHB2':'CB','PHEHB3':'CB','PHEQB':'CB','PHEQD':'CD1,CD2','PHEQE':'CE1,CE2','PHEHD1':'CD1','PHEHE1':'CE1','PHEHZ':'CZ','PHEHE2':'CE2','PHEHD2':'CD2',
 'GLYHA2':'CA','GLYHA3':'CA','GLYQA':'CA',
 'HISHA':'CA','HISHB2':'CB','HISHB3':'CB','HISQB':'CB','HISHD1':'ND1','HISHE2':'NE2','HISHD2':'CD2','HISHE1':'CE1',
+'HISTHA':'CA','HISTHB2':'CB','HISTHB3':'CB','HISTQB':'CB','HISTHD1':'ND1','HISTHE2':'NE2','HISTHD2':'CD2','HISTHE1':'CE1',
+'HIS+HA':'CA','HIS+HB2':'CB','HIS+HB3':'CB','HIS+QB':'CB','HIS+HD1':'ND1','HISE+E2':'NE2','HIS+HD2':'CD2','HIS+HE1':'CE1',
 'ILEHA':'CA','ILEHB':'CB','ILEQG2':'CG2','ILEHG21':'CG2','ILEHG22':'CG2','ILEHG23':'CG2','ILEHG12':'CG1','ILEHG13':'CG1','ILEQG1':'CG1','ILEQD1':'CD1','ILEHD11':'CD1','ILEHD12':'CD1','ILEHD13':'CD1',
 'LYSHA':'CA','LYSHB2':'CB','LYSHB3':'CB','LYSQB':'CB','LYSHG2':'CG','LYSHG3':'CG','LYSHD2':'CD ','LYSHD3':'CD ','LYSQD':'CD ','LYSHE2':'CE','LYSHE3':'CE','LYSQE':'CE','LYSHZ1':'NZ','LYSHZ2':'NZ','LYSHZ3':'NZ','LYSQZ':'NZ',
 'LEUHA':'CA','LEUHB2':'CB','LEUHB3':'CB','LEUQB':'CB','LEUHG':'CG','LEUHD11':'CD1','LEUHD12':'CD1','LEUHD13':'CD1','LEUQD1':'CD1','LEUHD21':'CD2','LEUHD22':'CD2','LEUHD23':'CD2','LEUQD2':'CD2','LEUQQD':'CD2,CD1',
@@ -216,7 +221,7 @@ for line in open(fovw).readlines():
 		atoms1 = atom1.split(',')
 		atoms2 = atom2.split(',')
 		cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[2]],dviol[3],dviol[1],AAA_dict[dviol[6]],dviol[7],dviol[5])
-		cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[2]],dviol[3],dviol[1],AAA_dict[dviol[6]],dviol[7],dviol[5])
+		cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[6]],dviol[7],dviol[5],AAA_dict[dviol[2]],dviol[3],dviol[1])
 		if int(dviol[9]) >= 10:
 			v+=1
 			if 'peak' not in line:
@@ -274,7 +279,7 @@ violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
 for viol in violpeaks:
 	checkcons.write(viol)
 checkcons.write('\n\n')
-usedupls,qupldict, upldict = {}, {}, {}
+usedupls,qupldict, upldict, upldict2 = {}, {}, {},{}
 finalupl,poorcons2, show, shortcons2,longcons2,sidelist = [],[],[],[],[],[]
 poorcons, shortcons, longcons = 'group poor, ', 'group short, ', 'group long, '
 for line in open(fupl).readlines():
@@ -592,7 +597,7 @@ outcmx.close()
 # Run the cycle7.noa analysis and generate peak list identifying peaks as 
 # unused, no assingment, and questionable
 
-noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict,upldict)
+noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict,upldict, pad)
 # ---------------------------------------------------------------------------
 # Run the GetDihed.py to determine phi, psi, chi1 and chi2 and plot them
 # for all 20 structures
