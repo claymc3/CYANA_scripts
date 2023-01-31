@@ -54,11 +54,18 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 					elif line.split()[6] == 'U':  # get intensity of psudo 4D NOESY
 						intdict[int(line.split()[0])] = line.split()[7]
 	Calibration_cns = []
+	Swapped = {}
 	for line in open(log).readlines():
 		if "Calibration constant for peak list" in line:
 			newline = line.replace(line.split()[5],cya_plists[int(line.split()[5][0:-1]) -1].replace('.peaks',':'))
 			if newline not in Calibration_cns:
 				Calibration_cns.append(newline)
+			if line.strip().splie()[-1] == 'swapped':
+				res = line.strip().split()
+				resi, resn, atom1, atom2, TF, junk, moreJunk
+				group1 = '{:}{:}-{:}'.format(AAA_dict[res[1]],res[0], res[2])
+				group2 = '{:}{:}-{:}'.format(AAA_dict[res[1]],res[0], res[3])
+
 
 	Assignments= []
 	for prot in prots:
