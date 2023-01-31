@@ -6,6 +6,8 @@
 # St Jude Children's Research Hospital 
 # Department of Structural Biology Memphis, TN 
 # 11/10/2022
+#
+# Updated January 30, 2023 to include peak intensities 
 # ------------------------------------------------------------------------------
 
 '''
@@ -14,6 +16,8 @@ import os
 import sys
 import numpy as np
 import re
+import glob
+
 ####----------------------------------------------------------------------------------------------####
 ##																									##
 ##			 	Setting controlling plot appearance: Font, line widths, ticks, and legend  			##
@@ -21,9 +25,11 @@ import re
 ####----------------------------------------------------------------------------------------------####
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 
-def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict):
+def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad):
 	cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
 	prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line][0].split()[2].split(',')
+	log = glob.glob(os.path.join(cwd + 'log*'))[0]
+	print(log)
 
 	plist_dict = {}
 	for x in range(len(cya_plists)):
@@ -35,12 +41,25 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict):
 		exec("questlist{:} = []".format(str(x)))
 		exec("usedquestlist{:} = []".format(str(x)))
 		exec("peaks{:} = {{}}".format(str(x)))
+		exec("intensity{:} = {{}}".format(str(x)))
 	for x in range(len(cya_plists)):
+		intdict = eval('intensity' + str(x))
 		pdict = eval('peaks' + str(x))
 		for line in open(cwd + cya_plists[x]):
 			if line.strip():
 				if line.strip()[0] != '#':
 					pdict[int(line.split()[0])] = [float(line.split()[1]),float(line.split()[2]),float(line.split()[3])]
+					if line.split()[5] == 'U':  # get intensity for 3D NOESY
+						intdict[int(line.split()[0])] = line.split()[6]
+					elif line.split()[6] == 'U':  # get intensity of psudo 4D NOESY
+						intdict[int(line.split()[0])] = line.split()[7]
+	Calibration_cns = []
+	for line in open(log).readlines():
+		if "Calibration constant for peak list" in line:
+			newline = line.replace(line.split()[5],cya_plists[int(line.split()[5][0:-1]) -1].replace('.peaks',':'))
+			if newline not in Calibration_cns:
+				Calibration_cns.append(newline)
+
 	Assignments= []
 	for prot in prots:
 		for line in open(cwd + prot.replace('.prot','-final.prot')).readlines():
@@ -65,10 +84,13 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict):
 				peak = int(noalines[x].strip().split()[1])
 				plist = noalines[x].strip().split()[3].replace('.peaks','')
 				pdict = eval('peaks' + plist_dict[plist])
+				intdict = eval('intensity' + plist_dict[plist])
 				questionable = eval('questlist' + plist_dict[plist])
 				used =eval('usedquestlist' + plist_dict[plist])
 				QF = noalines[x+1].split()[-1].replace(':','')
+				linepad = pad[len(plist):]
 				for y in range(2,int(noalines[x+1].split()[0])+2,1):
+
 					cns = noalines[x+y].strip().split()
 					if cns[4] == '+':
 						atom1,resn1, resi1, atom2, resn2, resi2, pshift, drange = cns[1],cns[2],int(cns[3]), cns[5], cns[6], int(cns[7]), float(cns[10])/100, cns[13]
@@ -78,7 +100,10 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict):
 					group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
 					conect = '{:}-{:}'.format(group1,group2)
 					if conect in upldict.keys(): drange = upldict[conect]
-					outline = '{:^28}   {:>9}A  Peak {:} from {:}  pshift {:3.2f}\n'.format(conect,drange,peak,plist,pshift)
+					if 'increased' not in line:
+						outline = '{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:3.2f}\n'.format(conect,intdict[peak],drange,peak,linepad,plist,pshift)
+					if 'increased' in line:
+						outline = '{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:3.2f} increased\n'.format(conect,intdict[peak],drange,peak,linepad,plist,pshift)
 					if '{:}-{:}'.format(group1,group2)in ADpairs:
 						assigndict['{:}-{:}'.format(group1,group2)].append(outline)
 					if '{:}-{:}'.format(group2,group1)in ADpairs:
@@ -109,8 +134,10 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict):
 			peak = int(noalines[x].strip().split()[1])
 			plist = noalines[x].strip().split()[3].replace('.peaks','')
 			pdict = eval('peaks' + plist_dict[plist])
+			intdict = eval('intensity' + plist_dict[plist])
 			noassingmnet = eval('no_assign' + plist_dict[plist])
 			unused = eval('unused' + plist_dict[plist])
+			linepad = pad[len(plist):]
 			if '0 out of 0' not in noalines[x+1]:
 				nopt = int(noalines[x+1].split()[3])
 				for y in range(2,int(noalines[x+1].split()[3])+2,1):
@@ -124,7 +151,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict):
 						group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
 						conect = '{:}-{:}'.format(group1,group2)
 						if conect in upldict.keys(): drange = upldict[conect]
-						outline = '#{:^28}   {:<9}A  Peak {:} from {:}  pshift {:0.2f} unused\n'.format(conect,drange,peak,plist,pshift)
+						outline = '#{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:0.2f} unused\n'.format(conect,intdict[peak],drange,peak,plist,linepad,pshift)
 						if '{:}-{:}'.format(group1,group2)in ADpairs2:
 							assigndict['{:}-{:}'.format(group1,group2)].append(outline)
 						if '{:}-{:}'.format(group2,group1)in ADpairs2:
@@ -140,6 +167,9 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict):
 				pdict = eval('peaks' + plist_dict[plist])
 				noassingmnet.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],'none',noalines[x].strip().split()[-2],'na'))
 	assigned = open(outdir + 'Assigned.list','w')
+	for val in Calibration_cns:
+		assigned.write(val.strip()+'\n')
+	assigned.write('\n\n')
 	for con in ADpairs:
 		if len(assigndict[con]) >= 1:
 			assigned.write('{:}  {:}:\n'.format(con,len(assigndict[con])))
@@ -147,14 +177,14 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict):
 			assigned.write('\n')
 		if len(assigndict[con]) == 1:
 			pline = assigndict[con][0].split()
-			peak = int(pline[3])
-			plist = pline[5]
-			pshift = pline[7]
+			peak = int(pline[4])
+			plist = pline[6]
+			pshift = pline[8]
 			pdict = eval('peaks' + plist_dict[plist])
 			questout =  eval('questlist' + plist_dict[plist])
 			used =eval('usedquestlist' + plist_dict[plist])
 			if peak not in used:
-				questout.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>10}  {:^6}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],pline[0],pline[1],pline[7]))
+				questout.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>10}  {:^6}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],pline[0],pline[2],pline[8]))
 
 	for x in range(len(cya_plists)):
 		eval("unused{:}.close()".format(str(x)))
