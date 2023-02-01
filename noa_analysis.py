@@ -120,7 +120,6 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 					conect = '{:}-{:}'.format(group1,group2)
 					if '{:} peak {:} from {:}'.format(conect,peak,plist) in upldict2: 
 						note = ' UPL ' + note
-						print('upl')
 					dist = (Calconst/float(intdict[peak][y-2]))**(1/6)
 					drange = '{:3.2f}-{:3.2f}'.format(dist, dist*1.25)
 					outline = '{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:3.2f} {:}\n'.format(conect,intdict[peak][y-2],drange,peak,linepad,plist,pshift,note)
