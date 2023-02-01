@@ -286,14 +286,6 @@ for line in open(fupl).readlines():
 		cns = line.split()
 		atom1 = cns[2]
 		atom2 = cns[5]
-		# if cns[1]+cns[2] in Ambiguous.keys():
-		# 	atom1 = atom1.replace(cns[2], Ambiguous[cns[1]+cns[2]])
-		# if cns[4]+cns[5] in Ambiguous.keys():
-		# 	atom2 = atom2.replace(cns[5], Ambiguous[cns[4]+cns[5]])
-		# atoms1 = atom1.split(',')
-		# atoms2 = atom2.split(',')
-		# for atom1 in atoms1:
-		# 	for atom2 in atoms2:
 		cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atom1,AAA_dict[cns[4]],cns[3],atom2)
 		cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],atom2,AAA_dict[cns[1]],cns[0],atom1)
 		if cons1 not in upldict.keys():
