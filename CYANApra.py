@@ -78,7 +78,6 @@ noadir = cwd  +'noa_analysis/'
 in_pdb = sys.argv[1]
 fupl = sys.argv[2]
 pdbname = in_pdb.split('/')[-1].split('.')[0]
-print(pdbname)
 fovw = fupl.replace('.upl','.ovw')
 calc = cwd + 'CALC.cya'
 outname = fupl.split('.')[0]
@@ -279,28 +278,30 @@ violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
 for viol in violpeaks:
 	checkcons.write(viol)
 checkcons.write('\n\n')
-usedupls,qupldict, upldict, upldict2 = {}, {}, {},{}
+usedupls,qupldict, upldict, upldict2 = {}, {}, {}, []
 finalupl,poorcons2, show, shortcons2,longcons2,sidelist = [],[],[],[],[],[]
 poorcons, shortcons, longcons = 'group poor, ', 'group short, ', 'group long, '
 for line in open(fupl).readlines():
-	if line.split():
+	if line.split() and '#SUP' in line:
 		cns = line.split()
 		atom1 = cns[2]
 		atom2 = cns[5]
-		if cns[1]+cns[2] in Ambiguous.keys():
-			atom1 = atom1.replace(cns[2], Ambiguous[cns[1]+cns[2]])
-		if cns[4]+cns[5] in Ambiguous.keys():
-			atom2 = atom2.replace(cns[5], Ambiguous[cns[4]+cns[5]])
-		atoms1 = atom1.split(',')
-		atoms2 = atom2.split(',')
-		for atom1 in atoms1:
-			for atom2 in atoms2:
-				cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atom1,AAA_dict[cns[4]],cns[3],atom2)
-				cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],atom2,AAA_dict[cns[1]],cns[0],atom1)
-				if cons1 not in upldict.keys():
-					upldict[cons1] = "{:3.2f}".format(float(cns[6]))
-				if cons2 not in upldict.keys():
-					upldict[cons2] = "{:3.2f}".format(float(cns[6]))
+		# if cns[1]+cns[2] in Ambiguous.keys():
+		# 	atom1 = atom1.replace(cns[2], Ambiguous[cns[1]+cns[2]])
+		# if cns[4]+cns[5] in Ambiguous.keys():
+		# 	atom2 = atom2.replace(cns[5], Ambiguous[cns[4]+cns[5]])
+		# atoms1 = atom1.split(',')
+		# atoms2 = atom2.split(',')
+		# for atom1 in atoms1:
+		# 	for atom2 in atoms2:
+		cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atom1,AAA_dict[cns[4]],cns[3],atom2)
+		cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],atom2,AAA_dict[cns[1]],cns[0],atom1)
+		if cons1 not in upldict.keys():
+			upldict[cons1] = "{:3.2f}".format(float(cns[6]))
+		if cons2 not in upldict.keys():
+			upldict[cons2] = "{:3.2f}".format(float(cns[6]))
+		upldict2.append("{:} peak {:} from {:}".format(cons1,cns[8],cya_plists[int(cns[10])-1]))
+		upldict2.append("{:} peak {:} from {:}".format(cons2,cns[8],cya_plists[int(cns[10])-1]))
 
 for line in open(fupl).readlines():
 	if line not in Filtered:
@@ -597,7 +598,7 @@ outcmx.close()
 # Run the cycle7.noa analysis and generate peak list identifying peaks as 
 # unused, no assingment, and questionable
 
-noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict,upldict, pad)
+noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict,upldict, pad, upldict2)
 # ---------------------------------------------------------------------------
 # Run the GetDihed.py to determine phi, psi, chi1 and chi2 and plot them
 # for all 20 structures
