@@ -25,7 +25,7 @@ import glob
 ####----------------------------------------------------------------------------------------------####
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 
-def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad):
+def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad,upldict2):
 	cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
 	prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line][0].split()[2].split(',')
 	log = glob.glob(os.path.join(cwd + 'log*'))[0]
@@ -45,14 +45,23 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 	for x in range(len(cya_plists)):
 		intdict = eval('intensity' + str(x))
 		pdict = eval('peaks' + str(x))
-		for line in open(cwd + cya_plists[x]):
+		for line in open(cwd + cya_plists[x].replace('.peaks','-cycle7.peaks')):
 			if line.strip():
 				if line.strip()[0] != '#':
 					pdict[int(line.split()[0])] = [float(line.split()[1]),float(line.split()[2]),float(line.split()[3])]
 					if line.split()[5] == 'U':  # get intensity for 3D NOESY
-						intdict[int(line.split()[0])] = line.split()[6]
+						intensity = "{:12.6E}".format(float(line.split()[6]))
+						if len(line.split()) > 13 and line.split()[13] == '#VC':
+							intensity = "{:12.6E}".format(float(line.split()[6]) * float(line.split()[14]))
 					elif line.split()[6] == 'U':  # get intensity of psudo 4D NOESY
-						intdict[int(line.split()[0])] = line.split()[7]
+						intensity = "{:12.6E}".format(float(line.split()[7]))
+						if len(line.split()) > 15 and line.split()[15] == '#VC':
+							intensity = "{:12.6E}".format(float(line.split()[7]) * float(line.split()[16]))
+					if int(line.split()[0]) in intdict.keys():
+						intdict[int(line.split()[0])].append(intensity)
+					else:
+						intdict[int(line.split()[0])] = [intensity]
+
 	Calibration_cns = []
 	Swapped = {}
 	for line in open(log).readlines():
@@ -60,13 +69,12 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 			newline = line.replace(line.split()[5],cya_plists[int(line.split()[5][0:-1]) -1].replace('.peaks',':'))
 			if newline not in Calibration_cns:
 				Calibration_cns.append(newline)
-			if line.strip().splie()[-1] == 'swapped':
-				res = line.strip().split()
-				resi, resn, atom1, atom2, TF, junk, moreJunk
-				group1 = '{:}{:}-{:}'.format(AAA_dict[res[1]],res[0], res[2])
-				group2 = '{:}{:}-{:}'.format(AAA_dict[res[1]],res[0], res[3])
-
-
+		if line.strip() and line.strip().split()[-1] == 'swapped':
+			res = line.strip().split()
+			group1 = '{:}{:}-{:}'.format(AAA_dict[res[1]],res[0], res[2])
+			group2 = '{:}{:}-{:}'.format(AAA_dict[res[1]],res[0], res[3])
+			Swapped[group1] = group2
+			Swapped[group2] = group1
 	Assignments= []
 	for prot in prots:
 		for line in open(cwd + prot.replace('.prot','-final.prot')).readlines():
@@ -96,8 +104,8 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 				used =eval('usedquestlist' + plist_dict[plist])
 				QF = noalines[x+1].split()[-1].replace(':','')
 				linepad = pad[len(plist):]
+				Calconst = float(Calibration_cns[int(plist_dict[plist]) -1].split()[-1])
 				for y in range(2,int(noalines[x+1].split()[0])+2,1):
-
 					cns = noalines[x+y].strip().split()
 					if cns[4] == '+':
 						atom1,resn1, resi1, atom2, resn2, resi2, pshift, drange = cns[1],cns[2],int(cns[3]), cns[5], cns[6], int(cns[7]), float(cns[10])/100, cns[13]
@@ -105,12 +113,17 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						atom1,resn1, resi1, atom2, resn2, resi2, pshift, drange = cns[0],cns[1],int(cns[2]), cns[4], cns[5], int(cns[6]), float(cns[9])/100, cns[12]
 					group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
 					group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
+					note = ''
+					if 'increased' in line: note = note + ' increased '
+					if group1 in Swapped.keys(): group1 = Swapped[group1]; note = note + ' swapped '
+					if group2 in Swapped.keys(): group2 = Swapped[group2]; note = note + ' swapped '
 					conect = '{:}-{:}'.format(group1,group2)
-					if conect in upldict.keys(): drange = upldict[conect]
-					if 'increased' not in line:
-						outline = '{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:3.2f}\n'.format(conect,intdict[peak],drange,peak,linepad,plist,pshift)
-					if 'increased' in line:
-						outline = '{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:3.2f} increased\n'.format(conect,intdict[peak],drange,peak,linepad,plist,pshift)
+					if '{:} peak {:} from {:}'.format(conect,peak,plist) in upldict2: 
+						note = ' UPL ' + note
+						print('upl')
+					dist = (Calconst/float(intdict[peak][y-2]))**(1/6)
+					drange = '{:3.2f}-{:3.2f}'.format(dist, dist*1.25)
+					outline = '{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:3.2f} {:}\n'.format(conect,intdict[peak][y-2],drange,peak,linepad,plist,pshift,note)
 					if '{:}-{:}'.format(group1,group2)in ADpairs:
 						assigndict['{:}-{:}'.format(group1,group2)].append(outline)
 					if '{:}-{:}'.format(group2,group1)in ADpairs:
@@ -156,9 +169,11 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 							atom1,resn1, resi1, atom2, resn2, resi2,pshift, drange = cns[0],cns[1],int(cns[2]), cns[4],cns[5],int(cns[6]), float(cns[9])/100, cns[12]
 						group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
 						group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
+						if group1 in Swapped.keys(): group1 = Swapped[group1]
+						if group2 in Swapped.keys(): group2 = Swapped[group2]
 						conect = '{:}-{:}'.format(group1,group2)
-						if conect in upldict.keys(): drange = upldict[conect]
-						outline = '#{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:0.2f} unused\n'.format(conect,intdict[peak],drange,peak,plist,linepad,pshift)
+						#if conect in upldict.keys(): drange = upldict[conect]
+						outline = '#{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:0.2f} unused\n'.format(conect,intdict[peak][0],drange,peak,plist,linepad,pshift)
 						if '{:}-{:}'.format(group1,group2)in ADpairs2:
 							assigndict['{:}-{:}'.format(group1,group2)].append(outline)
 						if '{:}-{:}'.format(group2,group1)in ADpairs2:
@@ -179,7 +194,10 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 	assigned.write('\n\n')
 	for con in ADpairs:
 		if len(assigndict[con]) >= 1:
-			assigned.write('{:}  {:}:\n'.format(con,len(assigndict[con])))
+			if con in upldict.keys():
+				assigned.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
+			if con not in upldict.keys():
+				assigned.write('{:} ({:}):\n'.format(con,len(assigndict[con])))
 			assigned.writelines(assigndict[con])
 			assigned.write('\n')
 		if len(assigndict[con]) == 1:
