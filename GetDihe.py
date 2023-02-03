@@ -156,14 +156,14 @@ def extract(in_pdb, Sequence, outdir):
 	chi2DF['mean'] = np.round(chi2DF.mean(axis=1),2)
 	chi2DF['stdv'] = np.round(chi2DF.std(axis=1),2)
 
-	PhiDF.to_csv(outdir + outname.replace('.pdb', '_phi.csv'))
-	PsiDF.to_csv(outdir + outname.replace('.pdb', '_psi.csv'))
-	chi1DF.to_csv(outdir + outname.replace('.pdb', '_chi1.csv'))
-	chi2DF.to_csv(outdir + outname.replace('.pdb', '_chi2.csv'))
+	PhiDF.to_csv(outdir + outname.replace('.pdb', '_Phi.csv'))
+	PsiDF.to_csv(outdir + outname.replace('.pdb', '_Psi.csv'))
+	chi1DF.to_csv(outdir + outname.replace('.pdb', '_Chi1.csv'))
+	chi2DF.to_csv(outdir + outname.replace('.pdb', '_Chi2.csv'))
 	#chi3DF.to_csv(outdir + in_pdb.replace('.pdb', '_chi3.csv'))
 	#chi4DF.to_csv(outdir + in_pdb.replace('.pdb', '_chi4.csv'))
 
-	pdf = PdfPages(outdir + outname.replace('.pdb', '_phi-psi.pdf'))
+	pdf = PdfPages(outdir + outname.replace('.pdb', '_Phi-Psi.pdf'))
 	for res in PhiDF.index.to_list():
 		fig, ax =plt.subplots(figsize=(3,3))
 		ax.scatter(PhiDF.loc[res][:-2],PsiDF.loc[res][:-2],marker='o',s= 30,facecolors='none', edgecolors= 'blue', linewidth=1.0)
@@ -180,7 +180,7 @@ def extract(in_pdb, Sequence, outdir):
 		plt.close()
 	pdf.close()
 
-	pdf = PdfPages(outdir + outname.replace('.pdb', '_chi1-chi2.pdf'))
+	pdf = PdfPages(outdir + outname.replace('.pdb', '_Chi1-Chi2.pdf'))
 	for res in chi1DF.index.to_list():
 		fig, ax = plt.subplots(figsize=(3,3))
 		ax.scatter(chi1DF.loc[res][:-2],chi2DF.loc[res][:-2],marker='o',s= 30,facecolors='none', edgecolors= 'blue', linewidth=1.0)
