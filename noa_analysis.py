@@ -25,6 +25,18 @@ import glob
 ####----------------------------------------------------------------------------------------------####
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 
+Assign_header = '''##########
+##Connection distance (number of cross peaks connected to this assignment):
+	assigment   intesnity   distance_range  [Peak peak_id from spectrum_id]  pshift pshif note
+
+intensity of the cross peak 
+Distanc_range: (Int/calibration_Const)**(1/6) - 1.25*(Int/calibration_Const)**(1/6)
+Peak ID in the Spectrum it was found in 
+pshift: how well the chemical shift matches 1.00 = perfect agreement
+Note: swapped - cyana swapped the stereo specific assignment 
+    : increased 
+'''
+
 def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad,upldict2):
 	cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
 	prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line][0].split()[2].split(',')
@@ -104,7 +116,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 				used =eval('usedquestlist' + plist_dict[plist])
 				QF = noalines[x+1].split()[-1].replace(':','')
 				linepad = pad[len(plist):]
-				Calconst = float(Calibration_cns[int(plist_dict[plist]) -1].split()[-1])
+				Calconst = float(Calibration_cns[int(plist_dict[plist])].split()[-1])
 				for y in range(2,int(noalines[x+1].split()[0])+2,1):
 					cns = noalines[x+y].strip().split()
 					if cns[4] == '+':
