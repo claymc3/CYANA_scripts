@@ -72,9 +72,10 @@ Pseudo2Heavy ={'ALAHA':'CA','ALAQB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'C
 'VALHA':'CA','VALHB':'CB','VALHG11':'CG1','VALHG12':'CG1','VALHG13':'CG1','VALQG1':'CG1','VALHG21':'CG2','VALHG22':'CG2','VALHG23':'CG2','VALQG2':'CG2','VALQQG':'CG1,CG2',
 'TRPHA':'CA','TRPHB2':'CB','TRPHB3':'CB','TRPQB':'CB','TRPHD1':'CD1','TRPHE3':'CE3','TRPHE1':'NE1','TRPHZ3':'CZ3','TRPHZ2':'CZ2','TRPHH2':'CH2',
 'TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRQD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH'}
+AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "CYSS":"C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P","cPRO":"P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
+A_dict = {'C': 'CYS', 'D': 'ASP', 'S': 'SER', 'Q': 'GLN', 'K': 'LYS','I': 'ILE', 'P': 'PRO', 'T': 'THR', 'F': 'PHE', 'N': 'ASN', 'G': 'GLY', 'H': 'HIS', 'L': 'LEU', 'R': 'ARG', 'W': 'TRP', 'A': 'ALA', 'V':'VAL', 'E': 'GLU', 'Y': 'TYR', 'M': 'MET'}
 
-
-cwd = '/Volumes/common/Kinases/FGFR3/FGFR3_459-755_C482A_C582S/Structure_Calc/cyana_25/'
+cwd = '/Users/mclay1/FGFR2_structure/cyana_73/'
 # cwd = '/Users/mclay1/FGFR3_structure/cyana_23/'
 
 in_pdb = cwd + 'final.pdb'
@@ -90,7 +91,7 @@ for mnum in range(1,21,1):
 	exec('Coor' + str(mnum) + ' = {}')
 	Starts.append(start)
 	Ends.append(start-1)
-Ends.append(open(in_pdb).readlines().index('END\n'))
+Ends.append(len(open(in_pdb).readlines()))
 Ends = Ends[1:]
 pdb = open(in_pdb).readlines()
 n = 0
@@ -101,7 +102,7 @@ for (start,end) in zip(Starts,Ends):
 	for x in range(start,end,1):
 		line = pdb[x]
 		if line[0:4] == "ATOM" or line[0:4] == 'HETA':
-			index = '%-4s %4s %-4s'%(line[17:20].strip(),line[22:26].strip(),line[12:16].strip())
+			index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
 			Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
 			# ## Generate pseudo atoms for methyl groups
 			# # print(index)
@@ -127,11 +128,11 @@ for (start,end) in zip(Starts,Ends):
 			# 			Coor[index] = [xcoor,ycoor,zcoor]
 
 def getDistance(donor, acceptor,PDBdict):
-	resn1, resi1, name1 = donor.split()
-	resn2, resi2, name2 = acceptor.split()
+	resn1, name1 = donor.split('-')
+	resn2, name2 = acceptor.split('-')
 	d = 0
-	if 'Q' in name1: atoms1list = ['%-4s %4s %-4s'%(resn1.replace('HIST','HIS'),resi1,atom) for atom in Pseudo2Prot[resn1.replace('HIST','HIS')+name1]]
-	if 'Q' in name2: atoms2list = ['%-4s %4s %-4s'%(resn2.replace('HIST','HIS'),resi2,atom) for atom in Pseudo2Prot[resn2.replace('HIST','HIS')+name2]]
+	if 'Q' in name1: atoms1list = ['{:}-{:}'.format(resn1,atom) for atom in Pseudo2Prot[A_dict[resn1[0]]+name1]]
+	if 'Q' in name2: atoms2list = ['{:}-{:}'.format(resn2,atom) for atom in Pseudo2Prot[A_dict[resn2[0]]+name2]]
 	if 'Q' not in name1: atoms1list = [donor]
 	if 'Q' not in name2: atoms2list = [acceptor]
 	for a1 in atoms1list:
@@ -155,14 +156,15 @@ for line in open(fupl).readlines():
 		pass 
 	else:
 		cns = line.strip().split()
-		atom1 = '%-4s %4s %-4s'%(cns[1].replace('HIST','HIS'),cns[0],cns[2])
-		atom2 = '%-4s %4s %-4s'%(cns[4].replace('HIST','HIS'),cns[3],cns[5])
+		atom1 = '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2])
+		atom2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
+		connection = '{:}{:}-{:} {:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
 		for mnum in range(1,21,1):
 			Coor = eval('Coor' + str(mnum))
-			d = getDistance(atom1, atom2,Coor)
+			d = getDistance(atom1, atom2, Coor)
 			DistancesDF.loc[atom1 + ' ' + atom2,mnum] = d
 			if np.round(d - float(cns[6]),2) > 0.1:
-				DiffDF.loc[atom1 + ' ' + atom2,mnum] = np.round(d - float(cns[6]),2)
+				DiffDF.loc[connection,mnum] = np.round(d - float(cns[6]),2)
 DistancesDF['mean'] = np.round(DistancesDF.mean(axis=1),2)
 DistancesDF['stdv'] = np.round(DistancesDF.std(axis=1),2)
 
@@ -171,18 +173,19 @@ for line in open(fupl).readlines():
 		pass 
 	else:
 		cns = line.strip().split()
-		atom1 = '%-4s %4s %-4s'%(cns[1].replace('HIST','HIS'),cns[0],cns[2])
-		atom2 = '%-4s %4s %-4s'%(cns[4].replace('HIST','HIS'),cns[3],cns[5])
-	DistancesDF.loc[atom1 + ' ' + atom2,'upl'] = float(cns[6])
-	DistancesDF.loc[atom1 + ' ' + atom2,'peak'] = cns[8]
-	DistancesDF.loc[atom1 + ' ' + atom2,'plist'] = cns[10]
+		atom1 = '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2])
+		atom2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
+		connection = '{:}{:}-{:} {:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+	DistancesDF.loc[connection,'upl'] = float(cns[6])
+	DistancesDF.loc[connection,'peak'] = cns[8]
+	DistancesDF.loc[connection,'plist'] = cns[10]
 	ovwent = '%-4s %4s %4s - %-4s %4s %4s' %(cns[2], cns[1],cns[0],cns[5],cns[4],cns[3])
 	if 'peak %s list %s' %(cns[8], cns[10]) in open(fovw).read():
-		DistancesDF.loc[atom1 + ' ' + atom2,'violation'] = 'yes'
-	if ovwent in open(fovw).read():
-		# print('found line')
-		print(ovwent)
-		print(fovwlines.index(ovwent))
+		DistancesDF.loc[connection,'violation'] = 'yes'
+		# if ovwent in open(fovw).read():
+		# 	# print('found line')
+		# 	print(ovwent)
+		# 	print(fovwlines.index(ovwent))
 		
 
 DistancesDF['mean diff'] = np.round(DiffDF.mean(axis=1),2)
@@ -200,14 +203,15 @@ for upl in upls:
 			pass 
 		else:
 			cns = line.strip().split()
-			atom1 = '%-4s %4s %-4s'%(cns[1].replace('HIST','HIS'),cns[0],cns[2])
-			atom2 = '%-4s %4s %-4s'%(cns[4].replace('HIST','HIS'),cns[3],cns[5])
+			atom1 = '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2])
+			atom2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
+			connection = '{:}{:}-{:} {:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
 			for mnum in range(1,21,1):
 				Coor = eval('Coor' + str(mnum))
 				d = getDistance(atom1, atom2,Coor)
 				DistancesDF.loc[atom1 + ' ' + atom2,mnum] = d
 				if np.round(d - float(cns[6]),2) > 0.1:
-					DiffDF.loc[atom1 + ' ' + atom2,mnum] = np.round(d - float(cns[6]),2)
+					DiffDF.loc[connection,mnum] = np.round(d - float(cns[6]),2)
 	DistancesDF['mean'] = np.round(DistancesDF.mean(axis=1),2)
 	DistancesDF['stdv'] = np.round(DistancesDF.std(axis=1),2)
 
@@ -216,9 +220,8 @@ for upl in upls:
 			pass 
 		else:
 			cns = line.strip().split()
-			atom1 = '%-4s %4s %-4s'%(cns[1].replace('HIST','HIS'),cns[0],cns[2])
-			atom2 = '%-4s %4s %-4s'%(cns[4].replace('HIST','HIS'),cns[3],cns[5])
-		DistancesDF.loc[atom1 + ' ' + atom2,'upl'] = float(cns[6])
+			connection = '{:}{:}-{:} {:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+		DistancesDF.loc[connection,'upl'] = float(cns[6])
 		ovwent = '%-4s %4s %4s - %-4s %4s %4s' %(cns[2], cns[1],cns[0],cns[5],cns[4],cns[3])
 		print(ovwent)
 		if ovwent in open(fovw).read():
