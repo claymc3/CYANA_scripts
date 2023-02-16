@@ -432,7 +432,7 @@ for uplfile in upls:
 	fin = open(uplfile,'r')
 	outpb = open(outdir +'pseudobonds/' + uplfile.replace('.upl','.pb'),'w')
 	pmlgroup = 'group {:}, '.format(uplfile.replace('.upl',''))
-	outpb.write("; halfbond = false\n; color = blue\n; radius = 0.15\n; dashes = 10\n")
+	outpb.write("; halfbond = false\n; color = cyan\n; radius = 0.15\n; dashes = 10\n")
 	for line in fin.readlines():
 		cns = line.split()
 		if line.strip() and "#" not in cns[0]:
@@ -449,7 +449,10 @@ for uplfile in upls:
 			for atom1 in atoms1:
 				for atom2 in atoms2:
 					u+=1
-					outpb.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+					if 'missing' in line:
+						outpb.write('#1.1:{:}@{:} #1.1:{:}@{:} blue\n'.format(cns[0], atom1, cns[3],atom2))
+					else:
+						outpb.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 					outpml.write('distance {:}{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 					pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
 			if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
@@ -460,12 +463,9 @@ for uplfile in upls:
 	outpml.write('color cyan,' + uplfile.replace('.upl','') + '\n')
 	mn+=1
 	outcmx.write('open ' + outdir +'pseudobonds/' + uplfile.replace('.upl','.pb') + '\n')
-	outcmx.write('color #{:} {:}\n'.format(str(mn),'cyan'))
+	#outcmx.write('color #{:} {:}\n'.format(str(mn),'cyan'))
 sidechains = 'show #1:'
-for res in sidelist:
-	sidechains = sidechains + res + ','
-outcmx.write(sidechains[:-1] + '\n')
-outcmx.write('hide H\n''show #1.1@H,N target a\n')
+
 
 selhbond = 'name hbond  #1.1:'
 hbonsl = []
@@ -489,7 +489,14 @@ for hbondf in hbonds:
 					selhbond = selhbond +'{:},'.format(cns[0])
 				if cns[3] not in selhbond:
 					selhbond = selhbond +'{:},'.format(cns[3])
+				if cns[2] not in ['O','H','N']: sidelist.append(cns[0])
+				if cns[5] not in ['O','H','N']: sidelist.append(cns[3])
 hbond.close()
+for res in sidelist:
+	sidechains = sidechains + res + ','
+outcmx.write(sidechains[:-1] + '\n')
+outcmx.write('hide H\n''show #1.1@H,N target a\n')
+
 outpml.write(hbgroupline + '\n')
 outpml.write('color pink, hbond\n')
 selhbond = selhbond[:-1] + '@O,N\nshow hbond target a\n'
@@ -608,7 +615,6 @@ from matplotlib.backends.backend_pdf import PdfPages
 import mplcursors
 import numpy as np
 from matplotlib.widgets import Slider
-print(pdbname)
 pdf=PdfPages(outdir + '{:}_upl_overview.pdf'.format(pdbname))
 nsubplots = round(len(Sequence)/25,0)
 if round(len(Sequence)/25,1) - nsubplots > 0.0:

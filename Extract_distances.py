@@ -75,7 +75,7 @@ Pseudo2Heavy ={'ALAHA':'CA','ALAQB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'C
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "CYSS":"C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P","cPRO":"P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 A_dict = {'C': 'CYS', 'D': 'ASP', 'S': 'SER', 'Q': 'GLN', 'K': 'LYS','I': 'ILE', 'P': 'PRO', 'T': 'THR', 'F': 'PHE', 'N': 'ASN', 'G': 'GLY', 'H': 'HIS', 'L': 'LEU', 'R': 'ARG', 'W': 'TRP', 'A': 'ALA', 'V':'VAL', 'E': 'GLU', 'Y': 'TYR', 'M': 'MET'}
 
-cwd = '/Users/mclay1/FGFR2_structure/cyana_73/'
+cwd = '/Volumes/common/Kinases/FGFR2/FGFR2_467-768_C491A/Structure_Calc/cyana_73/'
 # cwd = '/Users/mclay1/FGFR3_structure/cyana_23/'
 
 in_pdb = cwd + 'final.pdb'
@@ -144,13 +144,21 @@ def getDistance(donor, acceptor,PDBdict):
 	# print('used %s %s d=%1.2f' %(donor, acceptor,reff))
 	return reff
 
-fovwlines = [line[10:41] for line in open(fovw).readlines()[35:] if 'Angle' not in line]
-print(fovwlines[20:25])
+violdict = {}
+for line in open(fovw).readlines():
+	if line[4:9] == 'Upper' or line[4:9] == 'Lower':
+		dviol = line.split()
+		cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[2]],dviol[3],dviol[1],AAA_dict[dviol[6]],dviol[7],dviol[5])
+		cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[6]],dviol[7],dviol[5],AAA_dict[dviol[2]],dviol[3],dviol[1])
+		outline = ' #viol in {:} by {:}\n'.format(dviol[9],dviol[10])
+		violdict[cons1] = outline
+		violdict[cons2] = outline
 
 pd.set_option("display.precision", 2)
 DistancesDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv','upl','plist','peak'])
 DiffDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
-print('Wextracting Distances from %s' %fupl)
+print('Extracting Distances from %s' %fupl)
+## Extract distances for the final upl no modification, and excluding ambiguous restraints
 for line in open(fupl).readlines():
 	if 'SUP' not in line:
 		pass 
@@ -158,11 +166,11 @@ for line in open(fupl).readlines():
 		cns = line.strip().split()
 		atom1 = '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2])
 		atom2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
-		connection = '{:}{:}-{:} {:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+		connection = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
 		for mnum in range(1,21,1):
 			Coor = eval('Coor' + str(mnum))
 			d = getDistance(atom1, atom2, Coor)
-			DistancesDF.loc[atom1 + ' ' + atom2,mnum] = d
+			DistancesDF.loc[connection,mnum] = d
 			if np.round(d - float(cns[6]),2) > 0.1:
 				DiffDF.loc[connection,mnum] = np.round(d - float(cns[6]),2)
 DistancesDF['mean'] = np.round(DistancesDF.mean(axis=1),2)
@@ -175,18 +183,12 @@ for line in open(fupl).readlines():
 		cns = line.strip().split()
 		atom1 = '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2])
 		atom2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
-		connection = '{:}{:}-{:} {:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+		connection = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
 	DistancesDF.loc[connection,'upl'] = float(cns[6])
 	DistancesDF.loc[connection,'peak'] = cns[8]
 	DistancesDF.loc[connection,'plist'] = cns[10]
-	ovwent = '%-4s %4s %4s - %-4s %4s %4s' %(cns[2], cns[1],cns[0],cns[5],cns[4],cns[3])
-	if 'peak %s list %s' %(cns[8], cns[10]) in open(fovw).read():
-		DistancesDF.loc[connection,'violation'] = 'yes'
-		# if ovwent in open(fovw).read():
-		# 	# print('found line')
-		# 	print(ovwent)
-		# 	print(fovwlines.index(ovwent))
-		
+	if connection in violdict:
+		DistancesDF.loc[connection,'violation'] = violdict[connection]
 
 DistancesDF['mean diff'] = np.round(DiffDF.mean(axis=1),2)
 DistancesDF['max diff'] = np.round(DiffDF.max(axis=1),2)
@@ -205,7 +207,7 @@ for upl in upls:
 			cns = line.strip().split()
 			atom1 = '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2])
 			atom2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
-			connection = '{:}{:}-{:} {:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+			connection = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
 			for mnum in range(1,21,1):
 				Coor = eval('Coor' + str(mnum))
 				d = getDistance(atom1, atom2,Coor)
@@ -220,12 +222,10 @@ for upl in upls:
 			pass 
 		else:
 			cns = line.strip().split()
-			connection = '{:}{:}-{:} {:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+			connection = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
 		DistancesDF.loc[connection,'upl'] = float(cns[6])
-		ovwent = '%-4s %4s %4s - %-4s %4s %4s' %(cns[2], cns[1],cns[0],cns[5],cns[4],cns[3])
-		print(ovwent)
-		if ovwent in open(fovw).read():
-			DistancesDF.loc[atom1 + ' ' + atom2,'violation'] = 'yes'
+		if connection in violdict:
+			DistancesDF.loc[connection,'violation'] = violdict[connection]
 
 	DistancesDF['mean diff'] = np.round(DiffDF.mean(axis=1),2)
 	DistancesDF['max diff'] = np.round(DiffDF.max(axis=1),2)
