@@ -13,6 +13,7 @@ import os
 import sys
 import pandas as pd
 import numpy as np
+print(pd.__version__)
 '''
 CNS noe.tbl fomat
  assign (resid 632 and name HN   )  (resid 633 and name HN   )  3.24  1.44  1.44 !peak 1 #plist 1 #SUP 0.91 #QF 0.91 
@@ -52,7 +53,7 @@ DistancesDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
 
 Pseudo2Prot = {'ALAQB':['HB1', 'HB2', 'HB3'], 'ARGQB':['HB2', 'HB3'], 'ARGQG':['HG2', 'HG3'], 'ARGQD':['HD2', 'HD3'], 'ARGQH1':['HH11', 'HH12'], 'ARGQH2':['HH21', 'HH22'], 'ASNQB':['HB2', 'HB3'], 'ASNQD2':['HD21', 'HD22'], 'ASPQB':['HB2', 'HB3'], 'CYSQB':['HB2', 'HB3'], 'CYSSQB':['HB2', 'HB3'], 'GLNQB':['HB2', 'HB3'], 'GLNQG':['HG2', 'HG3'], 'GLNQE2':['HE21', 'HE22'], 'GLUQB':['HB2', 'HB3'], 'GLUQG':['HG2', 'HG3'], 'GLYQA':['HA2', 'HA3'], 'HISQB':['HB2', 'HB3'], 'ILEQG1':['HG11', 'HG12', 'HG13'], 'ILEQG2':['HG21', 'HG22', 'HG23'], 'ILEQD1':['HD11', 'HD12', 'HD13'], 'LEUQB':['HB2', 'HB3'], 'LEUQD1':['HD11', 'HD12', 'HD13'], 'LEUQD2':['HD21', 'HD22', 'HD23'], 'LEUQQD':['HD11', 'HD12', 'HD13','HD21', 'HD22', 'HD23'], 'LYSQG':['HG2', 'HG3'], 'LYSQD':['HD2', 'HD3'], 'LYSQE':['HE2', 'HE3'], 'LYSQZ':['HZ2', 'HZ3'], 'METQB':['HB2', 'HB3'], 'METQG':['HG2', 'HG3'], 'METQE':['HE1', 'HE2', 'HE3'], 'PHEQB':['HB2', 'HB3'], 'PHEQD':['HD1', 'HD2'], 'PHEQE':['HE1', 'HE2'],'PROQB':['HB2', 'HB3'], 'PROQG':['HG2', 'HG3'], 'PROQD':['HD2', 'HD3'], 'SERQB':['HB2', 'HB3'], 'THRQG2':['HG21', 'HG22', 'HG23'], 'TRPQB':['HB2', 'HB3'], 'TYRQB':['HB2', 'HB3'], 'TYRQD':['HD1', 'HD2'], 'TYRQE':['HE1', 'HE2'], 'VALQB':['HB2', 'HB3'], 'VALQG1':['HG11', 'HG12', 'HG13'], 'VALQG2':['HG21', 'HG22', 'HG23'], 'VALQQG':['HG11', 'HG12', 'HG13','HG21', 'HG22', 'HG23']}
 Prot2Pseudo = {'ALAHB': 'QB','ALAHB1': 'QB', 'ALAHB2': 'QB', 'ALAHB3': 'QB', 'ARGHB2': 'QB', 'ARGHB3': 'QB', 'ARGHG2': 'QG', 'ARGHG3': 'QG', 'ARGHD2': 'QD', 'ARGHD3': 'QD', 'ARGHH11': 'QH1', 'ARGHH12': 'QH1', 'ARGHH21': 'QH2', 'ARGHH22': 'QH2', 'ASNHB2': 'QB', 'ASNHB3': 'QB', 'ASNHD21': 'QD2', 'ASNHD22': 'QD2', 'ASPHB2': 'QB', 'ASPHB3': 'QB', 'CYSHB2': 'QB', 'CYSHB3': 'QB', 'CYSSHB2': 'QB', 'CYSSHB3': 'QB', 'GLNHB2': 'QB', 'GLNHB3': 'QB', 'GLNHG2': 'QG', 'GLNHG3': 'QG', 'GLNHE21': 'QE2', 'GLNHE22': 'QE2', 'GLUHB2': 'QB', 'GLUHB3': 'QB', 'GLUHG2': 'QG', 'GLUHG3': 'QG', 'GLYHA2': 'QA', 'GLYHA3': 'QA', 'HISHB2': 'QB', 'HISHB3': 'QB', 'ILEHG1': 'QG1', 'ILEHG11': 'QG1', 'ILEHG12': 'QG1', 'ILEHG13': 'QG1', 'ILEHG21': 'QG2', 'ILEHG22': 'QG2', 'ILEHG23': 'QG2', 'ILEHD11': 'QD1', 'ILEHD1': 'QD1', 'ILEHD12': 'QD1', 'ILEHD13': 'QD1', 'LEUHB2': 'QB', 'LEUHB3': 'QB', 'LEUHD1': 'QD1', 'LEUHD11': 'QD1', 'LEUHD12': 'QD1', 'LEUHD13': 'QD1', 'LEUHD2': 'QD2', 'LEUHD21': 'QD2', 'LEUHD22': 'QD2', 'LEUHD23': 'QD2', 'LYSHG2': 'QG', 'LYSHG3': 'QG', 'LYSHD2': 'QD', 'LYSHD3': 'QD', 'LYSHE2': 'QE', 'LYSHE3': 'QE', 'LYSHZ2': 'QZ', 'LYSHZ3': 'QZ', 'METHB2': 'QB', 'METHB3': 'QB', 'METHG2': 'QG', 'METHG3': 'QG', 'METHE': 'QE', 'METHE1': 'QE', 'METHE2': 'QE', 'METHE3': 'QE', 'PHEHB2': 'QB', 'PHEHB3': 'QB', 'PHEHD1': 'QD', 'PHEHD2': 'QD', 'PHEHE1': 'QE', 'PHEHE2': 'QE', 'PROHB2': 'QB', 'PROHB3': 'QB', 'PROHG2': 'QG', 'PROHG3': 'QG', 'PROHD2': 'QD', 'PROHD3': 'QD', 'SERHB2': 'QB', 'SERHB3': 'QB', 'THRHG2': 'QG2', 'THRHG21': 'QG2', 'THRHG22': 'QG2', 'THRHG23': 'QG2', 'TRPHB2': 'QB', 'TRPHB3': 'QB', 'TYRHB2': 'QB', 'TYRHB3': 'QB', 'TYRHD1': 'QD', 'TYRHD2': 'QD', 'TYRHE1': 'QE', 'TYRHE2': 'QE', 'VALHB2': 'QB', 'VALHB3': 'QB', 'VALHG11': 'QG1', 'VALHG12': 'QG1', 'VALHG13': 'QG1', 'VALHG21': 'QG2', 'VALHG22': 'QG2', 'VALHG23': 'QG2'}
-Pseudo2Heavy ={'ALAHA':'CA','ALAQB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'CB',
+replacements ={'ALAHA':'CA','ALAQB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'CB',
 'CYSHA':'CA','CYSHB2':'CB','CYSHB3':'CB','CYSQB':'CB',
 'ASPHA':'CA','ASPHB2':'CB','ASPHB3':'CB','ASPQB':'CB',
 'GLUHA':'CA','GLUHB2':'CB','GLUHB3':'CB','GLUQB':'CB','GLUHG2':'CG','GLUHG3':'CG','GLUQG':'CG',
@@ -72,6 +73,7 @@ Pseudo2Heavy ={'ALAHA':'CA','ALAQB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'C
 'VALHA':'CA','VALHB':'CB','VALHG11':'CG1','VALHG12':'CG1','VALHG13':'CG1','VALQG1':'CG1','VALHG21':'CG2','VALHG22':'CG2','VALHG23':'CG2','VALQG2':'CG2','VALQQG':'CG1,CG2',
 'TRPHA':'CA','TRPHB2':'CB','TRPHB3':'CB','TRPQB':'CB','TRPHD1':'CD1','TRPHE3':'CE3','TRPHE1':'NE1','TRPHZ3':'CZ3','TRPHZ2':'CZ2','TRPHH2':'CH2',
 'TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRQD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH'}
+
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "CYSS":"C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P","cPRO":"P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 A_dict = {'C': 'CYS', 'D': 'ASP', 'S': 'SER', 'Q': 'GLN', 'K': 'LYS','I': 'ILE', 'P': 'PRO', 'T': 'THR', 'F': 'PHE', 'N': 'ASN', 'G': 'GLY', 'H': 'HIS', 'L': 'LEU', 'R': 'ARG', 'W': 'TRP', 'A': 'ALA', 'V':'VAL', 'E': 'GLU', 'Y': 'TYR', 'M': 'MET'}
 
@@ -104,28 +106,6 @@ for (start,end) in zip(Starts,Ends):
 		if line[0:4] == "ATOM" or line[0:4] == 'HETA':
 			index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
 			Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
-			# ## Generate pseudo atoms for methyl groups
-			# # print(index)
-			# if line[17:20].strip() in ['ILE','LEU','ALA','VAL','MET','THR'] and line[12:16].strip() in ['HB1','HE1','HD11','HD21','HG11','HG21']:
-			# 	index = '%3s %4s %-4s'%(line[17:20].strip(),line[22:26].strip(),line[12:16].strip()[:-1].replace('H','Q'))
-			# 	# print('methyl ' + index)
-			# 	line2 = pdb[x+1]
-			# 	line3 = pdb[x+2]
-			# 	xcoor = (float(line[30:38]) + float(line2[30:38]) + float(line3[30:38]))/3.0
-			# 	ycoor = (float(line[38:46]) + float(line2[38:46]) + float(line3[38:46]))/3.0
-			# 	zcoor = (float(line[46:54]) + float(line2[46:54]) + float(line3[46:54]))/3.0
-			# 	Coor[index] = [xcoor,ycoor,zcoor]
-			# ## Generate pseudo atoms for side chain exchangeable atoms 
-			# if line[17:20].strip() not in ['ILE','LEU','ALA','VAL','MET','THR'] and line[12:16].strip()[0] == 'H':
-			# 	if line[17:20].strip() + 'Q' + line[12:16].strip()[1:-1] in Pseudo2Prot.keys():
-			# 		if line[12:16].strip() == Pseudo2Prot[line[17:20].strip() + 'Q' + line[12:16].strip()[1:-1]][0]:
-			# 			index = '%3s %4s %-4s'%(line[17:20].strip(),line[22:26].strip(),'Q' + line[12:16].strip()[1:-1])
-			# 			print('side chain '+ index)
-			# 			line2 = pdb[x+1]
-			# 			xcoor = (float(line[30:38]) + float(line2[30:38]))/2.0
-			# 			ycoor = (float(line[38:46]) + float(line2[38:46]))/2.0
-			# 			zcoor = (float(line[46:54]) + float(line2[46:54]))/2.0
-			# 			Coor[index] = [xcoor,ycoor,zcoor]
 
 def getDistance(donor, acceptor,PDBdict):
 	resn1, name1 = donor.split('-')
@@ -146,7 +126,7 @@ def getDistance(donor, acceptor,PDBdict):
 
 violdict = {}
 for line in open(fovw).readlines():
-	if line[4:9] == 'Upper' or line[4:9] == 'Lower':
+	if line[4:9] == 'Upper':
 		dviol = line.split()
 		cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[2]],dviol[3],dviol[1],AAA_dict[dviol[6]],dviol[7],dviol[5])
 		cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[6]],dviol[7],dviol[5],AAA_dict[dviol[2]],dviol[3],dviol[1])
@@ -167,35 +147,31 @@ for line in open(fupl).readlines():
 		atom1 = '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2])
 		atom2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
 		connection = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+		DistancesDF.loc[connection,'upl'] = cns[6]
+		DistancesDF.loc[connection,'peak'] = cns[8]
+		DistancesDF.loc[connection,'plist'] = cns[10]
+		diff = []
 		for mnum in range(1,21,1):
 			Coor = eval('Coor' + str(mnum))
 			d = getDistance(atom1, atom2, Coor)
 			DistancesDF.loc[connection,mnum] = d
 			if np.round(d - float(cns[6]),2) > 0.1:
 				DiffDF.loc[connection,mnum] = np.round(d - float(cns[6]),2)
-DistancesDF['mean'] = np.round(DistancesDF.mean(axis=1),2)
-DistancesDF['stdv'] = np.round(DistancesDF.std(axis=1),2)
+				diff.append(np.round(d - float(cns[6]),2))
+		if connection in violdict.keys():
+			DistancesDF.loc[connection,'violation'] = violdict[connection]
+		DistancesDF.loc[connection,'num viol'] = len(diff)
 
-for line in open(fupl).readlines():
-	if 'SUP' not in line:
-		pass 
-	else:
-		cns = line.strip().split()
-		atom1 = '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2])
-		atom2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
-		connection = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
-	DistancesDF.loc[connection,'upl'] = float(cns[6])
-	DistancesDF.loc[connection,'peak'] = cns[8]
-	DistancesDF.loc[connection,'plist'] = cns[10]
-	if connection in violdict:
-		DistancesDF.loc[connection,'violation'] = violdict[connection]
 
+DistancesDF['mean'] = np.round(DistancesDF[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]].mean(axis=1),2)
+DistancesDF['stdv'] = np.round(DistancesDF[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]].std(axis=1),2)
 DistancesDF['mean diff'] = np.round(DiffDF.mean(axis=1),2)
 DistancesDF['max diff'] = np.round(DiffDF.max(axis=1),2)
 DistancesDF.to_csv('final_distances_v2.csv')
 print(DistancesDF)
 print(DistancesDF.shape)
 
+## Now look at the other input upls 
 for upl in upls:
 	print(upl)
 	DiffDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
@@ -208,29 +184,20 @@ for upl in upls:
 			atom1 = '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2])
 			atom2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
 			connection = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+			DistancesDF.loc[connection,'upl'] = float(cns[6])
 			for mnum in range(1,21,1):
 				Coor = eval('Coor' + str(mnum))
 				d = getDistance(atom1, atom2,Coor)
 				DistancesDF.loc[atom1 + ' ' + atom2,mnum] = d
 				if np.round(d - float(cns[6]),2) > 0.1:
 					DiffDF.loc[connection,mnum] = np.round(d - float(cns[6]),2)
-	DistancesDF['mean'] = np.round(DistancesDF.mean(axis=1),2)
-	DistancesDF['stdv'] = np.round(DistancesDF.std(axis=1),2)
-
-	for line in open(cwd+upl).readlines():
-		if '#'in line[0:4]:
-			pass 
-		else:
-			cns = line.strip().split()
-			connection = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
-		DistancesDF.loc[connection,'upl'] = float(cns[6])
-		if connection in violdict:
-			DistancesDF.loc[connection,'violation'] = violdict[connection]
-
+			if connection in violdict.keys():
+				DistancesDF.loc[connection,'violation'] = violdict[connection]
+	DistancesDF['mean'] = np.round(DistancesDF[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]].mean(axis=1),2)
+	DistancesDF['stdv'] = np.round(DistancesDF[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]].std(axis=1),2)
 	DistancesDF['mean diff'] = np.round(DiffDF.mean(axis=1),2)
 	DistancesDF['max diff'] = np.round(DiffDF.max(axis=1),2)
 	DistancesDF.to_csv(upl.replace('.upl','_distances_v2.csv'))
-
 	print(DistancesDF)
 	print(DistancesDF.shape)
 
