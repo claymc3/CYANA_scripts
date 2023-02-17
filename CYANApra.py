@@ -199,7 +199,6 @@ uviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_upls_cons.pb','w')
 uviolpbout.write("; halfbond = false\n; color = hotpink\n; radius = 0.1\n; dashes = 0\n")
 
 ### Go through the final overview file and extract information about violated distance and angle restraints 
-
 i = 1
 Filtered = []
 violdict, Upperdict, Lowerdict = {}, {}, {}
@@ -211,53 +210,50 @@ phiv, chiv, violpeaks = [], [], []
 for line in open(fovw).readlines():
 	if line[4:9] == 'Upper' or line[4:9] == 'Lower':
 		dviol = line.split()
-		atom1 = dviol[1]
-		if dviol[2]+dviol[1] in replacements.keys():
-			atom1 = replacements[dviol[2]+dviol[1]]
-		atom2 = dviol[5]
-		if dviol[6]+dviol[5] in replacements.keys():
-			atom2 = replacements[dviol[6]+dviol[5]]
-		atoms1 = atom1.split(',')
-		atoms2 = atom2.split(',')
-		cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[2]],dviol[3],dviol[1],AAA_dict[dviol[6]],dviol[7],dviol[5])
-		cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[6]],dviol[7],dviol[5],AAA_dict[dviol[2]],dviol[3],dviol[1])
-		if int(dviol[9]) >= 10:
-			v+=1
-			if 'peak' not in line:
-				pbout = uviolpbout
-				grpstr = "uplviol"
-				if line[4:9] == 'Upper':
-					outline = ' #viol in {:} by +{:}\n'.format(dviol[9],dviol[10])
-					upldf.loc[dviol[7],'viol input'] = upldf.loc[dviol[7],'viol input'] + 1
-					upldf.loc[dviol[3],'viol input'] = upldf.loc[dviol[3],'viol input'] + 1
-					Upperdict[cons1] = outline
-					Upperdict[cons2] = outline
-				if line[4:9] == 'lower':
-					outline = ' #viol in {:} by -{:}\n'.format(dviol[9],dviol[10])
-					Lowerdict[cons1] = outline
-					Lowerdict[cons2] = outline
-			if 'peak' in line and 'list' in line:
-				pbout = pviolpbout
-				grpstr = "peakviol"
-				outline = ' #viol in {:} by {:}\n'.format(dviol[9],dviol[10])
-				violdict[cons1] = outline
-				violdict[cons2] = outline
-				for line2 in open(fupl).readlines():
-					cns = line2.split()
-					if cns[8] == line[90:].split()[1] and cns[10] == line[90:].split()[3] and cns[2] == dviol[1] and cns[5] == dviol[5]:
-						violpeaks.append(line2.replace('\n',' #Violated ' + line[44:88]+ '\n'))
-						if cns[0] != cns[3] and '#SUP' in line2:
-							upldf.loc[cns[0],'viol'] = upldf.loc[cns[0],'viol'] + 1
-							upldf.loc[cns[3],'viol'] = upldf.loc[cns[3],'viol'] + 1
-							finalupls[0].append(line2)
-							Filtered.append(line2)
-			for atom1 in atoms1:
-				for atom2 in atoms2: 
-					v+=1
-					pbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(dviol[3], atom1, dviol[7],atom2))
-					outpml.write('distance viol{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(v), pdbname, dviol[3], atom1, pdbname, dviol[7], atom2))
-					if 'peak' in line: viol_uplscons = viol_uplscons + "viol"+str(v) + ' '
-					if 'peak' not in line: viol_peakscons = viol_peakscons + "viol"+str(v) + ' '
+		if dviol[2]+dviol[1] not in Ambiguous.keys() and dviol[6]+dviol[5] not in Ambiguous.keys(): ## skip the ambiguous entries they are not used in refinement 
+			atom1 = dviol[1]
+			if dviol[2]+dviol[1] in replacements.keys():
+				atom1 = replacements[dviol[2]+dviol[1]]
+			atom2 = dviol[5]
+			if dviol[6]+dviol[5] in replacements.keys():
+				atom2 = replacements[dviol[6]+dviol[5]]
+			cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[2]],dviol[3],dviol[1],AAA_dict[dviol[6]],dviol[7],dviol[5])
+			cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[6]],dviol[7],dviol[5],AAA_dict[dviol[2]],dviol[3],dviol[1])
+			if int(dviol[9]) >= 10:
+				v+=1
+				if 'peak' not in line:
+					pbout = uviolpbout
+					grpstr = "uplviol"
+					if line[4:9] == 'Upper':
+						outline = ' #viol in {:} by +{:}\n'.format(dviol[9],dviol[10])
+						upldf.loc[dviol[7],'viol input'] = upldf.loc[dviol[7],'viol input'] + 1
+						upldf.loc[dviol[3],'viol input'] = upldf.loc[dviol[3],'viol input'] + 1
+						Upperdict[cons1] = outline
+						Upperdict[cons2] = outline
+					if line[4:9] == 'Lower':
+						outline = ' #viol in {:} by -{:}\n'.format(dviol[9],dviol[10])
+						Lowerdict[cons1] = outline
+						Lowerdict[cons2] = outline
+				if 'peak' in line and 'list' in line:
+					pbout = pviolpbout
+					grpstr = "peakviol"
+					outline = ' #viol in {:} by {:}\n'.format(dviol[9],dviol[10])
+					violdict[cons1] = outline
+					violdict[cons2] = outline
+					for line2 in open(fupl).readlines():
+						cns = line2.split()
+						if cns[8] == line[90:].split()[1] and cns[10] == line[90:].split()[3] and cns[2] == dviol[1] and cns[5] == dviol[5]:
+							violpeaks.append(line2.replace('\n',' #Violated ' + line[44:88]+ '\n'))
+							if cns[0] != cns[3] and '#SUP' in line2:
+								upldf.loc[cns[0],'viol'] = upldf.loc[cns[0],'viol'] + 1
+								upldf.loc[cns[3],'viol'] = upldf.loc[cns[3],'viol'] + 1
+								finalupls[0].append(line2)
+								Filtered.append(line2)
+				v+=1
+				pbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(dviol[3], atom1, dviol[7],atom2))
+				outpml.write('distance viol{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(v), pdbname, dviol[3], atom1, pdbname, dviol[7], atom2))
+				if 'peak' in line: viol_uplscons = viol_uplscons + "viol"+str(v) + ' '
+				if 'peak' not in line: viol_peakscons = viol_peakscons + "viol"+str(v) + ' '
 	if line[4:9] == 'Angle':
 		dang = line.split()
 		angle = upldf.loc[dang[3],'vdihed']
@@ -311,8 +307,6 @@ for line in open(fupl).readlines():
 					atom1 = atom1.replace(cns[2], replacements[cns[1]+cns[2]])
 				if cns[4]+cns[5] in replacements.keys():
 					atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
-				atoms1 = atom1.split(',')
-				atoms2 = atom2.split(',')
 				upldf.loc[cns[0],'cya'] = upldf.loc[cns[0],'cya'] + 1
 				upldf.loc[cns[3],'cya'] = upldf.loc[cns[3],'cya'] + 1
 				cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
@@ -320,29 +314,31 @@ for line in open(fupl).readlines():
 				outline = ' #{:3.2f} #peak {:} #plist {:}\n'.format(float(cns[6]),cns[8],cns[10])
 				usedupls[cons1] = outline
 				usedupls[cons2] = outline
-				for atom1 in atoms1:
-					if atom1 == 'H': atom1 = 'N'
-					for atom2 in atoms2:
-						if atom2 == 'H': atom2 = 'N'
-						cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atom1,AAA_dict[cns[4]],cns[3],atom2)
-						cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],atom2,AAA_dict[cns[1]],cns[0],atom1)
-						usedupls[cons1] = outline
-						usedupls[cons2] = outline
+				## Traslate amids H to N to search input upls but don't mess up the connections drawn in pymol/chimera
+				atoms1 = atom1
+				atoms2 = atom2
+				if atom1 == 'H': atoms1 = 'N'
+				if atom2 == 'H': atoms2 = 'N'
+				cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atoms1,AAA_dict[cns[4]],cns[3],atoms2)
+				cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],atoms2,AAA_dict[cns[1]],cns[0],atoms1)
+				usedupls[cons1] = outline
+				usedupls[cons2] = outline
+				## Make sure all connections to side chains are shown
 				if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
 					sidelist.append(cns[0])
 				if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
 					sidelist.append(cns[3])
 				if float(cns[12]) < 0.5:
-					for atom1 in atoms1:
-						for atom2 in atoms2:
-							i+=1
-							poorpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-							poorcons2.append(line)
-							outpml.write('distance poor{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-							poorcons = poorcons + 'poor{:} '.format(i)
+					i+=1
+					poorpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+					poorcons2.append(line)
+					outpml.write('distance poor{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+					poorcons = poorcons + 'poor{:} '.format(i)
 					Filtered.append(line)
 					finalupls[1].append(line)
 				if float(cns[12]) > 0.5:
+					# if cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR'] and cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR']: longcut = 6.00
+					# if cns[1] in ['ALA','LEU','VAL','MET','ILE','THR'] and cns[4] in ['ALA','LEU','VAL','MET','ILE','THR']:longcut = 5.00
 					if float(cns[6]) >= 6.0:
 						upldf.loc[cns[0],'long'] = upldf.loc[cns[0],'long'] + 1
 						upldf.loc[cns[3],'long'] = upldf.loc[cns[3],'long'] + 1
@@ -350,33 +346,27 @@ for line in open(fupl).readlines():
 						cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5],AAA_dict[cns[1]],cns[0],cns[2])
 						qupldict[cons1] = " #long distance\n"
 						qupldict[cons2] = " #long distance\n"
-						for atom1 in atoms1:
-							for atom2 in atoms2:
-								i+=1
-								longpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-								longcons2.append(line)
-								outpml.write('distance long{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-								longcons = longcons + 'long{:} '.format(i)
+						i+=1
+						longpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+						longcons2.append(line)
+						outpml.write('distance long{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+						longcons = longcons + 'long{:} '.format(i)
 						Filtered.append(line)
 						finalupls[2].append(line)
 					if float(cns[6]) <= 3.00:
 						if abs(int(cns[0])- int(cns[3])) > 1:
-							for atom1 in atoms1:
-								for atom2 in atoms2:
-									i+=1
-									shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:} {:}\n'.format(cns[0], atom1, cns[3],atom2, 'light coral'))
-									shortcons2.append(line)
-									outpml.write('distance short{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-									shortcons = shortcons + 'short{:} '.format(i)
+							i+=1
+							shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:} {:}\n'.format(cns[0], atom1, cns[3],atom2, 'light coral'))
+							shortcons2.append(line)
+							outpml.write('distance short{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+							shortcons = shortcons + 'short{:} '.format(i)
 							finalupls[3].append(line)
 							Filtered.append(line)
 					if float(cns[6]) > 3.00 and float(cns[6]) < 6.0:
-						for atom1 in atoms1:
-							for atom2 in atoms2:
-								i+=1
-								outpml.write('distance UPL{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-								pblist.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-								exec('group' + cns[10] + '=' + 'group' + cns[10] + '+ "UPL{:} "'.format(i))
+						i+=1
+						outpml.write('distance UPL{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+						pblist.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+						exec('group' + cns[10] + '=' + 'group' + cns[10] + '+ "UPL{:} "'.format(i))
 						Filtered.append(line)
 						finalupls[4].append(line)
 poorpbout.close()
@@ -465,7 +455,6 @@ for uplfile in upls:
 	outcmx.write('open ' + outdir +'pseudobonds/' + uplfile.replace('.upl','.pb') + '\n')
 	#outcmx.write('color #{:} {:}\n'.format(str(mn),'cyan'))
 sidechains = 'show #1:'
-
 
 selhbond = 'name hbond  #1.1:'
 hbonsl = []
@@ -597,7 +586,7 @@ outcmx.close()
 # Run the cycle7.noa analysis and generate peak list identifying peaks as 
 # unused, no assingment, and questionable
 
-noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict,upldict, pad, upldict2)
+noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict, upldict, pad, upldict2)
 # ---------------------------------------------------------------------------
 # Run the GetDihed.py to determine phi, psi, chi1 and chi2 and plot them
 # for all 20 structures
