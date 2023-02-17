@@ -348,7 +348,8 @@ for line in open(fupl).readlines():
 						qupldict[cons2] = " #long distance\n"
 						i+=1
 						longpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-						longcons2.append(line)
+						longcons2.extend([cons1,cons2])
+						#longcons2.append(line)
 						outpml.write('distance long{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 						longcons = longcons + 'long{:} '.format(i)
 						Filtered.append(line)
@@ -374,6 +375,14 @@ longpbout.close()
 shortpbout.close()
 pviolpbout.close()
 uviolpbout.close()
+
+# ---------------------------------------------------------------------------
+# Run the cycle7.noa analysis and generate peak list identifying peaks as 
+# unused, no assignment, and questionable
+
+assigndict = noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict, upldict, pad, upldict2)
+
+
 #### Write out Poor/Low Support constraints to the summary file
 checkcons.write('### Low Support Constraints (final_poor_cons.pb) ###\n')
 for p in range(len(poorcons2)):
@@ -381,8 +390,12 @@ for p in range(len(poorcons2)):
 checkcons.write('\n\n')
 #### Write out Long Distance constraints to the summary file
 checkcons.write('### Long Distance Constraints d >= 6.00 ###\n')
-for l in range(len(longcons2)):
-	checkcons.write(longcons2[l])
+
+for con in longcons2:
+	if con in assigndict.keys():
+		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
+		checkcons.writelines(assigndict[con])
+		checkcons.write('\n')
 checkcons.write('\n\n')
 #### Write out Short Distance constraints to the summary file
 checkcons.write('### Short Distance Constraints d <= 3.00 ###\n')
@@ -409,7 +422,7 @@ for (group, color) in [('poor','mediumvioletred'),('long','firebrick'),('short',
 	outpml.write(grpstr + '\n')
 	outpml.write('color {:}, {:}\n'.format(color, group))
 #### Write out the filtered upl list, which does not contain ambiguous (QQ) restraints 
-#### and has sorted the restrints into 5 labeled catagories
+#### and has sorted the restraints into 5 labeled categories
 
 filtered_upl = open(outdir + fupl.replace('.upl','4cns.upl'),'w')
 for upllist in finalupls:
@@ -493,7 +506,7 @@ outcmx.write('open ' + outdir +'pseudobonds/' + 'hbond.pb\n')
 outcmx.write('color #{:} {:}\n'.format(str(mn),'pink'))
 outcmx.write(selhbond)
 upls.extend(hbonds)
-## Examin input upl files and update lines for entries which are violated 10 or more times. 
+## Examine input upl files and update lines for entries which are violated 10 or more times, and identify proton-proton restraints that support heavy atoms based restraints 
 for uplfile in upls:
 	newlines = []
 	violupl = open(outdir + uplfile.replace('.upl','_viol.upl'),'w')
@@ -582,11 +595,6 @@ outpml.write("hide labels\n")
 outpml.close()
 outcmx.close()
 
-# ---------------------------------------------------------------------------
-# Run the cycle7.noa analysis and generate peak list identifying peaks as 
-# unused, no assingment, and questionable
-
-noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict, upldict, pad, upldict2)
 # ---------------------------------------------------------------------------
 # Run the GetDihed.py to determine phi, psi, chi1 and chi2 and plot them
 # for all 20 structures
