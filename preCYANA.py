@@ -22,8 +22,8 @@ replacements ={
 'THRHA':'CA','THRHB':'CB','THRHG1':'OG1','THRHG21':'CG2','THRHG22':'CG2','THRHG23':'CG2','THRQG2':'CG2',
 'VALHA':'CA','VALHB':'CB','VALHG11':'CG1','VALHG12':'CG1','VALHG13':'CG1','VALQG1':'CG1','VALHG21':'CG2','VALHG22':'CG2','VALHG23':'CG2','VALQG2':'CG2','VALQQG':'CG1,CG2',
 'TRPHA':'CA','TRPHB2':'CB','TRPHB3':'CB','TRPQB':'CB','TRPHD1':'CD1','TRPHE3':'CE3','TRPHE1':'NE1','TRPHZ3':'CZ3','TRPHZ2':'CZ2','TRPHH2':'CH2',
-'TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRQD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH'}
-#'ALAH':'N','CYSH':'N','ASPH':'N','GLUH':'N','PHEH':'N','GLYH':'N','HISH':'N','ILEH':'N','LYSH':'N','LEUH':'N','METH':'N','ASNH':'N','GLNH':'N','ARGH':'N','SERH':'N','THRH':'N','VALH':'N','TRPH':'N','TYRH':'N',
+'TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRQD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH',
+'ALAH':'N','CYSH':'N','ASPH':'N','GLUH':'N','PHEH':'N','GLYH':'N','HISH':'N','ILEH':'N','LYSH':'N','LEUH':'N','METH':'N','ASNH':'N','GLNH':'N','ARGH':'N','SERH':'N','THRH':'N','VALH':'N','TRPH':'N','TYRH':'N'}
 
 # ['ALAH','CYSH','ASPH','GLUH','PHEH','GLYH','HISH','ILEH','LYSH','LEUH','METH','ASNH','GLNH','ARGH','SERH','THRH','VALH','TRPH','TYRH']
 if len(sys.argv)==1:
@@ -67,6 +67,9 @@ pdbname = in_pdb.split('/')[-1].replace('.pdb','')
 calc = cwd + 'CALC.cya'
 outname = in_pdb.split('.')[0]
 
+if '/' not in in_pdb:
+	pdb_path = '../' + in_pdb
+
 ## Check for the output directory if it does not exist make it
 if not os.path.exists(outdir):
 	os.makedirs(outdir)
@@ -80,14 +83,13 @@ lols = [con for con in manualongcons if 'lol' in con and 'hbond' not in con]
 dihed = [con for con in manualongcons if 'aco' in con]
 
 outpml = open(outdir + 'CYANA_input.pml','w')
-outpml.write('load '+ cwd + in_pdb+'\n')
+outpml.write('load '+pdb_path+'\n')
 outpml.write('set_color teal = [0,127,127]\nset_color turquoise = [64,224,209]\nset_color goldenrod = [219,166,31]\nset_color palevioletred = [219,112,147]\nset_color orange = [255,165,0]\nset_color forest = [34,139,34]\nset_color royalblue = [65,105,225]\nset_color chocolate = [210,105,30]\nset_color purple = [128,0,128]\nset_color teal = [0,128,128]\nset_color gold = [255,215,0]\nset_color navy = [0,0,128]\nset_color darkturquoise = [0,206,209]\nset_color pink = [255,192,203]\nset_color cyan = [0,255,255]\nset_color paleturquoise = [175,238,238]\nset_color lightsalmon = [255,160,122]\nset_color khaki = [240,230,140]\nset_color yellowgreen = [154,205,50]\nset_color thistle = [216,191,216]\nset_color aquamarine = [127,255,212]\nset_color plum = [221,160,221]\nset_color lightpint = [255,182,193]\nset_color mediumvioletred = [199,21,133]\nset_color firebrick = [178,34,34]\nset_color lightcoral = [240,128,128]\nset_color deeppink = [255,20,147]\nset_color hotpink = [255,105,180]\nset_color purple = [128,0,128]\nset_color mediumpurple = [147,112,219]\nset_color navy = [0,0,128]\nset_color cornflowerblue = [100,149,237]\n')
 outpml.write('set dash_gap, 0.05\n')
 outpml.write('color gray60, all\n')
 outcmx = open(outdir + 'CYANA_input.cxc','w')
-outcmx.write('open '+ cwd + in_pdb+'\n')
+outcmx.write('open '+ pdb_path +' maxModels 1\n')
 outcmx.write('color #1 gray(150)\n')
-
 
 mn = 1
 mcount = 0
@@ -101,7 +103,7 @@ if Hasprot == False:
 		replacements[aa] = 'N'
 
 if mcount > 2: 
-	cmxn = '#1.1'
+	cmxn = '#1'
 	pmln = '{:}_0001'.format(pdbname)
 if mcount <= 1: 
 	cmxn = '#1'
@@ -186,22 +188,23 @@ for uplfile in upls:
 
 ### Color code secondar structure from TALOS analysis
 outpml.write('create predSS, {:}\ncolor gray60,predSS\nhide sticks, predSS\n'.format(pmln))
-outcmx.write('open '+ cwd + in_pdb+'\n')
 mn+=1
-if mcount > 2: 
-	hbcmxn = '#{:}.1'.format(mn)
-	outcmx.write('rename #{:} predSS\n'.format(mn))
-	outcmx.write('hide #{:}.2-20 target ac\n'.format(mn))
-if mcount <= 1: 
-	hbcmxn = '#{:}'.format(mn)
-	outcmx.write('rename #{:} predSS\n'.format(mn))
-outcmx.write('label {:} text "{{0.label_one_letter_code}}{{0.number}}{{0.insertion_code}}"\nlabel ontop false\n'.format(hbcmxn))
-CSHelix = 'name CSHelix {:}:'.format(hbcmxn)
-CSStrand = 'name CSStrand {:}:'.format(hbcmxn)
-CSLoop = 'name CSLoop {:}:'.format(hbcmxn)
-SeqHelix = 'name SeqHelix {:}:'.format(hbcmxn)
-SeqStrand = 'name SeqStrand {:}:'.format(hbcmxn)
-SeqLoop = 'name SeqLoop {:}:'.format(hbcmxn)
+outcmx.write('open {:} maxModels 1\nrename #{:} predSS\n'.format(pdb_path,mn))
+hbcmxn = mn
+# if mcount > 2: 
+# 	hbcmxn = '#{:}.1'.format(mn)
+# 	outcmx.write('rename #{:} predSS\n'.format(mn))
+# 	outcmx.write('hide #{:}.2-20 target ac\n'.format(mn))
+# if mcount <= 1: 
+# 	hbcmxn = '#{:}'.format(mn)
+# 	outcmx.write('rename #{:} predSS\n'.format(mn))
+outcmx.write('label #{:} text "{{0.label_one_letter_code}}{{0.number}}{{0.insertion_code}}"\nlabel ontop false\n'.format(hbcmxn))
+CSHelix = 'name CSHelix #{:}:'.format(hbcmxn)
+CSStrand = 'name CSStrand #{:}:'.format(hbcmxn)
+CSLoop = 'name CSLoop #{:}:'.format(hbcmxn)
+SeqHelix = 'name SeqHelix #{:}:'.format(hbcmxn)
+SeqStrand = 'name SeqStrand #{:}:'.format(hbcmxn)
+SeqLoop = 'name SeqLoop #{:}:'.format(hbcmxn)
 talos_lines = [line.strip() for line in open(talosSS).readlines() if line.strip() and not re.search('[A-Z]', line[0])]
 for line in talos_lines:
 	if line.split()[-1] == 'H':CSHelix = CSHelix + line.split()[0] + ','
@@ -240,7 +243,7 @@ for line in open('hbond.upl').readlines():
 				h+=1 
 				hbonsl.append((cns[0],cns[3]))
 				#hbonsl.append((cns[3],cns[0]))
-				hbond.write('{:}:{:}@{:} {:}:{:}@{:}\n'.format(hbcmxn, cns[0], cns[2], hbcmxn, cns[3],cns[5]))
+				hbond.write('#{:}:{:}@{:} #{:}:{:}@{:}\n'.format(hbcmxn, cns[0], cns[2], hbcmxn, cns[3],cns[5]))
 				outpml.write('distance hbond{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(h), pmln, cns[0], cns[2].replace('H','N'), pmln, cns[3], cns[5].replace('H','N')))
 				hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
 				if cns[0] not in selhbond:
@@ -274,14 +277,13 @@ for angf in dihed:
 					chir.append(ang[0])
 					cmxchisel = cmxchisel + ang[0] + ','
 					pmlchisel = pmlchisel  + ang[0] + '+'
-
-outcmx.write('combine {:} modelId {:} name phi-psi\n'.format(cmxn, mn+1))
+outcmx.write('open {:} maxModels 1\nrename #{:} phi-psi\nhide #{:} target a\n color #{:} gray(150)\n'.format(pdb_path,mn+1,mn+1,mn+1))
 outcmx.write(cmxphisel[:-1] + '\n')
 outcmx.write('color phipsisel purple target ac\n')
 outpml.write('create phi-psi, {:}\ncolor gray60, phi-psi\nhide sticks, phi-psi\n'.format(pmln))
 
 if len(cmxchisel[:-1]) > 18:
-	outcmx.write('combine {:} modelId {:} name chi\n'.format(cmxn, mn+2))
+	outcmx.write('open {:} maxModels 1\nrename #{:} chi\nhide #{:} target a\n color #{:} gray(150)\n'.format(pdb_path,mn+2,mn+2,mn+2))
 	outcmx.write(cmxchisel[:-1] + '\n''color chisel cornflower blue target ac \n')
 	outpml.write('create chi, {:}\ncolor gray60, chi\nhide sticks, chi\n'.format(pmln))
 	outpml.write(pmlphisel[:-1] + '\n')
@@ -292,7 +294,7 @@ outpml.write('color gold, elem S\ncolor red, elem O\ncolor blue, elem N\n')
 outcmx.write('color #1:ile paleturquoise target a\ncolor #1:leu lightsalmon  target a\ncolor #1:val khaki target a\ncolor #1:ala yellowgreen  target a\ncolor #1:met thistle target a\ncolor #1:thr aquamarine target a\ncolor #1:phe plum target a\ncolor #1:tyr lightpink target a\n')
 outcmx.write('color  byhetero target a\n')
 outcmx.write('show #1:thr,met,ala,leu,val,ile,phe,tyr\n')
-outcmx.write('hide H\nshow {:}@N,H target a\n'.format(cmxn))
+outcmx.write('hide H\nshow {:}@C,O,N,H target a\n'.format(cmxn))
 outcmx.write('show hbond target a\n')
 outcmx.write('cartoon suppress false\nlabel {:}  text "{{0.label_one_letter_code}}{{0.number}}{{0.insertion_code}}"\nlabel ontop false\n'.format(cmxn))
 outcmx.write('ui tool show "Side View"\n')
@@ -302,7 +304,7 @@ if mcount > 2:
 	outpml.write('split_states ' + pdbname + '\n')
 	for y in range(2,21,1):
 		outpml.write('align {:}_{:04d}, {:}_0001\n'.format(pdbname,y, pdbname))
-	outcmx.write('match #1.2-20 to #1.1\n')
+#	outcmx.write('match #1.2-20 to #1.1\n')
 outpml.close()
 outcmx.close()
 
