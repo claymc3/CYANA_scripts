@@ -389,7 +389,7 @@ for p in range(len(poorcons2)):
 	checkcons.write(poorcons2[p])
 checkcons.write('\n\n')
 #### Write out Long Distance constraints to the summary file
-checkcons.write('### Long Distance Constraints d >= 6.00 ###\n')
+checkcons.write('### {:} Long Distance Constraints d >= 6.00 ###\n'.format(len(longcons2)/2))
 
 for con in longcons2:
 	if con in assigndict.keys():
