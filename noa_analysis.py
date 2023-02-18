@@ -231,7 +231,8 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 		eval("questionable{:}.writelines(qlist)".format(str(x)))
 		eval("questionable{:}.close()".format(str(x)))
 	assigned.close()
-
 	print("Finished cycle7.noa analysis")
+
+	return assigndict
 
 
