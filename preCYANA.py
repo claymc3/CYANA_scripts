@@ -109,7 +109,7 @@ if mcount <= 1:
 	cmxn = '#1'
 	pmln = pdbname
 
-
+sidelist = []
 u = 0
 x = -1
 for uplfile in upls:
@@ -156,7 +156,10 @@ for uplfile in upls:
 						outpb.write('{:}:{:}@{:} {:}:{:}@{:}\n'.format(cmxn, cns[0], atom1, cmxn, cns[3],atom2))
 						outpml.write('distance {:}{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(uplfile.replace('.upl',''),str(u), pmln, cns[0], atom1, pmln, cns[3], atom2))
 						exec('group' + gid + '=' + 'group' + gid + '+"{:}{:} "'.format(uplfile.replace('.upl',''),str(u)))
-
+				if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
+					sidelist.append(cns[0])
+				if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
+					sidelist.append(cns[3])
 	if re.search(uplfile.replace('.upl','')+'[0-9]*',groupNN):
 		outpml.write(groupNN + '\n')
 		outpml.write('color {:}, {:}\n'.format(colors[x],uplfile.replace('.upl','_NN')))
@@ -191,13 +194,6 @@ outpml.write('create predSS, {:}\ncolor gray60,predSS\nhide sticks, predSS\n'.fo
 mn+=1
 outcmx.write('open {:} maxModels 1\nrename #{:} predSS\n'.format(pdb_path,mn))
 hbcmxn = mn
-# if mcount > 2: 
-# 	hbcmxn = '#{:}.1'.format(mn)
-# 	outcmx.write('rename #{:} predSS\n'.format(mn))
-# 	outcmx.write('hide #{:}.2-20 target ac\n'.format(mn))
-# if mcount <= 1: 
-# 	hbcmxn = '#{:}'.format(mn)
-# 	outcmx.write('rename #{:} predSS\n'.format(mn))
 outcmx.write('label #{:} text "{{0.label_one_letter_code}}{{0.number}}{{0.insertion_code}}"\nlabel ontop false\n'.format(hbcmxn))
 CSHelix = 'name CSHelix #{:}:'.format(hbcmxn)
 CSStrand = 'name CSStrand #{:}:'.format(hbcmxn)
@@ -214,21 +210,31 @@ for line in talos_lines:
 	if line.split()[-1] == 'e':SeqStrand = SeqStrand + line.split()[0] + ','
 	if line.split()[-1] == 'c':SeqLoop = SeqLoop + line.split()[0] + ','
 
-outcmx.write(CSHelix[:-1]+ '\ncolor CSHelix navy target c\n')
-outcmx.write(SeqHelix[:-1]+ '\ncolor SeqHelix royal blue target c\n')
-outcmx.write(CSStrand[:-1]+ '\ncolor CSStrand teal target c\n')
-outcmx.write(SeqStrand[:-1]+ '\ncolor SeqStrand turquoise target c\n')
-outcmx.write(CSLoop[:-1]+ '\ncolor CSLoop goldenrod target c\n')
-outcmx.write(SeqLoop[:-1]+ '\ncolor SeqLoop khaki target c\n')
-outpml.write('color navy, predSS and resi ' + CSHelix[CSHelix.index(':')+1:-1].replace(',','+') + '\n')
-outpml.write('color royalblue, predSS and resi ' + SeqHelix[SeqHelix.index(':')+1:-1].replace(',','+') + '\n')
-outpml.write('color teal, predSS and resi ' + CSStrand[CSStrand.index(':')+1:-1].replace(',','+') + '\n')
-outpml.write('color turquoise, predSS and resi ' + SeqStrand[SeqStrand.index(':')+1:-1].replace(',','+') + '\n')
-outpml.write('color goldenrod, predSS and resi ' + CSLoop[CSLoop.index(':')+1:-1].replace(',','+') + '\n')
-outpml.write('color khaki, predSS and resi ' + SeqLoop[SeqLoop.index(':')+1:-1].replace(',','+') + '\n')
-
+if CSHelix[-1] != ":":
+	outcmx.write(CSHelix[:-1]+ '\ncolor CSHelix navy target c\n')
+	outpml.write('color navy, predSS and resi ' + CSHelix[CSHelix.index(':')+1:-1].replace(',','+') + '\n')
+if CSStrand[-1]!= ":":
+	outcmx.write(CSStrand[:-1]+ '\ncolor CSStrand teal target c\n')
+	outpml.write('color teal, predSS and resi ' + CSStrand[CSStrand.index(':')+1:-1].replace(',','+') + '\n')
+if CSLoop[-1] != ":":
+	outcmx.write(CSLoop[:-1]+ '\ncolor CSLoop goldenrod target c\n')
+	outpml.write('color goldenrod, predSS and resi ' + CSLoop[CSLoop.index(':')+1:-1].replace(',','+') + '\n')
+if SeqHelix[-1] != ":":
+	outcmx.write(SeqHelix[:-1]+ '\ncolor SeqHelix royal blue target c\n')
+	outpml.write('color royalblue, predSS and resi ' + SeqHelix[SeqHelix.index(':')+1:-1].replace(',','+') + '\n')
+if SeqStrand[-1] != ":":
+	outcmx.write(SeqStrand[:-1]+ '\ncolor SeqStrand turquoise target c\n')
+	outpml.write('color turquoise, predSS and resi ' + SeqStrand[SeqStrand.index(':')+1:-1].replace(',','+') + '\n')
+if SeqLoop[-1] != ":":
+	outcmx.write(SeqLoop[:-1]+ '\ncolor SeqLoop khaki target c\n')
+	outpml.write('color khaki, predSS and resi ' + SeqLoop[SeqLoop.index(':')+1:-1].replace(',','+') + '\n')
 ### Read in hbond and render the pseudo bonds on the predSS model in chimera 
 
+sidechains = 'show #1:'
+for res in sidelist:
+	sidechains = sidechains + res + ','
+outcmx.write(sidechains[:-1] + '\n')
+outpml.write('show sticks, {:} and resi {:}\n'.format(pdbname, sidechains[sidechains.index(':')+1:-1].replace(',','+')))
 selhbond = 'name hbond  #{:}:'.format(mn)
 hbonsl = []
 hbond = open(outdir + 'hbond.pb','w')
