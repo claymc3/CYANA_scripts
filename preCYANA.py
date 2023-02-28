@@ -39,21 +39,22 @@ Required Input:
 	PDB			PDB to be used typically the final.pdb or pdb after CNS refinment
 				If this is not located in current directory provide path
 					CNS/refinePDB/r12_cya.pdb
-	TALOS		Path to the TALOS results directory, scipt will finde the predSS.tab
+	TALOS		Path to the TALOS results directory, scipt will find the predSS.tab
 				file it needs 
-				Chemical Shift based Helical Navy
-				Chemical Shift based Betta Strand Teal
-				Chemical Shift based Loop Strand goldenrod
-				Sequence based Helical royalblue
-				Sequence based Betta Strand turquoise
-				Sequence based Loop khaki
 
 OutPut:
 	name_pra.cxc
 	name_pra.pml
-	Pseudobond/Distance Groups from manual restraints:
-		input.upl
-		hbond.upl 
+	colors cartoon representation based on talos secondary structure classification:
+		Chemical Shift based Helical Navy
+		Chemical Shift based Beta Strand Teal
+		Chemical Shift based Loop Strand goldenrod
+		Sequence based Helical royalblue
+		Sequence based Beta Strand turquoise
+		Sequence based Loop khaki
+	Pseudobond/Distance Groups from upl files:
+		model.upl
+		hbond.upl
 ''')
 	exit()
 colors = ['palevioletred','orange','forest','royalblue','purple','chocolate','teal','gold','navy','darkturquoise','pink','cyan']
@@ -73,8 +74,6 @@ if '/' not in in_pdb:
 ## Check for the output directory if it does not exist make it
 if not os.path.exists(outdir):
 	os.makedirs(outdir)
-
-
 
 ## open the CALC.cya file to get the peaks list and additonal constraint files used in the calculation. 
 manualongcons = [line.strip() for line in open(calc).readlines() if line.strip() and '.upl' in line][0].split()[2].split(',')
@@ -116,15 +115,9 @@ for uplfile in upls:
 	mn+=1
 	x+=1
 	fin = open(uplfile,'r')
-	NNpb = open(outdir + uplfile.replace('.upl','_NN.pb'),'w')
-	NNpb.write("; halfbond = false\n; color = {:}\n; radius = 0.1\n; dashes = 10\n".format(colors[x]))
-	NCpb = open(outdir + uplfile.replace('.upl','_NC.pb'),'w')
-	NCpb.write("; halfbond = false\n; color = {:}\n; radius = 0.1\n; dashes = 10\n".format(colors[x+1]))
-	CCpb = open(outdir + uplfile.replace('.upl','_CC.pb'),'w')
-	CCpb.write("; halfbond = false\n; color = {:}\n; radius = 0.1\n; dashes = 10\n".format(colors[x+2]))
-	groupNN = 'group {:}, '.format(uplfile.replace('.upl','_NN'))
-	groupNC = 'group {:}, '.format(uplfile.replace('.upl','_NC'))
-	groupCC = 'group {:}, '.format(uplfile.replace('.upl','_CC'))
+	outpbpb = open(outdir + uplfile.replace('.upl','.pb'),'w')
+	outpbpb.write("; halfbond = false\n; color = {:}\n; radius = 0.1\n; dashes = 10\n".format(colors[x]))
+	gid = 'group {:}, '.format(uplfile.replace('.upl',''))
 	for line in fin.readlines():
 		if line.split():
 			cns = line.split()
@@ -139,15 +132,6 @@ for uplfile in upls:
 					atom1 = atom1
 				if cns[4]+cns[5] not in replacements.keys():
 					atom2=atom2
-				if atom1[0] == 'N' and atom2[0] == 'N':
-					outpb = NNpb
-					gid = 'NN'
-				if atom1[0] == 'N' and atom2[0] == 'C':
-					outpb = NCpb
-					gid = 'NC'
-				if atom1[0] == 'C' and atom2[0] == 'C':
-					outpb = CCpb
-					gid = 'CC'
 				atoms2 = atom2.split(',')
 				atoms1 = atom1.split(',')
 				for atom1 in atoms1:
@@ -155,39 +139,19 @@ for uplfile in upls:
 						u+=1
 						outpb.write('{:}:{:}@{:} {:}:{:}@{:}\n'.format(cmxn, cns[0], atom1, cmxn, cns[3],atom2))
 						outpml.write('distance {:}{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(uplfile.replace('.upl',''),str(u), pmln, cns[0], atom1, pmln, cns[3], atom2))
-						exec('group' + gid + '=' + 'group' + gid + '+"{:}{:} "'.format(uplfile.replace('.upl',''),str(u)))
+						exec(gid + '=' + gid + '+"{:}{:} "'.format(uplfile.replace('.upl',''),str(u)))
 				if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
 					sidelist.append(cns[0])
 				if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
 					sidelist.append(cns[3])
-	if re.search(uplfile.replace('.upl','')+'[0-9]*',groupNN):
-		outpml.write(groupNN + '\n')
-		outpml.write('color {:}, {:}\n'.format(colors[x],uplfile.replace('.upl','_NN')))
-		outcmx.write('open ' + outdir + uplfile.replace('.upl','_NN.pb') + '\n')
-		print('{:} {:}'.format(mn,uplfile.replace('.upl','_NN.pb')))
+	if re.search(uplfile.replace('.upl','')+'[0-9]*',gid):
+		outpml.write(gid + '\n')
+		outpml.write('color {:}, {:}\n'.format(colors[x],uplfile.replace('.upl','')))
+		outcmx.write('open ' + outdir + uplfile.replace('.upl','.pb') + '\n')
+		print('{:} {:}'.format(mn,uplfile.replace('.upl','.pb')))
 		outcmx.write('color #{:} {:}\n'.format(str(mn),colors[x]))
 	if not re.search(uplfile.replace('.upl','')+'[0-9]*',groupNN):
-		os.remove(outdir + uplfile.replace('.upl','_NN.pb'))
-	if re.search(uplfile.replace('.upl','')+'[0-9]*',groupNC):
-		mn+=1
-		x+=1
-		outpml.write(groupNC + '\n')
-		outpml.write('color {:}, {:}\n'.format(colors[x+1],uplfile.replace('.upl','_NC')))
-		outcmx.write('open ' + outdir + uplfile.replace('.upl','_NC.pb') + '\n')
-		print('{:} {:}'.format(mn,uplfile.replace('.upl','_NC.pb')))
-		outcmx.write('color #{:} {:}\n'.format(str(mn),colors[x+1]))
-	if not re.search(uplfile.replace('.upl','')+'[0-9]*',groupNC):
-		os.remove(outdir + uplfile.replace('.upl','_NC.pb'))
-	if re.search(uplfile.replace('.upl','')+'[0-9]*',groupCC):
-		mn+=1
-		x+=1
-		outpml.write(groupCC + '\n')
-		outpml.write('color {:}, {:}\n'.format(colors[x+2],uplfile.replace('.upl','_CC')))
-		outcmx.write('open ' + outdir + uplfile.replace('.upl','_CC.pb') + '\n')
-		print('{:} {:}'.format(mn,uplfile.replace('.upl','_CC.pb')))
-		outcmx.write('color #{:} {:}\n'.format(str(mn),colors[x+2]))
-	if not re.search(uplfile.replace('.upl','')+'[0-9]*',groupCC):
-		os.remove(outdir + uplfile.replace('.upl','_CC.pb'))
+		os.remove(outdir + uplfile.replace('.upl','.pb'))
 
 ### Color code secondar structure from TALOS analysis
 outpml.write('create predSS, {:}\ncolor gray60,predSS\nhide sticks, predSS\n'.format(pmln))
