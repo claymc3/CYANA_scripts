@@ -23,21 +23,13 @@ Atoms_dict = {'I':['CD1'], 'L':['CD1','CD2'], 'V':['CG1','CG2'], 'M':['CE'], 'A'
 
 cwd = os.getcwd()
 #####
-if len(sys.argv) <= 8:
+if len(sys.argv) <= 6:
 	print('''
 
 Usage: 
-	PrepCyana [Sequence] [index(s)] [pdb] [upl_extras] [residues] [TALOS] [dref] [sys_info]
+	PrepCyana [pdb] [upl_extras] [residues] [TALOS] [dref] [sys_info]
 
 Required Input:
-	Sequence 		Fasta style or three letter code formats accepted no need to
-					remove header. Fusions indicated by + before start of fused 
-					sequence. If this is not located in current directory
-					provide the path. 
-
-	Index(s)		Starting index for provided sequence. For fusions provide 
-					starting indexes separated by commas (eg 1,230). The + will 
-					trigger the use of the correct starting index. 
 
 	PDB 			Reference PDB used to generate initial upl file. If this is 
 					not located in current directory provide path 
@@ -50,6 +42,8 @@ Required Input:
 
 	residues 		Residues to use in upl generation and rmsd calumniation.
 					20-200,300-490
+					Residues of dynamic regions, and regions that do or are 
+					expected to show variations between states should be excluded. 
 
 	TALOS 			Path to results of TALOSN analysis. The pred.tab will be 
 					used to generate the dihid.aco input file. The predss.tab
@@ -65,10 +59,10 @@ Required Input:
 Assuming you have saved your .prot and .peak files are in current location
 
 name is taken from the prot file in this directory and any peak files in 
-this directory will be listing int he CYANA.calc file. 
+this directory will be listing int he CALC.cya file. 
 
 OutPut:
-	CYAN.calc
+	CALC.cya
 	init.cya
 	name.seq
 	name.upl
@@ -78,14 +72,15 @@ OutPut:
 ''')
 	exit()
 
-szFileName = sys.argv[1]
-Indexes = [int(x) for x in sys.argv[2].split(',')]
-in_pdb  = sys.argv[3]
-atoms = sys.argv[4]
-residues = sys.argv[5]
-TALOSdir = sys.argv[6]
-dref_val = sys.argv[7]
-sys_info = sys.argv[8]
+szFileName = glob.glob('*.seq')[0]
+print(szFileName)
+#Indexes = [int(x) for x in sys.argv[2].split(',')]
+in_pdb  = sys.argv[1]
+atoms = sys.argv[2]
+residues = sys.argv[3]
+TALOSdir = sys.argv[4]
+dref_val = sys.argv[5]
+sys_info = sys.argv[6]
 for val in dref_val.split(','):
 	if float(val) > 5:
 		print("Incorrect value for dref\nTypical values for dref are 4.0 - 4.5. If unsure, use 4.25.")
@@ -103,6 +98,8 @@ else:
 
 prot = glob.glob('*.prot')[0]
 name = prot.split('.')[0]
+os.rename(szFileName, name + '.seq')
+
 talosSS = os.path.join(TALOSdir +'/predSS.tab')
 talosS2 = os.path.join(TALOSdir +'/predS2.tab')
 indihed = os.path.join(TALOSdir +'/pred.tab')
@@ -124,35 +121,11 @@ for prot in prots:
 #------------------------------------------------------------------------------
 # Read in sequence and generate name.seq file 
 #
-sflines = [line.rstrip() for line in open(szFileName).readlines() if line.rstrip() and ">" not in line and "#" not in line]
-Sequence = ''
-### For 3 letter code sequences numbered or not
-if re.search('[A-Z][A-Z][A-Z] * ([0-9]*)', sflines[0]) or len(sflines[0]) == 3:
-	for line in sflines:
-		if re.search('[A-Z][A-Z][A-Z] * ([0-9]*)', line):
-			if re.search('[A-Z][A-Z][A-Z] * ([0-9]*)', line).group().split()[0].upper() in AAA_dict.keys():
-				Sequence = Sequence + AAA_dict[re.search('[A-Z][A-Z][A-Z] * ([0-9]*)', line).group().split()[0].upper()]
-		if re.search('[A-Z][A-Z][A-Z]', line) and not re.search('[A-Z][A-Z][A-Z] * ([0-9]*)', line):
-			if re.search('[A-Z][A-Z][A-Z]', line).group().upper() in AAA_dict.keys():
-				Sequence = Sequence + AAA_dict[re.search('[A-Z][A-Z][A-Z]', line).group().upper()]
-		if '+' in line:
-			Sequence = Sequence + '+'
-### For single letter code fasta style sequences 
-if len(sflines[0]) != 3 and not re.search('[A-Z][A-Z][A-Z] * ([0-9]*)', sflines[0]):
-	for line in sflines:
-		Sequence = Sequence + line
-Sequence = Sequence.replace('++','+')
 
+Sequence = ''
 num_seq = []
-seqfile = open(name + '.seq','w')
-for x in range(len(Sequence.split('+'))):
-	if x != 0:
-		seqfile.write("## + \n")
-	for i in range(len(Sequence.split('+')[x])):
-		index = i + int(Indexes[x])
-		seqfile.write('%s %5d\n'% (A_dict[Sequence.split('+')[x][i]], index))
-		num_seq.append((Sequence.split('+')[x][i], index))
-seqfile.close()
+for line in open(name + '.seq').readlines():
+		num_seq.append((line.strip().split()[0], line.strip().split()[1]))
 #
 #------------------------------------------------------------------------------
 
@@ -177,7 +150,6 @@ for line in talosS2_lines:
 	res = line.split()[1] + line.split()[0]
 	S2Dict[res] = float(line.split()[-1].replace('9999.0000','0.600'))
 
-
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
@@ -190,16 +162,16 @@ chi1_lines = [line.strip() for line in open(inchi1).readlines() if line.strip() 
 aco = open('dihed.aco','w')
 scale = {"Strong":2.0, "Generous":3.0}
 aco.write('## Chi1 values from TALOS\n')
-for line in chi1_lines:
-	cline = line.strip().split()
-	if cline[6] != 'na':
-		dchi = float(cline[-1])
-		if dchi<10: dchi = 10.0
-		if dchi>35: dchi = 35
-		chi1 = float(cline[7])
-		if chi1 < 0: chi1 = chi1 + 360.0
-		aco.write("#  " + line + "\n")
-		aco.write("{:>4s}  {:<4s} CHI1  {:8.1f}{:8.1f}\n\n".format(cline[0], A_dict[cline[1]], chi1-dchi, chi1+dchi))
+# for line in chi1_lines:
+# 	cline = line.strip().split()
+# 	if cline[6] != 'na':
+# 		dchi = float(cline[-1])
+# 		if dchi<10: dchi = 10.0
+# 		if dchi>35: dchi = 35
+# 		chi1 = float(cline[7])
+# 		if chi1 < 0: chi1 = chi1 + 360.0
+# 		aco.write("#  " + line + "\n")
+# 		aco.write("{:>4s}  {:<4s} CHI1  {:8.1f}{:8.1f}\n\n".format(cline[0], A_dict[cline[1]], chi1-dchi, chi1+dchi))
 
 aco.write('## Phi/Psi values from TALOS\n')
 for line in dihed_lines:
@@ -214,9 +186,9 @@ for line in dihed_lines:
 		aco.write("#  " + line + "\n")
 		if dline[1] != 'P':
 			#print "%4d  %4s  PHI  %8.1f%8.1f" % (int(dline[0]), A_dict[dline[1]], float(dline[2])-scale[dline[-1]]*dphi, float(dline[2])+ scale[dline[-1]]*dphi)
-			aco.write("%4d  %4s  PHI  %8.1f%8.1f\n" % (int(dline[0]), A_dict[dline[1]], float(dline[2])-scale[dline[-1]]*dphi/2, float(dline[2])+scale[dline[-1]]*dphi/2))
+			aco.write("{:>5}  {:<4}  PHI  {:8.1f}{:8.1f}\n".format(int(dline[0]), A_dict[dline[1]], float(dline[2])-scale[dline[-1]]*dphi/2, float(dline[2])+scale[dline[-1]]*dphi/2))
 		#print "%4d  %4s  PSI  %8.1f%8.1f\n" % (int(dline[0]), A_dict[dline[1]], float(dline[3])-scale[dline[-1]]*dpsi, float(dline[2])+scale[dline[-1]]*dpsi)
-		aco.write("%4d  %4s  PSI  %8.1f%8.1f\n\n" % (int(dline[0]), A_dict[dline[1]], float(dline[3])-scale[dline[-1]]*dpsi/2, float(dline[3])+scale[dline[-1]]*dpsi/2))
+		aco.write("{:>5}  {:<4}  PSI  {:8.1f}{:8.1f}\n\n" % (int(dline[0]), A_dict[dline[1]], float(dline[3])-scale[dline[-1]]*dpsi/2, float(dline[3])+scale[dline[-1]]*dpsi/2))
 
 aco.close()
 
@@ -231,11 +203,11 @@ aco.close()
 aco2 = open('inital.aco','w')
 for (res, resn) in num_seq:
 	if res == 'L':
-		aco2.write(' {:>4} LEU   CHI1    170.0   200.0 9.00E-01 type=2\n {:>4} LEU   CHI2     55.0    95.0 9.00E-01 type=2\n {:>4} LEU   CHI1    280.0   320.0 9.00E-01 type=2 OR\n {:>4} LEU   CHI2    170.0   200.0 9.00E-01 type=2\n\n'.format(resn,resn,resn,resn))
+		aco2.write(' {:>5} LEU   CHI1    170.0   200.0 9.00E-01 type=2\n {:>5} LEU   CHI2     55.0    95.0 9.00E-01 type=2\n {:>5} LEU   CHI1    280.0   320.0 9.00E-01 type=2 OR\n {:>5} LEU   CHI2    170.0   200.0 9.00E-01 type=2\n\n'.format(resn,resn,resn,resn))
 	if res == 'I':
-		aco2.write(' {:>4} ILE   CHI1     60.0    90.0 9.00E-01 type=2\n {:>4} ILE   CHI21   165.0   195.0 9.00E-01 type=2\n {:>4} ILE   CHI1    180.0   210.0 9.00E-01 type=2 OR\n {:>4} ILE   CHI21   165.0   195.0 9.00E-01 type=2\n {:>4} ILE   CHI1    280.0   320.0 9.00E-01 type=2 OR\n {:>4} ILE   CHI21   160.0   200.0 9.00E-01 type=2\n {:>4} ILE   CHI1    300.0   330.0 9.00E-01 type=2 OR\n {:>4} ILE   CHI21   305.0   330.0 9.00E-01 type=2\n {:>4} ILE   CHI1    190.0   220.0 9.00E-01 type=2 OR\n {:>4} ILE   CHI21    70.0    90.0 9.00E-01 type=2\n\n'.format(resn,resn,resn,resn,resn,resn,resn,resn,resn,resn))
+		aco2.write(' {:>5} ILE   CHI1     60.0    90.0 9.00E-01 type=2\n {:>5} ILE   CHI21   165.0   195.0 9.00E-01 type=2\n {:>5} ILE   CHI1    180.0   210.0 9.00E-01 type=2 OR\n {:>5} ILE   CHI21   165.0   195.0 9.00E-01 type=2\n {:>5} ILE   CHI1    280.0   320.0 9.00E-01 type=2 OR\n {:>5} ILE   CHI21   160.0   200.0 9.00E-01 type=2\n {:>5} ILE   CHI1    300.0   330.0 9.00E-01 type=2 OR\n {:>5} ILE   CHI21   305.0   330.0 9.00E-01 type=2\n {:>5} ILE   CHI1    190.0   220.0 9.00E-01 type=2 OR\n {:>5} ILE   CHI21    70.0    90.0 9.00E-01 type=2\n\n'.format(resn,resn,resn,resn,resn,resn,resn,resn,resn,resn))
 	if res == 'M':
-		aco2.write(' {:>4} MET   CHI1     60.0    90.0 9.00E-01 type=2\n {:>4} MET   CHI2    190.0   220.0 9.00E-01 type=2\n {:>4} MET   CHI1    170.0   220.0 9.00E-01 type=2 OR\n {:>4} MET   CHI2    170.0   210.0 9.00E-01 type=2\n {:>4} MET   CHI1    280.0   320.0 9.00E-01 type=2 OR\n {:>4} MET   CHI2    170.0   210.0 9.00E-01 type=2\n {:>4} MET   CHI1    290.0   320.0 9.00E-01 type=2 OR\n {:>4} MET   CHI2    280.0   320.0 9.00E-01 type=2\n {:>4} MET   CHI1    180.0   220.0 9.00E-01 type=2 OR\n {:>4} MET   CHI2     60.0    90.0 9.00E-01 type=2\n\n'.format(resn,resn,resn,resn,resn,resn,resn,resn,resn,resn))
+		aco2.write(' {:>5} MET   CHI1     60.0    90.0 9.00E-01 type=2\n {:>5} MET   CHI2    190.0   220.0 9.00E-01 type=2\n {:>5} MET   CHI1    170.0   220.0 9.00E-01 type=2 OR\n {:>5} MET   CHI2    170.0   210.0 9.00E-01 type=2\n {:>5} MET   CHI1    280.0   320.0 9.00E-01 type=2 OR\n {:>5} MET   CHI2    170.0   210.0 9.00E-01 type=2\n {:>5} MET   CHI1    290.0   320.0 9.00E-01 type=2 OR\n {:>5} MET   CHI2    280.0   320.0 9.00E-01 type=2\n {:>5} MET   CHI1    180.0   220.0 9.00E-01 type=2 OR\n {:>5} MET   CHI2     60.0    90.0 9.00E-01 type=2\n\n'.format(resn,resn,resn,resn,resn,resn,resn,resn,resn,resn))
 aco2.close()
 
 #------------------------------------------------------------------------------
@@ -310,10 +282,10 @@ for O in hbond_O:
 			dist = round(np.sqrt(((PDB_df.loc[O,'X'] - PDB_df.loc[N,'X'])**2) + ((PDB_df.loc[O,'Y'] - PDB_df.loc[N,'Y'])**2) + ((PDB_df.loc[O,'Z'] - PDB_df.loc[N,'Z'])**2)),1)
 			if dist >= 2.7 and dist <= 3.3: 
 				constrained.append(str(PDB_df.loc[O,'resid']) + '-' + str(PDB_df.loc[N,'resid']))
-				hbupl.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}     3.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
-				hbupl.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}     2.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
-				hblol.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}     2.70\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
-				hblol.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}     1.80\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
+				hbupl.write("{:>5}  {:<4}  {:<4}  {:>5}  {:<4}  {:<4}     3.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
+				hbupl.write("{:>5}  {:<4}  {:<4}  {:>5}  {:<4}  {:<4}     2.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
+				hblol.write("{:>5}  {:<4}  {:<4}  {:>5}  {:<4}  {:<4}     2.70\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
+				hblol.write("{:>5}  {:<4}  {:<4}  {:>5}  {:<4}  {:<4}     1.80\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
 ### For Betta Sheet residues from TALOS
 hblol.write("## Betta Sheet residues from TALOS \n")
 hbupl.write("## Betta Sheet residues from TALOS \n")				
@@ -325,10 +297,10 @@ for O in hbond_O:
 			dist = round(np.sqrt(((PDB_df.loc[O,'X'] - PDB_df.loc[N,'X'])**2) + ((PDB_df.loc[O,'Y'] - PDB_df.loc[N,'Y'])**2) + ((PDB_df.loc[O,'Z'] - PDB_df.loc[N,'Z'])**2)),1)
 			if dist >= 2.7 and dist <= 3.3: 
 				constrained.append(str(PDB_df.loc[O,'resid']) + '-' + str(PDB_df.loc[N,'resid']))
-				hbupl.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}     3.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
-				hbupl.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}     2.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
-				hblol.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}     2.70\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
-				hblol.write("{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}     1.80\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
+				hbupl.write("{:>5}  {:<4}  {:<4}  {:>5}  {:<4}  {:<4}     3.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
+				hbupl.write("{:>5}  {:<4}  {:<4}  {:>5}  {:<4}  {:<4}     2.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
+				hblol.write("{:>5}  {:<4}  {:<4}  {:>5}  {:<4}  {:<4}     2.70\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
+				hblol.write("{:>5}  {:<4}  {:<4}  {:>5}  {:<4}  {:<4}     1.80\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
 hblol.close()
 hbupl.close()
 hblol.close()
@@ -355,7 +327,7 @@ for i in range(len(N_list)):
 				atom2 = str(PDB_df.loc[N_list[x],'resid']) + '-' + PDB_df.loc[N_list[x],'name']
 				if constraint not in NN_used:
 					NN_used.append(N_list[i] + '-' + N_list[x])
-					NN_out = "{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}   {:6.2f}\n".format(PDB_df.loc[N_list[i],'resid'],PDB_df.loc[N_list[i],'resn'],PDB_df.loc[N_list[i],'name'], PDB_df.loc[N_list[x],'resid'],PDB_df.loc[N_list[x],'resn'],PDB_df.loc[N_list[x],'name'],dist)
+					NN_out = "{:>5}  {:<4}  {:<4}   {:>5}  {:<4}  {:<4}   {:6.2f}\n".format(PDB_df.loc[N_list[i],'resid'],PDB_df.loc[N_list[i],'resn'],PDB_df.loc[N_list[i],'name'], PDB_df.loc[N_list[x],'resid'],PDB_df.loc[N_list[x],'resn'],PDB_df.loc[N_list[x],'name'],dist)
 					if atom1 in Assignments and atom2 in Assignments: pass
 					if atom1 not in Assignments:
 						NN_out = NN_out.replace('\n',' # missing {:}\n'.format(N_list[i]))
@@ -364,6 +336,8 @@ for i in range(len(N_list)):
 					NN_lines.append(NN_out)
 
 print("Made %3.0f NN upl constraints " % (len(NN_used)))
+
+## need to update to sort Aromatic and Methyl carbons from each other 
 NC_used = []
 NC_lines = []
 NC_ids = []
@@ -371,12 +345,12 @@ for i in range(len(N_list)):
 	for x in range(len(C_list)):
 		diff = abs(int(PDB_df.loc[N_list[i],'resid']) - int(PDB_df.loc[C_list[x],'resid']))
 		if diff >= 3:
-			dist = np.rount(np.sqrt(((PDB_df.loc[N_list[i],'X'] - PDB_df.loc[C_list[x],'X'])**2) + ((PDB_df.loc[N_list[i],'Y'] - PDB_df.loc[C_list[x],'Y'])**2) + ((PDB_df.loc[N_list[i],'Z'] - PDB_df.loc[C_list[x],'Z'])**2)),1)
+			dist = np.round(np.sqrt(((PDB_df.loc[N_list[i],'X'] - PDB_df.loc[C_list[x],'X'])**2) + ((PDB_df.loc[N_list[i],'Y'] - PDB_df.loc[C_list[x],'Y'])**2) + ((PDB_df.loc[N_list[i],'Z'] - PDB_df.loc[C_list[x],'Z'])**2)),1)
 			if dist < 6.0:
 				atom1 = str(PDB_df.loc[N_list[i],'resid']) + '-' + PDB_df.loc[N_list[i],'name']
 				atom2 = str(PDB_df.loc[C_list[x],'resid']) + '-' + PDB_df.loc[C_list[x],'name']
 				NC_used.append(N_list[i] + '-' + C_list[x])
-				NC_out = "{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}   {:6.2f}\n".format(PDB_df.loc[N_list[i],'resid'],PDB_df.loc[N_list[i],'resn'],PDB_df.loc[N_list[i],'name'], PDB_df.loc[C_list[x],'resid'],PDB_df.loc[C_list[x],'resn'],PDB_df.loc[C_list[x],'name'],dist)
+				NC_out = "{:>5}  {:<4}  {:<4}   {:>5}  {:<4}  {:<4}   {:6.2f}\n".format(PDB_df.loc[N_list[i],'resid'],PDB_df.loc[N_list[i],'resn'],PDB_df.loc[N_list[i],'name'], PDB_df.loc[C_list[x],'resid'],PDB_df.loc[C_list[x],'resn'],PDB_df.loc[C_list[x],'name'],dist)
 				if atom1 in Assignments and atom2 in Assignments: pass
 				if atom1 not in Assignments:
 					NC_out = NC_out.replace('\n',' # missing {:}\n'.format(N_list[i]))
@@ -398,7 +372,7 @@ for i in range(len(C_list)):
 				atom2 = str(PDB_df.loc[C_list[x],'resid']) + '-' + PDB_df.loc[C_list[x],'name']
 				if constraint not in CC_used:
 					CC_used.append(C_list[i] + '-' + C_list[x])
-					CC_out = "{:>4} {:<4}  {:<3}   {:<4} {:<4}  {:<3}   {:6.2f}\n".format(PDB_df.loc[C_list[i],'resid'],PDB_df.loc[C_list[i],'resn'],PDB_df.loc[C_list[i],'name'], PDB_df.loc[C_list[x],'resid'],PDB_df.loc[C_list[x],'resn'],PDB_df.loc[C_list[x],'name'],dist)
+					CC_out = "{:>5}  {:<4}  {:<4}   {:>5}  {:<4}  {:<4}   {:6.2f}\n".format(PDB_df.loc[C_list[i],'resid'],PDB_df.loc[C_list[i],'resn'],PDB_df.loc[C_list[i],'name'], PDB_df.loc[C_list[x],'resid'],PDB_df.loc[C_list[x],'resn'],PDB_df.loc[C_list[x],'name'],dist)
 					if atom1 in Assignments and atom2 in Assignments: pass
 					if atom1 not in Assignments:
 						CC_out = CC_out.replace('\n',' # missing {:}\n'.format(C_list[i]))
@@ -431,11 +405,6 @@ for (nid,cid) in NC_ids:
 			temp2.append(float(line.split()[6]))
 	if len(temp) >= 1:
 		NC_outlines.append(temp[temp2.index(min(temp2))])
-
-upl.write('### N-C Distances\n')
-upl.writelines(NC_outlines)
-print("Original %3.0f NC upl constraints " % (len(NC_lines)))
-print("Made %3.0f NC upl constraints " % (len(NC_outlines)))
 CC_outlines = []
 for (cid1,cid2) in CC_ids:
 	temp,temp2 = [],[]
@@ -445,8 +414,32 @@ for (cid1,cid2) in CC_ids:
 			temp2.append(float(line.split()[6]))
 	if len(temp) >= 1:
 		CC_outlines.append(temp[temp2.index(min(temp2))])
-upl.write('### C-C Distances\n')
-upl.writelines(CC_outlines)
+
+
+NC_methyl, NC_Aro, CC_methyl, CC_Aro = [], [], [], []
+for line in NC_outlines:
+	if line.split()[4] in ['PHE','TYR']:
+		NC_Aro.append(line)
+	else:NC_methyl.append(line)
+upl.write('### N-C Methyl Distances\n')
+upl.writelines(NC_methyl)
+upl.write('### N-C Aromatic Distances\n')
+upl.writelines(NC_Aro)
+for line in CC_outlines:
+	if line.split()[1] in ['PHE','TYR'] and line not in CC_Aro:
+		CC_Aro.append(line)
+	if line.split()[4] in ['PHE','TYR'] and line not in CC_Aro:
+		CC_Aro.append(line)
+for line in CC_outlines:
+	if line not in CC_Aro:
+		CC_methyl.append(line)
+
+upl.write('### C-C Methyl-Methyl Distances\n')
+upl.writelines(CC_methyl)
+upl.write('### C-C Methyl-Aromatic Distances\n')
+upl.writelines(CC_Aro)
+print("Original %3.0f NC upl constraints " % (len(NC_lines)))
+print("Made %3.0f NC upl constraints " % (len(NC_outlines)))
 print("Original %3.0f CC upl constraints " % (len(CC_lines)))
 print("Made %3.0f CC upl constraints " % (len(CC_outlines)))
 upl.close()
@@ -456,20 +449,18 @@ ssa.close()
 
 CYANA = open('CALC.cya','w')
 clac_text = '''
-peaks       := %s      # names of NOESY peak lists
-prot        := %s                   # names of chemical shift lists
-constraints := %s.upl,%s,%s,%s              # additional (non-NOE) constraints
+peaks       := {:}      # names of NOESY peak lists
+prot        := {:}                   # names of chemical shift lists
+constraints := {:}.upl,{:},{:},{:}              # additional (non-NOE) constraints
 tolerance   := 0.01,0.01,0.01,0.01         # chemical shift tolerances
-dref        := %s
+dref        := {:}
 calibration :=                          # NOE calibration parameters
 structures  := 100,20                   # number of initial, final structures
 steps       := 20000                    # number of torsion angle dynamics steps
-rmsdrange   := %s                       # residue range for RMSD calculation
+rmsdrange   := {:}                       # residue range for RMSD calculation
 randomseed  := 52541                   # random number generator seed
 
 upl_values  := 2.4,7.0
-#weight_rdc   = 0.02               # weight for RDC restraints
-#cut_rdc      = 0.2                # cutoff for RDC violation output
 
 #subroutine KEEP
 #   peaks select "*, * number=10000..40000"
@@ -477,24 +468,24 @@ upl_values  := 2.4,7.0
 
 ssa
 noeassign peaks=$peaks prot=$prot autoaco # keep=KEEP 
-''' % (peaks_out, prots_out, name, 'hbond.lol', 'hbond.upl','dihed.aco',dref_val,residues.replace("-",".."))
+'''.format(peaks_out, prots_out, name, 'hbond.lol', 'hbond.upl','dihed.aco',dref_val,residues.replace("-",".."))
 CYANA.write(clac_text)
 CYANA.close()
 
 Init_Cyana = open('init.cya','w')
-init_text = '''name:=%s
-rmsdrange:=%s
+init_text = '''name:={:}
+rmsdrange:={:}
 cyanalib
 read lib special.lib append
 #read lib cyana_Zn2.lib append
-nproc:=%d
+nproc:={:d}
 read seq $name.seq
 #molecules define 1..146 201..346
 #molecule identity
 #weight_ide=0.09
 #molecule symdist "CA 1..146" "CA 201..346"
 #weight_sym=0.025
-#rdcdistances        # default bond lengths for dipole types''' % (name,residues.replace('-','...'),ncpu)
+#rdcdistances        # default bond lengths for dipole types'''.format(name,residues.replace('-','...'),ncpu)
 Init_Cyana.write(init_text)
 Init_Cyana.close()
 
