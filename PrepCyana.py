@@ -13,7 +13,13 @@ import os
 import sys
 import glob
 import re
+from datetime import datetime
 
+# datetime object containing current date and time
+now = datetime.now()
+
+# dd/mm/YY H:M:S
+dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
 pdb_columns = ['name', 'resn', 'resid', 'X', 'Y', 'Z','nuc']
 # Read in PDB file one line at a time, if the first four letter ar ATOM or HETA then it will parse the data into the 
 # data frame, using the atome index int he PDB as the row index in the data frame. 
@@ -23,21 +29,24 @@ Atoms_dict = {'I':['CD1'], 'L':['CD1','CD2'], 'V':['CG1','CG2'], 'M':['CE'], 'A'
 
 cwd = os.getcwd()
 #####
-if len(sys.argv) <= 6:
+if len(sys.argv) == 1:
 	print('''
 
 Usage: 
-	PrepCyana [pdb] [upl_extras] [residues] [TALOS] [dref] [sys_info]
+	PrepCyana [pdb] [chain] [Labeling] [residues] [TALOS]
 
 Required Input:
 
 	PDB 			Reference PDB used to generate initial upl file. If this is 
-					not located in current directory provide path 
+					not located in current directory provide path. 
 
-	UPL Extras 		Can specify use of side chain heavy atoms of I, L, V, M, A,
-					T, Y, F, or W to use in upl generation. 
-					I = I-CD1, L = L-CD1, L-CD2, V = V-CG1, V-CG2, M = M-CE, 
-					A = A-CB, T = T-CG2 F = F-CE1, F-CE2, Y = Y-CE1, Y-CE2, 
+	Chain:			Which chain in PDB should be used
+
+	Labeling		What side chains are labeled and can be used to generate 
+					heavy atom – heavy atom model based upls 
+					Supported labeling of: I, L, V, M, A,T, Y, F, or W
+					I = I-CD1, L = L-CD1, L-CD2, V = V-CG1, V-CG2, M = M-CE,
+					A = A-CB, T = T-CG2 F = F-CE1, F-CE2, Y = Y-CE1, Y-CE2,
 					W = W-NE1
 
 	residues 		Residues to use in upl generation and rmsd calumniation.
@@ -50,64 +59,52 @@ Required Input:
 					will be used to filter out unstructured regions from the 
 					upl, hbond.lol, and hbond.upl files 
 
-	dref			One or several comma-separated values for dref
-
-	sys_info		specify which chaperone you want to run on 
-					Valid values are: chap, chap2, chap3, chap4
-
-
 Assuming you have saved your .prot and .peak files are in current location
 
-name is taken from the prot file in this directory and any peak files in 
-this directory will be listing int he CALC.cya file. 
+name is taken from the first prot file found in this directory.
+All peaks and prot finles found in this directory will be listed in the CALC.cya 
+All upl, lol, and aco files created or already in this directory will be listed 
+in CALC.cya
 
 OutPut:
 	CALC.cya
 	init.cya
 	name.seq
-	name.upl
+	name_modle.upl
 	hbond.upl
 	hbond.lol
 	dihed.aco
+	inital.aco
 ''')
 	exit()
-
+Vnum = '2.1'
 szFileName = glob.glob('*.seq')[0]
 print(szFileName)
-#Indexes = [int(x) for x in sys.argv[2].split(',')]
 in_pdb  = sys.argv[1]
-atoms = sys.argv[2]
-residues = sys.argv[3]
-TALOSdir = sys.argv[4]
-dref_val = sys.argv[5]
-sys_info = sys.argv[6]
-for val in dref_val.split(','):
-	if float(val) > 5:
-		print("Incorrect value for dref\nTypical values for dref are 4.0 - 4.5. If unsure, use 4.25.")
-		exit(1)
-
-if sys_info == 'chap' or sys_info == 'chap2':
-	ncpu = 40
-	print("Using %d threads" %ncpu)
-elif sys_info == 'chap3' or sys_info == 'chap4':
-	ncpu = 80
-	print("Using %d threads" %ncpu)
-else:
-	print("Incorrect input provided. Options are one of chap, chap2, chap3, chap4\n")
-	exit(1)
-
+chain = sys.argv[2]
+atoms = sys.argv[3]
+residues = sys.argv[4]
+TALOSdir = sys.argv[5]
 prot = glob.glob('*.prot')[0]
 name = prot.split('.')[0]
-os.rename(szFileName, name + '.seq')
+if szFileName == name + '.seq': pass 
+else: os.rename(szFileName, name + '.seq')
 
 talosSS = os.path.join(TALOSdir +'/predSS.tab')
 talosS2 = os.path.join(TALOSdir +'/predS2.tab')
 indihed = os.path.join(TALOSdir +'/pred.tab')
 inchi1 = os.path.join(TALOSdir +'/predChi1.tab')
+print("Generated using V2.1")
 print("Using " + talosSS)
 print("Using " + indihed)
-print("Using " + talosS2)
-# Indexes = [int(x) for x in index.split(',')]
+# print("Using " + talosS2)
+log = open('prepcya_log', 'a')
+log.write('## Generated using PrepCyana_{:} on {:} \n'.format(Vnum,dt_string))
+log.write('prepcya {:} {:} {:} {:} {:}\n'.format(in_pdb,chain,atoms,residues,TALOSdir))
+
+#------------------------------------------------------------------------------
+# Read the prot files and figure what assignments are available
+# 
 Assignments = []
 prots = glob.glob('*.prot')
 for prot in prots:
@@ -118,17 +115,18 @@ for prot in prots:
 			assign = resi + '-' + atom
 			if assign not in Assignments:
 				Assignments.append(assign)
-#------------------------------------------------------------------------------
-# Read in sequence and generate name.seq file 
-#
 
-Sequence = ''
+#------------------------------------------------------------------------------
+# Read in sequence and generate name.seq file and translate the number to correct
+# amino acid abrivation
+
+num2AAA = {}
 num_seq = []
 for line in open(name + '.seq').readlines():
 		num_seq.append((line.strip().split()[0], line.strip().split()[1]))
+		num2AAA[line.strip().split()[1]] = line.strip().split()[0]
 #
 #------------------------------------------------------------------------------
-
 #------------------------------------------------------------------------------
 # Read in predSS.tab from TALOS run and great dictionary indicating secondary
 # structure of residue to use for preparation of hbond and manual upl/lol 
@@ -140,7 +138,6 @@ for line in talos_lines:
 	SecStrDict[res] = line.split()[-1].upper().replace('C','L')
 
 #------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
 # Read in predSS.tab from TALOS run and great dictionary indicating secondary
 # structure of residue to use for preparation of hbond and manual upl/lol 
 #
@@ -151,8 +148,6 @@ for line in talosS2_lines:
 	S2Dict[res] = float(line.split()[-1].replace('9999.0000','0.600'))
 
 #------------------------------------------------------------------------------
-
-#------------------------------------------------------------------------------
 # Read in TALOS pred.tab and create dihed.aco file 
 
 # dihed = glob.glob("*.aco")[0]
@@ -161,7 +156,7 @@ chi1_lines = [line.strip() for line in open(inchi1).readlines() if line.strip() 
 # (resid, slc, phi, psi, dphi, dpsi, s2, count, cs_cound, Class)
 aco = open('dihed.aco','w')
 scale = {"Strong":2.0, "Generous":3.0}
-aco.write('## Chi1 values from TALOS\n')
+# aco.write('## Chi1 values from TALOS\n')
 # for line in chi1_lines:
 # 	cline = line.strip().split()
 # 	if cline[6] != 'na':
@@ -172,8 +167,9 @@ aco.write('## Chi1 values from TALOS\n')
 # 		if chi1 < 0: chi1 = chi1 + 360.0
 # 		aco.write("#  " + line + "\n")
 # 		aco.write("{:>4s}  {:<4s} CHI1  {:8.1f}{:8.1f}\n\n".format(cline[0], A_dict[cline[1]], chi1-dchi, chi1+dchi))
-
+aco.write('## Generated using PrepCyana_{:}\n## Dihedrals extracted from {:}\n'.format(Vnum,indihed))
 aco.write('## Phi/Psi values from TALOS\n')
+phicount, psicount = 0,0 
 for line in dihed_lines:
 	dline = line.split()
 	if dline[-1] in scale.keys():
@@ -185,20 +181,18 @@ for line in dihed_lines:
 		if dpsi>35: dpsi = 35.0
 		aco.write("#  " + line + "\n")
 		if dline[1] != 'P':
+			phicount+=1
 			#print "%4d  %4s  PHI  %8.1f%8.1f" % (int(dline[0]), A_dict[dline[1]], float(dline[2])-scale[dline[-1]]*dphi, float(dline[2])+ scale[dline[-1]]*dphi)
-			aco.write("{:>5}  {:<4}  PHI  {:8.1f}{:8.1f}\n".format(int(dline[0]), A_dict[dline[1]], float(dline[2])-scale[dline[-1]]*dphi/2, float(dline[2])+scale[dline[-1]]*dphi/2))
+			aco.write("{:>5}  {:<4}  PHI  {:8.1f}{:8.1f}\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[2])-scale[dline[-1]]*dphi/2, float(dline[2])+scale[dline[-1]]*dphi/2))
 		#print "%4d  %4s  PSI  %8.1f%8.1f\n" % (int(dline[0]), A_dict[dline[1]], float(dline[3])-scale[dline[-1]]*dpsi, float(dline[2])+scale[dline[-1]]*dpsi)
-		aco.write("{:>5}  {:<4}  PSI  {:8.1f}{:8.1f}\n\n" % (int(dline[0]), A_dict[dline[1]], float(dline[3])-scale[dline[-1]]*dpsi/2, float(dline[3])+scale[dline[-1]]*dpsi/2))
-
+		aco.write("{:>5}  {:<4}  PSI  {:8.1f}{:8.1f}\n\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[3])-scale[dline[-1]]*dpsi/2, float(dline[3])+scale[dline[-1]]*dpsi/2))
+		psicount+= 1
 aco.close()
+log.write('Extracted {:} PHI angles and {:} PSI angles form TALOS\n'.format(phicount,psicount))
 
 #------------------------------------------------------------------------------
 # Prep and inital aco file to dias LEU, ILE, and MET residues to favorable 
 # chi1/chi2 regions 
-
-# leuout = ' {:>4} LEU   CHI1    170.0   200.0 9.00E-01 type=2\n {:>4} LEU   CHI2     55.0    95.0 9.00E-01 type=2\n {:>4} LEU   CHI1    280.0   320.0 9.00E-01 type=2 OR\n {:>4} LEU   CHI2    170.0   200.0 9.00E-01 type=2\n'.format(resn,resn,resn,resn)
-# ileout = ' {:>4} ILE   CHI1     60.0    90.0 9.00E-01 type=2\n {:>4} ILE   CHI21   165.0   195.0 9.00E-01 type=2\n {:>4} ILE   CHI1    180.0   210.0 9.00E-01 type=2 OR\n {:>4} ILE   CHI21   165.0   195.0 9.00E-01 type=2\n {:>4} ILE   CHI1    280.0   320.0 9.00E-01 type=2 OR\n {:>4} ILE   CHI21   160.0   200.0 9.00E-01 type=2\n {:>4} ILE   CHI1    300.0   330.0 9.00E-01 type=2 OR\n {:>4} ILE   CHI21   305.0   330.0 9.00E-01 type=2\n {:>4} ILE   CHI1    190.0   220.0 9.00E-01 type=2 OR\n {:>4} ILE   CHI21    70.0    90.0 9.00E-01 type=2\n'.format(resn,resn,resn,resn,resn,resn,resn,resn,resn,resn)
-# metout = ' {:>4} MET   CHI1     60.0    90.0 9.00E-01 type=2\n {:>4} MET   CHI2    190.0   220.0 9.00E-01 type=2\n {:>4} MET   CHI1    170.0   220.0 9.00E-01 type=2 OR\n {:>4} MET   CHI2    170.0   210.0 9.00E-01 type=2\n {:>4} MET   CHI1    280.0   320.0 9.00E-01 type=2 OR\n {:>4} MET   CHI2    170.0   210.0 9.00E-01 type=2\n {:>4} MET   CHI1    290.0   320.0 9.00E-01 type=2 OR\n {:>4} MET   CHI2    280.0   320.0 9.00E-01 type=2\n {:>4} MET   CHI1    180.0   220.0 9.00E-01 type=2 OR\n {:>4} MET   CHI2     60.0    90.0 9.00E-01 type=2\n'.format(resn,resn,resn,resn,resn,resn,resn,resn,resn,resn)
 
 aco2 = open('inital.aco','w')
 for (res, resn) in num_seq:
@@ -243,18 +237,21 @@ for i in range(len(atoms)):
 		allowed_atoms.append(A_dict[atoms[i]] + '-' + Atoms_dict[atoms[i]][x])
 
 #------------------------------------------------------------------------------
-# Generating pandas data fram from PDB file using only specified residues and atoms
+# Generating pandas data frame from PDB file using only specified residues and atoms
 #
 PDB_df = pd.DataFrame(columns=pdb_columns)
 with open(in_pdb) as In_pdb:
 	for line in In_pdb:
 		if line[0:4] == "ATOM" or line[0:4] == 'HETA':
-			if int(line[22:26].strip()) in allowed_resi:
+			chainid = line[21]
+			if chainid  == ' ':chainid = line[72]
+			if int(line[22:26].strip()) in allowed_resi and chainid == chain:
 				group = line[17:20].strip() + '-' + line[12:16].strip()
 				if group in allowed_atoms:
 					index =  AAA_dict[line[17:20].strip()] + line[22:26].strip() + "-" + line[12:16].strip()
 					PDB_df.loc[index, 'name'] = line[12:16].strip()
-					PDB_df.loc[index, 'resn'] = line[16:20].strip()
+					PDB_df.loc[index, 'resn2'] = line[16:20].strip()
+					PDB_df.loc[index, 'resn'] = num2AAA[line[22:26].strip()]
 					PDB_df.loc[index, 'resid'] = line[22:26].strip()
 					PDB_df.loc[index, 'X'] = float(line[30:38])
 					PDB_df.loc[index, 'Y'] = float(line[38:46])
@@ -265,6 +262,7 @@ with open(in_pdb) as In_pdb:
 						PDB_df.loc[index, 'SecStr'] = SecStrDict[AAA_dict[line[17:20].strip()] + line[22:26].strip()]
 					if AAA_dict[line[17:20].strip()] + line[22:26].strip() in S2Dict.keys():
 						PDB_df.loc[index, 'S2'] = S2Dict[AAA_dict[line[17:20].strip()] + line[22:26].strip()]
+
 #------------------------------------------------------------------------------
 # Find Hydrogen bonding connections 
 #
@@ -272,8 +270,11 @@ constrained = []
 hblol = open('hbond.lol','w')
 hbupl = open('hbond.upl', 'w')
 ### For Helical residues from TALOS
+helical_hb, sheet_hb = 0,0
 hbond_N = PDB_df[(PDB_df['nuc'] == 'N') & (PDB_df['SecStr'] == 'H')].index.tolist()
 hbond_O = PDB_df[(PDB_df['nuc'] == 'O') & (PDB_df['SecStr'] == 'H')].index.tolist()
+hblol.write('##Generated using PrepCyana_{:}\n## Distances extracted from {:}\n'.format(Vnum,in_pdb))
+hbupl.write('##Generated using PrepCyana_{:}\n## Distances extracted from {:}\n'.format(Vnum,in_pdb))
 hblol.write("## Helical residues from TALOS \n")
 hbupl.write("## Helical residues from TALOS \n")
 for O in hbond_O:
@@ -281,6 +282,7 @@ for O in hbond_O:
 		if abs(int(PDB_df.loc[O,'resid']) - int(PDB_df.loc[N,'resid'])) == 4: 
 			dist = round(np.sqrt(((PDB_df.loc[O,'X'] - PDB_df.loc[N,'X'])**2) + ((PDB_df.loc[O,'Y'] - PDB_df.loc[N,'Y'])**2) + ((PDB_df.loc[O,'Z'] - PDB_df.loc[N,'Z'])**2)),1)
 			if dist >= 2.7 and dist <= 3.3: 
+				helical_hb+= 1
 				constrained.append(str(PDB_df.loc[O,'resid']) + '-' + str(PDB_df.loc[N,'resid']))
 				hbupl.write("{:>5}  {:<4}  {:<4}  {:>5}  {:<4}  {:<4}     3.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
 				hbupl.write("{:>5}  {:<4}  {:<4}  {:>5}  {:<4}  {:<4}     2.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
@@ -296,6 +298,7 @@ for O in hbond_O:
 		if abs(int(PDB_df.loc[O,'resid']) - int(PDB_df.loc[N,'resid'])) > 3: 
 			dist = round(np.sqrt(((PDB_df.loc[O,'X'] - PDB_df.loc[N,'X'])**2) + ((PDB_df.loc[O,'Y'] - PDB_df.loc[N,'Y'])**2) + ((PDB_df.loc[O,'Z'] - PDB_df.loc[N,'Z'])**2)),1)
 			if dist >= 2.7 and dist <= 3.3: 
+				sheet_hb+= 1
 				constrained.append(str(PDB_df.loc[O,'resid']) + '-' + str(PDB_df.loc[N,'resid']))
 				hbupl.write("{:>5}  {:<4}  {:<4}  {:>5}  {:<4}  {:<4}     3.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'], PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name']))
 				hbupl.write("{:>5}  {:<4}  {:<4}  {:>5}  {:<4}  {:<4}     2.10\n".format(PDB_df.loc[O,'resid'],PDB_df.loc[O,'resn'],PDB_df.loc[O,'name'].replace('N','H'), PDB_df.loc[N,'resid'],PDB_df.loc[N,'resn'],PDB_df.loc[N,'name'].replace('N','H')))
@@ -305,22 +308,27 @@ hblol.close()
 hbupl.close()
 hblol.close()
 hbupl.close()
+log.write('Generated {:} unique Helical hbonds\nGenerated {:} unique Beta sheet hbonds\n'.format(helical_hb,sheet_hb))
 print("Generated hbond.upl and hbond.lol")
 #------------------------------------------------------------------------------
 # Prepare upl constraints for initial calculation only considering structured elements
 # based on TALOS predSS.tab
 #
-NN_used = []
-NN_lines = []
-upl = open(name + '.upl','w')
-# upl.write('### N-N distances\n')
+NN_used, NN_lines = [],[]
+upl = open(name + '_model.upl','w')
+upl.write('##Generated using PrepCyana_{:}\n## Distances extracted from {:}\n'.format(Vnum,in_pdb))
 N_list = PDB_df[(PDB_df['nuc'] == 'N')  & (PDB_df['resn'] != 'PRO')].index.tolist()
 C_list = PDB_df[(PDB_df['nuc'] == 'C')].index.tolist()
 for i in range(len(N_list)):
 	for x in range(len(N_list)):
 		diff = abs(int(PDB_df.loc[N_list[i],'resid']) - int(PDB_df.loc[N_list[x],'resid']))
-		if diff >= 3:
+		if PDB_df.loc[N_list[i],'SecStr'] == 'H' or PDB_df.loc[N_list[x],'SecStr'] == 'H': ridiff = 2
+		else: ridiff = 3
+		if diff >= ridiff:
 			dist = np.round(np.sqrt(((PDB_df.loc[N_list[i],'X'] - PDB_df.loc[N_list[x],'X'])**2) + ((PDB_df.loc[N_list[i],'Y'] - PDB_df.loc[N_list[x],'Y'])**2) + ((PDB_df.loc[N_list[i],'Z'] - PDB_df.loc[N_list[x],'Z'])**2)),1)
+			if dist < 3.1: 
+				print('N-N distance shorter than 3.1, likely van der Waals clash refine PDB model and try again')
+				exit()
 			if dist < 5.0:
 				constraint = N_list[x] + '-' + N_list[i]
 				atom1 = str(PDB_df.loc[N_list[i],'resid']) + '-' + PDB_df.loc[N_list[i],'name']
@@ -335,17 +343,18 @@ for i in range(len(N_list)):
 						NN_out = NN_out.replace('\n',' # missing {:}\n'.format(N_list[x]))
 					NN_lines.append(NN_out)
 
-print("Made %3.0f NN upl constraints " % (len(NN_used)))
-
-## need to update to sort Aromatic and Methyl carbons from each other 
-NC_used = []
-NC_lines = []
-NC_ids = []
+print("Made {:3.0f} NN upl constraints ".format(len(NN_used)))
+log.write("Generated  {:} NN upl constraints\n".format(len(NN_used)))
+NC_used, NC_lines, NC_ids = [], [], []
 for i in range(len(N_list)):
 	for x in range(len(C_list)):
 		diff = abs(int(PDB_df.loc[N_list[i],'resid']) - int(PDB_df.loc[C_list[x],'resid']))
 		if diff >= 3:
 			dist = np.round(np.sqrt(((PDB_df.loc[N_list[i],'X'] - PDB_df.loc[C_list[x],'X'])**2) + ((PDB_df.loc[N_list[i],'Y'] - PDB_df.loc[C_list[x],'Y'])**2) + ((PDB_df.loc[N_list[i],'Z'] - PDB_df.loc[C_list[x],'Z'])**2)),1)
+			if dist < 3.1:
+				NC_out = "{:>5}  {:<4}  {:<4}   {:>5}  {:<4}  {:<4}   {:6.2f}\n".format(PDB_df.loc[N_list[i],'resid'],PDB_df.loc[N_list[i],'resn'],PDB_df.loc[N_list[i],'name'], PDB_df.loc[C_list[x],'resid'],PDB_df.loc[C_list[x],'resn'],PDB_df.loc[C_list[x],'name'],dist)
+				print('{:} distance shorter than 3.1, likely van der Waals clash refine PDB model and try again'.format(NC_out))
+				exit()
 			if dist < 6.0:
 				atom1 = str(PDB_df.loc[N_list[i],'resid']) + '-' + PDB_df.loc[N_list[i],'name']
 				atom2 = str(PDB_df.loc[C_list[x],'resid']) + '-' + PDB_df.loc[C_list[x],'name']
@@ -366,6 +375,10 @@ for i in range(len(C_list)):
 		diff = abs(int(PDB_df.loc[C_list[i],'resid']) - int(PDB_df.loc[C_list[x],'resid']))
 		if diff >= 3:
 			dist = np.round(np.sqrt(((PDB_df.loc[C_list[i],'X'] - PDB_df.loc[C_list[x],'X'])**2) + ((PDB_df.loc[C_list[i],'Y'] - PDB_df.loc[C_list[x],'Y'])**2) + ((PDB_df.loc[C_list[i],'Z'] - PDB_df.loc[C_list[x],'Z'])**2)),1)
+			if dist < 3.1:
+				CC_out = "{:>5}  {:<4}  {:<4}   {:>5}  {:<4}  {:<4}   {:6.2f}\n".format(PDB_df.loc[C_list[i],'resid'],PDB_df.loc[C_list[i],'resn'],PDB_df.loc[C_list[i],'name'], PDB_df.loc[C_list[x],'resid'],PDB_df.loc[C_list[x],'resn'],PDB_df.loc[C_list[x],'name'],dist)
+				print('{:} distance shorter than 3.1, likely van der Waals clash refine PDB model and try again'.format(CC_out))
+				exit()
 			if dist < 6.0:
 				constraint = C_list[x] + '-' + C_list[i]
 				atom1 = str(PDB_df.loc[C_list[i],'resid']) + '-' + PDB_df.loc[C_list[i],'name']
@@ -438,27 +451,29 @@ upl.write('### C-C Methyl-Methyl Distances\n')
 upl.writelines(CC_methyl)
 upl.write('### C-C Methyl-Aromatic Distances\n')
 upl.writelines(CC_Aro)
+upl.write('\n\n')
 print("Original %3.0f NC upl constraints " % (len(NC_lines)))
 print("Made %3.0f NC upl constraints " % (len(NC_outlines)))
+log.write("Generated {:} NC upl constraints\n".format(len(NC_outlines)))
 print("Original %3.0f CC upl constraints " % (len(CC_lines)))
 print("Made %3.0f CC upl constraints " % (len(CC_outlines)))
+log.write("Generated  {:} CC upl constraints\n\n".format(len(CC_outlines)))
 upl.close()
 
 ssa = open('ssa.cya','w')
 ssa.close()
-
 CYANA = open('CALC.cya','w')
 clac_text = '''
 peaks       := {:}      # names of NOESY peak lists
-prot        := {:}                   # names of chemical shift lists
-constraints := {:}.upl,{:},{:},{:}              # additional (non-NOE) constraints
-tolerance   := 0.01,0.01,0.01,0.01         # chemical shift tolerances
-dref        := {:}
-calibration :=                          # NOE calibration parameters
-structures  := 100,20                   # number of initial, final structures
-steps       := 20000                    # number of torsion angle dynamics steps
-rmsdrange   := {:}                       # residue range for RMSD calculation
-randomseed  := 52541                   # random number generator seed
+prot        := {:}      # names of chemical shift lists
+constraints := {:}.upl,{:},{:},{:}      # additional (non-NOE) constraints
+tolerance   := 0.01,0.01,0.01,0.01      # chemical shift tolerances
+calibration :=      # NOE calibration parameters
+dref        := 4.5
+structures  := 100,20      # number of initial, final structures
+steps       := 20000       # number of torsion angle dynamics steps
+rmsdrange   := {:}      # residue range for RMSD calculation
+randomseed  := 52541      # random number generator seed
 
 upl_values  := 2.4,7.0
 
@@ -468,7 +483,7 @@ upl_values  := 2.4,7.0
 
 ssa
 noeassign peaks=$peaks prot=$prot autoaco # keep=KEEP 
-'''.format(peaks_out, prots_out, name, 'hbond.lol', 'hbond.upl','dihed.aco',dref_val,residues.replace("-",".."))
+'''.format(peaks_out, prots_out, name, 'hbond.lol', 'hbond.upl','dihed.aco',residues.replace("-",".."))
 CYANA.write(clac_text)
 CYANA.close()
 
@@ -478,14 +493,13 @@ rmsdrange:={:}
 cyanalib
 read lib special.lib append
 #read lib cyana_Zn2.lib append
-nproc:={:d}
+nproc:=60
 read seq $name.seq
 #molecules define 1..146 201..346
 #molecule identity
 #weight_ide=0.09
 #molecule symdist "CA 1..146" "CA 201..346"
-#weight_sym=0.025
-#rdcdistances        # default bond lengths for dipole types'''.format(name,residues.replace('-','...'),ncpu)
+#weight_sym=0.025'''.format(name,residues.replace('-','...'))
 Init_Cyana.write(init_text)
 Init_Cyana.close()
 
@@ -750,3 +764,6 @@ CSTABLE      65
 	64 PTR  CD2    125  132.32    1.25  129.70  137.70
 	65 PTR  C       41  175.16    1.82  170.20  178.50
 '''
+import preCYANA as precya
+
+# os.system('python3 precya {:} {:}'.format(in_pdb,TALOSdir))
