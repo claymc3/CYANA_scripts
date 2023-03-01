@@ -62,7 +62,9 @@ colors = ['orange','forest','royalblue','purple','chocolate','teal','gold','navy
 cwd = os.getcwd() + '/'
 outdir = cwd + 'pre_cyana/'
 in_pdb = sys.argv[1]
-TALOSdir = sys.argv[2]
+TALOSdir = sys.argv[-1]
+print('in precyana')
+print(TALOSdir)
 talosSS = os.path.join(TALOSdir +'/predSS.tab')
 pdbname = in_pdb.split('/')[-1].replace('.pdb','')
 calc = cwd + 'CALC.cya'
@@ -173,6 +175,30 @@ outpml.write(hbgroupline + '\n')
 outcmx.write('open '+ pdb_path +' maxModels 1\n')
 cmxn = '#2'
 outcmx.write('color {:} gray(150)\n'.format(cmxn))
+mn+=1
+### Read in the dihed.aco file and color residues that have defined phi/psi angles purple, and defined chi angles cornflower blue
+cmxphisel, cmxchisel = 'name phipsisel #{:}:'.format(mn), 'name chisel #{:}:'.format(mn)
+pmlphisel, pmlchisel = 'color purple, phi-psi and resi ','color navy, chi and resi '
+phir, chir = [],[]
+for angf in dihed:
+	for line in open(angf).readlines():
+		if '#' not in line and line.strip():
+			ang = line.split()
+			if ang[2] == 'PHI' or ang[2] == 'PSI':
+				if ang[0] not in phir:
+					phir.append(ang[0])
+					cmxphisel = cmxphisel + ang[0] + ','
+					pmlphisel = pmlphisel + ang[0] + '+'
+			if 'CHI' in ang[2]:
+				if ang[0] not in chir:
+					chir.append(ang[0])
+					cmxchisel = cmxchisel + ang[0] + ','
+					pmlchisel = pmlchisel  + ang[0] + '+'
+outcmx.write('open {:} maxModels 1\nrename #{:} dihed\nhide #{:} target a\n color #{:} gray(150)\n'.format(pdb_path,mn,mn,mn))
+outcmx.write(cmxphisel[:-1] + '\n')
+outcmx.write('color phipsisel purple target ac\n')
+outpml.write('create phi-psi, {:}\ncolor gray60, phi-psi\nhide sticks, phi-psi\n'.format(pmln))
+outpml.write(pmlphisel[:-1] + '\n')
 sidelist = []
 u = 0
 x = -1
@@ -233,29 +259,7 @@ mn+=1
 outcmx.write('color #{:} {:}\n'.format(str(mn),'pink'))
 outcmx.write(selhbond)
 outcmx.write(sidehbond)
-### Read in the dihed.aco file and color residues that have defined phi/psi angles purple, and defined chi angles cornflower blue
-cmxphisel, cmxchisel = 'name phipsisel #{:}:'.format(mn+1), 'name chisel #{:}:'.format(mn+1)
-pmlphisel, pmlchisel = 'color purple, phi-psi and resi ','color navy, chi and resi '
-phir, chir = [],[]
-for angf in dihed:
-	for line in open(angf).readlines():
-		if '#' not in line and line.strip():
-			ang = line.split()
-			if ang[2] == 'PHI' or ang[2] == 'PSI':
-				if ang[0] not in phir:
-					phir.append(ang[0])
-					cmxphisel = cmxphisel + ang[0] + ','
-					pmlphisel = pmlphisel + ang[0] + '+'
-			if 'CHI' in ang[2]:
-				if ang[0] not in chir:
-					chir.append(ang[0])
-					cmxchisel = cmxchisel + ang[0] + ','
-					pmlchisel = pmlchisel  + ang[0] + '+'
-outcmx.write('open {:} maxModels 1\nrename #{:} dihed\nhide #{:} target a\n color #{:} gray(150)\n'.format(pdb_path,mn+1,mn+1,mn+1))
-outcmx.write(cmxphisel[:-1] + '\n')
-outcmx.write('color phipsisel purple target ac\n')
-outpml.write('create phi-psi, {:}\ncolor gray60, phi-psi\nhide sticks, phi-psi\n'.format(pmln))
-outpml.write(pmlphisel[:-1] + '\n')
+
 if len(cmxchisel[:-1]) > 18:
 	outcmx.write(cmxchisel[:-1] + '\n''color chisel navy target a \n')
 	outcmx.write('show chisel\n')
@@ -266,7 +270,7 @@ outpml.write('show sticks, {:} and resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\n hide s
 outpml.write('color paleturquoise, {:} and resn ILE\ncolor lightsalmon, {:} and resn LEU\ncolor khaki, {:} and resn VAL\ncolor yellowgreen, {:} and resn ALA\ncolor thistle, {:} and resn MET\ncolor aquamarine, {:} and resn THR\ncolor lightpink, {:} and resn TYR\ncolor plum, {:} and resn PHE\n'.format(pdbname,pdbname,pdbname,pdbname,pdbname,pdbname,pdbname,pdbname))
 outpml.write('color gold, elem S\ncolor red, elem O\ncolor blue, elem N\n')
 outcmx.write('cartoon suppress false\nlabel {:}  text "{{0.label_one_letter_code}}{{0.number}}{{0.insertion_code}}"\nlabel ontop false\n'.format(cmxn))
-outcmx.write('color #2:ile paleturquoise target a\ncolor #1:leu lightsalmon  target a\ncolor #1:val khaki target a\ncolor #1:ala yellowgreen  target a\ncolor #1:met thistle target a\ncolor #1:thr aquamarine target a\ncolor #1:phe plum target a\ncolor #1:tyr lightpink target a\n')
+outcmx.write('color #2:ile paleturquoise target a\ncolor #2:leu lightsalmon  target a\ncolor #2:val khaki target a\ncolor #2:ala yellowgreen  target a\ncolor #2:met thistle target a\ncolor #2:thr aquamarine target a\ncolor #2:phe plum target a\ncolor #2:tyr lightpink target a\n')
 outcmx.write('color  byhetero target a\n')
 outcmx.write('show #2:thr,met,ala,leu,val,ile,phe,tyr\n')
 outcmx.write('hide H\nshow {:}@C,O,N,H target a\n'.format(cmxn))
