@@ -605,11 +605,9 @@ print('finished plotting dihedrals')
 # ---------------------------------------------------------------------------
 # Plot the upl counts for each residue 
 # 
-
 import matplotlib as mpl 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
-import mplcursors
 import numpy as np
 from matplotlib.widgets import Slider
 pdf=PdfPages(outdir + '{:}_upl_overview.pdf'.format(pdbname))
@@ -656,7 +654,6 @@ for i in range(0,len(upldf.index.tolist()),25):
 	ax.legend(loc='best', frameon=False, markerscale=0.000001)
 	ax.set_ylabel('Number of UPL Entries')
 	ax.set_xlabel('Residue')
-	# cursors = mplcursors.cursor(hover=True)
 	plt.tight_layout(pad = 0.4, w_pad = 0.4, h_pad = 0.4)
 pdf.savefig()
 # plt.show()
