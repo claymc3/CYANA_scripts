@@ -19,7 +19,7 @@ from datetime import datetime
 now = datetime.now()
 
 # dd/mm/YY H:M:S
-dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+dt_string = now.strftime("%Y-%m-%d %H:%M")
 pdb_columns = ['name', 'resn', 'resid', 'X', 'Y', 'Z','nuc']
 # Read in PDB file one line at a time, if the first four letter ar ATOM or HETA then it will parse the data into the 
 # data frame, using the atome index int he PDB as the row index in the data frame. 
@@ -75,6 +75,7 @@ OutPut:
 	hbond.lol
 	dihed.aco
 	inital.aco
+	prepcya_log
 ''')
 	exit()
 Vnum = '2.1'
