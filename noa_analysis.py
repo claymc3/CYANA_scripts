@@ -97,12 +97,12 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 					assign = Seqdict[resi] + '-' + atom
 					if assign not in Assignments and atom[0] in ['H','Q']:
 						Assignments.append(assign)
-	assigndict = {}
+	assigndict,assigndict2 = {}, {}
 	from itertools import combinations
 	ADpairs = [ '{:}-{:}'.format(comb[0],comb[1]) for comb in combinations(Assignments,2)]
 	for comb in ADpairs:
 		assigndict[comb] = []
-
+		assigndict2[comb] = []
 	noalines = open(noa7).readlines()
 	for x in range(len(noalines)):
 		line = noalines[x]
@@ -136,9 +136,11 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 					drange = '{:3.2f}-{:3.2f}'.format(dist, dist*1.25)
 					outline = '{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:3.2f} {:}\n'.format(conect,intdict[peak][y-2],drange,peak,linepad,plist,pshift,note)
 					if '{:}-{:}'.format(group1,group2)in ADpairs:
+						assigndict2['{:}-{:}'.format(group1,group2)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
 						assigndict['{:}-{:}'.format(group1,group2)].append(outline)
 					if '{:}-{:}'.format(group2,group1)in ADpairs:
 						assigndict['{:}-{:}'.format(group2,group1)].append(outline)
+						assigndict2['{:}-{:}'.format(group2,group1)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
 					if float(QF) <= 0.6:
 						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}   #poor/low support\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange,float(QF),'poor constraint'))
 						used.append(peak)
@@ -187,8 +189,10 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						outline = '#{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:0.2f} unused\n'.format(conect,intdict[peak][0],drange,peak,plist,linepad,pshift)
 						if '{:}-{:}'.format(group1,group2)in ADpairs2:
 							assigndict['{:}-{:}'.format(group1,group2)].append(outline)
+							assigndict2['{:}-{:}'.format(group1,group2)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
 						if '{:}-{:}'.format(group2,group1)in ADpairs2:
 							assigndict['{:}-{:}'.format(group2,group1)].append(outline)
+							assigndict2['{:}-{:}'.format(group2,group1)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
 						if conect in upldict.keys(): drange = upldict[conect]
 						if pshift > 0.75 and conect in upldict.keys():
 							unused.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:^6.2f}  #{:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,upldict[conect],pshift,noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures ','')))
@@ -233,6 +237,6 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 	assigned.close()
 	print("Finished cycle7.noa analysis")
 
-	return assigndict
+	return assigndict2
 
 
