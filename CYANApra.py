@@ -46,12 +46,12 @@ Usage:
 
 Required Input:
 
-	PDB			PDB to be used typically the final.pdb or pdb after CNS refinment
+	PDB			PDB to be used typically the final.pdb or pdb after CNS refinement
 				If this is not located in current directory provide path
 					CNS/refinePDB/r12_cya.pdb
 
 	upl				What upl file would you like to use? final.upl cycle?.upl
-					Which ever upl you specify determines the overveiw file used. 
+					Which ever upl you specify determines the overview file used. 
 
 OutPut:
 	name_pra.cxc
@@ -112,7 +112,7 @@ for plist in cya_plists:
 pad = ''
 for x in range(max(lengths)):
 	pad = pad + ' '
-checkcons.write('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl\n'.format(pad,pad))
+checkcons.write('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl    %\n'.format(pad,pad))
 manualcons = [line.strip() for line in open(calc).readlines() if line.strip() and '.upl' in line][0].split()[2].split(',')
 upls = [con for con in manualcons if 'upl' in con and 'hbond' not in con]
 hbonds = [con for con in manualcons if 'upl' in con and 'hbond' in con]
@@ -120,7 +120,7 @@ lols = [con for con in manualcons if 'lol' in con and 'hbond' not in con]
 dihed = [con for con in manualcons if 'aco' in con if con != 'inital.aco']
 noa = cwd + 'cycle7.noa'
 noalines = open(noa).readlines()
-print('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl'.format(pad,pad))
+print('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl    %'.format(pad,pad))
 ## Open Summary file and check the peak list files, upl, and ovw to determine the number of assignments and violations and write out the summary file 
 ## Creating the pseudobond files and group strings for rendering the constraints in chimera/pymol
 tpeak,tsingle,tamb,tnotused,tnota,tdia,tincr,tupl,tviol  = 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -187,24 +187,23 @@ outcmx.write('ui tool show "Side View"\n#ui mousemode right distance\n')
 angmn = len(cya_plists) + 8 + len(upls)
 cmxphisel, cmxchisel, cmxphiviol, cmxchiviol = 'name phipsisel #{:}:'.format(angmn), 'name chisel #{:}:'.format(angmn), 'name phipsiviol #{:}:'.format(angmn), 'name chiviol #{:}:'.format(angmn)
 pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'color purple, phi-psi and resi ','color navy, chi and resi ', 'color mediumpurple, viol_phi-psi and resi ', 'color cornflowerblue, viol_chi and resi '
-poorpbout = open(outdir +'pseudobonds/' + outname + '_poor_cons.pb','w')
+poorpbout = open(outdir +'pseudobonds/' + outname + '_poor.pb','w')
 poorpbout.write("; halfbond = false\n; color = mediumvioletred\n; radius = 0.1\n; dashes = 0\n")
-longpbout = open(outdir +'pseudobonds/' + outname + '_long_cons.pb','w')
+longpbout = open(outdir +'pseudobonds/' + outname + '_long.pb','w')
 longpbout.write("; halfbond = false\n; color = firebrick\n; radius = 0.1\n; dashes = 0\n")
-shortpbout = open(outdir +'pseudobonds/' + outname + '_short_cons.pb','w')
+shortpbout = open(outdir +'pseudobonds/' + outname + '_short.pb','w')
 shortpbout.write("; halfbond = false\n; color = lightcoral\n; radius = 0.1\n; dashes = 0\n")
-pviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_peaks_cons.pb','w')
+pviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_cyana_upls.pb','w')
 pviolpbout.write("; halfbond = false\n; color = deeppink\n; radius = 0.1\n; dashes = 0\n")
-uviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_upls_cons.pb','w')
+uviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_input_upls.pb','w')
 uviolpbout.write("; halfbond = false\n; color = hotpink\n; radius = 0.1\n; dashes = 0\n")
 
 ### Go through the final overview file and extract information about violated distance and angle restraints 
 i = 1
 Filtered = []
 violdict, Upperdict, Lowerdict = {}, {}, {}
-viol_peakscons,viol_uplscons= 'group viol_peaks, ', 'group viol_upls, '
+viol_cyana_upls,viol_input_upls= 'group viol_cyana_upl, ', 'group viol_input_upls, '
 finalupls = [["###Violated Restraints\n"],["###Poor/Low Support\n"],["###Long Distance Restraints (d >= 6.0)\n"],["###Short Distance Restraints (d <= 3.0)\n"],["###Good Restraints\n"]]
-checkcons.write('### Violated Distance Constraints from {:} \n'.format(str(fovw)))
 v = 0
 phiv, chiv, violpeaks = [], [], []
 for line in open(fovw).readlines():
@@ -243,17 +242,17 @@ for line in open(fovw).readlines():
 					for line2 in open(fupl).readlines():
 						cns = line2.split()
 						if cns[8] == line[90:].split()[1] and cns[10] == line[90:].split()[3] and cns[2] == dviol[1] and cns[5] == dviol[5]:
-							violpeaks.append(line2.replace('\n',' #Violated ' + line[44:88]+ '\n'))
 							if cns[0] != cns[3] and '#SUP' in line2:
 								upldf.loc[cns[0],'viol'] = upldf.loc[cns[0],'viol'] + 1
 								upldf.loc[cns[3],'viol'] = upldf.loc[cns[3],'viol'] + 1
+								violpeaks.append(line2.replace('\n',' #Violated ' + line[44:88]+ '\n'))
 								finalupls[0].append(line2)
 								Filtered.append(line2)
 				v+=1
 				pbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(dviol[3], atom1, dviol[7],atom2))
 				outpml.write('distance viol{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(v), pdbname, dviol[3], atom1, pdbname, dviol[7], atom2))
-				if 'peak' in line: viol_uplscons = viol_uplscons + "viol"+str(v) + ' '
-				if 'peak' not in line: viol_peakscons = viol_peakscons + "viol"+str(v) + ' '
+				if 'peak' in line: viol_input_upls = viol_input_upls + "viol"+str(v) + ' '
+				if 'peak' not in line: viol_cyana_upls = viol_cyana_upls + "viol"+str(v) + ' '
 	if line[4:9] == 'Angle':
 		dang = line.split()
 		angle = upldf.loc[dang[3],'vdihed']
@@ -270,10 +269,7 @@ for line in open(fovw).readlines():
 				chiv.append(dang[3])
 				cmxchiviol = cmxchiviol + dang[3] + ','
 				pmlchiviol = pmlchiviol + dang[3] + '+'
-violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
-for viol in violpeaks:
-	checkcons.write(viol)
-checkcons.write('\n\n')
+
 usedupls,qupldict, upldict, upldict2 = {}, {}, {}, []
 finalupl,poorcons2, show, shortcons2,longcons2,sidelist = [],[],[],[],[],[]
 poorcons, shortcons, longcons = 'group poor, ', 'group short, ', 'group long, '
@@ -382,28 +378,6 @@ uviolpbout.close()
 
 assigndict = noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict, upldict, pad, upldict2)
 
-
-#### Write out Poor/Low Support constraints to the summary file
-checkcons.write('### Low Support Constraints (final_poor_cons.pb) ###\n')
-for p in range(len(poorcons2)):
-	checkcons.write(poorcons2[p])
-checkcons.write('\n\n')
-#### Write out Long Distance constraints to the summary file
-checkcons.write('### {:} Long Distance Constraints d >= 6.00 ###\n'.format(len(longcons2)/2))
-
-for con in longcons2:
-	if con in assigndict.keys():
-		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
-		checkcons.writelines(assigndict[con])
-		checkcons.write('\n')
-checkcons.write('\n\n')
-#### Write out Short Distance constraints to the summary file
-checkcons.write('### Short Distance Constraints d <= 3.00 ###\n')
-for s in range(len(shortcons2)):
-	checkcons.write(shortcons2[s])
-checkcons.write('\n\n')
-checkcons.close()
-
 mn = 1
 for x in range(len(cya_plists)):
 	mn+=1
@@ -414,11 +388,12 @@ for x in range(len(cya_plists)):
 	outpml.write(groupstr + '\n')
 	outpml.write('color {:}, {:}\n'.format(colors[x+1],cya_plists[x]))
 
-for (group, color) in [('poor','mediumvioletred'),('long','firebrick'),('short', 'lightcoral'),('viol_peaks', 'deeppink'),('viol_upls', 'hotpink')]:
+for (group, color) in [('poor','mediumvioletred'),('long','firebrick'),('short', 'lightcoral'),('viol_cyana_upls', 'deeppink'),('viol_input_upls', 'hotpink')]:
 	mn+=1
-	outcmx.write('open ' + outdir +'pseudobonds/' + outname + '_' + group + '_cons.pb\n')
+	outcmx.write('open ' + outdir +'pseudobonds/' + outname + '_' + group + '.pb\n')
 	outcmx.write('color #{:} {:}\n'.format(str(mn),color))
-	grpstr = eval(group + 'cons')
+for (group, color) in [('poorcons','mediumvioletred'),('longcons','firebrick'),('shortcons', 'lightcoral'),('viol_cyana_upls', 'deeppink'),('viol_input_upls', 'hotpink')]:
+	grpstr = eval(group)
 	outpml.write(grpstr + '\n')
 	outpml.write('color {:}, {:}\n'.format(color, group))
 #### Write out the filtered upl list, which does not contain ambiguous (QQ) restraints 
@@ -507,7 +482,10 @@ outcmx.write('color #{:} {:}\n'.format(str(mn),'pink'))
 outcmx.write(selhbond)
 upls.extend(hbonds)
 ## Examine input upl files and update lines for entries which are violated 10 or more times, and identify proton-proton restraints that support heavy atoms based restraints 
+found_upls = 0
 for uplfile in upls:
+	found_upls = 0
+	tupls = 0
 	newlines = []
 	violupl = open(outdir + uplfile.replace('.upl','_viol.upl'),'w')
 	matchedupl = open(outdir + uplfile.replace('.upl','_found.upl'),'w')
@@ -515,12 +493,14 @@ for uplfile in upls:
 		newline = ''
 		if line.strip():
 			if '#' not in line.split()[0]:
+				if 'missing' not in line: tupls+=1
 				cns = line.split()
 				cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
 				if cons in Upperdict.keys():
 					newline = line.replace('\n', Upperdict[cons])
 					violupl.write(newline)
 				if cons in usedupls.keys():
+					found_upls+= 1
 					if len(newline) > 1: newline = newline.replace('\n', usedupls[cons])
 					if len(newline) < 1: newline = line.replace('\n', usedupls[cons])
 					matchedline = line.replace('\n', usedupls[cons])
@@ -528,6 +508,8 @@ for uplfile in upls:
 		if len(newline) < 1:
 			newline = line
 		newlines.append(newline)
+	if uplfile != 'hbond.upl': 
+		checkcons.write('{:} of {:} input upls from {:} found\n'.format(found_upls,tupls,uplfile))
 	fout = open(outdir + uplfile,'w')
 	fout.writelines(newlines)
 	fout.close()
@@ -549,7 +531,36 @@ for lolfile in lols:
 	fout = open(outdir + lolfile,'w')
 	fout.writelines(newlines)
 	fout.close()
+checkcons.write('\n\n')
 print('finished finding upls')
+checkcons.write('### Violated Distance Constraints from {:} \n'.format(str(fovw)))
+violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
+for viol in violpeaks:
+	checkcons.write(viol)
+checkcons.write('\n\n')
+
+#### Write out Poor/Low Support constraints to the summary file
+checkcons.write('### Low Support Constraints ({:}_poor.pb) ###\n'.format({outname}))
+for p in range(len(poorcons2)):
+	checkcons.write(poorcons2[p])
+checkcons.write('\n\n')
+#### Write out Long Distance constraints to the summary file
+checkcons.write('### {:3.0f} Long Distance Constraints d >= 6.00 ###\n'.format(len(longcons2)/2))
+
+for con in longcons2:
+	if con in assigndict.keys():
+		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
+		checkcons.writelines(assigndict[con])
+		checkcons.write('\n')
+checkcons.write('\n\n')
+#### Write out Short Distance constraints to the summary file
+checkcons.write('### Short Distance Constraints d <= 3.00 ###\n')
+for s in range(len(shortcons2)):
+	checkcons.write(shortcons2[s])
+checkcons.write('\n\n')
+checkcons.close()
+
+
 phir, chir = [],[]
 for angf in dihed:
 	for line in open(angf).readlines():
