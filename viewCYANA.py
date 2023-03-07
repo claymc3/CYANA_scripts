@@ -30,9 +30,9 @@ if len(sys.argv)==1:
 	print('''
 
 Usage: 
-	precya [pdb] [TALOS]
+	viewcya [pdb] [TALOS]
 
-	precyana AF-FGFR3_KD.pdb ../TALOS2
+	viewcya AF-FGFR3_KD.pdb ../TALOS2
 
 Required Input:
 
