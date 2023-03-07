@@ -33,7 +33,7 @@ if len(sys.argv) == 1:
 	print('''
 
 Usage: 
-	PrepCyana [pdb] [chain] [Labeling] [residues] [TALOS]
+	gencya [pdb] [chain] [Labeling] [residues] [TALOS]
 
 Required Input:
 
