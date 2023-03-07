@@ -484,8 +484,7 @@ upls.extend(hbonds)
 ## Examine input upl files and update lines for entries which are violated 10 or more times, and identify proton-proton restraints that support heavy atoms based restraints 
 found_upls = 0
 for uplfile in upls:
-	found_upls = 0
-	tupls = 0
+	found_upls, tupls,mupls = 0, 0, 0
 	newlines = []
 	violupl = open(outdir + uplfile.replace('.upl','_viol.upl'),'w')
 	matchedupl = open(outdir + uplfile.replace('.upl','_found.upl'),'w')
@@ -494,6 +493,7 @@ for uplfile in upls:
 		if line.strip():
 			if '#' not in line.split()[0]:
 				if 'missing' not in line: tupls+=1
+				if 'missing' in line: mupls+=1
 				cns = line.split()
 				cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
 				if cons in Upperdict.keys():
@@ -509,7 +509,8 @@ for uplfile in upls:
 			newline = line
 		newlines.append(newline)
 	if uplfile != 'hbond.upl': 
-		checkcons.write('{:} of {:} input upls from {:} found\n'.format(found_upls,tupls,uplfile))
+		checkcons.write('{:} of {:} of assignable input upls from {:} found\n'.format(found_upls,tupls,uplfile))
+		checkcons.write('{:} of {:} input upls from {:} missing assignment\n'.format(mupls,mupls + tupls, uplfile))
 	fout = open(outdir + uplfile,'w')
 	fout.writelines(newlines)
 	fout.close()
