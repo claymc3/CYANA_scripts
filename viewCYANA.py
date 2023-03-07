@@ -175,7 +175,7 @@ outpml.write(hbgroupline + '\n')
 outcmx.write('open '+ pdb_path +' maxModels 1\n')
 cmxn = '#2'
 outcmx.write('color {:} gray(150)\n'.format(cmxn))
-mn+=1
+mn+=2
 ### Read in the dihed.aco file and color residues that have defined phi/psi angles purple, and defined chi angles cornflower blue
 cmxphisel, cmxchisel = 'name phipsisel #{:}:'.format(mn), 'name chisel #{:}:'.format(mn)
 pmlphisel, pmlchisel = 'color purple, phi-psi and resi ','color navy, chi and resi '
@@ -275,7 +275,8 @@ outcmx.write('color  byhetero target a\n')
 outcmx.write('show #2:thr,met,ala,leu,val,ile,phe,tyr\n')
 outcmx.write('hide H\nshow {:}@C,O,N,H target a\n'.format(cmxn))
 outcmx.write('hide #{:}@C,O,N,H\n'.format(mn+1))
-outcmx.write('show shbond  target a\nhide H\nshow hbond target a\n')
+if ',' in sidehbond:
+	outcmx.write('show shbond  target a\nhide H\nshow hbond target a\n')
 outcmx.write('ui tool show "Side View"\n')
 outpml.write("hide labels\n")
 for y in range(2,21,1):
