@@ -323,7 +323,7 @@ C_list = PDB_df[(PDB_df['nuc'] == 'C')].index.tolist()
 for i in range(len(N_list)):
 	for x in range(len(N_list)):
 		diff = abs(int(PDB_df.loc[N_list[i],'resid']) - int(PDB_df.loc[N_list[x],'resid']))
-		if PDB_df.loc[N_list[i],'SecStr'] == 'H' or PDB_df.loc[N_list[x],'SecStr'] == 'H': ridiff = 2
+		if PDB_df.loc[N_list[i],'SecStr'] == 'H' or PDB_df.loc[N_list[x],'SecStr'] == 'H': ridiff = 3
 		else: ridiff = 3
 		if diff >= ridiff:
 			dist = np.round(np.sqrt(((PDB_df.loc[N_list[i],'X'] - PDB_df.loc[N_list[x],'X'])**2) + ((PDB_df.loc[N_list[i],'Y'] - PDB_df.loc[N_list[x],'Y'])**2) + ((PDB_df.loc[N_list[i],'Z'] - PDB_df.loc[N_list[x],'Z'])**2)),1)
@@ -342,6 +342,8 @@ for i in range(len(N_list)):
 						NN_out = NN_out.replace('\n',' # missing {:}\n'.format(N_list[i]))
 					if atom2 not in Assignments:
 						NN_out = NN_out.replace('\n',' # missing {:}\n'.format(N_list[x]))
+					if 'missing' in NN_out:
+						NN_out = '#' + NN_out
 					NN_lines.append(NN_out)
 
 print("Made {:3.0f} NN upl constraints ".format(len(NN_used)))
@@ -429,11 +431,12 @@ for (cid1,cid2) in CC_ids:
 	if len(temp) >= 1:
 		CC_outlines.append(temp[temp2.index(min(temp2))])
 
-
 NC_methyl, NC_Aro, CC_methyl, CC_Aro = [], [], [], []
 for line in NC_outlines:
 	if line.split()[4] in ['PHE','TYR']:
+		if 'missing' in line: line = '#' + line
 		NC_Aro.append(line)
+	if 'missing' in line: line = '#' + line
 	else:NC_methyl.append(line)
 upl.write('### N-C Methyl Distances\n')
 upl.writelines(NC_methyl)
@@ -441,11 +444,15 @@ upl.write('### N-C Aromatic Distances\n')
 upl.writelines(NC_Aro)
 for line in CC_outlines:
 	if line.split()[1] in ['PHE','TYR'] and line not in CC_Aro:
+		if 'missing' in line: line = '#' + line
 		CC_Aro.append(line)
 	if line.split()[4] in ['PHE','TYR'] and line not in CC_Aro:
+		if 'missing' in line: line = '#' + line
 		CC_Aro.append(line)
 for line in CC_outlines:
 	if line not in CC_Aro:
+		if 'missing' in line: 
+			line = '#' + line
 		CC_methyl.append(line)
 
 upl.write('### C-C Methyl-Methyl Distances\n')
@@ -765,6 +772,6 @@ CSTABLE      65
 	64 PTR  CD2    125  132.32    1.25  129.70  137.70
 	65 PTR  C       41  175.16    1.82  170.20  178.50
 '''
-import preCYANA as precya
+import viewCYANA as viewcya
 
 # os.system('python3 precya {:} {:}'.format(in_pdb,TALOSdir))
