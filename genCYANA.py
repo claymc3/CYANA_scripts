@@ -75,7 +75,7 @@ OutPut:
 	hbond.lol
 	dihed.aco
 	inital.aco
-	prepcya_log
+	genpcya_log
 ''')
 	exit()
 Vnum = '2.1'
@@ -99,9 +99,9 @@ print("Generated using V2.1")
 print("Using " + talosSS)
 print("Using " + indihed)
 # print("Using " + talosS2)
-log = open('prepcya_log', 'a')
-log.write('## Generated using PrepCyana_{:} on {:} \n'.format(Vnum,dt_string))
-log.write('prepcya {:} {:} {:} {:} {:}\n'.format(in_pdb,chain,atoms,residues,TALOSdir))
+log = open('genpcya_log', 'a')
+log.write('## Generated using genCYANA_{:} on {:} \n'.format(Vnum,dt_string))
+log.write('genpcya {:} {:} {:} {:} {:}\n'.format(in_pdb,chain,atoms,residues,TALOSdir))
 
 #------------------------------------------------------------------------------
 # Read the prot files and figure what assignments are available
