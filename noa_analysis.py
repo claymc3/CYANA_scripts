@@ -8,10 +8,10 @@
 # 11/10/2022
 #
 # Updated January 30, 2023 to include peak intensities 
+# Updated March 09, 2023 to account for old cycle7.peaks format missing information for multiple assignment crosspeaks
 # ------------------------------------------------------------------------------
 
 '''
-import pandas as pd
 import os
 import sys
 import numpy as np
@@ -23,19 +23,8 @@ import glob
 ##			 	Setting controlling plot appearance: Font, line widths, ticks, and legend  			##
 ##																									##
 ####----------------------------------------------------------------------------------------------####
-AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
+AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H", "HIST": "H","HIS+": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 
-Assign_header = '''##########
-##Connection distance (number of cross peaks connected to this assignment):
-	assigment   intesnity   distance_range  [Peak peak_id from spectrum_id]  pshift pshif note
-
-intensity of the cross peak 
-Distanc_range: (Int/calibration_Const)**(1/6) - 1.25*(Int/calibration_Const)**(1/6)
-Peak ID in the Spectrum it was found in 
-pshift: how well the chemical shift matches 1.00 = perfect agreement
-Note: swapped - cyana swapped the stereo specific assignment 
-    : increased 
-'''
 
 def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad,upldict2):
 	cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
