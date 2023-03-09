@@ -41,7 +41,6 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 	cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
 	prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line][0].split()[2].split(',')
 	log = glob.glob(os.path.join(cwd + 'log*'))[0]
-	print(log)
 
 	plist_dict = {}
 	for x in range(len(cya_plists)):
@@ -57,9 +56,15 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 	for x in range(len(cya_plists)):
 		intdict = eval('intensity' + str(x))
 		pdict = eval('peaks' + str(x))
-		for line in open(cwd + cya_plists[x].replace('.peaks','-cycle7.peaks')):
+
+		peaklines = open(cwd + cya_plists[x].replace('.peaks','-cycle7.peaks')).readlines()
+		for i in range(len(peaklines)):
+			line = peaklines[i]
 			if line.strip():
 				if line.strip()[0] != '#':
+					if line[0:7] == '       ':  # account for old format of cycle7.peaks
+						line = peaklines[i-1][0:peaklines[i-1].find(' U ')+35] + ' ' + peaklines[i].strip()
+						peaklines[i] = line
 					pdict[int(line.split()[0])] = [float(line.split()[1]),float(line.split()[2]),float(line.split()[3])]
 					if line.split()[5] == 'U':  # get intensity for 3D NOESY
 						intensity = "{:12.6E}".format(float(line.split()[6]))
@@ -204,7 +209,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 			if '0 out of 0' in noalines[x+1]:
 				pdict = eval('peaks' + plist_dict[plist])
 				noassingmnet.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:>9}A  {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],'none',noalines[x].strip().split()[-2],'na'))
-	assigned = open(outdir + 'Assigned.list','w')
+	assigned = open(outdir + 'Assigned.txt','w')
 	for val in Calibration_cns:
 		assigned.write(val.strip()+'\n')
 	assigned.write('\n\n')
