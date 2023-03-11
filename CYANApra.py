@@ -14,7 +14,7 @@ now = datetime.now()
 # dd/mm/YY H:M:S
 dt_string = now.strftime("%Y-%m-%d %H:%M")
 
-Vnum = '2.1'
+Vnum = '2.2'
 ## HIST is his protonated on NE2
 ## HIS+ is his protonated on both ND1 and NE2 
 replacements ={
@@ -28,7 +28,7 @@ replacements ={
 'HISTHA':'CA','HISTHB2':'CB','HISTHB3':'CB','HISTQB':'CB','HISTHD1':'ND1','HISTHE2':'NE2','HISTHD2':'CD2','HISTHE1':'CE1',
 'HIS+HA':'CA','HIS+HB2':'CB','HIS+HB3':'CB','HIS+QB':'CB','HIS+HD1':'ND1','HISE+E2':'NE2','HIS+HD2':'CD2','HIS+HE1':'CE1',
 'ILEHA':'CA','ILEHB':'CB','ILEQG2':'CG2','ILEHG21':'CG2','ILEHG22':'CG2','ILEHG23':'CG2','ILEHG12':'CG1','ILEHG13':'CG1','ILEQG1':'CG1','ILEQD1':'CD1','ILEHD11':'CD1','ILEHD12':'CD1','ILEHD13':'CD1',
-'LYSHA':'CA','LYSHB2':'CB','LYSHB3':'CB','LYSQB':'CB','LYSHG2':'CG','LYSHG3':'CG','LYSHD2':'CD ','LYSHD3':'CD ','LYSQD':'CD ','LYSHE2':'CE','LYSHE3':'CE','LYSQE':'CE','LYSHZ1':'NZ','LYSHZ2':'NZ','LYSHZ3':'NZ','LYSQZ':'NZ',
+'LYSHA':'CA','LYSHB2':'CB','LYSHB3':'CB','LYSQB':'CB','LYSHG2':'CG','LYSHG3':'CG','LYSHD2':'CD','LYSHD3':'CD','LYSQD':'CD','LYSHE2':'CE','LYSHE3':'CE','LYSQE':'CE','LYSHZ1':'NZ','LYSHZ2':'NZ','LYSHZ3':'NZ','LYSQZ':'NZ',
 'LEUHA':'CA','LEUHB2':'CB','LEUHB3':'CB','LEUQB':'CB','LEUHG':'CG','LEUHD11':'CD1','LEUHD12':'CD1','LEUHD13':'CD1','LEUQD1':'CD1','LEUHD21':'CD2','LEUHD22':'CD2','LEUHD23':'CD2','LEUQD2':'CD2','LEUQQD':'CD2,CD1',
 'METHA':'CA','METHB2':'CB','METHB3':'CB','METQB':'CB','METHG2':'CG','METHG3':'CG','METQG':'CG','METQE':'CE','METHE1':'CE','METHE2':'CE','METHE3':'CE',
 'ASNHA':'CA','ASNHB2':'CB','ASNHB3':'CB','ASNQB':'CB','ASNHD21':'ND2','ASNHD22':'ND2','ASNQD2':'ND2',
@@ -40,8 +40,12 @@ replacements ={
 'VALHA':'CA','VALHB':'CB','VALHG11':'CG1','VALHG12':'CG1','VALHG13':'CG1','VALQG1':'CG1','VALHG21':'CG2','VALHG22':'CG2','VALHG23':'CG2','VALQG2':'CG2','VALQQG':'CG1,CG2',
 'TRPHA':'CA','TRPHB2':'CB','TRPHB3':'CB','TRPQB':'CB','TRPHD1':'CD1','TRPHE3':'CE3','TRPHE1':'NE1','TRPHZ3':'CZ3','TRPHZ2':'CZ2','TRPHH2':'CH2',
 'TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRQD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH',
-'PTRHA':'CA','PTRHB2':'CB','PTRHB3':'CB','PTRQB':'CB','PTRQD':'CD1,CD2','PTRQE':'CE1,CE2','PTRHD1':'CD1','PTRHE1':'CE1','PTRHE2':'CE2','PTRHD2':'CD2','PTRHH':'OH'}
+'PTRHA':'CA','PTRHB2':'CB','PTRHB3':'CB','PTRQB':'CB','PTRQD':'CD1,CD2','PTRQE':'CE1,CE2','PTRHD1':'CD1','PTRHE1':'CE1','PTRHE2':'CE2','PTRHD2':'CD2','PTRHH':'OH',
+'TPOHA':'CA','TPOHB':'CB','TPOHG1':'OG1','TPOHG21':'CG2','TPOHG22':'CG2','TPOHG23':'CG2','TPOQG2':'CG2',
+'SEPHA':'CA','SEPHB2':'CB','SEPHB3':'CB','SEPHG':'OG'}
 #'ALAH':'N','CYSH':'N','ASPH':'N','GLUH':'N','PHEH':'N','GLYH':'N','HISH':'N','ILEH':'N','LYSH':'N','LEUH':'N','METH':'N','ASNH':'N','GLNH':'N','ARGH':'N','SERH':'N','THRH':'N','VALH':'N','TRPH':'N','TYRH':'N',
+ConTypeDict = {'ALAHA':'Ali', 'CYSHA':'Ali', 'CYSHB2':'Ali', 'CYSHB3':'Ali', 'CYSQB':'Ali', 'ASPHA':'Ali', 'ASPHB2':'Ali', 'ASPHB3':'Ali', 'ASPQB':'Ali', 'GLUHA':'Ali', 'GLUHB2':'Ali', 'GLUHB3':'Ali', 'GLUQB':'Ali', 'GLUHG2':'Ali', 'GLUHG3':'Ali', 'GLUQG':'Ali', 'GLYHA2':'Ali', 'GLYHA3':'Ali', 'GLYQA':'Ali', 'HISHA':'Ali', 'HISHB2':'Ali', 'HISHB3':'Ali', 'HISQB':'Ali', 'LYSHA':'Ali', 'LYSHB2':'Ali', 'LYSHB3':'Ali', 'LYSQB':'Ali', 'LYSHG2':'Ali', 'LYSHG3':'Ali', 'LYSHD2':'Ali', 'LYSHD3':'Ali', 'LYSQD':'Ali', 'LYSHE2':'Ali', 'LYSHE3':'Ali', 'LYSQE':'Ali', 'ASNHA':'Ali', 'ASNHB2':'Ali', 'ASNHB3':'Ali', 'ASNQB':'Ali', 'PROHA':'Ali', 'PROHB2':'Ali', 'PROHB3':'Ali', 'PROQB':'Ali', 'PROHG2':'Ali', 'PROHG3':'Ali', 'PROQG':'Ali', 'PROHD2':'Ali', 'PROHD3':'Ali', 'PROQD':'Ali', 'GLNHA':'Ali', 'GLNHB2':'Ali', 'GLNHB3':'Ali', 'GLNQB':'Ali', 'GLNHG2':'Ali', 'GLNHG3':'Ali', 'GLNQG':'Ali', 'ARGHA':'Ali', 'ARGHB2':'Ali', 'ARGHB3':'Ali', 'ARGQB':'Ali', 'ARGHG2':'Ali', 'ARGHG3':'Ali', 'ARGQG':'Ali', 'ARGHD2':'Ali', 'ARGHD3':'Ali', 'ARGQD':'Ali', 'SERHA':'Ali', 'SERHB2':'Ali', 'SERHB3':'Ali', 'TRPHA':'Ali', 'TRPHB2':'Ali', 'TRPHB3':'Ali', 'TRPQB':'Ali', 'TYRHA':'Ali', 'TYRHB2':'Ali', 'TYRHB3':'Ali', 'TYRQB':'Ali', 'PTRHA':'Ali', 'PTRHB2':'Ali', 'PTRHB3':'Ali', 'PTRQB':'Ali', 'TPOHA':'Ali', 'TPOHB':'Ali', 'SEPHA':'Ali', 'SEPHB2':'Ali', 'SEPHB3':'Ali', 'ALAHA':'Ali', 'ILEHA':'Ali', 'ILEHB':'Ali', 'ILEHG12':'Ali', 'ILEHG13':'Ali', 'ILEQG1':'Ali', 'LEUHA':'Ali', 'LEUHB2':'Ali', 'LEUHB3':'Ali', 'LEUQB':'Ali', 'LEUHG':'Ali', 'METHA':'Ali', 'METHB2':'Ali', 'METHB3':'Ali', 'METQB':'Ali', 'METHG2':'Ali', 'METHG3':'Ali', 'METQG':'Ali', 'THRHA':'Ali', 'THRHB':'Ali', 'VALHA':'Ali', 'VALHB':'Ali', 'PHEHA':'Aro', 'PHEHB2':'Aro', 'PHEHB3':'Aro', 'PHEQB':'Aro', 'TYRHA':'Aro', 'TYRHB2':'Aro', 'TYRHB3':'Aro', 'TYRQB':'Aro', 'PTRHA':'Aro', 'PTRHB2':'Aro', 'PTRHB3':'Aro', 'PTRQB':'Aro', 'HISTHA':'Ali', 'HISTHB2':'Ali', 'HISTHB3':'Ali', 'HISTQB':'Ali', 'HIS+HA':'Ali', 'HIS+HB2':'Ali', 'HIS+HB3':'Ali', 'HIS+QB':'Ali', 'ALAQB':'Methyl', 'ALAHB1':'Methyl', 'ALAHB2':'Methyl', 'ALAHB3':'Methyl', 'ILEQG2':'Methyl', 'ILEHG21':'Methyl', 'ILEHG22':'Methyl', 'ILEHG23':'Methyl', 'ILEQD1':'Methyl', 'ILEHD11':'Methyl', 'ILEHD12':'Methyl', 'ILEHD13':'Methyl', 'LEUHD11':'Methyl', 'LEUHD12':'Methyl', 'LEUHD13':'Methyl', 'LEUQD1':'Methyl', 'LEUHD21':'Methyl', 'LEUHD22':'Methyl', 'LEUHD23':'Methyl', 'LEUQD2':'Methyl', 'LEUQQD':'Methyl', 'METQG':'Methyl', 'METQE':'Methyl', 'METHE1':'Methyl', 'METHE2':'Methyl', 'METHE3':'Methyl', 'THRHG21':'Methyl', 'THRHG22':'Methyl', 'THRHG23':'Methyl', 'THRQG2':'Methyl', 'VALHG11':'Methyl', 'VALHG12':'Methyl', 'VALHG13':'Methyl', 'VALQG1':'Methyl', 'VALHG21':'Methyl', 'VALHG22':'Methyl', 'VALHG23':'Methyl', 'VALQG2':'Methyl', 'VALQQG':'Methyl', 'PHEQD':'Aro', 'PHEQE':'Aro', 'PHEHD1':'Aro', 'PHEHE1':'Aro', 'PHEHZ':'Aro', 'PHEHE2':'Aro', 'PHEHD2':'Aro', 'TYRQD':'Aro', 'TYRQE':'Aro', 'TYRHD1':'Aro', 'TYRHE1':'Aro', 'TYRHE2':'Aro', 'TYRHD2':'Aro', 'PTRQD':'Aro', 'PTRQE':'Aro', 'PTRHD1':'Aro', 'PTRHE1':'Aro', 'PTRHE2':'Aro', 'PTRHD2':'Aro', 'TRPHD1':'Aro', 'TRPHE3':'Aro', 'TRPHZ3':'Aro', 'TRPHZ2':'Aro', 'TRPHH2':'Aro', 'HISHD2':'Aro', 'HISHE1':'Aro', 'HISTHD2':'Aro', 'HISTHE1':'Aro', 'HIS+HD2':'Aro', 'HIS+HE1':'Aro', 'ALAH':'N', 'CYSH':'N', 'ASPH':'N', 'GLUH':'N', 'PHEH':'N', 'GLYH':'N', 'HISH':'N', 'ILEH':'N', 'LYSH':'N', 'LEUH':'N', 'METH':'N', 'ASNH':'N', 'GLNH':'N', 'ARGH':'N', 'SERH':'N', 'THRH':'N', 'VALH':'N', 'TRPH':'N', 'TYRH':'N', 'TPOH':'N', 'SEPH':'N', 'PTRH':'N', 'HISHD1':'N', 'HISHE2':'N', 'HISTH':'N','HISTHD1':'N', 'HISTHE2':'N', 'HIS+H':'N', 'HIS+HD1':'N', 'HISE+E2':'N', 'LYSHZ1':'N', 'LYSHZ2':'N', 'LYSHZ3':'N', 'LYSQZ':'N', 'ASNHD21':'N', 'ASNHD22':'N', 'ASNQD2':'N', 'GLNHE21':'N', 'GLNHE22':'N', 'GLNQE2':'N', 'ARGHE':'N', 'ARGHH11':'N', 'ARGHH12':'N', 'ARGQH1':'N', 'ARGHH21':'N', 'ARGHH22':'N', 'ARGQH2':'N', 'TRPHE1':'N','N-N':'N_N', 'Aro-Aro':'Aro_Aro','Methyl-Methyl':'Methyl_Methyl', 'Ali-Ali':'Ali_Ali', 'Aro-Methyl':'Methyl_Aro','Methyl-Aro':'Methyl_Aro','Methyl-N':'N_Methyl','N-Methyl':'N_Methyl', 'Aro-N':'N_Aro', 'N-Aro':'N_Aro','Methyl-Ali':'Ali_Methyl','Ali-Methyl':'Ali_Methyl','Aro-Ali':'Ali_Aro','Ali-Aro':'Ali_Aro', 'Ali-N':'N_Ali', 'N-Ali':'N_Ali'}
+
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "CYSS":"C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H","HISE": "H","HIS+": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P","cPRO":"P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 
 Ambiguous = {'ARGQB':'HB2,HB3','ARGQG':'HG2,HG3','ARGQG':'HG2,HG3','ARGQH1':'HH11,HH12','ARGQH2':'HH21,HH22','ASNQB':'HB2,HB3','ASNQD2':'HD21,HD22','ASPQB':'HB2,HB3','CYSQB':'HB2,HB3','CYSSQB':'HB2,HB3','GLNQB':'HB2,HB3','GLNQG':'HG2,HG3','GLNQE2':'HE21,HE22','GLUQB':'HB2,HB3','GLUQG':'HG2,HG3','GLYQA':'HA2,HA3','HISQB':'HB2,HB3','HISTQB':'HB2,HB3','ILEQG1':'HG12,HG13','LEUQB':'HB2,HB3','LEUQQD':'QD1,QD2','LYSQB':'HB2,HB3','LYSQG':'HG2,HG3','LYSQD':'HD2,HD3','LYSQE':'HE2,HE3','METQB':'HB2,HB3','METQG':'HG2,HG3','PHEQB':'HB2,HB3','PHEQG':'HG2,HG3','PHEQD':'HD2,HD3','PHEQE':'HE1,HE2','PROQB':'HB2,HB3','PROQG':'HG2,HG3','PROQD':'HD2,HD3','SERQB':'HB2,HB3','TRPQB':'HB2,HB3','TYRQB':'HB2,HB3','TYRQG':'HG2,HG3','TYRQD':'HD2,HD3','TYRQE':'HE1,HE2','VALQQG':'QG1,QG2'}
@@ -77,8 +81,8 @@ OutPut:
 	Anotated Constraints files 
 ''')
 	exit()
-colors = ['white','palevioletred','orange','forest','royalblue','purple','chocolate','teal','gold','navy','darkturquoise','pink','cyan']
-
+colors = ['royalblue','forest','yellowgreen', 'darkorange','purple','lightseagreen ','darkkhaki','peru','saddlebrown','mediumpurple']
+ConectionTypes = ['N_N','N_Methyl','N_Aro','Methyl_Methyl','Methyl_Aro','Aro_Aro','N_Ali','Ali_Ali','Ali_Aro','Ali_Methyl']
 
 cwd = os.getcwd() + '/'
 outdir = cwd + 'post_cyana_analysis/'
@@ -121,7 +125,6 @@ pad = ''
 for x in range(max(lengths)):
 	pad = pad + ' '
 
-
 checkcons.write('## Generated using PrepCyana_{:} on {:} \n'.format(Vnum,dt_string))
 checkcons.write('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl    %\n'.format(pad,pad))
 manualcons = [line.strip() for line in open(calc).readlines() if line.strip() and '.upl' in line][0].split()[2].split(',')
@@ -135,12 +138,13 @@ print('{:}                                         Assignments \n{:}#peaks   upl
 ## Open Summary file and check the peak list files, upl, and ovw to determine the number of assignments and violations and write out the summary file 
 ## Creating the pseudobond files and group strings for rendering the constraints in chimera/pymol
 tpeak,tsingle,tamb,tnotused,tnota,tdia,tincr,tupl,tviol  = 0, 0, 0, 0, 0, 0, 0, 0, 0
+
 for x in range(len(cya_plists)):
 	plistn = cya_plists[x]
-	exec("pb{:} = open('{:}','w')".format(str(x+1), outdir +'pseudobonds/' + plistn + '.pb'))
-	pbout = eval('pb{:}'.format(str(x+1)))
-	pbout.write("; halfbond = false\n; color = " + colors[x+1] + "\n; radius = 0.1\n; dashes = 0\n")
-	exec("group{:} = '{:}, '".format(str(x+1), 'group ' + cya_plists[x]))
+	# exec("pb{:} = open('{:}','w')".format(str(x+1), outdir +'pseudobonds/' + plistn + '.pb'))
+	# pbout = eval('pb{:}'.format(str(x+1)))
+	# pbout.write("; halfbond = false\n; color = " + colors[x+1] + "\n; radius = 0.1\n; dashes = 0\n")
+	# exec("group{:} = '{:}, '".format(str(x+1), 'group ' + cya_plists[x]))
 	plist = cya_plists[x]
 	upl = [line.strip() for line in open(fupl).readlines() if line.strip() and 'plist '+ str(x+1) in line]
 	tupl = tupl + len(upl)
@@ -178,16 +182,16 @@ print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13} 
 checkcons.write('\n\n')
 
 outpml = open(outdir + fupl.replace('.upl','_pra.pml'),'w')
-outpml.write('load '+ cwd + in_pdb+'\n')
+outpml.write('load ./' + in_pdb+'\n')
 outpml.write('set dash_gap, 0.05\n')
-outpml.write('set_color palevioletred = [219,112,147]\nset_color orange = [255,165,0]\nset_color forest = [34,139,34]\nset_color royalblue = [65,105,225]\nset_color chocolate = [210,105,30]\nset_color purple = [128,0,128]\nset_color teal = [0,128,128]\nset_color gold = [255,215,0]\nset_color navy = [0,0,128]\nset_color darkturquoise = [0,206,209]\nset_color pink = [255,192,203]\nset_color cyan = [0,255,255]\nset_color paleturquoise = [175,238,238]\nset_color lightsalmon = [255,160,122]\nset_color khaki = [240,230,140]\nset_color yellowgreen = [154,205,50]\nset_color thistle = [216,191,216]\nset_color aquamarine = [127,255,212]\nset_color plum = [221,160,221]\nset_color lightpint = [255,182,193]\nset_color mediumvioletred = [199,21,133]\nset_color firebrick = [178,34,34]\nset_color lightcoral = [240,128,128]\nset_color deeppink = [255,20,147]\nset_color hotpink = [255,105,180]\nset_color purple = [128,0,128]\nset_color mediumpurple = [147,112,219]\nset_color navy = [0,0,128]\nset_color cornflowerblue = [100,149,237]\n')
+outpml.write('set_color royalblue = [65,105,225]\nset_color forest = [34,139,34]\nset_color yellowgreen = [154,205,50]\nset_color darkorange = [255,140,0]\nset_color purple = [128,0,128]\nset_color lightseagreen = [32,178,170]\nset_color darkkhaki = [189,183,107]\nset_color peru = [205,133,63]\nset_color saddlebrown = [139,69,19]\nset_color gold = [255,215,0]\nset_color navy = [0,0,128]\nset_color darkturquoise = [0,206,209]\nset_color pink = [255,192,203]\nset_color cyan = [0,255,255]\nset_color paleturquoise = [175,238,238]\nset_color lightsalmon = [255,160,122]\nset_color khaki = [240,230,140]\nset_color yellowgreen = [154,205,50]\nset_color thistle = [216,191,216]\nset_color aquamarine = [127,255,212]\nset_color plum = [221,160,221]\nset_color lightpink = [255,182,193]\nset_color mediumvioletred = [199,21,133]\nset_color firebrick = [178,34,34]\nset_color lightcoral = [240,128,128]\nset_color deeppink = [255,20,147]\nset_color hotpink = [255,105,180]\nset_color mediumpurple = [147,112,219]\nset_color navy = [0,0,128]\nset_color cornflowerblue = [100,149,237]\n')
 outpml.write('color gray60, all\n')
 outpml.write('show sticks, {:} and resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\n hide sticks, elem H\nhide sticks, name N+C\n'.format(pdbname))
 outpml.write('color paleturquoise, {:} and resn ILE\ncolor lightsalmon, {:} and resn LEU\ncolor khaki, {:} and resn VAL\ncolor yellowgreen, {:} and resn ALA\ncolor thistle, {:} and resn MET\ncolor aquamarine, {:} and resn THR\ncolor lightpink, {:} and resn TYR\ncolor plum, {:} and resn PHE\n'.format(pdbname,pdbname,pdbname,pdbname,pdbname,pdbname,pdbname,pdbname))
 outpml.write('color gold, elem S\ncolor red, elem O\ncolor blue, elem N\n')
 outpml.write('split_states ' + pdbname + '\n')
 outcmx = open(outdir + fupl.replace('.upl','_pra.cxc'),'w')
-outcmx.write('open '+ cwd + in_pdb+'\n')
+outcmx.write('open ../'+ in_pdb+'\n')
 outcmx.write('color #1 gray(150)\n')
 outcmx.write('match #1.2-20 to #1.1\n')
 outcmx.write('color #1:ile paleturquoise target a\ncolor #1:leu lightsalmon  target a\ncolor #1:val khaki target a\ncolor #1:ala yellowgreen  target a\ncolor #1:met thistle target a\ncolor #1:thr aquamarine target a\ncolor #1:phe plum target a\ncolor #1:tyr lightpink target a\n')
@@ -207,8 +211,11 @@ shortpbout.write("; halfbond = false\n; color = lightcoral\n; radius = 0.1\n; da
 pviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_cyana_upls.pb','w')
 pviolpbout.write("; halfbond = false\n; color = deeppink\n; radius = 0.1\n; dashes = 0\n")
 uviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_input_upls.pb','w')
-uviolpbout.write("; halfbond = false\n; color = hotpink\n; radius = 0.1\n; dashes = 0\n")
+uviolpbout.write("; halfbond = false\n; color = hotpink\n; radius = 0.25\n; dashes = 10\n")
 
+for conect in ConectionTypes:
+	exec("{:}_pb = []".format(conect))
+	exec("group{:} = 'group {:}, '".format(conect, conect))
 ### Go through the final overview file and extract information about violated distance and angle restraints 
 i = 1
 Filtered = []
@@ -307,7 +314,8 @@ for line in open(fupl).readlines():
 			if cns[0] == cns[3]: ## exclude intramolecular restraints
 				pass
 			if cns[0] != cns[3]:
-				pblist = eval('pb' + cns[10])
+				ctype = ConTypeDict["{:}-{:}".format(ConTypeDict[cns[1]+cns[2]],ConTypeDict[cns[4]+cns[5]])]
+				pblist = eval(ctype + '_pb')
 				atom1 = cns[2]
 				atom2 = cns[5]
 				if cns[1]+cns[2] in replacements.keys():
@@ -373,8 +381,8 @@ for line in open(fupl).readlines():
 					if float(cns[6]) > 3.00 and float(cns[6]) < 6.0:
 						i+=1
 						outpml.write('distance UPL{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-						pblist.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-						exec('group' + cns[10] + '=' + 'group' + cns[10] + '+ "UPL{:} "'.format(i))
+						pblist.append('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+						exec('group' + ctype + '=' + 'group' + ctype + '+ "UPL{:} "'.format(i))
 						Filtered.append(line)
 						finalupls[4].append(line)
 poorpbout.close()
@@ -388,20 +396,26 @@ uviolpbout.close()
 # unused, no assignment, and questionable
 
 assigndict = noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict, upldict, pad, upldict2)
-
+#exec("pb{:} = open('{:}','w')".format(str(x+1), outdir +'pseudobonds/' + plistn + '.pb'))
+#pbout = eval('pb{:}'.format(conect))
+#pbout.write("; halfbond = false\n; color = " + colors[x+1] + "\n; radius = 0.1\n; dashes = 0\n")
 mn = 1
-for x in range(len(cya_plists)):
-	mn+=1
-	pbout = eval('pb{:}'.format(str(x+1)))
-	outcmx.write('open ' + outdir +'pseudobonds/' + cya_plists[x] +'.pb\n')
-	outcmx.write('color #{:} {:}\n'.format(str(mn),colors[mn]))
-	groupstr = eval('group' + str(x+1))
-	outpml.write(groupstr + '\n')
-	outpml.write('color {:}, {:}\n'.format(colors[x+1],cya_plists[x]))
+for x in range(len(ConectionTypes)):
+	pbs = eval('{:}_pb'.format(ConectionTypes[x]))
+	if len(pbs) > 1:
+		mn+=1
+		pbout = open('{:}pseudobonds/{:}_{:}.pb'.format(outdir, outname, ConectionTypes[x]),'w')
+		pbout.write("; halfbond = false\n; color = " + colors[x] + "\n; radius = 0.1\n; dashes = 0\n")
+		pbout.writelines(pbs)
+		outcmx.write('open pseudobonds/{:}_{:}.pb\n'.format(outname, ConectionTypes[x]))
+		outcmx.write('color #{:} {:}\n'.format(str(mn),colors[x]))
+		groupstr = eval('group' + ConectionTypes[x])
+		outpml.write(groupstr + '\n')
+		outpml.write('color {:}, {:}\n'.format(colors[x],ConectionTypes[x]))
 
 for (group, color) in [('poor','mediumvioletred'),('long','firebrick'),('short', 'lightcoral'),('viol_cyana_upls', 'deeppink'),('viol_input_upls', 'hotpink')]:
 	mn+=1
-	outcmx.write('open ' + outdir +'pseudobonds/' + outname + '_' + group + '.pb\n')
+	outcmx.write('open pseudobonds/' + outname + '_' + group + '.pb\n')
 	outcmx.write('color #{:} {:}\n'.format(str(mn),color))
 for (group, color) in [('poorcons','mediumvioletred'),('longcons','firebrick'),('shortcons', 'lightcoral'),('viol_cyana_upls', 'deeppink'),('viol_input_upls', 'hotpink')]:
 	grpstr = eval(group)
@@ -451,7 +465,7 @@ for uplfile in upls:
 	outpml.write(pmlgroup + '\n')
 	outpml.write('color cyan,' + uplfile.replace('.upl','') + '\n')
 	mn+=1
-	outcmx.write('open ' + outdir +'pseudobonds/' + uplfile.replace('.upl','.pb') + '\n')
+	outcmx.write('open pseudobonds/' + uplfile.replace('.upl','.pb') + '\n')
 	#outcmx.write('color #{:} {:}\n'.format(str(mn),'cyan'))
 sidechains = 'show #1:'
 
@@ -488,7 +502,7 @@ outcmx.write('hide H\n''show #1.1@H,N target a\n')
 outpml.write(hbgroupline + '\n')
 outpml.write('color pink, hbond\n')
 selhbond = selhbond[:-1] + '@O,N\nshow hbond target a\n'
-outcmx.write('open ' + outdir +'pseudobonds/' + 'hbond.pb\n')
+outcmx.write('open pseudobonds/' + 'hbond.pb\n')
 outcmx.write('color #{:} {:}\n'.format(str(mn),'pink'))
 outcmx.write(selhbond)
 upls.extend(hbonds)
@@ -590,7 +604,7 @@ for angf in dihed:
 					pmlchisel = pmlchisel  + ang[0] + '+'
 for y in range(2,21,1):
 	outpml.write('align {:}_{:04d}, {:}_0001\n'.format(pdbname,y, pdbname))
-outcmx.write('open '+ cwd + in_pdb+ ' maxModels 1\nrename #{:} angles\nhide #{:} target a\n color #{:} gray(150)\n'.format(angmn,angmn,angmn))
+outcmx.write('open ../' + in_pdb+ ' maxModels 1\nrename #{:} angles\nhide #{:} target a\n color #{:} gray(150)\n'.format(angmn,angmn,angmn))
 outcmx.write(cmxphisel[:-1] + '\n')
 outcmx.write('color phipsisel purple target c\n')
 if cmxchisel[-1] != ':':
