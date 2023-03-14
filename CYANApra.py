@@ -263,7 +263,7 @@ for line in open(fovw).readlines():
 							if cns[0] != cns[3] and '#SUP' in line2:
 								upldf.loc[cns[0],'viol'] = upldf.loc[cns[0],'viol'] + 1
 								upldf.loc[cns[3],'viol'] = upldf.loc[cns[3],'viol'] + 1
-								violpeaks.append(line2.replace('\n',' #Violated ' + line[44:88]+ '\n'))
+								violpeaks.extend([cons1,cons2])
 								finalupls[0].append(line2)
 								Filtered.append(line2)
 				v+=1
@@ -334,10 +334,10 @@ for line in open(fupl).readlines():
 				atoms2 = atom2
 				if atom1 == 'H': atoms1 = 'N'
 				if atom2 == 'H': atoms2 = 'N'
-				cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atoms1,AAA_dict[cns[4]],cns[3],atoms2)
-				cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],atoms2,AAA_dict[cns[1]],cns[0],atoms1)
-				usedupls[cons1] = outline
-				usedupls[cons2] = outline
+				cons1a = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atoms1,AAA_dict[cns[4]],cns[3],atoms2)
+				cons2a = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],atoms2,AAA_dict[cns[1]],cns[0],atoms1)
+				usedupls[cons1a] = outline
+				usedupls[cons2a] = outline
 				## Make sure all connections to side chains are shown
 				if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
 					sidelist.append(cns[0])
@@ -346,7 +346,7 @@ for line in open(fupl).readlines():
 				if float(cns[12]) < 0.5:
 					i+=1
 					poorpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-					poorcons2.append(line)
+					poorcons2.extend([cons1,cons2])
 					outpml.write('distance poor{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 					poorcons = poorcons + 'poor{:} '.format(i)
 					Filtered.append(line)
@@ -357,14 +357,11 @@ for line in open(fupl).readlines():
 					if float(cns[6]) >= 6.0:
 						upldf.loc[cns[0],'long'] = upldf.loc[cns[0],'long'] + 1
 						upldf.loc[cns[3],'long'] = upldf.loc[cns[3],'long'] + 1
-						cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
-						cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5],AAA_dict[cns[1]],cns[0],cns[2])
 						qupldict[cons1] = " #long distance\n"
 						qupldict[cons2] = " #long distance\n"
 						i+=1
 						longpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 						longcons2.extend([cons1,cons2])
-						#longcons2.append(line)
 						outpml.write('distance long{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 						longcons = longcons + 'long{:} '.format(i)
 						Filtered.append(line)
@@ -373,8 +370,10 @@ for line in open(fupl).readlines():
 						if abs(int(cns[0])- int(cns[3])) > 1:
 							i+=1
 							shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:} {:}\n'.format(cns[0], atom1, cns[3],atom2, 'light coral'))
-							shortcons2.append(line)
+							shortcons2.extend([cons1,cons2])
 							outpml.write('distance short{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+							qupldict[cons1] = " #short distance\n"
+							qupldict[cons2] = " #short distance\n"
 							shortcons = shortcons + 'short{:} '.format(i)
 							finalupls[3].append(line)
 							Filtered.append(line)
@@ -509,7 +508,7 @@ upls.extend(hbonds)
 ## Examine input upl files and update lines for entries which are violated 10 or more times, and identify proton-proton restraints that support heavy atoms based restraints 
 found_upls = 0
 for uplfile in upls:
-	found_upls, tupls,mupls = 0, 0, 0
+	found_upls, tupls,mupls, vupls = 0, 0, 0, 0
 	newlines = []
 	violupl = open(outdir + uplfile.replace('.upl','_viol.upl'),'w')
 	matchedupl = open(outdir + uplfile.replace('.upl','_found.upl'),'w')
@@ -522,6 +521,7 @@ for uplfile in upls:
 				cns = line.split()
 				cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
 				if cons in Upperdict.keys():
+					vupls+=1
 					newline = line.replace('\n', Upperdict[cons])
 					violupl.write(newline)
 				if cons in usedupls.keys():
@@ -533,9 +533,11 @@ for uplfile in upls:
 		if len(newline) < 1:
 			newline = line
 		newlines.append(newline)
-	if uplfile != 'hbond.upl': 
-		checkcons.write('{:} of {:} of assignable input upls from {:} found\n'.format(found_upls,tupls,uplfile))
-		checkcons.write('{:} of {:} input upls from {:} missing assignment\n'.format(mupls,mupls + tupls, uplfile))
+	if uplfile != 'hbond.upl':
+		checkcons.write('{:} input upls from {:}\n'.format(mupls + tupls, uplfile))
+		checkcons.write('    {:} of {:} of assignable input upls found\n'.format(found_upls,tupls))
+		checkcons.write('    {:} of upls violated in 10 or more structures\n'.format(vupls))
+		checkcons.write('    {:} of input upls missing assignment\n'.format(mupls))
 	fout = open(outdir + uplfile,'w')
 	fout.writelines(newlines)
 	fout.close()
@@ -558,17 +560,23 @@ for lolfile in lols:
 	fout.writelines(newlines)
 	fout.close()
 checkcons.write('\n\n')
-print('finished finding upls')
-checkcons.write('### Violated Distance Constraints from {:} \n'.format(str(fovw)))
-violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
-for viol in violpeaks:
-	checkcons.write(viol)
-checkcons.write('\n\n')
 
+print('finished finding upls')
+checkcons.write('### {:3.0f}  Violated Distance Constraints ###\n'.format(len(violpeaks)/2))
+# violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
+for viol in violpeaks:
+	if viol in assigndict.keys():
+		checkcons.write('{:}  {:3.2f}A ({:}): {:}'.format(viol,float(upldict[viol]),len(assigndict[viol]), violdict[viol]))
+		checkcons.writelines(assigndict[viol])
+		checkcons.write('\n')
+checkcons.write('\n\n')
 #### Write out Poor/Low Support constraints to the summary file
-checkcons.write('### Low Support Constraints ({:}_poor.pb) ###\n'.format({outname}))
-for p in range(len(poorcons2)):
-	checkcons.write(poorcons2[p])
+checkcons.write('### {:3.0f} Low Support Constraints ###\n'.format(len(poorcons2)/2))
+for con in poorcons2:
+	if con in assigndict.keys():
+		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
+		checkcons.writelines(assigndict[con])
+		checkcons.write('\n')
 checkcons.write('\n\n')
 #### Write out Long Distance constraints to the summary file
 checkcons.write('### {:3.0f} Long Distance Constraints d >= 6.00 ###\n'.format(len(longcons2)/2))
@@ -580,9 +588,12 @@ for con in longcons2:
 		checkcons.write('\n')
 checkcons.write('\n\n')
 #### Write out Short Distance constraints to the summary file
-checkcons.write('### Short Distance Constraints d <= 3.00 ###\n')
-for s in range(len(shortcons2)):
-	checkcons.write(shortcons2[s])
+checkcons.write('### {:3.0f} Short Distance Constraints d <= 3.00 ###\n'.format(len(shortcons2)/2))
+for con in shortcons2:
+	if con in assigndict.keys():
+		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
+		checkcons.writelines(assigndict[con])
+		checkcons.write('\n')
 checkcons.write('\n\n')
 checkcons.close()
 
@@ -648,8 +659,8 @@ from matplotlib.backends.backend_pdf import PdfPages
 import numpy as np
 from matplotlib.widgets import Slider
 pdf=PdfPages(outdir + '{:}_upl_overview.pdf'.format(pdbname))
-nsubplots = round(len(Sequence)/25,0)
-if round(len(Sequence)/25,1) - nsubplots > 0.0:
+nsubplots = round(len(Sequence)/20,0)
+if round(len(Sequence)/20,1) - nsubplots > 0.0:
 	nsubplots = nsubplots + 1
 if nsubplots == 0: nsubplots = 1
 fig_height = 3.0 * nsubplots
@@ -657,11 +668,11 @@ if fig_height <= 2.0:
 	fig_height = 3.0
 fig=plt.figure(figsize=(10.0,fig_height))
 spi = 0
-for i in range(0,len(upldf.index.tolist()),25):
+for i in range(0,len(upldf.index.tolist()),20):
 	spi = spi + 1
 	temp, resid = [], []
 	z = i
-	for y in range(25):
+	for y in range(20):
 		temp.append(upldf.index.tolist()[z])
 		resid.append(ASequence[z])
 		z = z + 1 
