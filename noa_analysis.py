@@ -35,6 +35,8 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 		exec("unused{:}.write('### Peaks which CYANA did not use assignment possiblity\\n#{:}  {:^26}  {:^24}  {:^10}  {:^6}  {:^24}\\n')".format(str(x),'Peakid','Frequencies','Connection','Dist' ,'Pshift','Comment'))
 		exec("no_assign{:} = open('{:}{:}_no_assign.list','w')".format(str(x), outdir, plist))
 		exec("no_assign{:}.write('### Peaks which CYANA found no assignment possibility\\n#{:}  {:^26}  {:^24}  {:^10}  {:^6}  {:^24}\\n')".format(str(x),'Peakid','Frequencies','Connection','Dist' ,'Pshift','Comment'))
+		exec("good{:} = open('{:}{:}_assigned.list','w')".format(str(x), outdir, plist))
+		exec("good{:}.write('### Peaks which CYANA assigned\\n#{:}  {:^26}  {:^24}  {:^10}  {:^6}  {:^24}\\n')".format(str(x),'Peakid','Frequencies','Connection','Dist' ,'Pshift','Comment'))
 		exec("questlist{:} = []".format(str(x)))
 		exec("usedquestlist{:} = []".format(str(x)))
 		exec("peaks{:} = {{}}".format(str(x)))
@@ -218,10 +220,45 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 			used =eval('usedquestlist' + plist_dict[plist])
 			if peak not in used:
 				questout.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^10}  {:^6}   #only\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],pline[0],pline[2],pline[8]))
+				used.append(peak)
+
+	for x in range(len(noalines)):
+		line = noalines[x]
+		if 'Peak' in noalines[x] and 'out of' in noalines[x+1]:
+			if '0 out of' not in noalines[x+1] and 'diagonal' not in noalines[x]:
+				peak = int(noalines[x].strip().split()[1])
+				plist = noalines[x].strip().split()[3].replace('.peaks','')
+				pdict = eval('peaks' + plist_dict[plist])
+				intdict = eval('intensity' + plist_dict[plist])
+				used =eval('usedquestlist' + plist_dict[plist])
+				SUP = noalines[x+1].split()[-1].replace(':','')
+				linepad = pad[len(plist):]
+				good = eval('good' + plist_dict[plist])
+				Calconst = float(Calibration_cns[int(plist_dict[plist])].split()[-1])
+				for y in range(2,int(noalines[x+1].split()[0])+2,1):
+					cns = noalines[x+y].strip().split()
+					if cns[4] == '+':
+						atom1,resn1, resi1, atom2, resn2, resi2, pshift, drange = cns[1],cns[2],int(cns[3]), cns[5], cns[6], int(cns[7]), float(cns[10])/100, cns[13]
+					if cns[3] == '+':
+						atom1,resn1, resi1, atom2, resn2, resi2, pshift, drange = cns[0],cns[1],int(cns[2]), cns[4], cns[5], int(cns[6]), float(cns[9])/100, cns[12]
+					group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
+					group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
+					note = ''
+					if group1 in Swapped.keys(): group1 = Swapped[group1]; note = note + 'swapped '
+					if group2 in Swapped.keys(): group2 = Swapped[group2]; note = note + 'swapped '
+					conect = '{:}-{:}'.format(group1,group2)
+					if '{:} peak {:} from {:}'.format(conect,peak,plist) in upldict2: 
+						note = note + 'UPL '
+					dist = (Calconst/float(intdict[peak][y-2]))**(1/6)
+					drange = '{:3.2f}-{:3.2f}'.format(dist, dist*1.25)
+					if conect in upldict.keys(): drange = upldict[conect]
+					if peak not in used:
+						good.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^10}  {:^6.2f}   {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange +'A',pshift,note))
 
 	for x in range(len(cya_plists)):
 		eval("unused{:}.close()".format(str(x)))
 		eval("no_assign{:}.close()".format(str(x)))
+		eval("good{:}.close()".format(str(x)))
 		exec("questionable{:} = open('{:}{:}_questionable.list','w')".format(str(x), outdir, cya_plists[x].replace('.peaks','')))
 		exec("questionable{:}.write('### Peaks with SUP < 0.6 #low support\\n### Peaks with poor chemical shift matching (Pshift < 0.6) #poor chem shift\\n### Peak associated with UPL > 6.0 #long distance\\n### Peak associated with UPL < 3.0 #short distance\\n### Peak represening only instance of an assignment #only\\n#{:}  {:^26}  {:^24}  {:^10}  {:^6}  {:^24}\\n')".format(str(x), outdir, cya_plists[x].replace('.peaks',''),'Peakid','Frequencies','Connection','Dist' ,'Pshift','Comment'))
 		questlist = eval('questlist' + plist_dict[cya_plists[x].replace('.peaks','')])
