@@ -50,7 +50,7 @@ ConTypeDict = {'ALAH':'N', 'ALAHA':'Ali', 'ALAHB':'Methyl', 'ALAHB1':'Methyl', '
 
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "CYSS":"C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H","HISE": "H","HIS+": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P","CPRO":"P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 
-Ambiguous = {'ARGQB':'HB2,HB3','ARGQG':'HG2,HG3','ARGQG':'HG2,HG3','ARGQH1':'HH11,HH12','ARGQH2':'HH21,HH22','ASNQB':'HB2,HB3','ASNQD2':'HD21,HD22','ASPQB':'HB2,HB3','CYSQB':'HB2,HB3','CYSSQB':'HB2,HB3','GLNQB':'HB2,HB3','GLNQG':'HG2,HG3','GLNQE2':'HE21,HE22','GLUQB':'HB2,HB3','GLUQG':'HG2,HG3','GLYQA':'HA2,HA3','HISQB':'HB2,HB3','HISTQB':'HB2,HB3','ILEQG1':'HG12,HG13','LEUQB':'HB2,HB3','LEUQQD':'QD1,QD2','LYSQB':'HB2,HB3','LYSQG':'HG2,HG3','LYSQD':'HD2,HD3','LYSQE':'HE2,HE3','METQB':'HB2,HB3','METQG':'HG2,HG3','PHEQB':'HB2,HB3','PHEQG':'HG2,HG3','PHEQD':'HD2,HD3','PHEQE':'HE1,HE2','PROQB':'HB2,HB3','PROQG':'HG2,HG3','PROQD':'HD2,HD3','SERQB':'HB2,HB3','TRPQB':'HB2,HB3','TYRQB':'HB2,HB3','TYRQG':'HG2,HG3','TYRQD':'HD2,HD3','TYRQE':'HE1,HE2','VALQQG':'QG1,QG2'}
+Ambiguous = {'ARGQB':'HB2,HB3','ARGQG':'HG2,HG3','ARGQG':'HG2,HG3','ARGQH1':'HH11,HH12','ARGQH2':'HH21,HH22','ASNQB':'HB2,HB3','ASNQD2':'HD21,HD22','ASPQB':'HB2,HB3','CYSQB':'HB2,HB3','CYSSQB':'HB2,HB3','GLNQB':'HB2,HB3','GLNQG':'HG2,HG3','GLNQE2':'HE21,HE22','GLUQB':'HB2,HB3','GLUQG':'HG2,HG3','GLYQA':'HA2,HA3','HISQB':'HB2,HB3','HISTQB':'HB2,HB3','ILEQG1':'HG12,HG13','LEUQB':'HB2,HB3','LEUQQD':'QD1,QD2','LYSQB':'HB2,HB3','LYSQG':'HG2,HG3','LYSQD':'HD2,HD3','LYSQE':'HE2,HE3','METQB':'HB2,HB3','METQG':'HG2,HG3','PHEQB':'HB2,HB3','PHEQG':'HG2,HG3','PHEQD':'HD2,HD3','PHEQE':'HE1,HE2','PROQB':'HB2,HB3','PROQG':'HG2,HG3','PROQD':'HD2,HD3','SERQB':'HB2,HB3','TRPQB':'HB2,HB3','TYRQB':'HB2,HB3','TYRQG':'HG2,HG3','TYRQD':'HD2,HD3','TYRQE':'HE1,HE2','PTRQB':'HB2,HB3','PTRQG':'HG2,HG3','PTRQD':'HD2,HD3','PTRQE':'HE1,HE2','VALQQG':'QG1,QG2'}
 
 if len(sys.argv)==1:
 	print('''
@@ -212,7 +212,7 @@ shortpbout = open(outdir +'pseudobonds/' + outname + '_short.pb','w')
 shortpbout.write("; halfbond = false\n; color = lightcoral\n; radius = 0.1\n; dashes = 0\n")
 # pviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_cyana_upls.pb','w')
 # pviolpbout.write("; halfbond = false\n; color = deeppink\n; radius = 0.1\n; dashes = 0\n")
-uviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_input_upls.pb','w')
+uviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_upls.pb','w')
 uviolpbout.write("; halfbond = false\n; color = hotpink\n; radius = 0.25\n; dashes = 10\n")
 
 for conect in ConectionTypes:
@@ -431,19 +431,13 @@ filtered_upl.close()
 
 u = 1
 for uplfile in upls:
-	found_upls, tupls,mupls, vupls = 0, 0, 0, 0
-	newlines = []
-	violupl = open(outdir + uplfile.replace('.upl','_viol.upl'),'w')
-	matchedupl = open(outdir + uplfile.replace('.upl','_found.upl'),'w')
+	fin = open(uplfile,'r')
 	outpb = open(outdir +'pseudobonds/' + uplfile.replace('.upl','.pb'),'w')
 	pmlgroup = 'group {:}, '.format(uplfile.replace('.upl',''))
 	outpb.write("; halfbond = false\n; color = cyan\n; radius = 0.15\n; dashes = 10\n")
-	for line in open(uplfile).readlines():
-		newline = ''
-		if line.strip() and "#" not in line.split()[0]:
-			cns = line.split()
-			if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist: sidelist.append(cns[0])
-			if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist: sidelist.append(cns[3])
+	for line in fin.readlines():
+		cns = line.split()
+		if line.strip() and "#" not in cns[0]:
 			atom1 = cns[2]
 			atom2 = cns[5]
 			if cns[1]+cns[2] in replacements.keys():
@@ -457,38 +451,16 @@ for uplfile in upls:
 			for atom1 in atoms1:
 				for atom2 in atoms2:
 					u+=1
-					cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atom1,AAA_dict[cns[4]],cns[3],atom2)
 					if 'missing' in line:
-						mupls+=1
 						outpb.write('#1.1:{:}@{:} #1.1:{:}@{:} blue\n'.format(cns[0], atom1, cns[3],atom2))
-					if 'missing' not in line: 
-						tupls+=1
+					else:
 						outpb.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 					outpml.write('distance {:}{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 					pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
-					if cons in Upperdict.keys():
-						vupls+=1
-						newline = line.replace('\n', Upperdict[cons])
-						violupl.write(newline)
-					if cons in usedupls.keys():
-						found_upls+= 1
-						if len(newline) > 1: newline = newline.replace('\n', usedupls[cons])
-						if len(newline) < 1: newline = line.replace('\n', usedupls[cons])
-						matchedline = line.replace('\n', usedupls[cons])
-						matchedupl.write(matchedline)
-		if len(newline) < 1:
-			newline = line
-		newlines.append(newline)
-	if uplfile != 'hbond.upl':
-		checkcons.write('{:} input upls from {:}\n'.format(mupls + tupls, uplfile))
-		checkcons.write('    {:} of {:} of assignable input upls found\n'.format(found_upls,tupls))
-		checkcons.write('    {:} of upls violated in 10 or more structures\n'.format(vupls))
-		checkcons.write('    {:} of input upls missing assignment\n'.format(mupls))
-	fout = open(outdir + uplfile,'w')
-	fout.writelines(newlines)
-	fout.close()
-	violupl.close()
-	matchedupl.close()
+			if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
+				sidelist.append(cns[0])
+			if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
+				sidelist.append(cns[3])
 	outpml.write(pmlgroup + '\n')
 	outpml.write('color cyan,' + uplfile.replace('.upl','') + '\n')
 	mn+=1
@@ -533,6 +505,51 @@ outcmx.write('color #{:} {:}\n'.format(str(mn),'pink'))
 outcmx.write(selhbond)
 upls.extend(hbonds)
 
+## Examine input upl files and update lines for entries which are violated 10 or more times, and identify proton-proton restraints that support heavy atoms based restraints 
+
+for uplfile in upls:
+	found_upls, tupls, mupls, vupls  = 0, 0, 0, 0
+	newlines = []
+	violupl = open(outdir + uplfile.replace('.upl','_viol.upl'),'w')
+	matchedupl = open(outdir + uplfile.replace('.upl','_found.upl'),'w')
+	for line in open(uplfile).readlines():
+		newline = ''
+		if line.strip():
+			if '#' not in line.split()[0]:
+				if 'missing' not in line: tupls+=1
+				if 'missing' in line: mupls+=1
+				cns = line.split()
+				atoms1 = [cns[2]]
+				atoms2 = [cns[5]]
+				cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+				if cns[1]+cns[2] in Ambiguous.keys(): atoms1 = Ambiguous[cns[1]+cns[2]].split(',')
+				if cns[4]+cns[5] in Ambiguous.keys(): atoms2 = Ambiguous[cns[4]+cns[5]].split(',')
+				for atom1 in atoms1:
+					for atom2 in atoms2: 
+						cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atom1,AAA_dict[cns[4]],cns[3],atom2)
+						if cons in Upperdict.keys():
+							vupls+= 1
+							newline = line.replace('\n', Upperdict[cons])
+							violupl.write(newline)
+						if cons in usedupls.keys():
+							found_upls+= 1
+							if len(newline) > 1: newline = newline.replace('\n', usedupls[cons])
+							if len(newline) < 1: newline = line.replace('\n', usedupls[cons])
+							matchedline = line.replace('\n', usedupls[cons])
+							matchedupl.write(matchedline)
+		if len(newline) < 1:
+			newline = line
+		newlines.append(newline)
+	if uplfile != 'hbond.upl': 
+		checkcons.write('{:} input upls from {:}\n'.format(mupls + tupls, uplfile))
+		checkcons.write('    {:} of {:} of assignable input upls found\n'.format(found_upls,tupls))
+		checkcons.write('    {:} of upls violated in 10 or more structures\n'.format(vupls))
+		checkcons.write('    {:} of upls missing assignment\n'.format(mupls))
+	fout = open(outdir + uplfile,'w')
+	fout.writelines(newlines)
+	fout.close()
+	violupl.close()
+	matchedupl.close()
 for lolfile in lols:
 	newlines = []
 	for line in open(lolfile).readlines():
