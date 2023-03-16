@@ -10,13 +10,10 @@ from datetime import datetime
 
 # datetime object containing current date and time
 now = datetime.now()
-
 # dd/mm/YY H:M:S
 dt_string = now.strftime("%Y-%m-%d %H:%M")
 
-Vnum = '2.2'
-## HIST is his protonated on NE2
-## HIS+ is his protonated on both ND1 and NE2 
+Vnum = '2.3'
 replacements ={
 'ALAHA':'CA','ALAQB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'CB',
 'CYSHA':'CA','CYSHB2':'CB','CYSHB3':'CB','CYSQB':'CB',
@@ -47,9 +44,7 @@ replacements ={
 'PTRHA':'CA','PTRHB2':'CB','PTRHB3':'CB','PTRQB':'CB','PTRQD':'CD1,CD2','PTRQE':'CE1,CE2','PTRHD1':'CD1','PTRHE1':'CE1','PTRHE2':'CE2','PTRHD2':'CD2','PTRHH':'OH'}
 #'ALAH':'N','CYSH':'N','ASPH':'N','GLUH':'N','PHEH':'N','GLYH':'N','HISH':'N','ILEH':'N','LYSH':'N','LEUH':'N','METH':'N','ASNH':'N','GLNH':'N','ARGH':'N','SERH':'N','THRH':'N','VALH':'N','TRPH':'N','TYRH':'N',
 ConTypeDict = {'ALAH':'N', 'ALAHA':'Ali', 'ALAHB':'Methyl', 'ALAHB1':'Methyl', 'ALAHB2':'Methyl', 'ALAHB3':'Methyl', 'ALAQB':'Methyl', 'ALAC':'Other', 'ALACA':'Ali', 'ALACB':'Methyl', 'ALAN':'N', 'CYSSH':'N', 'CYSSHA':'Ali', 'CYSSHB2':'Ali', 'CYSSHB3':'Ali', 'CYSSQB':'Ali', 'CYSSC':'Other', 'CYSSCA':'Ali', 'CYSSCB':'Ali', 'CYSSN':'N', 'CYSH':'N', 'CYSHA':'Ali', 'CYSHB2':'Ali', 'CYSHB3':'Ali', 'CYSQB':'Ali', 'CYSHG':'Ali', 'CYSC':'Other', 'CYSCA':'Ali', 'CYSCB':'Ali', 'CYSN':'N', 'ASPH':'N', 'ASPHA':'Ali', 'ASPHB2':'Ali', 'ASPHB3':'Ali', 'ASPQB':'Ali', 'ASPHD2':'Other', 'ASPC':'Other', 'ASPCA':'Ali', 'ASPCB':'Ali', 'ASPCG':'Ali', 'ASPN':'N', 'GLUH':'N', 'GLUHA':'Ali', 'GLUHB2':'Ali', 'GLUHB3':'Ali', 'GLUQB':'Ali', 'GLUHE2':'Other', 'GLUHG2':'Ali', 'GLUHG3':'Ali', 'GLUQG':'Ali', 'GLUC':'Other', 'GLUCA':'Ali', 'GLUCB':'Ali', 'GLUCG':'Ali', 'GLUCD':'Other', 'GLUN':'N', 'PHEH':'N', 'PHEHA':'Aro', 'PHEHB2':'Aro', 'PHEHB3':'Aro', 'PHEQB':'Aro', 'PHEHD1':'Aro', 'PHEHD2':'Aro', 'PHEQD':'Aro', 'PHEHE1':'Aro', 'PHEHE2':'Aro', 'PHEQE':'Aro', 'PHEHZ':'Aro', 'PHEC':'Other', 'PHECA':'Aro', 'PHECB':'Aro', 'PHECD1':'Aro', 'PHECD2':'Aro', 'PHECE1':'Aro', 'PHECE2':'Aro', 'PHECG':'Aro', 'PHECZ':'Aro', 'PHEN':'N',  'GLYH':'N', 'GLYHA2':'Ali', 'GLYHA3':'Ali', 'GLYC':'Other', 'GLYCA':'Ali', 'GLYN':'N',  'HISH':'N', 'HISHA':'Ali', 'HISHB2':'Ali', 'HISHB3':'Ali', 'HISQB':'Ali', 'HISHD1':'N', 'HISHD2':'Aro', 'HISHE1':'Aro', 'HISC':'Other', 'HISCA':'Ali', 'HISCB':'Ali', 'HISCD2':'Aro', 'HISCE1':'Aro', 'HISCG':'Aro', 'HISN':'N', 'HISND1':'N', 'HISNE2':'N', 'HISTH':'N', 'HISTHA':'Ali', 'HISTHB2':'Ali', 'HISTHB3':'Ali', 'HISTQB':'Ali', 'HISTHD2':'Aro', 'HISTHE1':'Aro', 'HISTHE2':'N', 'HISTC':'Other', 'HISTCA':'Ali', 'HISTCB':'Ali', 'HISTCD2':'Aro', 'HISTCE1':'Aro', 'HISTCG':'Aro', 'HISTN':'N', 'HISTND1':'N', 'HISTNE2':'N', 'HIS+H':'N', 'HIS+HA':'Ali', 'HIS+HB2':'Ali', 'HIS+HB3':'Ali', 'HIS+QB':'Ali', 'HIS+HD1':'N', 'HIS+HD2':'Aro', 'HIS+HE1':'Aro', 'HIS+HE2':'N', 'HIS+C':'Other', 'HIS+CA':'Ali', 'HIS+CB':'Ali', 'HIS+CD2':'Aro', 'HIS+CE1':'Aro', 'HIS+CG':'Aro', 'HIS+N':'N', 'HIS+ND1':'N', 'HIS+NE2':'N', 'ILEH':'N', 'ILEHA':'Ali', 'ILEHB':'Ali', 'ILEHG12':'Ali', 'ILEHG13':'Ali', 'ILEQG1':'Ali', 'ILEHD1':'Methyl', 'ILEHD11':'Methyl', 'ILEHD12':'Methyl', 'ILEHD13':'Methyl', 'ILEQD1':'Methyl', 'ILEHG2':'Methyl', 'ILEHG21':'Methyl', 'ILEHG22':'Methyl', 'ILEHG23':'Methyl', 'ILEQG2':'Methyl', 'ILEC':'Other', 'ILECA':'Ali', 'ILECB':'Ali', 'ILECD1':'Methyl', 'ILECG1':'Ali', 'ILECG2':'Methyl', 'ILEN':'N', 'LYSH':'N', 'LYSHA':'Ali', 'LYSHB2':'Ali', 'LYSHB3':'Ali', 'LYSQB':'Ali', 'LYSHD2':'Ali', 'LYSHD3':'Ali', 'LYSQD':'Ali', 'LYSHE2':'Ali', 'LYSHE3':'Ali', 'LYSQE':'Ali', 'LYSHG2':'Ali', 'LYSHG3':'Ali', 'LYSQG':'Ali', 'LYSC':'Other', 'LYSCA':'Ali', 'LYSCB':'Ali', 'LYSCD':'Ali', 'LYSCE':'Ali', 'LYSCG':'Ali', 'LYSN':'N', 'LYSNZ':'N', 'LYSQZ':'N', 'LYSHZ':'N', 'LEUH':'N', 'LEUHA':'Ali', 'LEUHB2':'Ali', 'LEUHB3':'Ali', 'LEUQB':'Ali', 'LEUHG':'Ali', 'LEUHD1':'Methyl', 'LEUHD11':'Methyl', 'LEUHD12':'Methyl', 'LEUHD13':'Methyl', 'LEUQD1':'Methyl', 'LEUHD2':'Methyl', 'LEUHD21':'Methyl', 'LEUHD22':'Methyl', 'LEUHD23':'Methyl', 'LEUQD2':'Methyl', 'LEUC':'Other', 'LEUCA':'Ali', 'LEUCB':'Ali', 'LEUCG':'Ali', 'LEUCD1':'Methyl', 'LEUCD2':'Methyl', 'LEUN':'N', 'METH':'N', 'METHA':'Ali', 'METHB2':'Ali', 'METHB3':'Ali', 'METQB':'Ali', 'METHG2':'Ali', 'METHG3':'Ali', 'METQG':'Ali', 'METHE':'Methyl', 'METHE1':'Methyl', 'METHE2':'Methyl', 'METHE3':'Methyl', 'METQE':'Methyl', 'METC':'Other', 'METCA':'Ali', 'METCB':'Ali', 'METCE':'Methyl', 'METCG':'Ali', 'METN':'N', 'ASNH':'N', 'ASNHA':'Ali', 'ASNHB2':'Ali', 'ASNHB3':'Ali', 'ASNQB':'Ali', 'ASNHD21':'N', 'ASNHD22':'N', 'ASNQD':'N', 'ASNC':'Other', 'ASNCA':'Ali', 'ASNCB':'Ali', 'ASNCG':'Other', 'ASNN':'N', 'ASNND2':'N', 'PROHA':'Ali', 'PROHB2':'Ali', 'PROHB3':'Ali', 'PROQB':'Ali', 'PROHD2':'Ali', 'PROHD3':'Ali', 'PROQD':'Ali', 'PROHG2':'Ali', 'PROHG3':'Ali', 'PROQG':'Ali', 'PROC':'Other', 'PROCA':'Ali', 'PROCB':'Ali', 'PROCD':'Ali', 'PROCG':'Ali', 'PRON':'N', 'CPROHA':'Ali', 'CPROHB2':'Ali', 'CPROHB3':'Ali', 'CPROQB':'Ali', 'CPROHD2':'Ali', 'CPROHD3':'Ali', 'CPROQD':'Ali', 'CPROHG2':'Ali', 'CPROHG3':'Ali', 'CPROQG':'Ali', 'CPROC':'Other', 'CPROCA':'Ali', 'CPROCB':'Ali', 'CPROCD':'Ali', 'CPROCG':'Ali', 'CPRON':'N', 'GLNH':'N', 'GLNHA':'Ali', 'GLNHB2':'Ali', 'GLNHB3':'Ali', 'GLNQB':'Ali', 'GLNHE21':'N', 'GLNHE22':'N', 'GLNQE2':'N', 'GLNHG2':'Ali', 'GLNHG3':'Ali', 'GLNQG':'Ali', 'GLNC':'Other', 'GLNCA':'Ali', 'GLNCB':'Ali', 'GLNCD':'Other', 'GLNCG':'Ali', 'GLNN':'N', 'GLNNE2':'N', 'ARGH':'N', 'ARGHA':'Ali', 'ARGHB2':'Ali', 'ARGHB3':'Ali', 'ARGQB':'Ali', 'ARGHD2':'Ali', 'ARGHD3':'Ali', 'ARGQD':'Ali', 'ARGHG2':'Ali', 'ARGHG3':'Ali', 'ARGQG':'Ali', 'ARGHH11':'N', 'ARGHH12':'N', 'ARGQH1':'N', 'ARGHH21':'N', 'ARGHH22':'N', 'ARGQH2':'N', 'ARGC':'Other', 'ARGCA':'Ali', 'ARGCB':'Ali', 'ARGCD':'Ali', 'ARGCG':'Ali', 'ARGCZ':'Ali', 'ARGN':'N', 'ARGNE':'N', 'ARGNH1':'N', 'ARGNH2':'N', 'ARGHE':'N', 'SERH':'N', 'SERHA':'Ali', 'SERHB2':'Ali', 'SERHB3':'Ali', 'SERQB':'Ali', 'SERHG':'Other', 'SERC':'Other', 'SERCA':'Ali', 'SERCB':'Ali', 'SERN':'N', 'SEPH':'N', 'SEPHA':'Ali', 'SEPHB2':'Ali', 'SEPHB3':'Ali', 'SEPQB':'Ali', 'SEPHG':'Other', 'SEPC':'Other', 'SEPCA':'Ali', 'SEPCB':'Ali', 'SEPN':'N', 'THRH':'N', 'THRHA':'Ali', 'THRHB':'Ali', 'THRHG1':'Other', 'THRHG2':'Methyl', 'THRQG2':'Methyl', 'THRC':'Other', 'THRCA':'Ali', 'THRCB':'Ali', 'THRCG2':'Methyl', 'THRN':'N', 'TPOH':'N', 'TPOHA':'Ali', 'TPOHB':'Ali', 'TPOHG1':'Other', 'TPOHG2':'Methyl', 'TPOQG2':'Methyl', 'TPOC':'Other', 'TPOCA':'Ali', 'TPOCB':'Ali', 'TPOCG2':'Methyl', 'TPON':'N', 'VALH':'N', 'VALHA':'Ali', 'VALHB':'Ali', 'VALHG1':'Methyl', 'VALQG1':'Methyl', 'VALHG2':'Methyl', 'VALQG2':'Methyl', 'VALC':'Other', 'VALCA':'Ali', 'VALCB':'Ali', 'VALCG1':'Methyl', 'VALCG2':'Methyl', 'VALN':'N', 'TRPH':'N', 'TRPHA':'Ali', 'TRPHB2':'Ali', 'TRPHB3':'Ali', 'TRPQB':'Ali', 'TRPHD1':'Aro', 'TRPHE1':'N', 'TRPHE3':'Aro', 'TRPHH2':'Aro', 'TRPHZ2':'Aro', 'TRPHZ3':'Aro', 'TRPC':'Other', 'TRPCA':'Ali', 'TRPCB':'Ali', 'TRPCD1':'Aro', 'TRPCD2':'Aro', 'TRPCE2':'Aro', 'TRPCE3':'Aro', 'TRPCG':'Aro', 'TRPCH2':'Aro', 'TRPCZ2':'Aro', 'TRPCZ3':'Aro', 'TRPN':'N', 'TRPNE1':'N', 'TYRH':'N', 'TYRHA':'Aro', 'TYRHB2':'Aro', 'TYRHB3':'Aro', 'TYRQB':'Aro', 'TYRHD1':'Aro', 'TYRHD2':'Aro', 'TYRQD':'Aro', 'TYRHE1':'Aro', 'TYRHE2':'Aro', 'TYRQE':'Aro', 'TYRHH':'Other', 'TYRC':'Other', 'TYRCA':'Aro', 'TYRCB':'Aro', 'TYRCD1':'Aro', 'TYRCD2':'Aro', 'TYRCE1':'Aro', 'TYRCE2':'Aro', 'TYRCG':'Aro', 'TYRCZ':'Aro', 'TYRN':'N', 'PTRH':'N', 'PTRHA':'Aro', 'PTRHB2':'Aro', 'PTRHB3':'Aro', 'PTRQB':'Aro', 'PTRHD1':'Aro', 'PTRHD2':'Aro', 'PTRQD':'Aro', 'PTRHE1':'Aro', 'PTRHE2':'Aro', 'PTRQE':'Aro', 'PTRHH':'Other', 'PTRC':'Other', 'PTRCA':'Aro', 'PTRCB':'Aro', 'PTRCD1':'Aro', 'PTRCD2':'Aro', 'PTRCE1':'Aro', 'PTRCE2':'Aro', 'PTRCG':'Aro', 'PTRCZ':'Aro', 'PTRN':'N', 'N-N':'N_N', 'Aro-Aro':'Aro_Aro', 'Methyl-Methyl':'Methyl_Methyl', 'Ali-Ali':'Ali_Ali', 'Aro-Methyl':'Methyl_Aro', 'Methyl-Aro':'Methyl_Aro', 'Methyl-N':'N_Methyl', 'N-Methyl':'N_Methyl', 'Aro-N':'N_Aro', 'N-Aro':'N_Aro', 'Methyl-Ali':'Ali_Methyl', 'Ali-Methyl':'Ali_Methyl', 'Aro-Ali':'Ali_Aro', 'Ali-Aro':'Ali_Aro', 'Ali-N':'N_Ali', 'N-Ali':'N_Ali', 'Other-Other':'Other','Other-N':'Other','N-Other':'Other','Other-Ali':'Other','Ali-Other':'Other','Other-Methyl':'Other','Methyl-Other':'Other', 'Other-Aro':'Other', 'Aro-Other':'Other'}
-
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "CYSS":"C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H","HISE": "H","HIS+": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P","CPRO":"P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
-
 Ambiguous = {'ARGQB':'HB2,HB3','ARGQG':'HG2,HG3','ARGQG':'HG2,HG3','ARGQH1':'HH11,HH12','ARGQH2':'HH21,HH22','ASNQB':'HB2,HB3','ASNQD2':'HD21,HD22','ASPQB':'HB2,HB3','CYSQB':'HB2,HB3','CYSSQB':'HB2,HB3','GLNQB':'HB2,HB3','GLNQG':'HG2,HG3','GLNQE2':'HE21,HE22','GLUQB':'HB2,HB3','GLUQG':'HG2,HG3','GLYQA':'HA2,HA3','HISQB':'HB2,HB3','HISTQB':'HB2,HB3','ILEQG1':'HG12,HG13','LEUQB':'HB2,HB3','LEUQQD':'QD1,QD2','LYSQB':'HB2,HB3','LYSQG':'HG2,HG3','LYSQD':'HD2,HD3','LYSQE':'HE2,HE3','METQB':'HB2,HB3','METQG':'HG2,HG3','PHEQB':'HB2,HB3','PHEQG':'HG2,HG3','PHEQD':'HD2,HD3','PHEQE':'HE1,HE2','PROQB':'HB2,HB3','PROQG':'HG2,HG3','PROQD':'HD2,HD3','SERQB':'HB2,HB3','TRPQB':'HB2,HB3','TYRQB':'HB2,HB3','TYRQG':'HG2,HG3','TYRQD':'HD2,HD3','TYRQE':'HE1,HE2','PTRQB':'HB2,HB3','PTRQG':'HG2,HG3','PTRQD':'HD2,HD3','PTRQE':'HE1,HE2','VALQQG':'QG1,QG2'}
 
 if len(sys.argv)==1:
@@ -68,19 +63,29 @@ Required Input:
 					Which ever upl you specify determines the overview file used. 
 
 OutPut:
-	name_pra.cxc
-	name_pra.pml
-	Pseudobond/Distance Groups from calculation:
-		Each peak list 
-		Poor constraints (SUP < 0.5)
-		Short non intramolecular distance restraints d < 3.0
-		Long distance restraints d > 6.0
-		Peak Violations
-		Manual restrain Violations (violated in 10 or more structures)
-	Pseudobond/Distance Groups from manual restraints:
-		input.upl
-		hbond.upl 
-	Anotated Constraints files 
+	post_cyana_analysis/
+		pdb_pra.cxc
+		pdb_pra.pml
+		upl_summary.txt
+		upl_overview.pdf
+		pdb_Phi-Psi.pdf
+		pdb_Chi1-Chi2.pdf
+		pdb_Phi.csv, pdb_Psi.csv, pdb_Chi1.csv, pdb_Chi2.csv 
+		Annotated upl files 
+		pseudobonds/ (Groups of Distance restraints)
+			upl_constraint_type.pb
+			upl_poor.pb: restraints with SUP < 0.5
+			upl_short.pb:  non intramolecular distance restraints d < 3.0
+			upl_long.pb: Long distance restraints d > 6.0
+			upl_viol_upls.pb: UPLs violated in 10 or more structures 
+			input.pb(s): input upl file(s) specified in CALC.cya
+			hbond.pb
+	noa_analysis/ 
+		Assignment_Summary.txt 
+		peak-list_assigned.list
+		peak-list_no_assign.list
+		peak-list_questionable.list
+		peak-list_unused.list
 ''')
 	exit()
 colors = ['royalblue','forest','yellowgreen', 'darkorange','purple','lightseagreen ','darkkhaki','peru','saddlebrown','mediumpurple','blue']
@@ -201,31 +206,31 @@ outcmx.write('show #1:thr,met,ala,leu,val,ile,phe,tyr\nname meyfside #1:thr,met,
 outcmx.write('label #1.1 text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n''label ontop false\n')
 outcmx.write('ui tool show "Side View"\n#ui mousemode right distance\n')
 
-angmn = len(cya_plists) + 8 + len(upls)
-cmxphisel, cmxchisel, cmxphiviol, cmxchiviol = 'name phipsisel #{:}:'.format(angmn), 'name chisel #{:}:'.format(angmn), 'name phipsiviol #{:}:'.format(angmn), 'name chiviol #{:}:'.format(angmn)
-pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'color purple, phi-psi and resi ','color navy, chi and resi ', 'color mediumpurple, viol_phi-psi and resi ', 'color cornflowerblue, viol_chi and resi '
+### Make pseudo bond and gorup statements for poor, long, and short upl entries from designated upl file 
+for conect in ConectionTypes:
+	exec("{:}_pb = []".format(conect))
+	exec("group{:} = 'group {:}, '".format(conect, conect))
 poorpbout = open(outdir +'pseudobonds/' + outname + '_poor.pb','w')
 poorpbout.write("; halfbond = false\n; color = mediumvioletred\n; radius = 0.1\n; dashes = 0\n")
 longpbout = open(outdir +'pseudobonds/' + outname + '_long.pb','w')
 longpbout.write("; halfbond = false\n; color = firebrick\n; radius = 0.1\n; dashes = 0\n")
 shortpbout = open(outdir +'pseudobonds/' + outname + '_short.pb','w')
-shortpbout.write("; halfbond = false\n; color = lightcoral\n; radius = 0.1\n; dashes = 0\n")
-# pviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_cyana_upls.pb','w')
-# pviolpbout.write("; halfbond = false\n; color = deeppink\n; radius = 0.1\n; dashes = 0\n")
+shortpbout.write("; halfbond = false\n; color = light coral\n; radius = 0.1\n; dashes = 0\n")
 uviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_upls.pb','w')
-uviolpbout.write("; halfbond = false\n; color = hotpink\n; radius = 0.25\n; dashes = 10\n")
+uviolpbout.write("; halfbond = false\n; color = hotpink\n; radius = 0.1\n; dashes = 0\n")
+finalupls = [["###Violated Restraints\n"],["###Poor/Low Support\n"],["###Long Distance Restraints (d >= 6.0)\n"],["###Short Distance Restraints (d <= 3.0)\n"],["###Good Restraints\n"]]
 
-for conect in ConectionTypes:
-	exec("{:}_pb = []".format(conect))
-	exec("group{:} = 'group {:}, '".format(conect, conect))
+cmxphisel, cmxchisel, cmxphiviol, cmxchiviol = 'name phipsisel #angmn:', 'name chisel #angmn:', 'name phipsiviol #angmn:', 'name chiviol #angmn:'
+pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'color purple, phi-psi and resi ','color navy, chi and resi ', 'color mediumpurple, viol_phi-psi and resi ', 'color cornflowerblue, viol_chi and resi '
+
 ### Go through the final overview file and extract information about violated distance and angle restraints 
-i = 1
 Filtered = []
 violdict, Upperdict, Lowerdict = {}, {}, {}
 viol_upls= 'group viol_upl, '
-finalupls = [["###Violated Restraints\n"],["###Poor/Low Support\n"],["###Long Distance Restraints (d >= 6.0)\n"],["###Short Distance Restraints (d <= 3.0)\n"],["###Good Restraints\n"]]
+
 v = 0
 phiv, chiv, violpeaks = [], [], []
+hbondline = ''
 for line in open(fovw).readlines():
 	if line[4:9] == 'Upper' or line[4:9] == 'Lower':
 		dviol = line.split()
@@ -284,6 +289,8 @@ for line in open(fovw).readlines():
 				chiv.append(dang[3])
 				cmxchiviol = cmxchiviol + dang[3] + ','
 				pmlchiviol = pmlchiviol + dang[3] + '+'
+	if 'Hydrogen bonds in 6' in line:
+		hbondline = line
 
 usedupls,qupldict, upldict, upldict2 = {}, {}, {}, []
 finalupl,poorcons2, show, shortcons2,longcons2,sidelist = [],[],[],[],[],[]
@@ -291,17 +298,27 @@ poorcons, shortcons, longcons = 'group poor, ', 'group short, ', 'group long, '
 for line in open(fupl).readlines():
 	if line.split() and '#SUP' in line:
 		cns = line.split()
-		atom1 = cns[2]
-		atom2 = cns[5]
-		cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atom1,AAA_dict[cns[4]],cns[3],atom2)
-		cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],atom2,AAA_dict[cns[1]],cns[0],atom1)
+		cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+		cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5],AAA_dict[cns[1]],cns[0],cns[2])
 		if cons1 not in upldict.keys():
 			upldict[cons1] = "{:3.2f}".format(float(cns[6]))
 		if cons2 not in upldict.keys():
 			upldict[cons2] = "{:3.2f}".format(float(cns[6]))
 		upldict2.append("{:} peak {:} from {:}".format(cons1,cns[8],cya_plists[int(cns[10])-1]))
 		upldict2.append("{:} peak {:} from {:}".format(cons2,cns[8],cya_plists[int(cns[10])-1]))
+fovwlines = open(fovw).readlines().index(hbondline) + 2 
 
+for line in open(fovw).readlines()[fovwlines:]:
+	if line.strip():
+		if line.strip()[0] == 'H':
+			hbc = line.split()
+			if len(hbc[0]) <= 3: doner = hbc[0].replace('H','N')
+			if len(hbc[0]) == 4: doner = hbc[0][:-1].replace('H','N')
+			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[1]],hbc[2],hbc[0],AAA_dict[hbc[5]],hbc[6],hbc[4])] = ' # found in {:} structures'.format(hbc[7])
+			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[5]],hbc[6],hbc[4],AAA_dict[hbc[1]],hbc[2],hbc[0])] = ' # found in {:} structures'.format(hbc[7])
+			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[1]],hbc[2],doner,AAA_dict[hbc[5]],hbc[6],hbc[4])] = ' # found in {:} structures'.format(hbc[7])
+			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[5]],hbc[6],hbc[4],AAA_dict[hbc[1]],hbc[2],doner)] = ' # found in {:} structures'.format(hbc[7])
+i = 1
 for line in open(fupl).readlines():
 	if line not in Filtered:
 		if '#SUP' not in line: ## exclude ambiguous restraints
@@ -330,7 +347,7 @@ for line in open(fupl).readlines():
 				outline = ' #{:3.2f} #peak {:} #plist {:}\n'.format(float(cns[6]),cns[8],cns[10])
 				usedupls[cons1] = outline
 				usedupls[cons2] = outline
-				## Traslate amids H to N to search input upls but don't mess up the connections drawn in pymol/chimera
+				## Traslate amides H to N to search input upls but don't mess up the connections drawn in pymol/chimera
 				atoms1 = atom1
 				atoms2 = atom2
 				if atom1 == 'H': atoms1 = 'N'
@@ -370,7 +387,7 @@ for line in open(fupl).readlines():
 					if float(cns[6]) <= 3.00:
 						if abs(int(cns[0])- int(cns[3])) > 1:
 							i+=1
-							shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:} {:}\n'.format(cns[0], atom1, cns[3],atom2, 'light coral'))
+							shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 							shortcons2.extend([cons1,cons2])
 							outpml.write('distance short{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 							qupldict[cons1] = " #short distance\n"
@@ -395,9 +412,7 @@ uviolpbout.close()
 # unused, no assignment, and questionable
 
 assigndict = noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict, upldict, pad, upldict2)
-#exec("pb{:} = open('{:}','w')".format(str(x+1), outdir +'pseudobonds/' + plistn + '.pb'))
-#pbout = eval('pb{:}'.format(conect))
-#pbout.write("; halfbond = false\n; color = " + colors[x+1] + "\n; radius = 0.1\n; dashes = 0\n")
+
 mn = 1
 for x in range(len(ConectionTypes)):
 	pbs = eval('{:}_pb'.format(ConectionTypes[x]))
@@ -407,7 +422,7 @@ for x in range(len(ConectionTypes)):
 		pbout.write("; halfbond = false\n; color = " + colors[x] + "\n; radius = 0.1\n; dashes = 0\n")
 		pbout.writelines(pbs)
 		outcmx.write('open pseudobonds/{:}_{:}.pb\n'.format(outname, ConectionTypes[x]))
-		outcmx.write('color #{:} {:}\n'.format(str(mn),colors[x]))
+		# outcmx.write('color #{:} {:}\n'.format(str(mn),colors[x]))
 		groupstr = eval('group' + ConectionTypes[x])
 		outpml.write(groupstr + '\n')
 		outpml.write('color {:}, {:}\n'.format(colors[x],ConectionTypes[x]))
@@ -415,14 +430,14 @@ for x in range(len(ConectionTypes)):
 for (group, color) in [('poor','mediumvioletred'),('long','firebrick'),('short', 'lightcoral'),('viol_upls', 'deeppink')]:
 	mn+=1
 	outcmx.write('open pseudobonds/' + outname + '_' + group + '.pb\n')
-	outcmx.write('color #{:} {:}\n'.format(str(mn),color))
+	# outcmx.write('color #{:} {:}\n'.format(str(mn),color))
 for (group, color) in [('poorcons','mediumvioletred'),('longcons','firebrick'),('shortcons', 'lightcoral'),('viol_upls', 'deeppink')]:
 	grpstr = eval(group)
 	outpml.write(grpstr + '\n')
 	outpml.write('color {:}, {:}\n'.format(color, group))
+
 #### Write out the filtered upl list, which does not contain ambiguous (QQ) restraints 
 #### and has sorted the restraints into 5 labeled categories
-
 filtered_upl = open(outdir + fupl.replace('.upl','4cns.upl'),'w')
 for upllist in finalupls:
 	for upl in upllist:
@@ -448,11 +463,14 @@ for uplfile in upls:
 			atoms1 = atom1.split(',')
 			upldf.loc[cns[0],'input'] = upldf.loc[cns[0],'input'] + 1
 			upldf.loc[cns[3],'input'] = upldf.loc[cns[3],'input'] + 1
+			cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
 			for atom1 in atoms1:
 				for atom2 in atoms2:
 					u+=1
 					if 'missing' in line:
 						outpb.write('#1.1:{:}@{:} #1.1:{:}@{:} blue\n'.format(cns[0], atom1, cns[3],atom2))
+					if cons in Upperdict.keys():
+						outpb.write('#1.1:{:}@{:} #1.1:{:}@{:} hotpink\n'.format(cns[0], atom1, cns[3],atom2))
 					else:
 						outpb.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 					outpml.write('distance {:}{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
@@ -465,9 +483,7 @@ for uplfile in upls:
 	outpml.write('color cyan,' + uplfile.replace('.upl','') + '\n')
 	mn+=1
 	outcmx.write('open pseudobonds/' + uplfile.replace('.upl','.pb') + '\n')
-	#outcmx.write('color #{:} {:}\n'.format(str(mn),'cyan'))
 sidechains = 'show #1:'
-
 selhbond = 'name hbond  #1.1:'
 hbonsl = []
 hbond = open(outdir +'pseudobonds/' + 'hbond.pb','w')
@@ -482,8 +498,11 @@ for hbondf in hbonds:
 			if (cns[0],cns[3]) not in hbonsl:
 				h+=1 
 				hbonsl.append((cns[0],cns[3]))
-				# hbonsl.append((cns[3],cns[0]))
-				hbond.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], cns[2], cns[3],cns[5]))
+				cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+				if cons in Upperdict.keys():
+					hbond.write('#1.1:{:}@{:} #1.1:{:}@{:} hotpink\n'.format(cns[0], cns[2], cns[3],cns[5]))
+				else:
+					hbond.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], cns[2], cns[3],cns[5]))
 				outpml.write('distance hbond{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(h), pdbname, cns[0], cns[2].replace('H','N'), pdbname, cns[3], cns[5].replace('H','N')))
 				hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
 				if cns[0] not in selhbond:
@@ -501,13 +520,13 @@ outpml.write(hbgroupline + '\n')
 outpml.write('color pink, hbond\n')
 selhbond = selhbond[:-1] + '@O,N\nshow hbond target a\n'
 outcmx.write('open pseudobonds/' + 'hbond.pb\n')
-outcmx.write('color #{:} {:}\n'.format(str(mn),'pink'))
 outcmx.write(selhbond)
 upls.extend(hbonds)
+mn+=1
 
 ## Examine input upl files and update lines for entries which are violated 10 or more times, and identify proton-proton restraints that support heavy atoms based restraints 
-
 for uplfile in upls:
+	print(uplfile)
 	found_upls, tupls, mupls, vupls  = 0, 0, 0, 0
 	newlines = []
 	violupl = open(outdir + uplfile.replace('.upl','_viol.upl'),'w')
@@ -540,11 +559,10 @@ for uplfile in upls:
 		if len(newline) < 1:
 			newline = line
 		newlines.append(newline)
-	if uplfile != 'hbond.upl': 
-		checkcons.write('{:} input upls from {:}\n'.format(mupls + tupls, uplfile))
-		checkcons.write('    {:} of {:} of assignable input upls found\n'.format(found_upls,tupls))
-		checkcons.write('    {:} of upls violated in 10 or more structures\n'.format(vupls))
-		checkcons.write('    {:} of upls missing assignment\n'.format(mupls))
+	checkcons.write('{:} input upls from {:}\n'.format(mupls + tupls, uplfile))
+	checkcons.write('    {:} of {:} of assignable input upls found\n'.format(found_upls,tupls))
+	checkcons.write('    {:} of upls violated in 10 or more structures\n'.format(vupls))
+	checkcons.write('    {:} of upls missing assignment\n'.format(mupls))
 	fout = open(outdir + uplfile,'w')
 	fout.writelines(newlines)
 	fout.close()
@@ -569,7 +587,7 @@ for lolfile in lols:
 checkcons.write('\n\n')
 
 print('finished finding upls')
-checkcons.write('### {:3.0f}  Violated Distance Constraints ###\n'.format(len(violpeaks)/2))
+checkcons.write('### {:3.0f}  Violated Distance Restraints ###\n'.format(len(violpeaks)/2))
 # violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
 for viol in violpeaks:
 	if viol in assigndict.keys():
@@ -578,7 +596,7 @@ for viol in violpeaks:
 		checkcons.write('\n')
 checkcons.write('\n\n')
 #### Write out Poor/Low Support constraints to the summary file
-checkcons.write('### {:3.0f} Low Support Constraints ###\n'.format(len(poorcons2)/2))
+checkcons.write('### {:3.0f} Low Support Restraints ###\n'.format(len(poorcons2)/2))
 for con in poorcons2:
 	if con in assigndict.keys():
 		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
@@ -586,7 +604,7 @@ for con in poorcons2:
 		checkcons.write('\n')
 checkcons.write('\n\n')
 #### Write out Long Distance constraints to the summary file
-checkcons.write('### {:3.0f} Long Distance Constraints d >= 6.00 ###\n'.format(len(longcons2)/2))
+checkcons.write('### {:3.0f} Long Distance Restraints d >= 6.00 ###\n'.format(len(longcons2)/2))
 
 for con in longcons2:
 	if con in assigndict.keys():
@@ -595,7 +613,7 @@ for con in longcons2:
 		checkcons.write('\n')
 checkcons.write('\n\n')
 #### Write out Short Distance constraints to the summary file
-checkcons.write('### {:3.0f} Short Distance Constraints d <= 3.00 ###\n'.format(len(shortcons2)/2))
+checkcons.write('### {:3.0f} Short Distance Restraints d <= 3.00 ###\n'.format(len(shortcons2)/2))
 for con in shortcons2:
 	if con in assigndict.keys():
 		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
@@ -620,23 +638,25 @@ for angf in dihed:
 					chir.append(ang[0])
 					cmxchisel = cmxchisel + ang[0] + ','
 					pmlchisel = pmlchisel  + ang[0] + '+'
+
 for y in range(2,21,1):
 	outpml.write('align {:}_{:04d}, {:}_0001\n'.format(pdbname,y, pdbname))
-outcmx.write('open ../' + in_pdb+ ' maxModels 1\nrename #{:} angles\nhide #{:} target a\n color #{:} gray(150)\n'.format(angmn,angmn,angmn))
-outcmx.write(cmxphisel[:-1] + '\n')
+outcmx.write('open ../' + in_pdb+ ' maxModels 1\nrename #{:} angles\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(mn,mn,mn))
+outcmx.write(cmxphisel.replace('angmn',str(mn))[:-1] + '\n')
 outcmx.write('color phipsisel purple target c\n')
 if cmxchisel[-1] != ':':
-	outcmx.write(cmxchisel[:-1] + '\n')
+	outcmx.write(cmxchisel.replace('angmn',str(mn))[:-1] + '\n')
 	outcmx.write('color chisel navy target a \n')
 	outcmx.write('show chisel target a\n')
 if cmxphiviol[-1] != ':':
-	outcmx.write(cmxphiviol[:-1] + '\n')
+	outcmx.write(cmxphiviol.replace('angmn',str(mn))[:-1] + '\n')
 	outcmx.write('color phipsiviol mediumpurple target c \n')
 if cmxchiviol[-1] != ':':
-	outcmx.write(cmxchiviol[:-1] + '\n')
+	outcmx.write(cmxchiviol.replace('angmn',str(mn))[:-1] + '\n')
 	outcmx.write('color chiviol cornflower blue target a\n')
 	outcmx.write('show chiviol target a\n')
-outcmx.write('hide #{:}@H*,N,O target a\ncolor  byhetero target a\n'.format(angmn))
+outcmx.write('label #{:} text "{{0.label_one_letter_code}}{{0.number}}{{0.insertion_code}}"\n''label ontop false\n'.format(mn))
+outcmx.write('hide #{:}@H*,N,O target a\ncolor  byhetero target a\n'.format(mn))
 outpml.write('hide everything, {:}\n'.format(pdbname))
 outpml.write('create phi-psi, {:}_0001\ncolor gray60,phi-psi\nhide sticks, phi-psi\n'.format(pdbname))
 outpml.write(pmlphisel[:-1] + '\n')
@@ -665,7 +685,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 import numpy as np
 from matplotlib.widgets import Slider
-pdf=PdfPages(outdir + '{:}_upl_overview.pdf'.format(pdbname))
+pdf=PdfPages(outdir + '{:}_overview.pdf'.format(pdbname))
 nsubplots = round(len(Sequence)/20,0)
 if round(len(Sequence)/20,1) - nsubplots > 0.0:
 	nsubplots = nsubplots + 1
@@ -700,7 +720,7 @@ for i in range(0,len(upldf.index.tolist()),20):
 		if not pd.isna(angle):
 			angelidx.append(index[n]+2*width)
 			angelh.append(max(upldf['cya']))
-			text = ax.text(index[n]+0.1, max(upldf['cya']), angle,ha='center', va='top',fontsize=6)
+			text = ax.text(index[n]+0.1, max(upldf['cya']), angle, ha='center', va='top',fontsize=6)
 	ax.bar(angelidx, angelh, 0.9, color='gray',alpha = 0.5, zorder = 0.0,edgecolor='none' )
 	ax.set_xticks(index +2*width, labels=resid)
 	ax.set_ylim([0,max(upldf['cya'])])
