@@ -526,7 +526,6 @@ mn+=1
 
 ## Examine input upl files and update lines for entries which are violated 10 or more times, and identify proton-proton restraints that support heavy atoms based restraints 
 for uplfile in upls:
-	print(uplfile)
 	found_upls, tupls, mupls, vupls  = 0, 0, 0, 0
 	newlines = []
 	violupl = open(outdir + uplfile.replace('.upl','_viol.upl'),'w')
