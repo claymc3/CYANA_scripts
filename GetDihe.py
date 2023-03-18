@@ -54,16 +54,10 @@ def _cache_ROTA_PREF_VALUES():
 	f_path = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 	ROTA_PREF_VALUES = {}
 	for key, val in ROTA_PREFERENCES.items():
-		## Values in data span 5 to 255 in incrments of 2
-		ROTA_PREF_VALUES[key] = np.full((361, 361), 0, dtype=np.float64)
-		with open(os.path.join(f_path, val["file"])) as fn:
-			for line in fn:
-				if line.startswith("#"):
-					continue
-				else:
-					x = int(float(line.split()[1]))
-					y = int(float(line.split()[0]))
-					ROTA_PREF_VALUES[key][x][y] = float(line.split()[-1]) 
+		ROTA_PREF_VALUES[key] = np.full((360, 360), 0, dtype=np.float64)
+		fn = open(os.path.join(f_path, val["file"])).readlines()
+		for (line,x,y) in val["incr"]:
+			ROTA_PREF_VALUES[key][x][y] = ROTA_PREF_VALUES[key][x][y] + float(fn[line].split()[-1])
 	return ROTA_PREF_VALUES
 
 def crossProduct(u,v):
@@ -186,13 +180,8 @@ def plot_chi1_chi2_ramachandran(pdf, chi1DF, chi2DF):
 		normals = {"chi1":[],"chi2":[]}
 		outliers = {"chi1":[],"chi2":[]}
 		aa_type = res[0]
-		multiple = float(ROTA_PREFERENCES[aa_type]["incr"])
 		for mnum in range(1,2,1):
-			# print(multiple * ceil(chi1DF.loc[res,mnum] / multiple))
-			# print(multiple * ceil(chi2DF.loc[res,mnum] / multiple))
-			# print(multiple * floor(chi1DF.loc[res,mnum] / multiple))
-			# print(multiple * floor(chi2DF.loc[res,mnum] / multiple))
-			if ROTA_PREF_VALUES[aa_type][int(multiple * floor(chi2DF.loc[res,mnum] / multiple))][int(multiple * floor(chi1DF.loc[res,mnum] / multiple))] < ROTA_PREFERENCES[aa_type]["bounds"][1]:
+			if ROTA_PREF_VALUES[aa_type][int(chi2DF.loc[res,mnum])][int(chi1DF.loc[res,mnum])] < ROTA_PREFERENCES[aa_type]["bounds"][1]:
 				outliers["chi1"].append(chi1DF.loc[res,mnum])
 				outliers["chi2"].append(chi2DF.loc[res,mnum])
 			else:
