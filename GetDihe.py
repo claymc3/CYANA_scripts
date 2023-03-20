@@ -55,9 +55,14 @@ def _cache_ROTA_PREF_VALUES():
 	ROTA_PREF_VALUES = {}
 	for key, val in ROTA_PREFERENCES.items():
 		ROTA_PREF_VALUES[key] = np.full((360, 360), 0, dtype=np.float64)
-		fn = open(os.path.join(f_path, val["file"])).readlines()
-		for (line,x,y) in val["incr"]:
-			ROTA_PREF_VALUES[key][x][y] = ROTA_PREF_VALUES[key][x][y] + float(fn[line].split()[-1])
+		with open(os.path.join(f_path, val["file"])) as fn:
+			for line in fn:
+				if line.startswith("#"):
+					continue
+				else:
+					x = int(float(line.split()[1]))
+					y = int(float(line.split()[0]))
+					ROTA_PREF_VALUES[key][x][y] = float(line.split()[2])
 	return ROTA_PREF_VALUES
 
 def crossProduct(u,v):
