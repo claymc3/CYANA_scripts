@@ -162,8 +162,8 @@ def plot_phi_psi_ramachandran(pdf, PhiDF, PsiDF):
 				extent=(-180, 180, 180, -180))
 		ax.scatter(normals["phi"], normals["psi"],marker='o',s= 30,facecolors='blue', edgecolors= 'none', linewidth=1.0)
 		ax.scatter(outliers["phi"], outliers["psi"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
-		ax.set_xlabel('Phi')
-		ax.set_ylabel('Psi')
+		ax.set_xlabel(r'$\phi$')
+		ax.set_ylabel(r'$\psi$')
 		ax.set_title(res)
 		ax.set_xlim([-180,180])
 		ax.set_xticks([-180,-120,-60,0,60,120,180])
@@ -199,8 +199,8 @@ def plot_chi1_chi2_ramachandran(pdf, chi1DF, chi2DF):
 				extent=(0, 360, 360, 0))
 		ax.scatter(normals["chi1"], normals["chi2"],marker='o',s= 30,facecolors='blue', edgecolors= 'none', linewidth=1.0)
 		ax.scatter(outliers["chi1"], outliers["chi2"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
-		ax.set_xlabel('chi1')
-		ax.set_ylabel('chi2')
+		ax.set_xlabel(r'$\chi$1')
+		ax.set_ylabel(r'$\chi$2')
 		ax.set_title(res)
 		ax.set_xlim([0,360])
 		ax.set_xticks([0,60,120,180,240,300,360])
@@ -281,8 +281,8 @@ def extract(in_pdb, Sequence, outdir):
 
 	for i in range(1,len(Sequence)-1,1):
 		if Sequence[i+1][0] == 'P': PhiDF.loc[Sequence[i],'type'] = "PRE-PRO"
-		if Sequence[i][0] == 'P':PhiDF.loc[Sequence[i],'type'] = "PRO"
-		if Sequence[i][0] == 'G':PhiDF.loc[Sequence[i],'type'] = "GLY"
+		elif Sequence[i][0] == 'P':PhiDF.loc[Sequence[i],'type'] = "PRO"
+		elif Sequence[i][0] == 'G':PhiDF.loc[Sequence[i],'type'] = "GLY"
 		else: PhiDF.loc[Sequence[i],'type'] = "General"
 	for res in Sequence: 
 		if res[0] in SideDihe.keys():
