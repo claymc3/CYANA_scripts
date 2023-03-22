@@ -20,7 +20,7 @@ RAMA_PREFERENCES = {
     },
     "PRE-PRO": {
         "file": os.path.join('top500-angles/pct/rama/', 'rama500-prepro.data'),
-        "cmap": mplcolors.ListedColormap(['#FFFFFF', '#B3E8FF', '#7FD9FF']),
+        "cmap": mplcolors.ListedColormap(['#FFFFFF', '#E0D1FF', '#BE9EFF']),
         "bounds": [0, 0.002, 0.02, 1],
     }
 }
