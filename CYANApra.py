@@ -673,7 +673,7 @@ outcmx.close()
 # Run the GetDihed.py to determine phi, psi, chi1 and chi2 and plot them
 # for all 20 structures
 print('Extracting dihedrals')
-Dihed.extract(in_pdb, ASequence, outdir, upldf)
+Dihed.extract(in_pdb, ASequence, outdir, upldf, dihed)
 print('finished plotting dihedrals')
 
 print('finished')
