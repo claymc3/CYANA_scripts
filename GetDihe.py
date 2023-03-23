@@ -28,9 +28,6 @@ Aromatic_groups = {"PHE" : ['CE1', 'CE2'], "TYR": ['CE1','CHE2']}
 Pass_Atoms = ['N   ALA', 'H   ALA', 'N   ARG', 'H   ARG', 'N   ASN', 'H   ASN', 'N   ASP', 'H   ASP', 'N   CYS', 'H   CYS', 'N   GLU', 'H   GLU', 'N   GLN', 'H   GLN', 'N   GLY', 'H   GLY', 'N   HIS', 'H   HIS', 'N   ILE', 'H   ILE', 'N   LEU', 'H   LEU', 'N   LYS', 'H   LYS', 'N   MET', 'H   MET', 'N   PHE', 'H   PHE', 'N   SER', 'H   SER', 'N   THR', 'H   THR', 'N   TRP', 'H   TRP', 'N   TYR', 'H   TYR', 'N   VAL', 'H   VAL']
 
 
-if len(sys.argv) == 1:
-	print('Usage: GetDieh pdb chain')
-	exit()
 
 RAMA_PREF_VALUES = None
 ROTA_PREF_VALUES = None
@@ -136,96 +133,106 @@ SideDihe = {
  'F':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
  'Y':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
  'W':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']]}
-
-
-def plot_phi_psi_ramachandran(pdf, PhiDF, PsiDF):
-	print('Plotting Phi-Psi')
+def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF):
 
 	global RAMA_PREF_VALUES
 
 	if RAMA_PREF_VALUES is None:
 		RAMA_PREF_VALUES = _cache_RAMA_PREF_VALUES()
 
-	for res in PhiDF.index.to_list():
-		normals = {"phi":[],"psi":[]}
-		outliers = {"phi":[],"psi":[]}
-		aa_type = PhiDF.loc[res,'type']
-		for mnum in range(1,21,1):
-			if RAMA_PREF_VALUES[aa_type][int(PsiDF.loc[res,mnum])+ 180][int(PhiDF.loc[res,mnum]) + 180] < RAMA_PREFERENCES[aa_type]["bounds"][1]:
-				outliers["phi"].append(PhiDF.loc[res,mnum])
-				outliers["psi"].append(PsiDF.loc[res,mnum])
-			else:
-				normals["phi"].append(PhiDF.loc[res,mnum])
-				normals["psi"].append(PsiDF.loc[res,mnum])
+	normals = {"phi":[],"psi":[]}
+	outliers = {"phi":[],"psi":[]}
+	aa_type = PhiDF.loc[res,'type']
+	for mnum in range(1,21,1):
+		if RAMA_PREF_VALUES[aa_type][int(PsiDF.loc[res,mnum])+ 180][int(PhiDF.loc[res,mnum]) + 180] < RAMA_PREFERENCES[aa_type]["bounds"][1]:
+			outliers["phi"].append(PhiDF.loc[res,mnum])
+			outliers["psi"].append(PsiDF.loc[res,mnum])
+		else:
+			normals["phi"].append(PhiDF.loc[res,mnum])
+			normals["psi"].append(PsiDF.loc[res,mnum])
 
-		fig, ax =plt.subplots(figsize=(3,3))
-		plt.imshow(RAMA_PREF_VALUES[aa_type], cmap=RAMA_PREFERENCES[aa_type]["cmap"],
-				norm=colors.BoundaryNorm(RAMA_PREFERENCES[aa_type]["bounds"], RAMA_PREFERENCES[aa_type]["cmap"].N),
-				extent=(-180, 180, 180, -180))
-		ax.scatter(normals["phi"], normals["psi"],marker='o',s= 30,facecolors='black', edgecolors= 'none', linewidth=1.0)
-		ax.scatter(outliers["phi"], outliers["psi"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
-		ax.set_xlabel(r'$\phi$')
-		ax.set_ylabel(r'$\psi$')
-		ax.set_title(res)
-		ax.set_xlim([-180,180])
-		ax.set_xticks([-180,-120,-60,0,60,120,180])
-		ax.set_yticks([-180,-120,-60,0,60,120,180])
-		ax.set_ylim([-180,180])
-		ax.plot([-180, 180], [0, 0], color="black")
-		ax.plot([0, 0], [-180, 180], color="black")
-		ax.grid(visible=True, which='major', axis='both',linestyle='--')
-		plt.tight_layout()
-		pdf.savefig()
-		plt.close()
+	ax.imshow(RAMA_PREF_VALUES[aa_type], cmap=RAMA_PREFERENCES[aa_type]["cmap"],
+			norm=colors.BoundaryNorm(RAMA_PREFERENCES[aa_type]["bounds"], RAMA_PREFERENCES[aa_type]["cmap"].N),
+			extent=(-180, 180, 180, -180))
+	ax.scatter(normals["phi"], normals["psi"],marker='o',s= 30,facecolors='black', edgecolors= 'none', linewidth=1.0)
+	ax.scatter(outliers["phi"], outliers["psi"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
+	ax.set_xlabel(r'$\mathrm{\phi}$')
+	ax.set_ylabel(r'$\mathrm{\psi}$')
+	ax.set_title(res)
+	ax.set_xlim([-180,180])
+	ax.set_xticks([-180,-120,-60,0,60,120,180])
+	ax.set_yticks([-180,-120,-60,0,60,120,180])
+	ax.set_ylim([-180,180])
+	ax.plot([-180, 180], [0, 0], color="black")
+	ax.plot([0, 0], [-180, 180], color="black")
+	ax.grid(visible=True, which='major', axis='both',linestyle='--')
+	plt.tight_layout()
 
-def plot_chi1_chi2_ramachandran(pdf, chi1DF, chi2DF):
-	print('Plotting Chi1-Chi2')
+
+def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF):
+
 	global ROTA_PREF_VALUES
 
 	if ROTA_PREF_VALUES is None:
 		ROTA_PREF_VALUES = _cache_ROTA_PREF_VALUES()
 
-	for res in chi1DF.index.to_list():
-		normals = {"chi1":[],"chi2":[]}
-		outliers = {"chi1":[],"chi2":[]}
-		aa_type = res[0]
-		for mnum in range(1,2,1):
-			if ROTA_PREF_VALUES[aa_type][int(chi2DF.loc[res,mnum])][int(chi1DF.loc[res,mnum])] < ROTA_PREFERENCES[aa_type]["bounds"][1]:
-				outliers["chi1"].append(chi1DF.loc[res,mnum])
-				outliers["chi2"].append(chi2DF.loc[res,mnum])
-			else:
-				normals["chi1"].append(chi1DF.loc[res,mnum])
-				normals["chi2"].append(chi2DF.loc[res,mnum])
+	normals = {"chi1":[],"chi2":[]}
+	outliers = {"chi1":[],"chi2":[]}
+	aa_type = res[0]
+	for mnum in range(1,2,1):
+		if ROTA_PREF_VALUES[aa_type][int(chi2DF.loc[res,mnum])][int(chi1DF.loc[res,mnum])] < ROTA_PREFERENCES[aa_type]["bounds"][1]:
+			outliers["chi1"].append(chi1DF.loc[res,mnum])
+			outliers["chi2"].append(chi2DF.loc[res,mnum])
+		else:
+			normals["chi1"].append(chi1DF.loc[res,mnum])
+			normals["chi2"].append(chi2DF.loc[res,mnum])
 
-		fig, ax =plt.subplots(figsize=(3,3))
-		plt.imshow(ROTA_PREF_VALUES[aa_type], cmap=ROTA_PREFERENCES[aa_type]["cmap"],
-				norm=colors.BoundaryNorm(ROTA_PREFERENCES[aa_type]["bounds"], ROTA_PREFERENCES[aa_type]["cmap"].N),
-				extent=(0, 360, 360, 0))
-		ax.scatter(normals["chi1"], normals["chi2"],marker='o',s= 30,facecolors='black', edgecolors= 'none', linewidth=1.0)
-		ax.scatter(outliers["chi1"], outliers["chi2"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
-		ax.set_xlabel(r'$\chi$1')
-		ax.set_ylabel(r'$\chi$2')
-		ax.set_title(res)
-		ax.set_xlim([0,360])
-		ax.set_xticks([0,60,120,180,240,300,360])
-		ax.set_yticks([0,60,120,180,240,300,360])
-		ax.set_ylim([0,360])
-		ax.grid(visible=True, which='major', axis='both',linestyle='--')
-		plt.tight_layout()
-		pdf.savefig()
-		plt.close()
+	ax.imshow(ROTA_PREF_VALUES[aa_type], cmap=ROTA_PREFERENCES[aa_type]["cmap"],
+			norm=colors.BoundaryNorm(ROTA_PREFERENCES[aa_type]["bounds"], ROTA_PREFERENCES[aa_type]["cmap"].N),
+			extent=(0, 360, 360, 0))
+	ax.scatter(normals["chi1"], normals["chi2"],marker='o',s= 30,facecolors='black', edgecolors= 'none', linewidth=1.0)
+	ax.scatter(outliers["chi1"], outliers["chi2"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
+	ax.set_xlabel(r'$\mathrm{\chi}1$')
+	ax.set_ylabel(r'$\mathrm{\chi}2$')
+	ax.set_title(res)
+	ax.set_xlim([0,360])
+	ax.set_xticks([0,60,120,180,240,300,360])
+	ax.set_yticks([0,60,120,180,240,300,360])
+	ax.set_ylim([0,360])
+	ax.grid(visible=True, which='major', axis='both',linestyle='--')
+	plt.tight_layout(w_pad = 0.1)
 
+def plot_upl(res, ax, upldf):
+	width = 0.18
+	ax.bar(1, upldf.loc[res,'cya'], width, color = '#9acd32', ecolor='none', label='CYANA UPL')
+	ax.bar(1 + width, upldf.loc[res,'long'], width, color = '#800080', edgecolor='none', label='long UPL')
+	ax.bar(1 + 2 * width, upldf.loc[res,'viol'], width, color = '#ffa500', edgecolor='none', label='Violated UPL')
+	ax.bar(1 + 3 * width, upldf.loc[res,'input'], width, color = '#6495ed', edgecolor='none', label='Input UPL')
+	ax.bar(1 + 4 * width, upldf.loc[res,'viol input'], width, color = '#db7093', edgecolor='none', label='Violate Input UPL')
+	angle = upldf.loc[res,'vdihed']
+	if not pd.isna(angle):
+		text = ax.text(1+0.1, max(upldf['cya']), angle, ha='center', va='top',fontsize=6)
+		ax.bar(1 + 2*width, max(upldf['cya']), 0.9, color='gray',alpha = 0.5, zorder = 0.0,edgecolor='none' )
+	# ax.set_xticks(index +2*width, labels=resid)
+	ax.set_ylim([0,max(upldf['cya'])])
+	# ax.set_xlim([(min(index) - 1.0 * width), (max(index) + 5 * width)])
+	# ax.tick_params(axis='x', labelrotation = 90)
+	box = ax.get_position()
+	ax.set_position([box.x0, box.y0, box.width * 0.4, box.height])
+	# Put a legend to the right of the current axis
+	ax.legend(loc='center left',  frameon=False, bbox_to_anchor=(1.0, 0.5), markerscale=0.000001)
+	ax.set_ylabel('Number of UPL Entries')
+	ax.set_xlabel('Residue')
+	ax.tick_params(axis='y')
+	# plt.tight_layout()
 
-
-
-in_pdb = sys.argv[1]
 ###----------------------------------------------------------------------------###
 ##	Extract the starting and ending lines for the 20 NMR models in the file.	##
 ##	Build a separate dictionary for each set of coordinates with the format:	##
 ##								A#-atom:[x,y,z] 								##
 ##	where A# is the residue single letter code and index 						##
 ###----------------------------------------------------------------------------###
-def extract(in_pdb, Sequence, outdir):
+def extract(in_pdb, Sequence, outdir,upldf):
 	outname = in_pdb.split('/')[-1]
 	Starts, Ends = [], []
 	for mnum in range(1,21,1):
@@ -299,26 +306,34 @@ def extract(in_pdb, Sequence, outdir):
 	#chi3DF.to_csv(outdir + in_pdb.replace('.pdb', '_chi3.csv'))
 	#chi4DF.to_csv(outdir + in_pdb.replace('.pdb', '_chi4.csv'))
 
-	pdf = PdfPages(outdir + outname.replace('.pdb', '_Phi-Psi.pdf'))
-	plot_phi_psi_ramachandran(pdf,PhiDF, PsiDF)
+
+	pdf = PdfPages(outdir + '{:}_overview.pdf'.format(in_pdb.replace('.pdb','')))
+	for res in Sequence:
+		if res not in PhiDF.index.to_list():
+			fig, ax = plt.subplots(figsize=(3,3))
+			plot_upl(res, ax, upldf)
+			pdf.savefig()
+			plt.close()
+		if res in PhiDF.index.to_list() and res in chi1DF.index.to_list():
+			fig, (ax1,ax2,ax3) =plt.subplots(1,3,figsize=(9,3))
+			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF)
+			plot_chi1_chi2_ramachandran(res, ax2, chi1DF, chi2DF)
+			plot_upl(res, ax3, upldf)
+			pdf.savefig()
+			plt.close()
+		if res in PhiDF.index.to_list() and res not in chi1DF.index.to_list():
+			fig, (ax1,ax2) =plt.subplots(1,2,figsize=(6,3))
+			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF)
+			plot_upl(res, ax2, upldf)
+			pdf.savefig()
+			plt.close()
+		if res not in PhiDF.index.to_list() and res in chi1DF.index.to_list():
+			fig, (ax1,ax2) =plt.subplots(1,2,figsize=(6,3))
+			plot_chi1_chi2_ramachandran(res, ax1, chi1DF, chi2DF)
+			plot_upl(res, ax2, upldf)
+			pdf.savefig()
+			plt.close()
 	pdf.close()
 
-	pdf = PdfPages(outdir + outname.replace('.pdb', '_Chi1-Chi2.pdf'))
-	plot_chi1_chi2_ramachandran(pdf,chi1DF, chi2DF)
-	pdf.close()
 
-	# for res in chi1DF.index.to_list():
-	# 	fig, ax = plt.subplots(figsize=(3,3))
-	# 	ax.scatter(chi1DF.loc[res][:-2],chi2DF.loc[res][:-2],marker='o',s= 30,facecolors='none', edgecolors= 'blue', linewidth=1.0)
-	# 	ax.set_xlabel('Chi1')
-	# 	ax.set_ylabel('Chi2')
-	# 	ax.set_title(res)
-	# 	ax.set_xlim([0,360])
-	# 	ax.set_xticks([0,60,120,180,240,300,360])
-	# 	ax.set_yticks([0,60,120,180,240,300,360])
-	# 	ax.set_ylim([0,360])
-	# 	ax.grid(visible=True, which='major', axis='both',linestyle='--')
-	# 	plt.tight_layout()
-	# 	pdf.savefig()
-	# 	plt.close()
-	# pdf.close()
+
