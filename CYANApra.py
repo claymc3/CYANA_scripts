@@ -109,7 +109,7 @@ for resn,resi in seq:
 	Seqdict[resi] = AAA_dict[resn] + resi
 	ASequence.append(AAA_dict[resn] + resi)
 	Sequence.append(resi)
-upldf = pd.DataFrame(index = Sequence, columns=['cya','long','viol','input','viol input','vdihed'])
+upldf = pd.DataFrame(index = ASequence, columns=['cya','long','viol','input','viol input','vdihed'])
 upldf['cya'] = np.zeros(len(Sequence))
 upldf['long'] = np.zeros(len(Sequence))
 upldf['viol'] = np.zeros(len(Sequence))
@@ -249,8 +249,8 @@ for line in open(fovw).readlines():
 				outline = ' #viol in {:} by +{:}\n'.format(dviol[9],dviol[10])
 				if 'peak' not in line:
 					if line[4:9] == 'Upper':
-						upldf.loc[dviol[7],'viol input'] = upldf.loc[dviol[7],'viol input'] + 1
-						upldf.loc[dviol[3],'viol input'] = upldf.loc[dviol[3],'viol input'] + 1
+						upldf.loc[AAA_dict[dviol[6]] + dviol[7],'viol input'] = upldf.loc[AAA_dict[dviol[6]] + dviol[7],'viol input'] + 1
+						upldf.loc[AAA_dict[dviol[2]] + dviol[3],'viol input'] = upldf.loc[AAA_dict[dviol[2]] + dviol[3],'viol input'] + 1
 						Upperdict[cons1] = outline
 						Upperdict[cons2] = outline
 					if line[4:9] == 'Lower':
@@ -264,8 +264,8 @@ for line in open(fovw).readlines():
 						cns = line2.split()
 						if cns[8] == line[90:].split()[1] and cns[10] == line[90:].split()[3] and cns[2] == dviol[1] and cns[5] == dviol[5]:
 							if cns[0] != cns[3] and '#SUP' in line2:
-								upldf.loc[cns[0],'viol'] = upldf.loc[cns[0],'viol'] + 1
-								upldf.loc[cns[3],'viol'] = upldf.loc[cns[3],'viol'] + 1
+								upldf.loc[AAA_dict[cns[1]] + cns[0],'viol'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'viol'] + 1
+								upldf.loc[AAA_dict[cns[4]] + cns[3],'viol'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'viol'] + 1
 								violpeaks.extend([cons1,cons2])
 								finalupls[0].append(line2)
 								Filtered.append(line2)
@@ -275,10 +275,10 @@ for line in open(fovw).readlines():
 				viol_upls = viol_upls + "viol"+str(v) + ' '
 	if line[4:9] == 'Angle':
 		dang = line.split()
-		angle = upldf.loc[dang[3],'vdihed']
+		angle = upldf.loc[ AAA_dict[dang[2]] + dang[3],'vdihed']
 		if pd.isna(angle): angle = ''
 		angle = angle + '{:} {:}\n'.format(dang[1],dang[7])
-		upldf.loc[dang[3],'vdihed'] = angle
+		upldf.loc[AAA_dict[dang[2]] + dang[3],'vdihed'] = angle
 		if dang[1] == 'PHI' or dang[1] == 'PSI':
 			if dang[3] not in phiv:
 				phiv.append(dang[3])
@@ -340,8 +340,8 @@ for line in open(fupl).readlines():
 					atom1 = atom1.replace(cns[2], replacements[cns[1]+cns[2]])
 				if cns[4]+cns[5] in replacements.keys():
 					atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
-				upldf.loc[cns[0],'cya'] = upldf.loc[cns[0],'cya'] + 1
-				upldf.loc[cns[3],'cya'] = upldf.loc[cns[3],'cya'] + 1
+				upldf.loc[AAA_dict[cns[1]] + cns[0],'cya'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'cya'] + 1
+				upldf.loc[AAA_dict[cns[4]] + cns[3],'cya'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'cya'] + 1
 				cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
 				cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5],AAA_dict[cns[1]],cns[0],cns[2])
 				outline = ' #{:3.2f} #peak {:} #plist {:}\n'.format(float(cns[6]),cns[8],cns[10])
@@ -373,8 +373,8 @@ for line in open(fupl).readlines():
 					# if cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR'] and cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR']: longcut = 6.00
 					# if cns[1] in ['ALA','LEU','VAL','MET','ILE','THR'] and cns[4] in ['ALA','LEU','VAL','MET','ILE','THR']:longcut = 5.00
 					if float(cns[6]) >= 6.0:
-						upldf.loc[cns[0],'long'] = upldf.loc[cns[0],'long'] + 1
-						upldf.loc[cns[3],'long'] = upldf.loc[cns[3],'long'] + 1
+						upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
+						upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] + 1
 						qupldict[cons1] = " #long distance\n"
 						qupldict[cons2] = " #long distance\n"
 						i+=1
@@ -461,8 +461,8 @@ for uplfile in upls:
 				atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
 			atoms2 = atom2.split(',')
 			atoms1 = atom1.split(',')
-			upldf.loc[cns[0],'input'] = upldf.loc[cns[0],'input'] + 1
-			upldf.loc[cns[3],'input'] = upldf.loc[cns[3],'input'] + 1
+			upldf.loc[AAA_dict[cns[1]] + cns[0],'input'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'input'] + 1
+			upldf.loc[AAA_dict[cns[4]] + cns[3],'input'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'input'] + 1
 			cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
 			for atom1 in atoms1:
 				for atom2 in atoms2:
@@ -672,66 +672,9 @@ outcmx.close()
 # ---------------------------------------------------------------------------
 # Run the GetDihed.py to determine phi, psi, chi1 and chi2 and plot them
 # for all 20 structures
-
-Dihed.extract(in_pdb, ASequence, outdir)
+print('Extracting dihedrals')
+Dihed.extract(in_pdb, ASequence, outdir, upldf)
 print('finished plotting dihedrals')
 
-# ---------------------------------------------------------------------------
-# Plot the upl counts for each residue 
-# 
-import matplotlib as mpl 
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_pdf import PdfPages
-import numpy as np
-from matplotlib.widgets import Slider
-pdf=PdfPages(outdir + '{:}_overview.pdf'.format(pdbname))
-nsubplots = round(len(Sequence)/20,0)
-if round(len(Sequence)/20,1) - nsubplots > 0.0:
-	nsubplots = nsubplots + 1
-if nsubplots == 0: nsubplots = 1
-fig_height = 3.0 * nsubplots
-if fig_height <= 2.0: 
-	fig_height = 3.0
-fig=plt.figure(figsize=(10.0,fig_height))
-spi = 0
-for i in range(0,len(upldf.index.tolist()),20):
-	spi = spi + 1
-	temp, resid = [], []
-	z = i
-	for y in range(20):
-		temp.append(upldf.index.tolist()[z])
-		resid.append(ASequence[z])
-		z = z + 1 
-		if z == len(upldf.index.tolist()):break
-	index = np.arange(i,z,1)
-	dfp = upldf.reindex(temp)
-	width = 0.18
-	ax = fig.add_subplot(int(nsubplots),1,spi)
-	ax.bar(index, dfp['cya'], width, color = '#9acd32', ecolor='none', label='CYANA UPL')
-	ax.bar(index + width, dfp['long'], width, color = '#800080', edgecolor='none', label='long UPL')
-	ax.bar(index + 2 * width, dfp['viol'], width, color = '#ffa500', edgecolor='none', label='Violated UPL')
-	ax.bar(index + 3 * width, dfp['input'], width, color = '#6495ed', edgecolor='none', label='Input UPL')
-	ax.bar(index + 4 * width, dfp['viol input'], width, color = '#db7093', edgecolor='none', label='Violate Input UPL')
-	angelidx, angelh = [], []
-	for n in range(len(index)):
-		res = temp[n]
-		angle = dfp.loc[res,'vdihed']
-		if not pd.isna(angle):
-			angelidx.append(index[n]+2*width)
-			angelh.append(max(upldf['cya']))
-			text = ax.text(index[n]+0.1, max(upldf['cya']), angle, ha='center', va='top',fontsize=6)
-	ax.bar(angelidx, angelh, 0.9, color='gray',alpha = 0.5, zorder = 0.0,edgecolor='none' )
-	ax.set_xticks(index +2*width, labels=resid)
-	ax.set_ylim([0,max(upldf['cya'])])
-	ax.set_xlim([(min(index) - 1.0 * width), (max(index) + 5 * width)])
-	ax.tick_params(axis='x', labelrotation = 90)
-	ax.legend(loc='best', frameon=False, markerscale=0.000001)
-	ax.set_ylabel('Number of UPL Entries')
-	ax.set_xlabel('Residue')
-	plt.tight_layout(pad = 0.4, w_pad = 0.4, h_pad = 0.4)
-pdf.savefig()
-# plt.show()
-plt.close()
-pdf.close()
 print('finished')
 
