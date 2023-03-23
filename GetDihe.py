@@ -10,6 +10,11 @@ from matplotlib import colors
 from math import ceil, floor
 from rama_config import RAMA_PREFERENCES
 from rama_config import ROTA_PREFERENCES
+mpl.rcParams['font.sans-serif'] = 'arial'
+mpl.rcParams['font.size'] = 10
+mpl.rcParams['axes.linewidth'] = 1.0
+mpl.rcParams['xtick.major.width'] = 1.0
+mpl.rcParams['xtick.labelsize'] = mpl.rcParams['ytick.labelsize']=8
 
 pdb_columns = ['name', 'resn', 'resid', 'Chain', 'X', 'Y', 'Z', 'Element']
 # Read in PDB file one line at a time, if the first four letter ar ATOM or HETA then it will parse the data into the 
@@ -38,16 +43,12 @@ def _cache_RAMA_PREF_VALUES():
 		RAMA_PREF_VALUES[key] = np.full((360, 360), 0, dtype=np.float64)
 		with open(os.path.join(f_path, val["file"])) as fn:
 			for line in fn:
-				if line.startswith("#"):
-					continue
-				else:
+				if line[0] != "#":
 					x = int(float(line.split()[1]))
 					y = int(float(line.split()[0]))
-					RAMA_PREF_VALUES[key][x + 180][y + 180] \
-						= RAMA_PREF_VALUES[key][x + 179][y + 179] \
-						= RAMA_PREF_VALUES[key][x + 179][y + 180] \
-						= RAMA_PREF_VALUES[key][x + 180][y + 179] \
-						= float(line.split()[2]) 
+					for nx in np.arange(x-1,x+1,1):
+						for ny in np.arange(y-1,y+1,1):
+							RAMA_PREF_VALUES[key][nx + 180][ny + 180] = float(line.split()[-1])
 	return RAMA_PREF_VALUES
 
 def _cache_ROTA_PREF_VALUES():
@@ -57,12 +58,14 @@ def _cache_ROTA_PREF_VALUES():
 		ROTA_PREF_VALUES[key] = np.full((360, 360), 0, dtype=np.float64)
 		with open(os.path.join(f_path, val["file"])) as fn:
 			for line in fn:
-				if line.startswith("#"):
-					continue
-				else:
+				if line[0] != "#":
 					x = int(float(line.split()[1]))
 					y = int(float(line.split()[0]))
-					ROTA_PREF_VALUES[key][x][y] = float(line.split()[2])
+					for nx in np.arange(x-1,x+1,1):
+						for ny in np.arange(y-1,y+1,1):
+							ROTA_PREF_VALUES[key][nx][ny] = float(line.split()[-1])
+							if key in ['F','Y','D']:
+								ROTA_PREF_VALUES[key][nx+180][ny] = float(line.split()[-1])
 	return ROTA_PREF_VALUES
 
 def crossProduct(u,v):
@@ -106,8 +109,7 @@ def calcDihedrals(A,B,C,D):
 # chi4 side chain torsion angle for atoms *G,*D,*E,*Z
 # chi5 side chain torsion angle for atoms *D,*E,*Z, NH1
 # return phi, psi
-#MODEL        1
-#
+
 #SideDihe = {
 # 'R':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD' ], ['chi3', 'CB', 'CG', 'CD', 'NE'], ['chi4', 'CG', 'CD', 'NE', 'CZ'], ['chi5', 'CD', 'NE', 'CZ' ,'NH1']],
 # 'N':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'OD1']],
@@ -160,7 +162,7 @@ def plot_phi_psi_ramachandran(pdf, PhiDF, PsiDF):
 		plt.imshow(RAMA_PREF_VALUES[aa_type], cmap=RAMA_PREFERENCES[aa_type]["cmap"],
 				norm=colors.BoundaryNorm(RAMA_PREFERENCES[aa_type]["bounds"], RAMA_PREFERENCES[aa_type]["cmap"].N),
 				extent=(-180, 180, 180, -180))
-		ax.scatter(normals["phi"], normals["psi"],marker='o',s= 30,facecolors='blue', edgecolors= 'none', linewidth=1.0)
+		ax.scatter(normals["phi"], normals["psi"],marker='o',s= 30,facecolors='black', edgecolors= 'none', linewidth=1.0)
 		ax.scatter(outliers["phi"], outliers["psi"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
 		ax.set_xlabel(r'$\phi$')
 		ax.set_ylabel(r'$\psi$')
@@ -169,6 +171,8 @@ def plot_phi_psi_ramachandran(pdf, PhiDF, PsiDF):
 		ax.set_xticks([-180,-120,-60,0,60,120,180])
 		ax.set_yticks([-180,-120,-60,0,60,120,180])
 		ax.set_ylim([-180,180])
+		ax.plot([-180, 180], [0, 0], color="black")
+		ax.plot([0, 0], [-180, 180], color="black")
 		ax.grid(visible=True, which='major', axis='both',linestyle='--')
 		plt.tight_layout()
 		pdf.savefig()
@@ -197,7 +201,7 @@ def plot_chi1_chi2_ramachandran(pdf, chi1DF, chi2DF):
 		plt.imshow(ROTA_PREF_VALUES[aa_type], cmap=ROTA_PREFERENCES[aa_type]["cmap"],
 				norm=colors.BoundaryNorm(ROTA_PREFERENCES[aa_type]["bounds"], ROTA_PREFERENCES[aa_type]["cmap"].N),
 				extent=(0, 360, 360, 0))
-		ax.scatter(normals["chi1"], normals["chi2"],marker='o',s= 30,facecolors='blue', edgecolors= 'none', linewidth=1.0)
+		ax.scatter(normals["chi1"], normals["chi2"],marker='o',s= 30,facecolors='black', edgecolors= 'none', linewidth=1.0)
 		ax.scatter(outliers["chi1"], outliers["chi2"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
 		ax.set_xlabel(r'$\chi$1')
 		ax.set_ylabel(r'$\chi$2')
