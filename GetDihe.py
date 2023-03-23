@@ -210,13 +210,13 @@ def plot_upl(res, ax, upldf):
 	ax.bar(1 + 3 * width, upldf.loc[res,'input'], width, color = '#6495ed', edgecolor='none', label='Input UPL')
 	ax.bar(1 + 4 * width, upldf.loc[res,'viol input'], width, color = '#db7093', edgecolor='none', label='Violate Input UPL')
 	angle = upldf.loc[res,'vdihed']
+	ymax = 10.0
+	if max(upldf.loc[res][0:5]) > 10.0:
+		ymax = max(upldf.loc[res][0:5]) + 1
 	if not pd.isna(angle):
-		text = ax.text(1+0.1, max(upldf['cya']), angle, ha='center', va='top',fontsize=6)
-		ax.bar(1 + 2*width, max(upldf['cya']), 0.9, color='gray',alpha = 0.5, zorder = 0.0,edgecolor='none' )
-	# ax.set_xticks(index +2*width, labels=resid)
-	ax.set_ylim([0,max(upldf['cya'])])
-	# ax.set_xlim([(min(index) - 1.0 * width), (max(index) + 5 * width)])
-	# ax.tick_params(axis='x', labelrotation = 90)
+		text = ax.text(1+0.1,ymax, angle, ha='center', va='top',fontsize=6)
+		ax.bar(1 + 2*width, ymax, 0.9, color='gray',alpha = 0.5, zorder = 0.0,edgecolor='none' )
+	ax.set_ylim([0,ymax])
 	box = ax.get_position()
 	ax.set_position([box.x0, box.y0, box.width * 0.4, box.height])
 	# Put a legend to the right of the current axis
@@ -232,7 +232,45 @@ def plot_upl(res, ax, upldf):
 ##								A#-atom:[x,y,z] 								##
 ##	where A# is the residue single letter code and index 						##
 ###----------------------------------------------------------------------------###
-def extract(in_pdb, Sequence, outdir,upldf):
+def extract(in_pdb, Sequence, outdir,upldf, dihed):
+	phicount, psicount,chi1count,chi2count, total = 0,0,0,0,0
+	phipsidict = {}
+	chidisct = {}
+	for line in open(dihed):
+		if line.split():
+			if line.startswith('#'):
+				continue
+			else:
+				cns = line.split()
+				if cns[2] == 'PHI':
+					phicount+= 1
+					outline = r"$\phi$  {:} - {:}\n".format(cns[3],cns[4])
+					if AAA_dict[cns[1]] + cns[0] not in phipsidict.keys():
+						phipsidict[AAA_dict[cns[1]] + cns[0]] = [outline]
+					if AAA_dict[cns[1]] + cns[0] not in phipsidict.keys():
+						phipsidict[AAA_dict[cns[1]] + cns[0]].append(outline)
+				if cns[2] == 'PSI':
+					psicount+= 1
+					outline = r"$\psi$  {:} - {:}\n".format(cns[3],cns[4])
+					if AAA_dict[cns[1]] + cns[0] not in phipsidict.keys():
+						phipsidict[AAA_dict[cns[1]] + cns[0]] = [outline]
+					if AAA_dict[cns[1]] + cns[0] not in phipsidict.keys():
+						phipsidict[AAA_dict[cns[1]] + cns[0]].append(outline)
+				if cns[2] == 'CHI1':
+					chi1count+= 1
+					outline = r"$\chi$1  {:} - {:}\n".format(cns[3],cns[4])
+					if AAA_dict[cns[1]] + cns[0] not in chidict.keys():
+						chidict[AAA_dict[cns[1]] + cns[0]] = [outline]
+					if AAA_dict[cns[1]] + cns[0] not in chidict.keys():
+						chidict[AAA_dict[cns[1]] + cns[0]].append(outline)
+				if cns[2].replace('CHI21','CHI2') == 'CHI2':
+					chi2count+= 1
+					outline = r"$\chi$2  {:} - {:}\n".format(cns[3],cns[4])
+					if AAA_dict[cns[1]] + cns[0] not in chidict.keys():
+						chidict[AAA_dict[cns[1]] + cns[0]] = [outline]
+					if AAA_dict[cns[1]] + cns[0] not in chidict.keys():
+						chidict[AAA_dict[cns[1]] + cns[0]].append(outline)
+
 	outname = in_pdb.split('/')[-1]
 	Starts, Ends = [], []
 	for mnum in range(1,21,1):
@@ -291,7 +329,7 @@ def extract(in_pdb, Sequence, outdir,upldf):
 	chi2DF['stdv'] = np.round(chi2DF.std(axis=1),2)
 
 	for i in range(1,len(Sequence)-1,1):
-		if Sequence[i+1][0] == 'P': PhiDF.loc[Sequence[i],'type'] = "PRE-PRO"
+		if Sequence[i+1][0] == 'P' and Sequence[i][0] != 'G': PhiDF.loc[Sequence[i],'type'] = "PRE-PRO"
 		elif Sequence[i][0] == 'P':PhiDF.loc[Sequence[i],'type'] = "PRO"
 		elif Sequence[i][0] == 'G':PhiDF.loc[Sequence[i],'type'] = "GLY"
 		else: PhiDF.loc[Sequence[i],'type'] = "General"
@@ -308,10 +346,12 @@ def extract(in_pdb, Sequence, outdir,upldf):
 
 
 	pdf = PdfPages(outdir + '{:}_overview.pdf'.format(in_pdb.replace('.pdb','')))
+	legendcolors = ['#9acd32','#800080','#ffa500','#6495ed','#db7093']
+	text = ['CYANA UPL','long UPL','Violated UPL','Input UPL','Violate Input UPL']
 	for res in Sequence:
 		if res not in PhiDF.index.to_list():
-			fig, ax = plt.subplots(figsize=(3,3))
-			plot_upl(res, ax, upldf)
+			fig, ax1 = plt.subplots(figsize=(3,3))
+			plot_upl(res, ax1, upldf)
 			pdf.savefig()
 			plt.close()
 		if res in PhiDF.index.to_list() and res in chi1DF.index.to_list():
