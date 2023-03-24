@@ -133,28 +133,30 @@ SideDihe = {
  'F':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
  'Y':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
  'W':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']]}
-def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,text, pdict):
+def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext, pdict,ypos):
 
 	global RAMA_PREF_VALUES
 
 	if RAMA_PREF_VALUES is None:
 		RAMA_PREF_VALUES = _cache_RAMA_PREF_VALUES()
-
+	outtext = []
 	if res in pdict.keys():
-		text.extend(pdict[res])
+		outtext.extend(pdict[res])
 	normals = {"phi":[],"psi":[]}
 	outliers = {"phi":[],"psi":[]}
 	aa_type = PhiDF.loc[res,'type']
-	outline = ""
+	outline = "   "
 	for mnum in range(1,21,1):
 		if RAMA_PREF_VALUES[aa_type][int(PsiDF.loc[res,mnum])+ 180][int(PhiDF.loc[res,mnum]) + 180] < RAMA_PREFERENCES[aa_type]["bounds"][1]:
 			outliers["phi"].append(PhiDF.loc[res,mnum])
 			outliers["psi"].append(PsiDF.loc[res,mnum])
-			outline = outline  + r"{:}  $\phi$ {:} $\psi$ {:}\n".format(mnum, PhiDF.loc[res,mnum],PsiDF.loc[res,mnum])
+			outline = outline  + "{:} ".format(mnum, PhiDF.loc[res,mnum],PsiDF.loc[res,mnum])
 		else:
 			normals["phi"].append(PhiDF.loc[res,mnum])
 			normals["psi"].append(PsiDF.loc[res,mnum])
-	if len(outline) >1: text.append([outline,'red'])
+	if len(outliers['phi']) >1 or len(outliers['psi']) >1: 
+		outtext.append([r"$\phi, psi$ disallowed in:",'red'])
+		outtext.append([outline,'red'])
 	ax.imshow(RAMA_PREF_VALUES[aa_type], cmap=RAMA_PREFERENCES[aa_type]["cmap"],
 			norm=colors.BoundaryNorm(RAMA_PREFERENCES[aa_type]["bounds"], RAMA_PREFERENCES[aa_type]["cmap"].N),
 			extent=(-180, 180, 180, -180))
@@ -162,10 +164,14 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,text, pdict):
 	ax.scatter(outliers["phi"], outliers["psi"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
 	ax.set_xlabel(r'$\mathrm{\phi}$')
 	ax.set_ylabel(r'$\mathrm{\psi}$')
+	if len(outtext) > 0:
+		for text, col in outtext:
+			axtext.text(0.0,ypos, text, color = col, fontsize = 8)
+			ypos = ypos + 0.05
 	if res in pdict.keys():
 		ax.set_title(res + " *")
 	else:
-		ax.set_title(res + " *")
+		ax.set_title(res)
 	ax.set_xlim([-180,180])
 	ax.set_xticks([-180,-120,-60,0,60,120,180])
 	ax.set_yticks([-180,-120,-60,0,60,120,180])
@@ -174,29 +180,33 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,text, pdict):
 	ax.plot([0, 0], [-180, 180], color="black")
 	ax.grid(visible=True, which='major', axis='both',linestyle='--')
 	plt.tight_layout(w_pad = 0.0001)
+	return ypos
 
-def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, text, pdict):
+def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, pdict, ypos):
 
 	global ROTA_PREF_VALUES
 
 	if ROTA_PREF_VALUES is None:
 		ROTA_PREF_VALUES = _cache_ROTA_PREF_VALUES()
-
+	outtext = []
 	normals = {"chi1":[],"chi2":[]}
 	outliers = {"chi1":[],"chi2":[]}
 	if res in pdict.keys():
-		text.append([pdict[res],'black'])
-	outline = ""
+		print(pdict[res])
+		outtext.extend(pdict[res])
+	outline = "   "
 	aa_type = res[0]
 	for mnum in range(1,21,1):
 		if ROTA_PREF_VALUES[aa_type][int(chi2DF.loc[res,mnum])][int(chi1DF.loc[res,mnum])] < ROTA_PREFERENCES[aa_type]["bounds"][1]:
 			outliers["chi1"].append(chi1DF.loc[res,mnum])
 			outliers["chi2"].append(chi2DF.loc[res,mnum])
-			outline = outline  + r"{:}  $\chi1$ {:} $\chi22$ {:}\n".format(mnum, chi1DF.loc[res,mnum], chi2DF.loc[res,mnum])
+			outline = outline  + "{:} ".format(mnum)
 		else:
 			normals["chi1"].append(chi1DF.loc[res,mnum])
 			normals["chi2"].append(chi2DF.loc[res,mnum])
-	if len(outline) >1: text.append([outline,'red'])
+	if len(outliers) >1: 
+		outtext.append([r"$\chi1, chi2$ disallowed in:",'red'])
+		outtext.append([outline,'red'])
 	ax.imshow(ROTA_PREF_VALUES[aa_type], cmap=ROTA_PREFERENCES[aa_type]["cmap"],
 			norm=colors.BoundaryNorm(ROTA_PREFERENCES[aa_type]["bounds"], ROTA_PREFERENCES[aa_type]["cmap"].N),
 			extent=(0, 360, 360, 0))
@@ -204,16 +214,22 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, text, pdict):
 	ax.scatter(outliers["chi1"], outliers["chi2"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
 	ax.set_xlabel(r'$\mathrm{\chi}1$')
 	ax.set_ylabel(r'$\mathrm{\chi}2$')
+	if len(outtext) > 0:
+		for text, col in outtext:
+			axtext.text(0.0,ypos, text, color = col, fontsize = 8)
+			ypos = ypos + 0.05
+	
 	if res in pdict.keys():
 		ax.set_title(res + " *")
 	else:
-		ax.set_title(res + " *")
+		ax.set_title(res)
 	ax.set_xlim([0,360])
 	ax.set_xticks([0,60,120,180,240,300,360])
 	ax.set_yticks([0,60,120,180,240,300,360])
 	ax.set_ylim([0,360])
 	ax.grid(visible=True, which='major', axis='both',linestyle='--')
 	plt.tight_layout(w_pad = 0.0001)
+	return ypos
 
 def plot_upl(res, ax, upldf):
 	width = 0.18
@@ -227,11 +243,11 @@ def plot_upl(res, ax, upldf):
 	if max(upldf.loc[res][0:5]) > 10.0:
 		ymax = max(upldf.loc[res][0:5]) + 1
 	if not pd.isna(angle):
-		text = ax.text(1+0.1,ymax, angle, ha='center', va='top',fontsize=6)
+		ax.text(1+0.1,ymax, angle, ha='center', va='top',fontsize=6)
 		ax.bar(1 + 2*width, ymax, 0.9, color='gray',alpha = 0.5, zorder = 0.0,edgecolor='none' )
 	ax.set_ylim([0,ymax])
 	box = ax.get_position()
-	ax.set_position([box.x0, box.y0, box.width * 0.4, box.height])
+	ax.set_title(res)
 	# Put a legend to the right of the current axis
 	# ax.legend(loc='center left',  frameon=False, bbox_to_anchor=(1.0, 0.5), markerscale=0.000001)
 	ax.set_ylabel('Number of UPL Entries')
@@ -359,33 +375,38 @@ def extract(in_pdb, Sequence, outdir,upldf, dihed):
 
 
 	pdf = PdfPages(outdir + '{:}_overview.pdf'.format(in_pdb.replace('.pdb','')))
-	text = [['CYANA UPL','#9acd32'],['long UPL\n','#800080'],['Violated UPL\n\n','#ffa500'],['Input UPL\n\n','#6495ed'],['Violate Input UPL\n\n\n','#db7093']]
+	text = [['CYANA UPL','#9acd32'],['long UPL','#800080'],['Violated UPL','#ffa500'],['Input UPL','#6495ed'],['Violate Input UPL','#db7093']]
 	for res in Sequence:
+		ypos = 0.75
 		if res not in PhiDF.index.to_list():
-			fig, (ax1, ax0) = plt.subplots(1,2, figsize=(3,3),width_ratios = [2,3])
+			fig, (ax1, ax0) = plt.subplots(1,2, figsize=(3,3),width_ratios = [3,4])
+			gridspec = ax0.get_subplotspec().get_gridspec()
 			plot_upl(res, ax1, upldf)
 			# pdf.savefig()
 			# plt.close()
 		if res in PhiDF.index.to_list() and res in chi1DF.index.to_list():
 			fig, (ax1,ax2,ax3,ax0) =plt.subplots(1,4,figsize=(9,3), width_ratios = [6,6,3,3])
-			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,text,phipsidict)
-			plot_chi1_chi2_ramachandran(res, ax2, chi1DF, chi2DF,text,chidict)
+			ypos = plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0,phipsidict, ypos)
+			ypos = plot_chi1_chi2_ramachandran(res, ax2, chi1DF, chi2DF,ax0,chidict, ypos)
 			plot_upl(res, ax3, upldf)
 			# pdf.savefig()
 			# plt.close()
 		if res in PhiDF.index.to_list() and res not in chi1DF.index.to_list():
 			fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3), width_ratios = [2,1,1])
-			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,text,phipsidict)
+			ypos = plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0,phipsidict, ypos)
 			plot_upl(res, ax2, upldf)
 			# pdf.savefig()
 			# plt.close()
 		if res not in PhiDF.index.to_list() and res in chi1DF.index.to_list():
 			fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3),width_ratios = [2,1,1])
-			plot_chi1_chi2_ramachandran(res, ax1, chi1DF, chi2DF,text,chidict)
+			ypos = plot_chi1_chi2_ramachandran(res, ax1, chi1DF, chi2DF,ax0,chidict, ypos)
 			plot_upl(res, ax2, upldf)
 		ax0.axis('off')
-		# for text, col in text:
-		# 	a0.text(0.05,0.05, text, color = col, fontsize = 8)
+		y = 0.95
+		for val, col in text:
+			ax0.text(0.0,y , val, color = col, fontsize = 8)
+			y = y - 0.05
+			# ax0.text(0.0,0.55 , val, color = col, fontsize = 8)
 		pdf.savefig()
 		plt.close()
 
