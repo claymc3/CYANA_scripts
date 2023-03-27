@@ -6,7 +6,7 @@ RAMA_PREFERENCES = {
     "General": {
         "file": os.path.join('top2018_DataSet/rama/', 'rama2018-general-noGPpreP.data'),
         "cmap": mplcolors.ListedColormap(['#FFFFFF', '#B3E8FF', '#7FD9FF']),
-        "bounds": [0, 0.0005, 0.02, 1],
+        "bounds": [0, 0.001, 0.02, 1],
     },
     "GLY": {
         "file": os.path.join('top2018_DataSet/rama/', 'rama2018-gly-sym.data'),
