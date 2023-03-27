@@ -37,7 +37,7 @@ def _cache_RAMA_PREF_VALUES():
 	f_path = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 	RAMA_PREF_VALUES = {}
 	for key, val in RAMA_PREFERENCES.items():
-		RAMA_PREF_VALUES[key] = np.full((360, 360), 0, dtype=np.float64)
+		RAMA_PREF_VALUES[key] = np.full((361, 361), 0, dtype=np.float64)
 		with open(os.path.join(f_path, val["file"])) as fn:
 			for line in fn:
 				if line[0] != "#":
@@ -52,7 +52,7 @@ def _cache_ROTA_PREF_VALUES():
 	f_path = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 	ROTA_PREF_VALUES = {}
 	for key, val in ROTA_PREFERENCES.items():
-		ROTA_PREF_VALUES[key] = np.full((360, 360), 0, dtype=np.float64)
+		ROTA_PREF_VALUES[key] = np.full((361, 361), 0, dtype=np.float64)
 		with open(os.path.join(f_path, val["file"])) as fn:
 			for line in fn:
 				if line[0] != "#":
