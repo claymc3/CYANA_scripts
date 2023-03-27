@@ -114,6 +114,7 @@ upldf['cya'] = np.zeros(len(Sequence))
 upldf['long'] = np.zeros(len(Sequence))
 upldf['viol'] = np.zeros(len(Sequence))
 upldf['input'] = np.zeros(len(Sequence))
+upldf['found input'] = np.zeros(len(Sequence))
 upldf['viol input'] = np.zeros(len(Sequence))
 ## Check for the output directory if it does not exist make it
 if not os.path.exists(outdir):
@@ -123,7 +124,7 @@ if not os.path.exists(outdir +'pseudobonds/'):
 if not os.path.exists(noadir):
 	os.makedirs(noadir)
 checkcons = open(outdir + outname + '_summary.txt','w')
-## open the CALC.cya file to get the peaks list and additonal constraint files used in the calculation. 
+## open the CALC.cya file to get the peaks list and additional constraint files used in the calculation. 
 cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
 lengths = []
 for plist in cya_plists:
@@ -249,10 +250,11 @@ for line in open(fovw).readlines():
 				outline = ' #viol in {:} by +{:}\n'.format(dviol[9],dviol[10])
 				if 'peak' not in line:
 					if line[4:9] == 'Upper':
-						upldf.loc[AAA_dict[dviol[6]] + dviol[7],'viol input'] = upldf.loc[AAA_dict[dviol[6]] + dviol[7],'viol input'] + 1
-						upldf.loc[AAA_dict[dviol[2]] + dviol[3],'viol input'] = upldf.loc[AAA_dict[dviol[2]] + dviol[3],'viol input'] + 1
-						Upperdict[cons1] = outline
-						Upperdict[cons2] = outline
+						if 'O' not in dviol[1]:
+							upldf.loc[AAA_dict[dviol[6]] + dviol[7],'viol input'] = upldf.loc[AAA_dict[dviol[6]] + dviol[7],'viol input'] + 1
+							upldf.loc[AAA_dict[dviol[2]] + dviol[3],'viol input'] = upldf.loc[AAA_dict[dviol[2]] + dviol[3],'viol input'] + 1
+							Upperdict[cons1] = outline
+							Upperdict[cons2] = outline
 					if line[4:9] == 'Lower':
 						outline = ' #viol in {:} by -{:}\n'.format(dviol[9],dviol[10])
 						Lowerdict[cons1] = outline
@@ -551,6 +553,9 @@ for uplfile in upls:
 							violupl.write(newline)
 						if cons in usedupls.keys():
 							found_upls+= 1
+							if 'hbond' not in uplfile:
+								upldf.loc[AAA_dict[cns[1]] + cns[0],'found input'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'found input'] + 1
+								upldf.loc[AAA_dict[cns[4]] + cns[3],'found input'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'found input'] + 1
 							if len(newline) > 1: newline = newline.replace('\n', usedupls[cons])
 							if len(newline) < 1: newline = line.replace('\n', usedupls[cons])
 							matchedline = line.replace('\n', usedupls[cons])
@@ -567,6 +572,7 @@ for uplfile in upls:
 	fout.close()
 	violupl.close()
 	matchedupl.close()
+
 for lolfile in lols:
 	newlines = []
 	for line in open(lolfile).readlines():
@@ -585,6 +591,54 @@ for lolfile in lols:
 	fout.close()
 checkcons.write('\n\n')
 
+phicount, psicount,chi1count,chi2count, total = 0,0,0,0,0
+phipsidict,chidict,plotdict = {}, {}, {}
+for aco in dihed:
+	for line in open(aco):
+		if line.split():
+			if line.startswith('#'):
+				continue
+			else:
+				cns = line.split()
+				if cns[2] == 'PHI':
+					phicount+= 1
+					total+=1
+					outline = r"$\phi$  {:} - {:}".format(cns[3],cns[4])
+					plotdict[AAA_dict[cns[1]] + cns[0] + 'PHI'] = [float(cns[3]), float(cns[4])]
+					if AAA_dict[cns[1]] + cns[0] not in phipsidict.keys():
+						phipsidict[AAA_dict[cns[1]] + cns[0]] = [[outline,'black']]
+					else: 
+						phipsidict[AAA_dict[cns[1]] + cns[0]].append([outline,'black'])
+				if cns[2] == 'PSI':
+					psicount+= 1
+					total+=1
+					outline = r"$\psi$  {:} - {:}".format(cns[3],cns[4])
+					plotdict[AAA_dict[cns[1]] + cns[0] + 'PSI'] = [float(cns[3]), float(cns[4])]
+					if AAA_dict[cns[1]] + cns[0] not in phipsidict.keys():
+						phipsidict[AAA_dict[cns[1]] + cns[0]] = [[outline,'black']]
+					else: 
+						phipsidict[AAA_dict[cns[1]] + cns[0]].append([outline,'black'])
+				if cns[2] == 'CHI1':
+					chi1count+= 1
+					total+=1
+					outline = r"$\chi$1  {:} - {:}".format(cns[3],cns[4])
+					plotdict[AAA_dict[cns[1]] + cns[0] + 'CHI1'] = [float(cns[3]), float(cns[4])]
+					if AAA_dict[cns[1]] + cns[0] not in chidict.keys():
+						chidict[AAA_dict[cns[1]] + cns[0]] = [[outline,'black']]
+					else:
+						chidict[AAA_dict[cns[1]] + cns[0]].append([outline,'black'])
+				if cns[2].replace('CHI21','CHI2') == 'CHI2':
+					chi2count+= 1
+					total+=1
+					outline = r"$\chi$2  {:} - {:}".format(cns[3],cns[4])
+					plotdict[AAA_dict[cns[1]] + cns[0] + 'CHI2'] = [float(cns[3]), float(cns[4])]
+					if AAA_dict[cns[1]] + cns[0] not in chidict.keys():
+						chidict[AAA_dict[cns[1]] + cns[0]] = [[outline,'black']]
+					else:
+						chidict[AAA_dict[cns[1]] + cns[0]].append([outline,'black'])
+angle_text = "Total of {:} dihedral restraints:\n   {:>4} Phi restraints\n   {:>4} Psi restraints\n   {:>4} Chi1 restraints\n   {:>4} Chi2 restraints\n\n".format(total, phicount, psicount,chi1count,chi2count)
+print(angle_text)
+checkcons.write(angle_text)
 print('finished finding upls')
 checkcons.write('### {:3.0f}  Violated Distance Restraints ###\n'.format(len(violpeaks)/2))
 # violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
@@ -673,7 +727,7 @@ outcmx.close()
 # Run the GetDihed.py to determine phi, psi, chi1 and chi2 and plot them
 # for all 20 structures
 print('Extracting dihedrals')
-Dihed.extract(in_pdb, ASequence, outdir, upldf, dihed)
+Dihed.extract(in_pdb, ASequence, outdir, upldf, phipsidict, chidict, plotdict)
 print('finished plotting dihedrals')
 
 print('finished')
