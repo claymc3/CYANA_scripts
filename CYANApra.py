@@ -226,7 +226,7 @@ pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'color purple, phi-psi and resi '
 
 ### Go through the final overview file and extract information about violated distance and angle restraints 
 Filtered = []
-violdict, Upperdict, Lowerdict = {}, {}, {}
+violdict, Upperdict, Lowerdict, dihedviol = {}, {}, {}, {}
 viol_upls= 'group viol_upl, '
 
 v = 0
@@ -277,10 +277,7 @@ for line in open(fovw).readlines():
 				viol_upls = viol_upls + "viol"+str(v) + ' '
 	if line[4:9] == 'Angle':
 		dang = line.split()
-		angle = upldf.loc[ AAA_dict[dang[2]] + dang[3],'vdihed']
-		if pd.isna(angle): angle = ''
-		angle = angle + '{:} {:}\n'.format(dang[1],dang[7])
-		upldf.loc[AAA_dict[dang[2]] + dang[3],'vdihed'] = angle
+		dihedviol[AAA_dict[dang[2]] + dang[3] + dang[1].replace('CHI21','CHI2')] = r'$\{:}$ viol in {:} by {:}'.format(dang[1].lower(), dang[6], dang[7])
 		if dang[1] == 'PHI' or dang[1] == 'PSI':
 			if dang[3] not in phiv:
 				phiv.append(dang[3])
@@ -727,7 +724,8 @@ outcmx.close()
 # Run the GetDihed.py to determine phi, psi, chi1 and chi2 and plot them
 # for all 20 structures
 print('Extracting dihedrals')
-Dihed.extract(in_pdb, ASequence, outdir, upldf, phipsidict, chidict, plotdict)
+print(dihedviol)
+Dihed.extract(in_pdb, ASequence, outdir, upldf, phipsidict, chidict, plotdict,dihedviol)
 print('finished plotting dihedrals')
 
 print('finished')
