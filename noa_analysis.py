@@ -130,7 +130,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						dist = (Calconst/float(intdict[peak][y-2]))**(1/6)
 						drange = '{:3.2f}-{:3.2f}'.format(dist, dist*1.25)
 					if float(intdict[peak][y-2]) == 0.0: 
-						print('Warning Peak {:4} from }{:} has zero intensity !'.formate(peak, plist))
+						print('Warning Peak {:>4} from {:} has zero intensity !'.format(peak, plist))
 					outline = '{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:3.2f} {:}\n'.format(conect,intdict[peak][y-2],drange,peak,linepad,plist,pshift,note)
 					if conect in upldict.keys(): drange = upldict[conect]
 					if '{:}-{:}'.format(group1,group2)in ADpairs:
