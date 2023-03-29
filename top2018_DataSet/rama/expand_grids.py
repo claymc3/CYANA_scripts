@@ -23,8 +23,8 @@ pdf = PdfPages('Ramachandran_Phi-Psi_templates.pdf')
 files = [
 ['rama2018-general-noGPpreP.data', bcmap, [0, 0.001, 0.02, 1],'General'],
 ['rama2018-prepro-noGP.data', pcmap, [0, 0.002, 0.02, 1],'Pre-Proline'],
-['rama2018-gly.data', ycmap,[0, 0.002, 0.02, 1],'Glycine'],
-['rama2018-gly-sym.data', ycmap,[0, 0.002, 0.025, 1],'Sym-Glycine'],
+# ['rama2018-gly.data', ycmap,[0, 0.002, 0.02, 1],'Glycine'],
+['rama2018-gly-sym.data', ycmap,[0, 0.002, 0.02, 1],'Glycine'],
 ['rama2018-pro.data', gcmap, [0, 0.002, 0.02, 1],'Proline']
 ]
 
@@ -48,8 +48,8 @@ for file,cmap,bounds,label  in files:
 	ax.set_xlim([-180,180])
 	ax.set_xticks([-180,-120,-60,0,60,120,180])
 	ax.set_yticks([-180,-120,-60,0,60,120,180])
-	ax.plot([-180, 180], [0, 0], color="black")
-	ax.plot([0, 0], [-180, 180], color="black")
+	# ax.plot([-180, 180], [0, 0], color="black")
+	# ax.plot([0, 0], [-180, 180], color="black")
 	ax.set_ylim([-180,180])
 	ax.grid(visible=True, which='major', axis='both',linestyle='--')
 	plt.tight_layout()
