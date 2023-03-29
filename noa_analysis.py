@@ -252,8 +252,11 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 					conect = '{:}-{:}'.format(group1,group2)
 					if '{:} peak {:} from {:}'.format(conect,peak,plist) in upldict2: 
 						note = note + 'UPL '
-					dist = (Calconst/float(intdict[peak][y-2]))**(1/6)
-					drange = '{:3.2f}-{:3.2f}'.format(dist, dist*1.25)
+					if float(intdict[peak][y-2]) != 0.0: 
+						dist = (Calconst/float(intdict[peak][y-2]))**(1/6)
+						drange = '{:3.2f}-{:3.2f}'.format(dist, dist*1.25)
+					if float(intdict[peak][y-2]) == 0.0: 
+						print('Warning Peak {:>4} from {:} has zero intensity !'.format(peak, plist))
 					if conect in upldict.keys(): drange = upldict[conect]
 					if peak not in used:
 						good.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^10}  {:^6.2f}   {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange +'A',pshift,note))
