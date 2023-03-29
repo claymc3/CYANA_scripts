@@ -10,11 +10,14 @@ from matplotlib import colors
 from math import ceil, floor
 from rama_config import RAMA_PREFERENCES
 from rama_config import ROTA_PREFERENCES
+
+mpl.rcParams['pdf.fonttype'] = 42
 mpl.rcParams['font.sans-serif'] = 'arial'
 mpl.rcParams['font.size'] = 10
 mpl.rcParams['axes.linewidth'] = 1.0
 mpl.rcParams['xtick.major.width'] = 1.0
 mpl.rcParams['xtick.labelsize'] = mpl.rcParams['ytick.labelsize']=8
+plt.rcParams['mathtext.default'] = 'regular'
 
 pdb_columns = ['name', 'resn', 'resid', 'Chain', 'X', 'Y', 'Z', 'Element']
 # Read in PDB file one line at a time, if the first four letter ar ATOM or HETA then it will parse the data into the 
@@ -332,7 +335,7 @@ def plot_upl(res, ax, upldf):
 ###----------------------------------------------------------------------------###
 def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihedviol):
 
-	outname = in_pdb.split('/')[-1]
+	outname = in_pdb.split('/')[-1].replace('.pdb','')
 	Starts, Ends = [], []
 	for mnum in range(1,21,1):
 		start = open(in_pdb).readlines().index('MODEL' + '%9s\n' %str(mnum))
@@ -402,7 +405,7 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
 	#chi4DF.to_csv(outdir + in_pdb.replace('.pdb', '_chi4.csv'))
 
 
-	pdf = PdfPages(outdir + '{:}_overview.pdf'.format(in_pdb.replace('.pdb','')))
+	pdf = PdfPages(outdir + '{:}_overview.pdf'.format(outname))
 	text = [['CYANA UPL','#9acd32'],['long UPL','#800080'],['Violated UPL','#ffa500'],['Input UPL','#6495ed'],['Found Input UPL','navy'],['Violate Input UPL','#db7093']]
 	for res in Sequence:
 		if res not in PhiDF.index.to_list():
