@@ -14,11 +14,17 @@ gcmap = mplcolors.ListedColormap(['#FFFFFF', '#D0FFC5', '#7FFF8C'])
 pcmap = mplcolors.ListedColormap(['#FFFFFF', '#E0D1FF', '#BE9EFF'])
 ycmap = mplcolors.ListedColormap(['#FFFFFF', '#FFE8C5', '#FFCC7F'])
 # exit()
+mpl.rcParams['pdf.fonttype'] = 42
 mpl.rcParams['font.sans-serif'] = 'arial'
 mpl.rcParams['font.size'] = 10
 mpl.rcParams['axes.linewidth'] = 1.0
 mpl.rcParams['xtick.major.width'] = 1.0
 mpl.rcParams['xtick.labelsize'] = mpl.rcParams['ytick.labelsize']=8
+plt.rcParams['mathtext.default'] = 'regular'
+mpl.rcParams['mathtext.sf']= 'sans\\-serif'
+
+
+
 pdf = PdfPages('Ramachandran_Phi-Psi_templates.pdf')
 files = [
 ['rama2018-general-noGPpreP.data', bcmap, [0, 0.001, 0.02, 1],'General'],

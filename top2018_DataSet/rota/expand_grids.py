@@ -6,11 +6,15 @@ import matplotlib as mpl
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib import colors
 import matplotlib.colors as mplcolors
+
+mpl.rcParams['pdf.fonttype'] = 42
 mpl.rcParams['font.sans-serif'] = 'arial'
 mpl.rcParams['font.size'] = 10
 mpl.rcParams['axes.linewidth'] = 1.0
 mpl.rcParams['xtick.major.width'] = 1.0
 mpl.rcParams['xtick.labelsize'] = mpl.rcParams['ytick.labelsize']=8
+plt.rcParams['mathtext.default'] = 'regular'
+mpl.rcParams['mathtext.sf']= 'sans\\-serif'
 # for x in np.arange(2.5,362.5,5):
 # 	print(x)
 bcmap = mplcolors.ListedColormap(['#FFFFFF', '#B3E8FF', '#7FD9FF'])
