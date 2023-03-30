@@ -397,12 +397,12 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
 		if res[0] in SideDihe.keys():
 			chi1DF.loc[res,'type'] = res[0]
 
-	PhiDF.to_csv(outdir + outname.replace('.pdb', '_Phi.csv'))
-	PsiDF.to_csv(outdir + outname.replace('.pdb', '_Psi.csv'))
-	chi1DF.to_csv(outdir + outname.replace('.pdb', '_Chi1.csv'))
-	chi2DF.to_csv(outdir + outname.replace('.pdb', '_Chi2.csv'))
-	#chi3DF.to_csv(outdir + in_pdb.replace('.pdb', '_chi3.csv'))
-	#chi4DF.to_csv(outdir + in_pdb.replace('.pdb', '_chi4.csv'))
+	PhiDF.to_csv(outdir + outname + '_Phi.csv')
+	PsiDF.to_csv(outdir + outname + '_Psi.csv')
+	chi1DF.to_csv(outdir + outname + '_Chi1.csv')
+	chi2DF.to_csv(outdir + outname + '_Chi2.csv')
+	#chi3DF.to_csv(outdir + outname + '_chi3.csv')
+	#chi4DF.to_csv(outdir + outname + '_chi4.csv')
 
 
 	pdf = PdfPages(outdir + '{:}_overview.pdf'.format(outname))

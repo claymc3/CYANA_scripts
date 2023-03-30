@@ -466,14 +466,14 @@ for uplfile in upls:
 			for atom1 in atoms1:
 				for atom2 in atoms2:
 					u+=1
+					outpml.write('distance {:}{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+					pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
 					if 'missing' in line:
 						outpb.write('#1.1:{:}@{:} #1.1:{:}@{:} blue\n'.format(cns[0], atom1, cns[3],atom2))
 					if cons in Upperdict.keys():
 						outpb.write('#1.1:{:}@{:} #1.1:{:}@{:} hotpink\n'.format(cns[0], atom1, cns[3],atom2))
 					else:
 						outpb.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-					outpml.write('distance {:}{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-					pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
 			if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
 				sidelist.append(cns[0])
 			if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
@@ -588,53 +588,43 @@ for lolfile in lols:
 	fout.close()
 checkcons.write('\n\n')
 
-phicount, psicount,chi1count,chi2count, total = 0,0,0,0,0
+phicount, psicount,chi1count,chi2count, othercount, total = 0,0,0,0,0, 0 
 phipsidict,chidict,plotdict = {}, {}, {}
+phir, chir = [],[]
 for aco in dihed:
 	for line in open(aco):
 		if line.split():
 			if line.startswith('#'):
 				continue
 			else:
-				cns = line.split()
-				if cns[2] == 'PHI':
-					phicount+= 1
-					total+=1
-					outline = r"$\phi$  {:} - {:}".format(cns[3],cns[4])
-					plotdict[AAA_dict[cns[1]] + cns[0] + 'PHI'] = [float(cns[3]), float(cns[4])]
-					if AAA_dict[cns[1]] + cns[0] not in phipsidict.keys():
-						phipsidict[AAA_dict[cns[1]] + cns[0]] = [[outline,'black']]
-					else: 
-						phipsidict[AAA_dict[cns[1]] + cns[0]].append([outline,'black'])
-				if cns[2] == 'PSI':
-					psicount+= 1
-					total+=1
-					outline = r"$\psi$  {:} - {:}".format(cns[3],cns[4])
-					plotdict[AAA_dict[cns[1]] + cns[0] + 'PSI'] = [float(cns[3]), float(cns[4])]
-					if AAA_dict[cns[1]] + cns[0] not in phipsidict.keys():
-						phipsidict[AAA_dict[cns[1]] + cns[0]] = [[outline,'black']]
-					else: 
-						phipsidict[AAA_dict[cns[1]] + cns[0]].append([outline,'black'])
-				if cns[2] == 'CHI1':
-					chi1count+= 1
-					total+=1
-					outline = r"$\chi$1  {:} - {:}".format(cns[3],cns[4])
-					plotdict[AAA_dict[cns[1]] + cns[0] + 'CHI1'] = [float(cns[3]), float(cns[4])]
-					if AAA_dict[cns[1]] + cns[0] not in chidict.keys():
-						chidict[AAA_dict[cns[1]] + cns[0]] = [[outline,'black']]
-					else:
-						chidict[AAA_dict[cns[1]] + cns[0]].append([outline,'black'])
-				if cns[2].replace('CHI21','CHI2') == 'CHI2':
-					chi2count+= 1
-					total+=1
-					outline = r"$\chi$2  {:} - {:}".format(cns[3],cns[4])
-					plotdict[AAA_dict[cns[1]] + cns[0] + 'CHI2'] = [float(cns[3]), float(cns[4])]
-					if AAA_dict[cns[1]] + cns[0] not in chidict.keys():
-						chidict[AAA_dict[cns[1]] + cns[0]] = [[outline,'black']]
-					else:
-						chidict[AAA_dict[cns[1]] + cns[0]].append([outline,'black'])
+				total+=1
+				ang = line.split()
+				angle = ang[2].replace('CHI21','CHI2')
+				try:
+					exec('{:}count = {:}count + 1'.format(angle.lower(),angle.lower()))
+				except NameError:
+					othercount+=1
+				if 'PH' in ang[2]:
+					angdict = phipsidict
+					if ang[0] not in phir:
+						phir.append(ang[0])
+						cmxphisel = cmxphisel + ang[0] + ','
+						pmlphisel = pmlphisel + ang[0] + '+'
+				if 'CHI' in ang[2]:
+					angdict = chidict
+					if ang[0] not in chir:
+						chir.append(ang[0])
+						cmxchisel = cmxchisel + ang[0] + ','
+						pmlchisel = pmlchisel  + ang[0] + '+'
+				outline = r"$\{:}$  {:} - {:}".format(angle.lower(), ang[3],ang[4])
+				plotdict[AAA_dict[ang[1]] + ang[0] + angle] = [float(ang[3]), float(ang[4])]
+				if AAA_dict[ang[1]] + ang[0] not in angdict.keys():
+					angdict[AAA_dict[ang[1]] + ang[0]] = [[outline,'black']]
+				else: 
+					angdict[AAA_dict[ang[1]] + ang[0]].append([outline,'black'])
+
 angle_text = "Total of {:} dihedral restraints:\n   {:>4} Phi restraints\n   {:>4} Psi restraints\n   {:>4} Chi1 restraints\n   {:>4} Chi2 restraints\n\n".format(total, phicount, psicount,chi1count,chi2count)
-print(angle_text)
+print(angle_text[:-2])
 checkcons.write(angle_text)
 print('finished finding upls')
 checkcons.write('### {:3.0f}  Violated Distance Restraints ###\n'.format(len(violpeaks)/2))
@@ -672,23 +662,6 @@ for con in shortcons2:
 checkcons.write('\n\n')
 checkcons.close()
 
-
-phir, chir = [],[]
-for angf in dihed:
-	for line in open(angf).readlines():
-		if '#' not in line and line.strip():
-			ang = line.split()
-			if ang[2] == 'PHI' or ang[2] == 'PSI':
-				if ang[0] not in phir:
-					phir.append(ang[0])
-					cmxphisel = cmxphisel + ang[0] + ','
-					pmlphisel = pmlphisel + ang[0] + '+'
-			if 'CHI' in ang[2]:
-				if ang[0] not in chir:
-					chir.append(ang[0])
-					cmxchisel = cmxchisel + ang[0] + ','
-					pmlchisel = pmlchisel  + ang[0] + '+'
-
 for y in range(2,21,1):
 	outpml.write('align {:}_{:04d}, {:}_0001\n'.format(pdbname,y, pdbname))
 outcmx.write('open ../' + in_pdb+ ' maxModels 1\nrename #{:} angles\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(mn,mn,mn))
@@ -713,9 +686,9 @@ outpml.write(pmlphisel[:-1] + '\n')
 outpml.write('create chi, {:}_0001\ncolor gray60, chi\nhide sticks, chi\n'.format(pdbname))
 outpml.write(pmlchisel[:-1] + '\n')
 outpml.write('create viol_phi-psi, {:}_0001\ncolor gray60, viol_phi-psi\nhide sticks, viol_phi-psi\n'.format(pdbname))
-outpml.write(pmlchiviol[:-1] + '\n')
-outpml.write('create viol_chi, {:}_0001\ncolor gray60, viol_chi\nhide sticks, viol_chi\n'.format(pdbname))
 outpml.write(pmlphiviol[:-1] + '\n')
+outpml.write('create viol_chi, {:}_0001\ncolor gray60, viol_chi\nhide sticks, viol_chi\n'.format(pdbname))
+outpml.write(pmlchiviol[:-1] + '\n')
 outpml.write("hide labels\n")
 outpml.close()
 outcmx.close()
