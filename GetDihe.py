@@ -95,7 +95,7 @@ def calcDihedrals(A,B,C,D):
 	U2 = norm([C[i] - B[i] for i in range(3)])
 	U1 = getOrthoNorm([A[i] - B[i] for i in range(3)], U2)
 	U3 = getOrthoNorm([D[i] - C[i] for i in range(3)], U2)
-	angle = 180/pi * acos(dotProduct(U1,U3))
+	angle = 180/pi * acos(np.round(dotProduct(U1,U3),3))
 	sign = dotProduct(crossProduct(U1,U3),U2)
 	if sign < 0:
 		angle = -angle
@@ -363,8 +363,6 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
 
 	for mnum in range(1,21,1):
 		Coords = eval('Coor' + str(mnum))
-		# print('Coor' + str(mnum))
-		# print(Coords)
 		for i in range(1,len(Sequence)-1,1):
 			phi = calcDihedrals(Coords[Sequence[i-1]+ '-C'],Coords[Sequence[i]+ '-N'],Coords[Sequence[i]+ '-CA'],Coords[Sequence[i]+ '-C'])
 			PhiDF.loc[Sequence[i],mnum] = np.round(phi,1)
@@ -404,10 +402,13 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
 	#chi3DF.to_csv(outdir + outname + '_chi3.csv')
 	#chi4DF.to_csv(outdir + outname + '_chi4.csv')
 
-
 	pdf = PdfPages(outdir + '{:}_overview.pdf'.format(outname))
 	text = [['CYANA UPL','#9acd32'],['long UPL','#800080'],['Violated UPL','#ffa500'],['Input UPL','#6495ed'],['Found Input UPL','navy'],['Violate Input UPL','#db7093']]
+	count = 0
 	for res in Sequence:
+		count+=1
+		if count in np.arange(1,len(Sequence),25):
+			print('Ploting results for {:} ({:} of {:})'.format(res, count, len(Sequence)))
 		if res not in PhiDF.index.to_list():
 			fig, (ax1, ax0) = plt.subplots(1,2, figsize=(3.2,3),width_ratios = [3,4])
 			gridspec = ax0.get_subplotspec().get_gridspec()
@@ -438,7 +439,6 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
 		plt.tight_layout(w_pad = 0.0001)
 		pdf.savefig()
 		plt.close()
-
 	pdf.close()
 
 
