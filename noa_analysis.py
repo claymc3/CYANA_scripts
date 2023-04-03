@@ -34,7 +34,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 		exec("unused{:} = ['### Peaks which CYANA did not use assignment possiblity #unused\\n']".format(str(x)))
 		exec("no_assign{:} = ['### Peaks which CYANA found no assignment possibility #no assignmnet\\n']".format(str(x)))
 		exec("good{:} = open('{:}{:}.list','w')".format(str(x), outdir, plist))
-		exec("good{:}.write('### Peaks which CYANA assigned\\n#{:}  {:^26}  {:^24}  {:^10}  {:^6}  {:^24}\\n')".format(str(x),'Peakid','Frequencies','Connection','Dist' ,'Pshift','Comment'))
+		exec("good{:}.write('### Peaks which CYANA assigned\\n#{:}  {:^26}  {:^24}  {:^4}  {:^10}  {:^6}  {:^24}\\n')".format(str(x),'Peakid','Frequencies','Connection','UPL', 'Range' ,'Pshift','Comment'))
 		exec("questlist{:} = []".format(str(x)))
 		exec("usedquestlist{:} = []".format(str(x)))
 		exec("peaks{:} = {{}}".format(str(x)))
@@ -130,7 +130,8 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 					if float(intdict[peak][y-2]) == 0.0: 
 						print('Warning Peak {:>4} from {:} has zero intensity !'.format(peak, plist))
 					outline = '{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:3.2f} {:}\n'.format(conect,intdict[peak][y-2],drange,peak,linepad,plist,pshift,note)
-					if conect in upldict.keys(): drange = upldict[conect]
+					udist = ''
+					if conect in upldict.keys(): udist = upldict[conect] + 'A'
 					if '{:}-{:}'.format(group1,group2)in ADpairs:
 						assigndict2['{:}-{:}'.format(group1,group2)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
 						assigndict['{:}-{:}'.format(group1,group2)].append(outline)
@@ -138,18 +139,18 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						assigndict['{:}-{:}'.format(group2,group1)].append(outline)
 						assigndict2['{:}-{:}'.format(group2,group1)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
 					if float(SUP) <= 0.6:
-						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^10}  {:^6.2f}   #low support\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange +'A',float(SUP)))
+						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6.2f}   #low support\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',float(SUP)))
 						used.append(peak)
 					if conect in violdict.keys():
-						outline = "{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^10}  {:6.2f}  {:}".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange +'A',pshift,violdict[conect])
+						outline = "{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:6.2f}  {:}".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,violdict[conect])
 						questionable.append(outline)
 						used.append(peak)
 					if conect in qupldict.keys():
-						outline = "{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^10}  {:^6.2f}  {:}".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange +'A',pshift,qupldict[conect])
+						outline = "{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6.2f}  {:}".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,qupldict[conect])
 						questionable.append(outline)
 						used.append(peak)
 					if pshift <= 0.60 and peak not in used:
-						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^10}  {:^6.2f}   #poor chem shift\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange +'A',pshift))
+						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6.2f}   poor chem shift\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist,drange +'A',pshift))
 						used.append(peak)
 	print('finished assinged')
 
@@ -181,7 +182,11 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						if group1 in Swapped.keys(): group1 = Swapped[group1]
 						if group2 in Swapped.keys(): group2 = Swapped[group2]
 						conect = '{:}-{:}'.format(group1,group2)
-						if conect in upldict.keys(): drange = upldict[conect]
+						if float(intdict[peak][0]) != 0.0: 
+							dist = (Calconst/float(intdict[peak][0]))**(1/6)
+							drange = '{:3.2f}-{:3.2f}'.format(dist, dist*1.25)
+						if float(intdict[peak][0]) == 0.0: 
+							print('Warning Peak {:>4} from {:} has zero intensity !'.format(peak, plist))
 						outline = '#{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:0.2f} unused\n'.format(conect,intdict[peak][0],drange,peak,plist,linepad,pshift)
 						if '{:}-{:}'.format(group1,group2)in ADpairs2:
 							assigndict['{:}-{:}'.format(group1,group2)].append(outline)
@@ -189,16 +194,19 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						if '{:}-{:}'.format(group2,group1)in ADpairs2:
 							assigndict['{:}-{:}'.format(group2,group1)].append(outline)
 							assigndict2['{:}-{:}'.format(group2,group1)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
-						if conect in upldict.keys(): drange = upldict[conect]
+						udsit = ''
+						if conect in upldict.keys(): udist = upldict[conect]+'A'
 						if pshift > 0.75 and conect in upldict.keys():
-							unused.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^10}  {:^6.2f}   #unused {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,upldict[conect]+'A',pshift,noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures ','')))
+							unused.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6.2f}   unused {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures ','')))
 						if pshift > 0.75 and conect not in upldict.keys():
-							unused.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^10}  {:^6.2f}   #unused \n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange +'A',pshift))
+							unused.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6.2f}   unused \n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist,drange +'A',pshift))
 						if pshift < 0.75 and int(noalines[x+1].split()[3]) == 1:
-							noassingmnet.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^10}  {:^6.2f}   #unused {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange +'A',pshift,noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures ','')))
+							noassingmnet.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6.2f}   unused {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures ','')))
 			if '0 out of 0' in noalines[x+1]:
 				pdict = eval('peaks' + plist_dict[plist])
-				noassingmnet.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^10}  {:^6}   #no assignmnet\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],'none',noalines[x].strip().split()[-2]+'A','na'))
+				noassingmnet.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6}   no assignmnet\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2], 'none','', noalines[x].strip().split()[-2]+'A','na'))
+
+
 	assigned = open(outdir + 'Assignment_Summary.txt','w')
 	for val in Calibration_cns:
 		assigned.write(val.strip()+'\n')
@@ -255,9 +263,10 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						drange = '{:3.2f}-{:3.2f}'.format(dist, dist*1.25)
 					if float(intdict[peak][y-2]) == 0.0: 
 						print('Warning Peak {:>4} from {:} has zero intensity !'.format(peak, plist))
-					if conect in upldict.keys(): drange = upldict[conect]
+					udist = ''
+					if conect in upldict.keys(): udist = upldict[conect]
 					if peak not in used:
-						good.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^10}  {:^6.2f}   {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,drange +'A',pshift,note))
+						good.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6.2f}   {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,note))
 
 	for x in range(len(cya_plists)):
 		eval("good{:}.close()".format(str(x)))
