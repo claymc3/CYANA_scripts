@@ -374,8 +374,8 @@ for line in open(fupl).readlines():
 					if float(cns[6]) >= 6.0:
 						upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
 						upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] + 1
-						qupldict[cons1] = " #long distance\n"
-						qupldict[cons2] = " #long distance\n"
+						qupldict[cons1] = " long distance\n"
+						qupldict[cons2] = " long distance\n"
 						i+=1
 						longpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 						longcons2.extend([cons1,cons2])
@@ -389,8 +389,8 @@ for line in open(fupl).readlines():
 							shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 							shortcons2.extend([cons1,cons2])
 							outpml.write('distance short{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-							qupldict[cons1] = " #short distance\n"
-							qupldict[cons2] = " #short distance\n"
+							qupldict[cons1] = " short distance\n"
+							qupldict[cons2] = " short distance\n"
 							shortcons = shortcons + 'short{:} '.format(i)
 							finalupls[3].append(line)
 							Filtered.append(line)
@@ -629,6 +629,7 @@ checkcons.write(angle_text)
 print('finished finding upls')
 checkcons.write('### {:3.0f}  Violated Distance Restraints ###\n'.format(len(violpeaks)/2))
 # violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
+violpeaks = sorted(violpeaks, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 for viol in violpeaks:
 	if viol in assigndict.keys():
 		checkcons.write('{:}  {:3.2f}A ({:}): {:}'.format(viol,float(upldict[viol]),len(assigndict[viol]), violdict[viol]))
@@ -636,6 +637,7 @@ for viol in violpeaks:
 		checkcons.write('\n')
 checkcons.write('\n\n')
 #### Write out Poor/Low Support constraints to the summary file
+poorcons2 = sorted(poorcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 checkcons.write('### {:3.0f} Low Support Restraints ###\n'.format(len(poorcons2)/2))
 for con in poorcons2:
 	if con in assigndict.keys():
@@ -644,8 +646,8 @@ for con in poorcons2:
 		checkcons.write('\n')
 checkcons.write('\n\n')
 #### Write out Long Distance constraints to the summary file
+longcons2 = sorted(longcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 checkcons.write('### {:3.0f} Long Distance Restraints d >= 6.00 ###\n'.format(len(longcons2)/2))
-
 for con in longcons2:
 	if con in assigndict.keys():
 		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
@@ -654,6 +656,7 @@ for con in longcons2:
 checkcons.write('\n\n')
 #### Write out Short Distance constraints to the summary file
 checkcons.write('### {:3.0f} Short Distance Restraints d <= 3.00 ###\n'.format(len(shortcons2)/2))
+shortcons2 = sorted(shortcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 for con in shortcons2:
 	if con in assigndict.keys():
 		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
