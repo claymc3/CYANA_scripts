@@ -87,6 +87,8 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 					assign = Seqdict[resi] + '-' + atom
 					if assign not in Assignments and atom[0] in ['H','Q']:
 						Assignments.append(assign)
+	Assignments = sorted(Assignments, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
+
 	assigndict,assigndict2 = {}, {}
 	from itertools import combinations
 	ADpairs = [ '{:}-{:}'.format(comb[0],comb[1]) for comb in combinations(Assignments,2)]
@@ -139,10 +141,10 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						assigndict['{:}-{:}'.format(group2,group1)].append(outline)
 						assigndict2['{:}-{:}'.format(group2,group1)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
 					if float(SUP) <= 0.6:
-						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6.2f}   #low support\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',float(SUP)))
+						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6.2f}   low support\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',float(SUP)))
 						used.append(peak)
 					if conect in violdict.keys():
-						outline = "{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:6.2f}  {:}".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,violdict[conect])
+						outline = "{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:6.2f}  {:}".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,violdict[conect].replace(' #',''))
 						questionable.append(outline)
 						used.append(peak)
 					if conect in qupldict.keys():
@@ -203,8 +205,14 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						if pshift < 0.75 and int(noalines[x+1].split()[3]) == 1:
 							noassingmnet.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6.2f}   unused {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures ','')))
 			if '0 out of 0' in noalines[x+1]:
+				drange = ''
+				if float(intdict[peak][0]) != 0.0: 
+					dist = (Calconst/float(intdict[peak][0]))**(1/6)
+					drange = '{:3.2f}-{:3.2f}'.format(dist, dist*1.25)
+				if float(intdict[peak][0]) == 0.0: 
+					print('Warning Peak {:>4} from {:} has zero intensity !'.format(peak, plist))
 				pdict = eval('peaks' + plist_dict[plist])
-				noassingmnet.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6}   no assignmnet\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2], 'none','', noalines[x].strip().split()[-2]+'A','na'))
+				noassingmnet.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6}   no assignmnet\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2], 'none','', drange+'A','na'))
 
 
 	assigned = open(outdir + 'Assignment_Summary.txt','w')
@@ -228,7 +236,9 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 			questout =  eval('questlist' + plist_dict[plist])
 			used =eval('usedquestlist' + plist_dict[plist])
 			if peak not in used:
-				questout.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^10}  {:^6}   #only\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],pline[0],pline[2],pline[8]))
+				upl = ''
+				if con in upldict.keys(): upl = upldict[con]
+				questout.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6}   only\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],pline[0],upl, pline[2],pline[8]))
 				used.append(peak)
 
 	for x in range(len(noalines)):
