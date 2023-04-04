@@ -34,7 +34,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 		exec("unused{:} = ['### Peaks which CYANA did not use assignment possiblity #unused\\n']".format(str(x)))
 		exec("no_assign{:} = ['### Peaks which CYANA found no assignment possibility #no assignmnet\\n']".format(str(x)))
 		exec("good{:} = open('{:}{:}.list','w')".format(str(x), outdir, plist))
-		exec("good{:}.write('### Peaks which CYANA assigned\\n#{:}  {:^26}  {:^24}  {:^4}  {:^10}  {:^6}  {:^24}\\n')".format(str(x),'Peakid','Frequencies','Connection','UPL', 'Range' ,'Pshift','Comment'))
+		exec("good{:}.write('### Peaks which CYANA assigned\\n#{:}  {:^26}  {:^24}  {:^4}  {:^10}  {:^6}  {:^24}\\n')".format(str(x),'Peak #','Frequencies','Connection','UPL', 'Range' ,'Pshift','Comment'))
 		exec("questlist{:} = []".format(str(x)))
 		exec("usedquestlist{:} = []".format(str(x)))
 		exec("peaks{:} = {{}}".format(str(x)))
@@ -274,7 +274,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 					if float(intdict[peak][y-2]) == 0.0: 
 						print('Warning Peak {:>4} from {:} has zero intensity !'.format(peak, plist))
 					udist = ''
-					if conect in upldict.keys(): udist = upldict[conect]
+					if conect in upldict.keys(): udist = upldict[conect] + 'A'
 					if peak not in used:
 						good.write("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6.2f}   {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,note))
 
