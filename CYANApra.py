@@ -604,7 +604,7 @@ for aco in dihed:
 					exec('{:}count = {:}count + 1'.format(angle.lower(),angle.lower()))
 				except NameError:
 					othercount+=1
-				if 'PH' in ang[2]:
+				if 'P' in ang[2]:
 					angdict = phipsidict
 					if ang[0] not in phir:
 						phir.append(ang[0])
