@@ -182,7 +182,8 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext, pdict,ypos,plotdict,
 			norm=colors.BoundaryNorm(RAMA_PREFERENCES[aa_type]["bounds"], RAMA_PREFERENCES[aa_type]["cmap"].N),
 			extent=(-180, 180, 180, -180))
 	ax.scatter(normals["phi"], normals["psi"],marker='o',s= 30,facecolors='black', edgecolors= 'none', linewidth=1.0)
-	ax.scatter(outliers["phi"], outliers["psi"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
+	if outcount != 0:
+		ax.scatter(outliers["phi"], outliers["psi"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
 	ax.set_xlabel(r'$\mathrm{\phi}$')
 	ax.set_ylabel(r'$\mathrm{\psi}$')
 	tcolor = 'black'
@@ -264,7 +265,8 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, pdict, ypos,plo
 			norm=colors.BoundaryNorm(ROTA_PREFERENCES[aa_type]["bounds"], ROTA_PREFERENCES[aa_type]["cmap"].N),
 			extent=(0, 360, 360, 0))
 	ax.scatter(normals["chi1"], normals["chi2"],marker='o',s= 30,facecolors='black', edgecolors= 'none', linewidth=1.0)
-	ax.scatter(outliers["chi1"], outliers["chi2"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
+	if outcount != 0:
+		ax.scatter(outliers["chi1"], outliers["chi2"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
 	ax.set_xlabel(r'$\mathrm{\chi}1$')
 	ax.set_ylabel(r'$\mathrm{\chi}2$')
 	tcolor = 'black'
@@ -452,8 +454,8 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
 		for val, col in text:
 			ax0.text(-0.3,y , val, color = col, fontsize = 8)
 			y = y - 0.06
-		plt.tight_layout()
-		pdf.savefig()
+		# plt.tight_layout()
+		pdf.savefig(transparent=True)
 		plt.close()
 	pdf.close()
 
