@@ -199,7 +199,7 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext, pdict,ypos,plotdict,
 	ax.set_title(title, color = tcolor)
 	if len(outtext) > 0:
 		for text, col in outtext:
-			axtext.text(-0.1,ypos, text, color = col, fontsize = 8)
+			axtext.text(-0.3,ypos, text, color = col, fontsize = 8)
 			ypos = ypos - 0.06
 	ax.set_xlim([-180,180])
 	ax.set_xticks([-180,-120,-60,0,60,120,180])
@@ -281,7 +281,7 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, pdict, ypos,plo
 	ax.set_title(title, color = tcolor)
 	if len(outtext) > 0:
 		for text, col in outtext:
-			axtext.text(-0.1,ypos, text, color = col, fontsize = 8)
+			axtext.text(-0.3,ypos, text, color = col, fontsize = 8)
 			ypos = ypos - 0.06
 	ax.set_xlim([0,360])
 	ax.set_xticks([0,60,120,180,240,300,360])
@@ -401,42 +401,58 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
 	chi2DF.to_csv(outdir + outname + '_Chi2.csv')
 	#chi3DF.to_csv(outdir + outname + '_chi3.csv')
 	#chi4DF.to_csv(outdir + outname + '_chi4.csv')
-
+	import time
+	start_time = time.time()
 	pdf = PdfPages(outdir + '{:}_overview.pdf'.format(outname))
 	text = [['CYANA UPL','#9acd32'],['long UPL','#800080'],['Violated UPL','#ffa500'],['Input UPL','#6495ed'],['Found Input UPL','navy'],['Violate Input UPL','#db7093']]
 	count = 0
+	from matplotlib.gridspec import GridSpec
 	for res in Sequence:
 		count+=1
 		if count in np.arange(1,len(Sequence),25):
-			print('Ploting results for {:} ({:} of {:})'.format(res, count, len(Sequence)))
+			print('Plotting results for {:} ({:} of {:})'.format(res, count, len(Sequence)))
 		if res not in PhiDF.index.to_list():
-			fig, (ax1, ax0) = plt.subplots(1,2, figsize=(3.2,3),width_ratios = [3,4])
-			gridspec = ax0.get_subplotspec().get_gridspec()
+			fig = plt.figure(figsize=(3,3))
+			gs = GridSpec(1,2,width_ratios = (1,1))
+			ax1 = fig.add_subplot(gs[0])
+			ax0 = fig.add_subplot(gs[1])
+			# fig, (ax1, ax0) = plt.subplots(1,2, figsize=(3.2,3),width_ratios = [3,4])
 			plot_upl(res, ax1, upldf)
-			xpos = 0.2
 		if res in PhiDF.index.to_list() and res in chi1DF.index.to_list():
-			fig, (ax1,ax2,ax3,ax0) =plt.subplots(1,4,figsize=(9,3), width_ratios = [6,6,3,3])
+			fig = plt.figure(figsize=(9,3))
+			gs = GridSpec(1,4,width_ratios = (6,6,3,3))
+			ax1 = fig.add_subplot(gs[0])
+			ax2 = fig.add_subplot(gs[1])
+			ax3 = fig.add_subplot(gs[2])
+			ax0 = fig.add_subplot(gs[3])
+			# fig, (ax1,ax2,ax3,ax0) =plt.subplots(1,4,figsize=(9,3), width_ratios = [6,6,3,3])
 			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0,phipsidict, 0.60,plotdict,dihedviol)
 			plot_chi1_chi2_ramachandran(res, ax2, chi1DF, chi2DF,ax0,chidict, 0.35,plotdict,dihedviol)
 			plot_upl(res, ax3, upldf)
-			xpos = -0.1
 		if res in PhiDF.index.to_list() and res not in chi1DF.index.to_list():
-			fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3), width_ratios = [2,1,1])
+			fig = plt.figure(figsize=(6,3))
+			gs = GridSpec(1,3,width_ratios = (2,1,1))
+			ax1 = fig.add_subplot(gs[0])
+			ax2 = fig.add_subplot(gs[1])
+			ax0 = fig.add_subplot(gs[2])
+			# fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3), width_ratios = [2,1,1])
 			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0,phipsidict, 0.60, plotdict,dihedviol)
 			plot_upl(res, ax2, upldf)
-			xpos = -0.1
 		if res not in PhiDF.index.to_list() and res in chi1DF.index.to_list():
-			fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3),width_ratios = [2,1,1])
+			fig = plt.figure(figsize=(6,3))
+			gs = GridSpec(1,3,width_ratios = (2,1,1))
+			ax1 = fig.add_subplot(gs[0])
+			ax2 = fig.add_subplot(gs[1])
+			ax0 = fig.add_subplot(gs[2])
+			# fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3),width_ratios = [2,1,1])
 			plot_chi1_chi2_ramachandran(res, ax1, chi1DF, chi2DF,ax0,chidict, 0.60, plotdict,dihedviol)
 			plot_upl(res, ax2, upldf)
-			xpos = -0.1
 		ax0.axis('off')
 		y = 0.99
 		for val, col in text:
-			ax0.text(xpos,y , val, color = col, fontsize = 8)
+			ax0.text(-0.3,y , val, color = col, fontsize = 8)
 			y = y - 0.06
-			# ax0.text(0.0,0.55 , val, color = col, fontsize = 8)
-		plt.tight_layout(w_pad = 0.0001)
+		plt.tight_layout()
 		pdf.savefig()
 		plt.close()
 	pdf.close()
