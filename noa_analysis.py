@@ -154,7 +154,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 					if pshift <= 0.60 and peak not in used:
 						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6.2f}   poor chem shift\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist,drange +'A',pshift))
 						used.append(peak)
-	print('finished assinged')
+	print('finished assigned')
 
 	ADpairs2 = []
 	for con in ADpairs:
@@ -237,7 +237,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 			used =eval('usedquestlist' + plist_dict[plist])
 			if peak not in used:
 				upl = ''
-				if con in upldict.keys(): upl = upldict[con]
+				if con in upldict.keys(): upl = upldict[con] + 'A'
 				questout.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^4}  {:^10}  {:^6}   only\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],pline[0],upl, pline[2],pline[8]))
 				used.append(peak)
 
