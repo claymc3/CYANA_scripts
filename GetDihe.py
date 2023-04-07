@@ -224,7 +224,7 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext, pdict,ypos,plotdict,
 			ax.plot([x1, x2], [y1, y1], color="black",linewidth = 1.0)
 			ax.plot([x1, x2], [y2, y2], color="black",linewidth = 1.0)
 	ax.grid(visible=True, which='major', axis='both',linestyle='--')
-	plt.tight_layout(w_pad = 0.0001)
+	# plt.tight_layout(w_pad = 0.0001)
 
 def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, pdict, ypos,plotdict,dihedviol):
 
@@ -307,7 +307,7 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, pdict, ypos,plo
 			ax.plot([x1, x2], [y1, y1], color="black",linewidth = 1.0)
 			ax.plot([x1, x2], [y2, y2], color="black",linewidth = 1.0)
 	ax.grid(visible=True, which='major', axis='both',linestyle='--')
-	plt.tight_layout(w_pad = 0.0001)
+	# plt.tight_layout(w_pad = 0.0001)
 
 def plot_upl(res, ax, upldf):
 	width = 0.15
@@ -422,7 +422,7 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
 			plot_upl(res, ax1, upldf)
 		if res in PhiDF.index.to_list() and res in chi1DF.index.to_list():
 			fig = plt.figure(figsize=(9,3))
-			gs = GridSpec(1,4,width_ratios = (6,6,3,3))
+			gs = GridSpec(1,4,width_ratios = (2,2,1,1))
 			ax1 = fig.add_subplot(gs[0])
 			ax2 = fig.add_subplot(gs[1])
 			ax3 = fig.add_subplot(gs[2])
