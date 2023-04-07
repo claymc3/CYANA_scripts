@@ -626,6 +626,11 @@ for aco in dihed:
 angle_text = "Total of {:} dihedral restraints:\n   {:>4} Phi restraints\n   {:>4} Psi restraints\n   {:>4} Chi1 restraints\n   {:>4} Chi2 restraints\n\n".format(total, phicount, psicount,chi1count,chi2count)
 print(angle_text[:-2])
 checkcons.write(angle_text)
+checkcons.write('{:3.0f} Violated Distance Restraints\n'.format(len(violpeaks)/2))
+checkcons.write('{:3.0f} Low Support Restraints\n'.format(len(poorcons2)/2))
+checkcons.write('{:3.0f} Long Distance Restraints d >= 6.0\n'.format(len(longcons2)/2))
+checkcons.write('{:3.0f} Short Distance Restraints d <= 3.0\n\n'.format(len(shortcons2)/2))
+
 print('finished finding upls')
 checkcons.write('### {:3.0f}  Violated Distance Restraints ###\n'.format(len(violpeaks)/2))
 # violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
@@ -647,7 +652,7 @@ for con in poorcons2:
 checkcons.write('\n\n')
 #### Write out Long Distance constraints to the summary file
 longcons2 = sorted(longcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
-checkcons.write('### {:3.0f} Long Distance Restraints d >= 6.00 ###\n'.format(len(longcons2)/2))
+checkcons.write('### {:3.0f} Long Distance Restraints d >= 6.0 ###\n'.format(len(longcons2)/2))
 for con in longcons2:
 	if con in assigndict.keys():
 		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
@@ -655,7 +660,7 @@ for con in longcons2:
 		checkcons.write('\n')
 checkcons.write('\n\n')
 #### Write out Short Distance constraints to the summary file
-checkcons.write('### {:3.0f} Short Distance Restraints d <= 3.00 ###\n'.format(len(shortcons2)/2))
+checkcons.write('### {:3.0f} Short Distance Restraints d <= 3.0 ###\n'.format(len(shortcons2)/2))
 shortcons2 = sorted(shortcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 for con in shortcons2:
 	if con in assigndict.keys():
