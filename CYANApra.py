@@ -230,6 +230,7 @@ violdict, Upperdict, Lowerdict, dihedviol = {}, {}, {}, {}
 viol_upls= 'group viol_upl, '
 
 v = 0
+vphicount, vpsicount,vchi1count,vchi2count, vothercount = 0,0,0,0,0
 phiv, chiv, violpeaks = [], [], []
 hbondline = ''
 for line in open(fovw).readlines():
@@ -278,6 +279,11 @@ for line in open(fovw).readlines():
 	if line[4:9] == 'Angle':
 		dang = line.split()
 		dihedviol[AAA_dict[dang[2]] + dang[3] + dang[1].replace('CHI21','CHI2')] = r'$\{:}$ viol in {:} by {:}'.format(dang[1].lower(), dang[6], dang[7])
+		angle = dang[1].replace('CHI21','CHI2')
+		try:
+			exec('v{:}count = v{:}count + 1'.format(angle.lower(),angle.lower()))
+		except NameError:
+			vothercount+=1
 		if dang[1] == 'PHI' or dang[1] == 'PSI':
 			if dang[3] not in phiv:
 				phiv.append(dang[3])
@@ -374,8 +380,8 @@ for line in open(fupl).readlines():
 					if float(cns[6]) >= 6.0:
 						upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
 						upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] + 1
-						qupldict[cons1] = " long distance\n"
-						qupldict[cons2] = " long distance\n"
+						qupldict[cons1] = "long distance\n"
+						qupldict[cons2] = "long distance\n"
 						i+=1
 						longpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 						longcons2.extend([cons1,cons2])
@@ -389,8 +395,8 @@ for line in open(fupl).readlines():
 							shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 							shortcons2.extend([cons1,cons2])
 							outpml.write('distance short{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-							qupldict[cons1] = " short distance\n"
-							qupldict[cons2] = " short distance\n"
+							qupldict[cons1] = "short distance\n"
+							qupldict[cons2] = "short distance\n"
 							shortcons = shortcons + 'short{:} '.format(i)
 							finalupls[3].append(line)
 							Filtered.append(line)
@@ -623,7 +629,7 @@ for aco in dihed:
 				else: 
 					angdict[AAA_dict[ang[1]] + ang[0]].append([outline,'black'])
 
-angle_text = "Total of {:} dihedral restraints:\n   {:>4} Phi restraints\n   {:>4} Psi restraints\n   {:>4} Chi1 restraints\n   {:>4} Chi2 restraints\n\n".format(total, phicount, psicount,chi1count,chi2count)
+angle_text = "Total of {:} dihedral restraints:\n   {:>4} Phi restraints {:} violated\n   {:>4} Psi restraints {:} violated\n   {:>4} Chi1 restraints {:} violated\n   {:>4} Chi2 restraints {:} violated \n\n".format(total, phicount, vphicount, psicount, vpsicount ,chi1count ,vchi1count, chi2count, vchi2count)
 print(angle_text[:-2])
 checkcons.write(angle_text)
 checkcons.write('{:3.0f} Violated Distance Restraints\n'.format(len(violpeaks)/2))
