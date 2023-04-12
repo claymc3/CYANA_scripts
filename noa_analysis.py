@@ -144,7 +144,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						questionable.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^5}  {:^10}  {:^6.2f}   low support\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',float(SUP)))
 						used.append(peak)
 					if conect in violdict.keys():
-						outline = "{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^5}  {:^10}  {:6.2f}   {:}".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,violdict[conect].replace(' #',''))
+						outline = "{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^5}  {:^10}  {:^6.2f}   {:}".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,violdict[conect].replace(' #',''))
 						questionable.append(outline)
 						used.append(peak)
 					if conect in qupldict.keys():
@@ -235,9 +235,13 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 			pdict = eval('peaks' + plist_dict[plist])
 			questout =  eval('questlist' + plist_dict[plist])
 			used =eval('usedquestlist' + plist_dict[plist])
+			if peak in used:
+				index = used.index(peak)
+				pline = questout[index]
+				questout[index] = pline.replace('\n', ' only\n')
 			if peak not in used:
 				upl = ' '
-				note = 'only '
+				note = 'only'
 				if con in upldict.keys(): upl = upldict[con] + 'A'
 				if con in qupldict.keys(): note = note + qupldict[con]
 				questout.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^5}  {:^10}  {:^6}   {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],pline[0],upl, pline[2],pline[8],note))
