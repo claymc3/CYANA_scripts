@@ -380,8 +380,8 @@ for line in open(fupl).readlines():
 					if float(cns[6]) >= 6.0:
 						upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
 						upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] + 1
-						qupldict[cons1] = "long distance\n"
-						qupldict[cons2] = "long distance\n"
+						qupldict[cons1] = "long"
+						qupldict[cons2] = "long"
 						i+=1
 						longpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 						longcons2.extend([cons1,cons2])
@@ -395,8 +395,8 @@ for line in open(fupl).readlines():
 							shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 							shortcons2.extend([cons1,cons2])
 							outpml.write('distance short{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-							qupldict[cons1] = "short distance\n"
-							qupldict[cons2] = "short distance\n"
+							qupldict[cons1] = "short"
+							qupldict[cons2] = "short"
 							shortcons = shortcons + 'short{:} '.format(i)
 							finalupls[3].append(line)
 							Filtered.append(line)
