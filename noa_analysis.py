@@ -34,7 +34,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 	'### poor chem shit: Peaks with poor chemical shift matching (Pshift < 0.6)\n',
 	'### long distance: Peak associated with UPL > 6.0\n',
 	'### short distance: Peak associated with UPL < 3.0 \n',
-	'### only: Peak represening the only instance of an assignment\n',
+	'### lone: Peak represening the only instance of an assignment\n',
 	"#{:}  {:^26}  {:^24}  {:^5}  {:^10}  {:^6}  {:^24}\n".format('Peak #','Frequencies','Connection','UPL', 'Range' ,'Pshift','Comment')
 	]
 	plist_dict = {}
@@ -148,18 +148,18 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						assigndict2['{:}-{:}'.format(group2,group1)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
 					if float(SUP) <= 0.6:
 						note = note + 'low support '
-						used.append(peak)
+						if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
 					if conect in violdict.keys():
 						note = note + violdict[conect].replace(' #','') + ' '
-						used.append(peak)
+						if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
 					if conect in qupldict.keys():
 						note = note + qupldict[conect] + ' '
-						used.append(peak)
-					if pshift <= 0.60 and peak not in used:
+						if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
+					if pshift <= 0.60 and '{:} {:}'.format(peak, conect) not in used:
 						note = note + 'poor chem shift '
-						used.append(peak)
+						if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
 					outlist.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^5}  {:^10}  {:^6.2f}   {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,note))
-					if peak not in used: used.append(peak)
+					if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
 
 	print('finished assigned')
 
@@ -238,12 +238,13 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 			peak = int(pline[4])
 			plist = pline[6]
 			pshift = pline[8]
+			conect = pline[0]
 			pdict = eval('peaks' + plist_dict[plist])
 			questout =  eval('outlist' + plist_dict[plist])
 			used =eval('usedquestlist' + plist_dict[plist])
-			index = used.index(peak)
+			index = used.index('{:} {:}'.format(peak, conect))
 			pline = questout[index]
-			questout[index] = pline.replace('\n', ' only\n')
+			questout[index] = pline.replace('\n', 'lone\n')
 
 	for x in range(len(cya_plists)):
 		exec("good{:} = open('{:}{:}.list','w')".format(str(x), outdir, cya_plists[x].replace('.peaks','')))
