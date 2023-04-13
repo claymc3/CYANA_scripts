@@ -150,7 +150,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						note = note + 'low support '
 						if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
 					if conect in violdict.keys():
-						note = note + violdict[conect].replace(' #','') + ' '
+						note = note + violdict[conect].replace(' #','').replace("\n",'') + ' '
 						if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
 					if conect in qupldict.keys():
 						note = note + qupldict[conect] + ' '
@@ -158,6 +158,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 					if pshift <= 0.60 and '{:} {:}'.format(peak, conect) not in used:
 						note = note + 'poor chem shift '
 						if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
+					note.replace('increased ','')
 					outlist.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^5}  {:^10}  {:^6.2f}   {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,note))
 					if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
 
