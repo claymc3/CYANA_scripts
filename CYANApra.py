@@ -68,8 +68,6 @@ OutPut:
 		pdb_pra.pml
 		upl_summary.txt
 		upl_overview.pdf
-		pdb_Phi-Psi.pdf
-		pdb_Chi1-Chi2.pdf
 		pdb_Phi.csv, pdb_Psi.csv, pdb_Chi1.csv, pdb_Chi2.csv 
 		Annotated upl files 
 		pseudobonds/ (Groups of Distance restraints)
@@ -82,10 +80,7 @@ OutPut:
 			hbond.pb
 	noa_analysis/ 
 		Assignment_Summary.txt 
-		peak-list_assigned.list
-		peak-list_no_assign.list
-		peak-list_questionable.list
-		peak-list_unused.list
+		peak-list.list
 ''')
 	exit()
 colors = ['royalblue','forest','yellowgreen', 'darkorange','purple','lightseagreen ','darkkhaki','peru','saddlebrown','mediumpurple','blue']
@@ -126,14 +121,16 @@ if not os.path.exists(noadir):
 checkcons = open(outdir + outname + '_summary.txt','w')
 ## open the CALC.cya file to get the peaks list and additional constraint files used in the calculation. 
 cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
-lengths = []
+lengths,upllengths = [], []
 for plist in cya_plists:
 	lengths.append(len(plist))
 pad = ''
 for x in range(max(lengths)):
 	pad = pad + ' '
 
+shortsum = open(outdir + 'Short_stats.txt','w')
 checkcons.write('## Generated using PrepCyana_{:} on {:} \n'.format(Vnum,dt_string))
+shortsum.write('## Generated using PrepCyana_{:} on {:} \n'.format(Vnum,dt_string))
 checkcons.write('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl    %\n'.format(pad,pad))
 manualcons = [line.strip() for line in open(calc).readlines() if line.strip() and '.upl' in line][0].split()[2].split(',')
 upls = [con for con in manualcons if 'upl' in con and 'hbond' not in con]
@@ -142,17 +139,19 @@ lols = [con for con in manualcons if 'lol' in con and 'hbond' not in con]
 dihed = [con for con in manualcons if 'aco' in con if con != 'inital.aco']
 noa = cwd + 'cycle7.noa'
 noalines = open(noa).readlines()
+for upl in [con for con in manualcons if 'upl' in con]:
+	upllengths.append(len(upl))
+uplpad = ''
+for x in range(max(upllengths)):
+	uplpad = uplpad + ' '
 print('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl    %'.format(pad,pad))
+shortsum.write('{:} #peaks  % Assignment\n'.format(pad))
 ## Open Summary file and check the peak list files, upl, and ovw to determine the number of assignments and violations and write out the summary file 
 ## Creating the pseudobond files and group strings for rendering the constraints in chimera/pymol
 tpeak,tsingle,tamb,tnotused,tnota,tdia,tincr,tupl,tviol  = 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 for x in range(len(cya_plists)):
 	plistn = cya_plists[x]
-	# exec("pb{:} = open('{:}','w')".format(str(x+1), outdir +'pseudobonds/' + plistn + '.pb'))
-	# pbout = eval('pb{:}'.format(str(x+1)))
-	# pbout.write("; halfbond = false\n; color = " + colors[x+1] + "\n; radius = 0.1\n; dashes = 0\n")
-	# exec("group{:} = '{:}, '".format(str(x+1), 'group ' + cya_plists[x]))
 	plist = cya_plists[x]
 	upl = [line.strip() for line in open(fupl).readlines() if line.strip() and 'plist '+ str(x+1) in line]
 	tupl = tupl + len(upl)
@@ -184,10 +183,15 @@ for x in range(len(cya_plists)):
 				tdia+=1
 	linepad = pad[len(plist):]
 	checkcons.write("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%\n".format(plist,linepad,peak,len(upl),len(viol), single,amb,notused,nota,dia,incr, 100*((single+amb+dia)/peak)))
+	shortsum.write("{:<}{:} {:^6d}   {:^3.1f}% ({:})\n".format(plist,linepad,peak,100*((single+amb+dia)/peak),(single+amb+dia)))
 	print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%".format(plist,linepad, peak,len(upl),len(viol),single,amb,notused,nota,dia,incr, 100*((single+amb+dia)/peak)))
 checkcons.write("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%\n".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr,100*((tsingle+ tamb+ tdia)/tpeak)))
+shortsum.write("{:<}{:} {:^6d}   {:^3.1f}% ({:})\n\n".format('Total',pad[5:],tpeak,100*((tsingle+ tamb+ tdia)/tpeak),(tsingle+ tamb+ tdia)))
 print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr, 100*((tsingle+ tamb+ tdia)/tpeak)))
 checkcons.write('\n\n')
+
+
+
 
 outpml = open(outdir + fupl.replace('.upl','_pra.pml'),'w')
 outpml.write('load ./' + in_pdb+'\n')
@@ -530,6 +534,7 @@ upls.extend(hbonds)
 mn+=1
 
 ## Examine input upl files and update lines for entries which are violated 10 or more times, and identify proton-proton restraints that support heavy atoms based restraints 
+
 for uplfile in upls:
 	found_upls, tupls, mupls, vupls  = 0, 0, 0, 0
 	newlines = []
@@ -567,15 +572,21 @@ for uplfile in upls:
 			newline = line
 		newlines.append(newline)
 	checkcons.write('{:} input upls from {:}\n'.format(mupls + tupls, uplfile))
+	shortsum.write('{:} input upls from {:}\n'.format(mupls + tupls, uplfile))
 	checkcons.write('    {:} of {:} of assignable input upls found\n'.format(found_upls,tupls))
+	shortsum.write('    {:} of {:} of assignable input upls found\n'.format(found_upls,tupls))
 	checkcons.write('    {:} of upls violated in 10 or more structures\n'.format(vupls))
-	checkcons.write('    {:} of upls missing assignment\n'.format(mupls))
+	shortsum.write('    {:} of upls violated in 10 or more structures\n'.format(vupls))
+	if mupls >=1:
+		checkcons.write('    {:} of upls missing assignment\n'.format(mupls))
+		shortsum.write('    {:} of upls missing assignment\n'.format(mupls))
+
 	fout = open(outdir + uplfile,'w')
 	fout.writelines(newlines)
 	fout.close()
 	violupl.close()
 	matchedupl.close()
-
+shortsum.write('\n')
 for lolfile in lols:
 	newlines = []
 	for line in open(lolfile).readlines():
@@ -629,9 +640,11 @@ for aco in dihed:
 				else: 
 					angdict[AAA_dict[ang[1]] + ang[0]].append([outline,'black'])
 
-angle_text = "Total of {:} dihedral restraints:\n   {:>4} Phi restraints {:} violated\n   {:>4} Psi restraints {:} violated\n   {:>4} Chi1 restraints {:} violated\n   {:>4} Chi2 restraints {:} violated \n\n".format(total, phicount, vphicount, psicount, vpsicount ,chi1count ,vchi1count, chi2count, vchi2count)
+angle_text = "Total of {:} dihedral restraints:\n       input viol\n{:<6} {:^5} {:^4}\n{:<6} {:^5} {:^4}\n{:<6} {:^5} {:^4}\n{:<6} {:^5} {:^4}\n\n".format(total, 'Phi', phicount, vphicount, 'Psi', psicount, vpsicount , 'Chi1', chi1count ,vchi1count, 'Chi2', chi2count, vchi2count)
+
 print(angle_text[:-2])
 checkcons.write(angle_text)
+shortsum.write(angle_text)
 checkcons.write('{:3.0f} Violated Distance Restraints\n'.format(len(violpeaks)/2))
 checkcons.write('{:3.0f} Low Support Restraints\n'.format(len(poorcons2)/2))
 checkcons.write('{:3.0f} Long Distance Restraints d >= 6.0\n'.format(len(longcons2)/2))
@@ -676,6 +689,13 @@ for con in shortcons2:
 checkcons.write('\n\n')
 checkcons.close()
 
+for line in open(fovw).readlines():
+	if line.strip():
+		if line.split()[0] == 'Ave':
+			shortsum.write("Target Function {:}\n".format(line.split()[1]))
+		if line.split()[0] == 'Average':
+			shortsum.write(line.strip() + '\n')
+shortsum.close()
 for y in range(2,21,1):
 	outpml.write('align {:}_{:04d}, {:}_0001\n'.format(pdbname,y, pdbname))
 outcmx.write('open ../' + in_pdb+ ' maxModels 1\nrename #{:} angles\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(mn,mn,mn))
