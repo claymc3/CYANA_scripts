@@ -379,14 +379,14 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
 						if ang < 0: ang = ang + 360.0
 						diheDF.loc[res,mnum] = np.round(ang,1)
 
-	PhiDF['mean'] = np.round(PhiDF.mean(axis=1),2)
-	PhiDF['stdv'] = np.round(PhiDF.std(axis=1),2)
-	PsiDF['mean'] = np.round(PsiDF.mean(axis=1),2)
-	PsiDF['stdv'] = np.round(PsiDF.std(axis=1),2)
-	chi1DF['mean'] = np.round(chi1DF.mean(axis=1),2)
-	chi1DF['stdv'] = np.round(chi1DF.std(axis=1),2)
-	chi2DF['mean'] = np.round(chi2DF.mean(axis=1),2)
-	chi2DF['stdv'] = np.round(chi2DF.std(axis=1),2)
+	PhiDF['mean'] = PhiDF.mean(axis=1).astype(float).round(2)
+	PhiDF['stdv'] = PhiDF.std(axis=1).astype(float).round(2)
+	PsiDF['mean'] = PsiDF.mean(axis=1).astype(float).round(2)
+	PsiDF['stdv'] = PsiDF.std(axis=1).astype(float).round(2)
+	chi1DF['mean'] = chi1DF.mean(axis=1).astype(float).round(2)
+	chi1DF['stdv'] = chi1DF.std(axis=1).astype(float).round(2)
+	chi2DF['mean'] = chi2DF.mean(axis=1).astype(float).round(2)
+	chi2DF['stdv'] = chi2DF.std(axis=1).astype(float).round(2)
 
 	for i in range(1,len(Sequence)-1,1):
 		if Sequence[i+1][0] == 'P' and Sequence[i][0] != 'G': PhiDF.loc[Sequence[i],'type'] = "PRE-PRO"
