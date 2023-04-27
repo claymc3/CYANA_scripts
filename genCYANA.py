@@ -491,7 +491,7 @@ upl_values  := 2.4,7.0
 
 ssa
 noeassign peaks=$peaks prot=$prot autoaco # keep=KEEP 
-'''.format(peaks_out, prots_out, name, 'hbond.lol', 'hbond.upl','dihed.aco',residues.replace("-",".."))
+'''.format(peaks_out, prots_out, name+ '_model', 'hbond.lol', 'hbond.upl','dihed.aco',residues.replace("-",".."))
 CYANA.write(clac_text)
 CYANA.close()
 
