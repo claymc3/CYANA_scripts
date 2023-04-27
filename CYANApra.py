@@ -574,12 +574,12 @@ for uplfile in upls:
 	checkcons.write('{:} input upls from {:}\n'.format(mupls + tupls, uplfile))
 	shortsum.write('{:} input upls from {:}\n'.format(mupls + tupls, uplfile))
 	checkcons.write('    {:} of {:} of assignable input upls found\n'.format(found_upls,tupls))
-	shortsum.write('    {:} of {:} of assignable input upls found\n'.format(found_upls,tupls))
+	# shortsum.write('    {:} of {:} of assignable input upls found\n'.format(found_upls,tupls))
 	checkcons.write('    {:} of upls violated in 10 or more structures\n'.format(vupls))
 	shortsum.write('    {:} of upls violated in 10 or more structures\n'.format(vupls))
 	if mupls >=1:
 		checkcons.write('    {:} of upls missing assignment\n'.format(mupls))
-		shortsum.write('    {:} of upls missing assignment\n'.format(mupls))
+		# shortsum.write('    {:} of upls missing assignment\n'.format(mupls))
 
 	fout = open(outdir + uplfile,'w')
 	fout.writelines(newlines)
@@ -694,7 +694,7 @@ for line in open(fovw).readlines():
 		if line.split()[0] == 'Ave':
 			shortsum.write("Target Function {:}\n".format(line.split()[1]))
 		if line.split()[0] == 'Average':
-			shortsum.write(line.strip() + '\n')
+			shortsum.write(line.strip()[8:52] + '\n')
 shortsum.close()
 for y in range(2,21,1):
 	outpml.write('align {:}_{:04d}, {:}_0001\n'.format(pdbname,y, pdbname))
@@ -726,7 +726,6 @@ outpml.write(pmlchiviol[:-1] + '\n')
 outpml.write("hide labels\n")
 outpml.close()
 outcmx.close()
-
 # ---------------------------------------------------------------------------
 # Run the GetDihed.py to determine phi, psi, chi1 and chi2 and plot them
 # for all 20 structures
