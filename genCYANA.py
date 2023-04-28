@@ -59,6 +59,7 @@ Required Input:
 					will be used to filter out unstructured regions from the 
 					upl, hbond.lol, and hbond.upl files 
 
+Assuming you have saved your .proj.seq in the current location
 Assuming you have saved your .prot and .peak files are in current location
 
 name is taken from the first prot file found in this directory.
