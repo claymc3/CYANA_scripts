@@ -129,8 +129,8 @@ for x in range(max(lengths)):
 	pad = pad + ' '
 
 shortsum = open(outdir + 'Short_stats.txt','w')
-checkcons.write('## Generated using PrepCyana_{:} on {:} \n'.format(Vnum,dt_string))
-shortsum.write('## Generated using PrepCyana_{:} on {:} \n'.format(Vnum,dt_string))
+checkcons.write('## Generated using CYANApra_{:} on {:} \n'.format(Vnum,dt_string))
+shortsum.write('## Generated using CYANApra_{:} on {:} \n'.format(Vnum,dt_string))
 checkcons.write('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl    %\n'.format(pad,pad))
 manualcons = [line.strip() for line in open(calc).readlines() if line.strip() and '.upl' in line][0].split()[2].split(',')
 upls = [con for con in manualcons if 'upl' in con and 'hbond' not in con]
