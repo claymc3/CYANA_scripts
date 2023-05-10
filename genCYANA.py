@@ -437,8 +437,10 @@ for line in NC_outlines:
 	if line.split()[4] in ['PHE','TYR']:
 		if 'missing' in line: line = '#' + line
 		NC_Aro.append(line)
-	if 'missing' in line: line = '#' + line
-	else:NC_methyl.append(line)
+for line in NC_outlines:
+	if line not in NC_Aro:
+		if 'missing' in line: line = '#' + line
+		NC_methyl.append(line)
 upl.write('### N-C Methyl Distances\n')
 upl.writelines(NC_methyl)
 upl.write('### N-C Aromatic Distances\n')
