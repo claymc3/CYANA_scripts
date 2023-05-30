@@ -125,7 +125,7 @@ for prot in prots:
 num2AAA = {}
 num_seq = []
 for line in open(name + '.seq').readlines():
-		num_seq.append((line.strip().split()[0], line.strip().split()[1]))
+		num_seq.append((AAA_dict[line.strip().split()[0]], line.strip().split()[1]))
 		num2AAA[line.strip().split()[1]] = line.strip().split()[0]
 #
 #------------------------------------------------------------------------------
@@ -494,7 +494,7 @@ upl_values  := 2.4,7.0
 
 ssa
 noeassign peaks=$peaks prot=$prot autoaco # keep=KEEP 
-'''.format(peaks_out, prots_out, name+ '_model', 'hbond.lol', 'hbond.upl','dihed.aco',residues.replace("-",".."))
+'''.format(peaks_out, prots_out, name+ '_model', 'hbond.lol', 'hbond.upl','dihed.aco,inital.aco',residues.replace("-",".."))
 CYANA.write(clac_text)
 CYANA.close()
 
