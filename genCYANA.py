@@ -775,6 +775,8 @@ CSTABLE      65
 	64 PTR  CD2    125  132.32    1.25  129.70  137.70
 	65 PTR  C       41  175.16    1.82  170.20  178.50
 '''
+special.write(special_text)
+special.close()
 import viewCYANA as viewcya
 
 # os.system('python3 precya {:} {:}'.format(in_pdb,TALOSdir))
