@@ -12,7 +12,10 @@ from rama_config import RAMA_PREFERENCES
 from rama_config import ROTA_PREFERENCES
 
 mpl.rcParams['pdf.fonttype'] = 42
-mpl.rcParams['font.sans-serif'] = 'arial'
+if sys.platform == "linux":
+	mpl.rcParams['font.sans-serif'] = 'Dejavu Sans'
+else:
+	mpl.rcParams['font.sans-serif'] = 'arial'
 mpl.rcParams['font.size'] = 10
 mpl.rcParams['axes.linewidth'] = 1.0
 mpl.rcParams['xtick.major.width'] = 1.0
