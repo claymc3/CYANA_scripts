@@ -83,7 +83,12 @@ outname = in_pdb.split('.')[0]
 if '/' not in in_pdb:
 	pdb_path = '../' + in_pdb
 	pymol_pdb_path = './' + in_pdb
-
+if '../' in in_pdb:
+	pdb_path = '../' + in_pdb
+	pymol_pdb_path = './' + in_pdb
+else:
+	pdb_path = in_pdb
+	pymol_pdb_path = in_pdb
 ## Check for the output directory if it does not exist make it
 if not os.path.exists(outdir):
 	os.makedirs(outdir)
@@ -216,8 +221,8 @@ u = 0
 mn+=1
 for uplfile in upls:
 	for conect in ConectionTypes:
-		exec("{:}_{:}_pb = []".format(uplfile.replace('.upl',''),conect))
-		exec("group{:}{:} = 'group {:}_{:}, '".format(uplfile.replace('.upl',''),conect, uplfile.replace('.upl',''), conect))
+		exec("{:}_{:}_pb = []".format(uplfile.replace('.upl','').replace("-","_"),conect))
+		exec("group{:}{:} = 'group {:}_{:}, '".format(uplfile.replace('.upl','').replace("-","_"),conect, uplfile.replace('.upl','').replace("-","_"), conect))
 for uplfile in upls:
 	fin = open(uplfile,'r')
 	# outpb.write("; halfbond = false\n; color = {:}\n; radius = 0.15\n; dashes = 10\n".format(colors[x]))
@@ -230,7 +235,7 @@ for uplfile in upls:
 				if cns[4]+cns[5] in ConTypeDict.keys():ct2 = ConTypeDict[cns[4]+cns[5]]
 				if cns[4]+cns[5] not in ConTypeDict.keys(): ct2 = 'Other'
 				ctype = ConTypeDict["{:}-{:}".format(ct1,ct2)]
-				outpb = eval('{:}_{:}_pb'.format(uplfile.replace('.upl',''), ctype))
+				outpb = eval('{:}_{:}_pb'.format(uplfile.replace('.upl','').replace("-","_"), ctype))
 				atom1 = cns[2]
 				atom2 = cns[5]
 				if cns[1]+cns[2] in replacements.keys():
@@ -248,7 +253,7 @@ for uplfile in upls:
 						u+=1
 						outpb.append('{:}:{:}@{:} {:}:{:}@{:}\n'.format(cmxn, cns[0], atom1, cmxn, cns[3],atom2))
 						outpml.write('distance UPL{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(u), pmln, cns[0], atom1, pmln, cns[3], atom2))
-						exec('group{:}{:} = group{:}{:} + "UPL{:}"'.format(uplfile.replace('.upl',''), ctype,uplfile.replace('.upl',''), ctype,u))
+						exec('group{:}{:} = group{:}{:} + "UPL{:}"'.format(uplfile.replace('.upl','').replace("-","_"), ctype,uplfile.replace('.upl','').replace("-","_"), ctype,u))
 				if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
 					sidelist.append(cns[0])
 				if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
@@ -256,7 +261,7 @@ for uplfile in upls:
 
 for uplfile in upls:
 	for x in range(len(ConectionTypes)):
-		pbs = eval('{:}_{:}_pb'.format(uplfile.replace('.upl',''),ConectionTypes[x]))
+		pbs = eval('{:}_{:}_pb'.format(uplfile.replace('.upl','').replace("-","_"),ConectionTypes[x]))
 		if len(pbs) > 1:
 			mn+=1
 			pbout = open('{:}pseudobonds/{:}_{:}.pb'.format(outdir, uplfile.replace('.upl',''), ConectionTypes[x]),'w')
@@ -264,9 +269,9 @@ for uplfile in upls:
 			pbout.writelines(pbs)
 			outcmx.write('open pseudobonds/{:}_{:}.pb\n'.format(uplfile.replace('.upl',''), ConectionTypes[x]))
 			outcmx.write('color #{:} {:}\n'.format(str(mn),colors[x]))
-			groupstr = eval('group{:}{:}'.format(uplfile.replace('.upl',''),ConectionTypes[x]))
+			groupstr = eval('group{:}{:}'.format(uplfile.replace('.upl','').replace("-","_"),ConectionTypes[x]))
 			outpml.write(groupstr + '\n')
-			outpml.write('color {:}, {:}_{:}\n'.format(colors[x],uplfile.replace('.upl',''),ConectionTypes[x]))
+			outpml.write('color {:}, {:}_{:}\n'.format(colors[x],uplfile.replace('.upl','').replace("-","_"),ConectionTypes[x]))
 
 
 sidechains = 'show #2:'
