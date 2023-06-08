@@ -76,7 +76,7 @@ OutPut:
 	hbond.lol
 	dihed.aco
 	inital.aco
-	genpcya_log
+	gencya_log
 ''')
 	exit()
 Vnum = '2.1'
@@ -100,9 +100,9 @@ print("Generated using V2.1")
 print("Using " + talosSS)
 print("Using " + indihed)
 # print("Using " + talosS2)
-log = open('genpcya_log', 'a')
+log = open('gencya_log', 'a')
 log.write('## Generated using genCYANA_{:} on {:} \n'.format(Vnum,dt_string))
-log.write('genpcya {:} {:} {:} {:} {:}\n'.format(in_pdb,chain,atoms,residues,TALOSdir))
+log.write('gencya {:} {:} {:} {:} {:}\n'.format(in_pdb,chain,atoms,residues,TALOSdir))
 
 #------------------------------------------------------------------------------
 # Read the prot files and figure what assignments are available
@@ -199,11 +199,11 @@ log.write('Extracted {:} PHI angles and {:} PSI angles form TALOS\n'.format(phic
 aco2 = open('inital.aco','w')
 for (res, resn) in num_seq:
 	if res == 'L':
-		aco2.write(' {:>5} LEU   CHI1    155.0   212.0 9.00E-01 type=2\n {:>5} LEU   CHI2     40.0    88.0 9.00E-01 type=2\n {:>5} LEU   CHI1    264.0   324.0 9.00E-01 type=2 OR\n {:>5} LEU   CHI2    143.0   205.0 9.00E-01 type=2\n\n'.format(resn,resn,resn,resn))
+		aco2.write(' {:>5}  LEU   CHI1    155.0   212.0 9.00E-01 type=2\n {:>5}  LEU   CHI2     40.0    88.0 9.00E-01 type=2\n {:>5}  LEU   CHI1    264.0   324.0 9.00E-01 type=2 OR\n {:>5}  LEU   CHI2    143.0   205.0 9.00E-01 type=2\n\n'.format(resn,resn,resn,resn))
 	if res == 'I':
-		aco2.write(' {:>5} ILE   CHI1     40.0    80.0 9.00E-01 type=2\n {:>5} ILE   CHI21   145.0   195.0 9.00E-01 type=2\n {:>5} ILE   CHI1    168.0   212.0 9.00E-01 type=2 OR\n {:>5} ILE   CHI21   145.0   185.0 9.00E-01 type=2\n {:>5} ILE   CHI1    275.0   325.0 9.00E-01 type=2 OR\n {:>5} ILE   CHI21   138.0   198.0 9.00E-01 type=2\n {:>5} ILE   CHI1    278.0   325.0 9.00E-01 type=2 OR\n {:>5} ILE   CHI21   274.0   322.0 9.00E-01 type=2\n {:>5} ILE   CHI1    172.0   212.0 9.00E-01 type=2 OR\n {:>5} ILE   CHI21    48.0    82.0 9.00E-01 type=2\n\n'.format(resn,resn,resn,resn,resn,resn,resn,resn,resn,resn))
+		aco2.write(' {:>5}  ILE   CHI1     40.0    80.0 9.00E-01 type=2\n {:>5}  ILE   CHI21   145.0   195.0 9.00E-01 type=2\n {:>5}  ILE   CHI1    168.0   212.0 9.00E-01 type=2 OR\n {:>5}  ILE   CHI21   145.0   185.0 9.00E-01 type=2\n {:>5}  ILE   CHI1    275.0   325.0 9.00E-01 type=2 OR\n {:>5}  ILE   CHI21   138.0   198.0 9.00E-01 type=2\n {:>5}  ILE   CHI1    278.0   325.0 9.00E-01 type=2 OR\n {:>5}  ILE   CHI21   274.0   322.0 9.00E-01 type=2\n {:>5}  ILE   CHI1    172.0   212.0 9.00E-01 type=2 OR\n {:>5}  ILE   CHI21    48.0    82.0 9.00E-01 type=2\n\n'.format(resn,resn,resn,resn,resn,resn,resn,resn,resn,resn))
 	if res == 'M':
-		aco2.write(' {:>5} MET   CHI1     45.0    84.0 9.00E-01 type=2\n {:>5} MET   CHI2    157.0   210.0 9.00E-01 type=2\n {:>5} MET   CHI1    157.0   208.0 9.00E-01 type=2 OR\n {:>5} MET   CHI2    150.0   208.0 9.00E-01 type=2\n {:>5} MET   CHI1    265.0   322.0 9.00E-01 type=2 OR\n {:>5} MET   CHI2    146.0   212.0 9.00E-01 type=2\n {:>5} MET   CHI1    266.0   320.0 9.00E-01 type=2 OR\n {:>5} MET   CHI2    270.0   325.0 9.00E-01 type=2\n {:>5} MET   CHI1    161.0   208.0 9.00E-01 type=2 OR\n {:>5} MET   CHI2     42.0    86.0 9.00E-01 type=2\n\n'.format(resn,resn,resn,resn,resn,resn,resn,resn,resn,resn))
+		aco2.write(' {:>5}  MET   CHI1     45.0    84.0 9.00E-01 type=2\n {:>5}  MET   CHI2    157.0   210.0 9.00E-01 type=2\n {:>5}  MET   CHI1    157.0   208.0 9.00E-01 type=2 OR\n {:>5}  MET   CHI2    150.0   208.0 9.00E-01 type=2\n {:>5}  MET   CHI1    265.0   322.0 9.00E-01 type=2 OR\n {:>5}  MET   CHI2    146.0   212.0 9.00E-01 type=2\n {:>5}  MET   CHI1    266.0   320.0 9.00E-01 type=2 OR\n {:>5}  MET   CHI2    270.0   325.0 9.00E-01 type=2\n {:>5}  MET   CHI1    161.0   208.0 9.00E-01 type=2 OR\n {:>5}  MET   CHI2     42.0    86.0 9.00E-01 type=2\n\n'.format(resn,resn,resn,resn,resn,resn,resn,resn,resn,resn))
 aco2.close()
 
 #------------------------------------------------------------------------------
