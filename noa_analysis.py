@@ -95,12 +95,13 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						Assignments.append(assign)
 	Assignments = sorted(Assignments, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 
-	assigndict,assigndict2 = {}, {}
+	assigndict,assigndict2,notassigndict = {}, {},{}
 	from itertools import combinations
 	ADpairs = [ '{:}-{:}'.format(comb[0],comb[1]) for comb in combinations(Assignments,2)]
 	for comb in ADpairs:
 		assigndict[comb] = []
 		assigndict2[comb] = []
+		notassigndict[comb] = []
 	noalines = open(noa7).readlines()
 	for x in range(len(noalines)):
 		line = noalines[x]
@@ -165,9 +166,12 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 	print('finished assigned')
 
 	ADpairs2 = []
+	UNAssigned = []
 	for con in ADpairs:
 		if len(assigndict[con]) >= 1:
 			ADpairs2.append(con)
+		if len(assigndict[con]) == 0:
+			UNAssigned.append(con)
 	for x in range(len(noalines)):
 		line = noalines[x]
 		if 'Peak' in noalines[x] and '0 out of' in noalines[x+1]:
@@ -203,9 +207,15 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						if '{:}-{:}'.format(group2,group1)in ADpairs2:
 							assigndict['{:}-{:}'.format(group2,group1)].append(outline)
 							assigndict2['{:}-{:}'.format(group2,group1)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
-						udsit = ' '
-						note = 'unused '
+						# if noalines[x+1].split()[3] == "1":
+						outline = '#{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:0.2f} {:} out of {:} unused\n'.format(conect,intdict[peak][0],drange,peak,plist,linepad,pshift,y-1,noalines[x+1].split()[3])
+						if '{:}-{:}'.format(group1,group2)in UNAssigned:
+							notassigndict['{:}-{:}'.format(group1,group2)].append(outline)
+						if '{:}-{:}'.format(group2,group1)in UNAssigned:
+							notassigndict['{:}-{:}'.format(group2,group1)].append(outline)
+						note = 'unused {:}'.format(noalines[x+1].split()[3])
 						if conect in upldict.keys(): udist = upldict[conect]+'A'
+						if conect not in upldict.keys(): udist =' '
 						if pshift > 0.75 and conect in upldict.keys():
 							note = note + noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures ','') + ' '
 						if pshift < 0.75 and int(noalines[x+1].split()[3]) == 1:
@@ -221,19 +231,52 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 				pdict = eval('peaks' + plist_dict[plist])
 				outlist.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^5}  {:^10}  {:^6}   no assignmnet\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2], 'none','', drange+'A','na'))
 
-
+	inconsistant = open(outdir + 'Inconsistant_distances.txt','w')
 	assigned = open(outdir + 'Assignment_Summary.txt','w')
+	unused = open(outdir + 'Unused_Connections.txt','w')
+	inconcount,numcon, intracount, shortcount,mediumcount,longcount = 0, 0, 0, 0, 0,0
+	Gamidecount, Tamidecount,Mamidecount = 0, 0,0
 	for val in Calibration_cns:
 		assigned.write(val.strip()+'\n')
 	assigned.write('\n\n')
 	for con in ADpairs:
-		if len(assigndict[con]) >= 1:
+		if len(assigndict[con]) > 1:
+			numcon += 1
+			dist = []
+			for line in assigndict[con]:
+				if 'unused' not in line: dist.append(float(line.split()[2].split('-')[0]))
+				if 'unused' in line: dist.append(float(line.split()[3].split('-')[0]))
+				if 'unused' in line: wpass = True
+			if np.std(dist) > 0.3: 
+				inconcount += 1
+				if con in upldict.keys():
+					inconsistant.write('{:}  {:3.2f}A ({:}): {:0.2f}\n'.format(con,float(upldict[con]),len(assigndict[con]),np.std(dist)))
+				if con not in upldict.keys():
+					inconsistant.write('{:} ({:}): {:0.2f}\n'.format(con,len(assigndict[con]),np.std(dist)))
+				inconsistant.writelines(assigndict[con])
+				inconsistant.write('\n')
 			if con in upldict.keys():
 				assigned.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
 			if con not in upldict.keys():
 				assigned.write('{:} ({:}):\n'.format(con,len(assigndict[con])))
 			assigned.writelines(assigndict[con])
 			assigned.write('\n')
+		if len(notassigndict[con]) >= 1:
+			unused.write('{:} ({:}):\n'.format(con,len(notassigndict[con])))
+			unused.writelines(notassigndict[con])
+			unused.write('\n')
+			rn1 = con.split('-')[0][0]
+			rn2 = con.split('-')[2][0]
+			if con.split('-')[0][0] == 'G' and con.split('-')[1] == 'H': Gamidecount+= 1
+			if con.split('-')[2][0] == 'G' and con.split('-')[3] == 'H': Gamidecount+= 1
+			if con.split('-')[0][0] == 'T' and con.split('-')[1] == 'H': Tamidecount+= 1
+			if con.split('-')[2][0] == 'T' and con.split('-')[3] == 'H': Tamidecount+= 1
+			if con.split('-')[0][0] == 'M' and con.split('-')[1] == 'H': Mamidecount+= 1
+			if con.split('-')[2][0] == 'M' and con.split('-')[3] == 'H': Mamidecount+= 1
+			if abs(float(con.split('-')[0][1:]) - float(con.split('-')[2][1:])) == 0: intracount+= 1
+			if abs(float(con.split('-')[0][1:]) - float(con.split('-')[2][1:])) <= 4 and abs(float(con.split('-')[0][1:]) - float(con.split('-')[2][1:])) != 0: shortcount+= 1
+			if abs(float(con.split('-')[0][1:]) - float(con.split('-')[2][1:])) <= 5 and abs(float(con.split('-')[0][1:]) - float(con.split('-')[2][1:])) >= 2: mediumcount+= 1
+			if abs(float(con.split('-')[0][1:]) - float(con.split('-')[2][1:])) > 5 : longcount+= 1
 		if len(assigndict[con]) == 1:
 			pline = assigndict[con][0].split()
 			peak = int(pline[4])
@@ -256,6 +299,15 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 		eval("good{:}.writelines(olist)".format(str(x)))
 		eval("good{:}.close()".format(str(x)))
 	assigned.close()
+	inconsistant.close()
+	print('Fount {:} inconsistant distances of {:} connections'.format(inconcount, numcon))
+	print('Found {:} unused intra molecular contacts'.format(intracount))
+	print('Found {:} unused short contacts'.format(shortcount))
+	print('Found {:} unused medium molecular contacts'.format(mediumcount))
+	print('Found {:} unused long molecular contacts'.format(longcount))
+	print('Found {:} unused G-H assignment'.format(Gamidecount))
+	print('Found {:} unused M-H assignment'.format(Mamidecount))
+	print('Found {:} unused T-H assignment'.format(Tamidecount))
 	print("Finished cycle7.noa analysis")
 
 	return assigndict2
