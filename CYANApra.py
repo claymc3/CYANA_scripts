@@ -611,7 +611,7 @@ phir, chir = [],[]
 for aco in dihed:
 	for line in open(aco):
 		if line.split():
-			if line.startswith('#'):
+			if re.match('^\s*#', line):
 				continue
 			else:
 				total+=1
