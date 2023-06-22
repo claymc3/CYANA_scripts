@@ -23,7 +23,7 @@ AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "
 
 
 def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad,upldict2):
-	cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
+	cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
 	prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line][0].split()[2].split(',')
 	log = glob.glob(os.path.join(cwd + 'log*'))[0]
 	header = [ '### UPL: Peak was idenitified in the output.upl file\n',
