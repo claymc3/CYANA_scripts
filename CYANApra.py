@@ -120,7 +120,7 @@ if not os.path.exists(noadir):
 	os.makedirs(noadir)
 checkcons = open(outdir + outname + '_summary.txt','w')
 ## open the CALC.cya file to get the peaks list and additional constraint files used in the calculation. 
-cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line][0].split()[2].split(',')
+cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
 lengths,upllengths = [], []
 for plist in cya_plists:
 	lengths.append(len(plist))
