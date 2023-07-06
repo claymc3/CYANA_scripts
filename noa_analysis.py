@@ -24,7 +24,7 @@ AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "
 
 def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad,upldict2):
 	cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
-	prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line][0].split()[2].split(',')
+	prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
 	log = glob.glob(os.path.join(cwd + 'log*'))[0]
 	header = [ '### UPL: Peak was idenitified in the output.upl file\n',
 	'### swapped: steriospecific assignment was swapped relative to the input chemical shift list\n'
@@ -52,7 +52,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 		for i in range(len(peaklines)):
 			line = peaklines[i]
 			if line.strip():
-				if line.strip()[0] != '#':
+				if not re.match('^\s*#', line):
 					if line[0:7] == '       ':  # account for old format of cycle7.peaks
 						line = peaklines[i-1][0:peaklines[i-1].find(' U ')+35] + ' ' + peaklines[i].strip()
 						peaklines[i] = line
