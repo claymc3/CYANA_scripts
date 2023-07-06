@@ -226,7 +226,7 @@ uviolpbout.write("; halfbond = false\n; color = hotpink\n; radius = 0.1\n; dashe
 finalupls = [["###Violated Restraints\n"],["###Poor/Low Support\n"],["###Long Distance Restraints (d >= 6.0)\n"],["###Short Distance Restraints (d <= 3.0)\n"],["###Good Restraints\n"]]
 
 cmxphisel, cmxchisel, cmxphiviol, cmxchiviol = 'name phipsisel #angmn:', 'name chisel #angmn:', 'name phipsiviol #angmn:', 'name chiviol #angmn:'
-pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'color purple, phi-psi and resi ','color navy, chi and resi ', 'color mediumpurple, viol_phi-psi and resi ', 'color cornflowerblue, viol_chi and resi '
+pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'phipsi and resi ','chi and resi ', 'phipsi and resi ', 'chi and resi '
 
 ### Go through the final overview file and extract information about violated distance and angle restraints 
 Filtered = []
@@ -323,10 +323,10 @@ for line in open(fovw).readlines()[fovwlines:]:
 			hbc = line.split()
 			if len(hbc[0]) <= 3: doner = hbc[0].replace('H','N')
 			if len(hbc[0]) == 4: doner = hbc[0][:-1].replace('H','N')
-			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[1]],hbc[2],hbc[0],AAA_dict[hbc[5]],hbc[6],hbc[4])] = ' # found in {:} structures'.format(hbc[7])
-			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[5]],hbc[6],hbc[4],AAA_dict[hbc[1]],hbc[2],hbc[0])] = ' # found in {:} structures'.format(hbc[7])
-			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[1]],hbc[2],doner,AAA_dict[hbc[5]],hbc[6],hbc[4])] = ' # found in {:} structures'.format(hbc[7])
-			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[5]],hbc[6],hbc[4],AAA_dict[hbc[1]],hbc[2],doner)] = ' # found in {:} structures'.format(hbc[7])
+			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[1]],hbc[2],hbc[0],AAA_dict[hbc[5]],hbc[6],hbc[4])] = ' # found in {:} structures\n'.format(hbc[7])
+			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[5]],hbc[6],hbc[4],AAA_dict[hbc[1]],hbc[2],hbc[0])] = ' # found in {:} structures\n'.format(hbc[7])
+			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[1]],hbc[2],doner,AAA_dict[hbc[5]],hbc[6],hbc[4])] = ' # found in {:} structures\n'.format(hbc[7])
+			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[5]],hbc[6],hbc[4],AAA_dict[hbc[1]],hbc[2],doner)] = ' # found in {:} structures\n'.format(hbc[7])
 i = 1
 for line in open(fupl).readlines():
 	if line not in Filtered:
@@ -715,15 +715,71 @@ if cmxchiviol[-1] != ':':
 outcmx.write('label #{:} text "{{0.label_one_letter_code}}{{0.number}}{{0.insertion_code}}"\n''label ontop false\n'.format(mn))
 outcmx.write('hide #{:}@H*,N,O target a\ncolor  byhetero target a\n'.format(mn))
 outpml.write('hide everything, {:}\n'.format(pdbname))
-outpml.write('create phi-psi, {:}_0001\ncolor gray60,phi-psi\nhide sticks, phi-psi\n'.format(pdbname))
-outpml.write(pmlphisel[:-1] + '\n')
+outpml.write('create phipsi, {:}_0001\ncolor gray60,phi-psi\nhide sticks, phi-psi\n'.format(pdbname))
+outpml.write('color purple, ' + pmlphisel[:-1] + '\n')
+outpml.write('color mediumpurple, ' + pmlphiviol[:-1] + '\n')
 outpml.write('create chi, {:}_0001\ncolor gray60, chi\nhide sticks, chi\n'.format(pdbname))
-outpml.write(pmlchisel[:-1] + '\n')
-outpml.write('create viol_phi-psi, {:}_0001\ncolor gray60, viol_phi-psi\nhide sticks, viol_phi-psi\n'.format(pdbname))
-outpml.write(pmlphiviol[:-1] + '\n')
-outpml.write('create viol_chi, {:}_0001\ncolor gray60, viol_chi\nhide sticks, viol_chi\n'.format(pdbname))
-outpml.write(pmlchiviol[:-1] + '\n')
+outpml.write('color navy, ' + pmlchisel[:-1] + '\n')
+outpml.write('show sticks,' + pmlchisel[:-1] + '\n')
+outpml.write('color cornflowerblue, ' + pmlchiviol[:-1] + '\n')
+outpml.write('show sticks, ' + pmlchiviol[:-1] + '\n')
 outpml.write("hide labels\n")
+
+mn+=1
+outcmx.write('open ../' + in_pdb+ ' maxModels 1\nrename #{:} noes\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(mn,mn,mn))
+#outcmx.write('color name c9 rgb(0,56,71)\ncolor name c8 rgb(0,63,92)\ncolor name c7 rgb(47,75,124)\ncolor name c6 rgb(102,81,145)\ncolor name c5 rgb(160,81,149)\ncolor name c4 rgb(212,80,135)\ncolor name c3 rgb(249,93,106)\ncolor name c2 rgb(255,124,67)\ncolor name c1 rgb(255,166,0)\ncolor name c0 rgb(255,205,0)\n')
+#outpml.write('set_color c9 = [0,56,71]\nset_color c8  = [0,63,92]\nset_color c7  = [47,75,124]\nset_color c6  = [102,81,145]\nset_color c5  = [160,81,149]\nset_color c4  = [212,80,135]\nset_color c3  = [249,93,106]\nset_color c2  = [255,124,67]\nset_color c1  = [255,166,0]\nset_color c0  = [255,205,0]\n')
+outcmx.write('color name c0 rgb(255,205,0)\ncolor name c2 rgb(156,217,59)\ncolor name c4 rgb(52,182,121)\ncolor name c6 rgb(42,117,142)\ncolor name c8 rgb(59,81,139)\ncolor name c10 rgb(20,64,110)\n')
+outpml.write('set_color c0 = [255,205,0]\nset_color c2  = [156,217,59]\nset_color c4  = [52,182,121]\nset_color c6  = [42,117,142]\nset_color c8  = [59,81,139]\nset_color c10  = [20,64,110]\n')
+import matplotlib.pyplot as plt
+plt.hist(upldf['cya'],bins=10)
+plt.show()
+outpml.write('create noes, {:}_0001\ncolor gray60,phi-psi\nhide sticks, noes\n'.format(pdbname))
+indexs = [val[1:] for val in upldf[(upldf['cya'] == 0)].index.tolist() if val[0] != 'P']
+for x in range(0,len(indexs),50):
+	i = x
+	plmout = 'color c0, noes and resi '
+	cmxout = 'color #{:}:'.format(mn)
+	for j in range(50):
+		plmout = plmout + str(indexs[i]) + '+'
+		cmxout = cmxout + str(indexs[i]) + ','
+		i=i+1
+		if i== len(indexs): break
+	outpml.write(plmout[:-1] + '\n')
+	outcmx.write(cmxout[:-1] + ' c0 target ac\n')
+for n in range(2,10,2):
+
+	indexs = [val[1:] for val in upldf[(upldf['cya'] == n-1)].index.tolist()]
+	indexs.extend([val[1:] for val in upldf[(upldf['cya'] == n)].index.tolist()])
+	print(indexs)
+	for x in range(0,len(indexs),50):
+		i = x
+		plmout = 'color c{:}, noes and resi '.format(str(n))
+		cmxout = 'color #{:}:'.format(mn)
+		for j in range(50):
+			plmout = plmout + str(indexs[i]) + '+'
+			cmxout = cmxout + str(indexs[i]) + ','
+			i=i+1
+			if i== len(indexs): break
+		outpml.write(plmout[:-1] + '\n')
+		outcmx.write(cmxout[:-1] + ' c{:} target ac\n'.format(str(n)))
+indexs = [val[1:] for val in upldf[(upldf['cya'] >= 9)].index.tolist()]
+for x in range(0,len(indexs),50):
+	i = x
+	plmout = 'color c10, noes and resi '
+	cmxout = 'color #{:}:'.format(mn)
+	for j in range(50):
+		plmout = plmout + str(indexs[i]) + '+'
+		cmxout = cmxout + str(indexs[i]) + ','
+		i=i+1
+		if i== len(indexs): break
+	outpml.write(plmout[:-1] + '\n')
+	outcmx.write(cmxout[:-1] + ' c10 target ac\n')
+outcmx.write(sidechains[:-1].replace('#1',"#{:}".format(mn)) + '\n')
+outcmx.write("show #{:}:thr,met,ala,leu,val,ile,phe,tyr\nhide #{:}@H*\ncolor byhetero\n".format(mn,mn))
+outcmx.write('key c0:0 c2:2 c4:4 c6:6 c8:8 c10:10 fontsize 14 colorTreatment distinct numericLabelSpacing equal\n')
+outpml.write('show sticks, noes and resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\nhide sticks, elem H\ncolor blue, elem N, blue\ncolor gold, elem S\n, color red, elem O\ncolor orange, elem P\ncolor white, elem H\n')
+outpml.write(sidechains[:-1].replace(",","+").replace('#1:',"sticks, noes and resi ") + '\n')
 outpml.close()
 outcmx.close()
 # ---------------------------------------------------------------------------
