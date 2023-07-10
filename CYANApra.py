@@ -731,9 +731,6 @@ outcmx.write('open ../' + in_pdb+ ' maxModels 1\nrename #{:} noes\nhide #{:} tar
 #outpml.write('set_color c9 = [0,56,71]\nset_color c8  = [0,63,92]\nset_color c7  = [47,75,124]\nset_color c6  = [102,81,145]\nset_color c5  = [160,81,149]\nset_color c4  = [212,80,135]\nset_color c3  = [249,93,106]\nset_color c2  = [255,124,67]\nset_color c1  = [255,166,0]\nset_color c0  = [255,205,0]\n')
 outcmx.write('color name c0 rgb(255,205,0)\ncolor name c2 rgb(156,217,59)\ncolor name c4 rgb(52,182,121)\ncolor name c6 rgb(42,117,142)\ncolor name c8 rgb(59,81,139)\ncolor name c10 rgb(20,64,110)\n')
 outpml.write('set_color c0 = [255,205,0]\nset_color c2  = [156,217,59]\nset_color c4  = [52,182,121]\nset_color c6  = [42,117,142]\nset_color c8  = [59,81,139]\nset_color c10  = [20,64,110]\n')
-import matplotlib.pyplot as plt
-plt.hist(upldf['cya'],bins=10)
-# plt.show()
 plt.savefig(outdir+'upl_dist_hist.png')
 print('UPL distribution saved as a histogram')
 outpml.write('create noes, {:}_0001\ncolor gray60,phi-psi\nhide sticks, noes\n'.format(pdbname))
