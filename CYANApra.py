@@ -733,7 +733,9 @@ outcmx.write('color name c0 rgb(255,205,0)\ncolor name c2 rgb(156,217,59)\ncolor
 outpml.write('set_color c0 = [255,205,0]\nset_color c2  = [156,217,59]\nset_color c4  = [52,182,121]\nset_color c6  = [42,117,142]\nset_color c8  = [59,81,139]\nset_color c10  = [20,64,110]\n')
 import matplotlib.pyplot as plt
 plt.hist(upldf['cya'],bins=10)
-plt.show()
+# plt.show()
+plt.savefig(outdir+'upl_dist_hist.png')
+print('UPL distribution saved as a histogram')
 outpml.write('create noes, {:}_0001\ncolor gray60,phi-psi\nhide sticks, noes\n'.format(pdbname))
 indexs = [val[1:] for val in upldf[(upldf['cya'] == 0)].index.tolist() if val[0] != 'P']
 for x in range(0,len(indexs),50):
