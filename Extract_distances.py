@@ -80,10 +80,11 @@ replacements ={
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "CYSS":"C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P","cPRO":"P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 A_dict = {'C': 'CYS', 'D': 'ASP', 'S': 'SER', 'Q': 'GLN', 'K': 'LYS','I': 'ILE', 'P': 'PRO', 'T': 'THR', 'F': 'PHE', 'N': 'ASN', 'G': 'GLY', 'H': 'HIS', 'L': 'LEU', 'R': 'ARG', 'W': 'TRP', 'A': 'ALA', 'V':'VAL', 'E': 'GLU', 'Y': 'TYR', 'M': 'MET'}
 
-cwd = '/Volumes/common/Kinases/FGFR2/FGFR2_467-768_C491A/Structure_Calc/cyana_73/'
+cwd = '/Users/mclay1/FGFR2/FGFR2_467-768_C491A/Structure_Calc/cyana_70/'
 # cwd = '/Users/mclay1/FGFR3_structure/cyana_23/'
 
-in_pdb = cwd + 'final.pdb'
+in_pdb = cwd + 'CNS/refinedPDB/FGFR2_r70_cya.pdb'
+pdb_name = in_pdb.split('/')[-1].replace('.pdb','')
 fupl = cwd + 'final.upl'
 calc = cwd + 'CALC.cya'
 init = cwd + 'init.cya'
@@ -153,8 +154,8 @@ for line in open(fovw).readlines():
 
 
 
-pd.set_option("display.precision", 2)
-DistancesDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv','upl','plist','peak'])
+
+DistancesDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv','upl','violation','num viol'])
 DiffDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
 print('Extracting Distances from %s' %fupl)
 ## Extract distances for the final upl no modification, and excluding ambiguous restraints
@@ -167,12 +168,10 @@ for line in open(fupl).readlines():
 		atom2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
 		connection = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
 		DistancesDF.loc[connection,'upl'] = cns[6]
-		DistancesDF.loc[connection,'peak'] = cns[8]
-		DistancesDF.loc[connection,'plist'] = cns[10]
 		diff = []
 		for mnum in range(1,21,1):
 			Coor = eval('Coor' + str(mnum))
-			d = getDistance(atom1, atom2, Coor)
+			d = float(getDistance(atom1, atom2, Coor))
 			DistancesDF.loc[connection,mnum] = d
 			if np.round(d - float(cns[6]),2) > 0.1:
 				DiffDF.loc[connection,mnum] = np.round(d - float(cns[6]),2)
@@ -180,44 +179,46 @@ for line in open(fupl).readlines():
 		if connection in violdict.keys():
 			DistancesDF.loc[connection,'violation'] = violdict[connection]
 		DistancesDF.loc[connection,'num viol'] = len(diff)
-
-DistancesDF['mean'] = np.round(DistancesDF[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]].mean(axis=1),2)
-DistancesDF['stdv'] = np.round(DistancesDF[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]].std(axis=1),2)
-DistancesDF['mean diff'] = np.round(DiffDF.mean(axis=1),2)
-DistancesDF['max diff'] = np.round(DiffDF.max(axis=1),2)
-DistancesDF.to_csv('final_distances_v1.csv')
+DistancesDF['mean'] = DistancesDF[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]].mean(axis=1)
+DistancesDF['stdv'] = DistancesDF[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]].std(axis=1)
+decimals = pd.Series([2, 2,2,2], index=['mean','stdv','mean diff','max diff'])
+DistancesDF['mean diff'] = DiffDF.mean(axis=1)
+DistancesDF['max diff'] = DiffDF.max(axis=1)
+DistancesDF.round(2)
+DistancesDF.to_csv(pdb_name + '_distances_proton.csv')
 print(DistancesDF)
 print(DistancesDF.shape)
 
 ## Now look at the other input upls 
-for upl in upls:
-	print(upl)
-	DiffDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
-	DistancesDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv','upl'])
-	for line in open(cwd+upl).readlines():
-		if '#'in line[0:4]:
-			pass 
-		else:
-			cns = line.strip().split()
-			atom1 = '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2])
-			atom2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
-			connection = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
-			DistancesDF.loc[connection,'upl'] = float(cns[6])
-			for mnum in range(1,21,1):
-				Coor = eval('Coor' + str(mnum))
-				d = getDistance(atom1, atom2,Coor)
-				DistancesDF.loc[atom1 + ' ' + atom2,mnum] = d
-				if np.round(d - float(cns[6]),2) > 0.1:
-					DiffDF.loc[connection,mnum] = np.round(d - float(cns[6]),2)
-			if connection in violdict.keys():
-				DistancesDF.loc[connection,'violation'] = violdict[connection]
-	DistancesDF['mean'] = np.round(DistancesDF[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]].mean(axis=1),2)
-	DistancesDF['stdv'] = np.round(DistancesDF[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]].std(axis=1),2)
-	DistancesDF['mean diff'] = np.round(DiffDF.mean(axis=1),2)
-	DistancesDF['max diff'] = np.round(DiffDF.max(axis=1),2)
-	DistancesDF.to_csv(upl.replace('.upl','_distances_v1.csv'))
-	print(DistancesDF)
-	print(DistancesDF.shape)
+# for upl in upls:
+# 	print(upl)
+# 	DiffDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
+# 	DistancesDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv','upl'])
+# 	for line in open(cwd+upl).readlines():
+# 		if '#'in line[0:4]:
+# 			pass 
+# 		else:
+# 			cns = line.strip().split()
+# 			atom1 = '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2])
+# 			atom2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
+# 			connection = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+# 			DistancesDF.loc[connection,'upl'] = float(cns[6])
+# 			for mnum in range(1,21,1):
+# 				Coor = eval('Coor' + str(mnum))
+# 				d = getDistance(atom1, atom2,Coor)
+# 				DistancesDF.loc[atom1 + ' ' + atom2,mnum] = d
+# 				if np.round(d - float(cns[6]),2) > 0.1:
+# 					DiffDF.loc[connection,mnum] = np.round(d - float(cns[6]),2)
+# 			if connection in violdict.keys():
+# 				DistancesDF.loc[connection,'violation'] = violdict[connection]
+# 	DistancesDF['mean'] = DistancesDF[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]].mean()
+# 	DistancesDF['stdv'] = DistancesDF[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]].std()
+# 	DistancesDF['mean diff'] = DiffDF.mean(axis=1)
+# 	DistancesDF['max diff'] = DiffDF.max(axis=1)
+# 	DistancesDF.round({'mean':2,'std':2,'mean diff':2,'max diff':2})
+# 	DistancesDF.to_csv(upl.replace('.upl','_distances_v1.csv'))
+# 	print(DistancesDF)
+# 	print(DistancesDF.shape)
 
 
 ### Now do this replacing protons with heavy atoms but drop the viaolation counts and so on 
@@ -247,9 +248,11 @@ for line in open(fupl).readlines():
 			d = getDistance(atom1, atom2, Coor)
 			DistancesDF.loc[connection,mnum] = d
 
-DistancesDF['mean'] = np.round(DistancesDF[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]].mean(axis=1),2)
-DistancesDF['stdv'] = np.round(DistancesDF[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]].std(axis=1),2)
-DistancesDF.to_csv('final_distances_v2.csv')
+DistancesDF['mean'] = DistancesDF[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]].mean(axis=1)
+DistancesDF['stdv'] = DistancesDF[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]].std(axis=1)
+decimals = pd.Series([2,2], index=['mean','stdv'])
+DistancesDF.round(2)
+DistancesDF.to_csv(pdb_name + '_distances_heavy_atom.csv')
 print(DistancesDF)
 print(DistancesDF.shape)
 
