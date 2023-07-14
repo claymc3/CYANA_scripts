@@ -107,7 +107,7 @@ Sequence, ASequence = [],[]
 
 for (start,end) in zip(Starts,Ends):
 	n+=1
-	print('Reading coordinates for model %d' %n)
+	print('Reading coordinates for model {:d}'.format(n))
 	Coor = eval('Coor' + str(n))
 	for x in range(start,end,1):
 		line = pdb[x]
