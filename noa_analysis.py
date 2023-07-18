@@ -49,6 +49,9 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 		intdict = eval('intensity' + str(x))
 		pdict = eval('peaks' + str(x))
 		peaklines = open(cwd + cya_plists[x].replace('.peaks','-cycle7.peaks')).readlines()
+		ndim = int(peaklines[0][-2])
+		intidx = ndim + 3
+		VCV = 2*ndim + 8
 		for i in range(len(peaklines)):
 			line = peaklines[i]
 			if line.strip():
@@ -57,14 +60,10 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						line = peaklines[i-1][0:peaklines[i-1].find(' U ')+35] + ' ' + peaklines[i].strip()
 						peaklines[i] = line
 					pdict[int(line.split()[0])] = [float(line.split()[1]),float(line.split()[2]),float(line.split()[3])]
-					if line.split()[5] == 'U':  # get intensity for 3D NOESY
-						intensity = "{:12.6E}".format(float(line.split()[6]))
-						if len(line.split()) > 13 and line.split()[13] == '#VC':
-							intensity = "{:12.6E}".format(float(line.split()[6]) * float(line.split()[14]))
-					elif line.split()[6] == 'U':  # get intensity of psudo 4D NOESY
-						intensity = "{:12.6E}".format(float(line.split()[7]))
-						if len(line.split()) > 15 and line.split()[15] == '#VC':
-							intensity = "{:12.6E}".format(float(line.split()[7]) * float(line.split()[16]))
+					if re.search('#VC',line):
+						VC = float(line.split()[VCV])
+					else: VC = 1.0
+					intensity = "{:12.6E}".format(float(line.split()[intidx]) *VC)
 					if int(line.split()[0]) in intdict.keys():
 						intdict[int(line.split()[0])].append(intensity)
 					else:
@@ -178,6 +177,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 			peak = int(noalines[x].strip().split()[1])
 			plist = noalines[x].strip().split()[3].replace('.peaks','')
 			pdict = eval('peaks' + plist_dict[plist])
+			used =eval('usedquestlist' + plist_dict[plist])
 			intdict = eval('intensity' + plist_dict[plist])
 			outlist = eval('outlist' + plist_dict[plist])
 			linepad = pad[len(plist):]
@@ -221,6 +221,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						if pshift < 0.75 and int(noalines[x+1].split()[3]) == 1:
 							note = note + noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures ','') + ' '
 						outlist.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^5}  {:^10}  {:^6.2f}   {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,note))
+						used.append('{:} {:}'.format(peak, conect))
 			if '0 out of 0' in noalines[x+1]:
 				drange = ''
 				if float(intdict[peak][0]) != 0.0: 
@@ -234,7 +235,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 	inconsistant = open(outdir + 'Inconsistant_distances.txt','w')
 	assigned = open(outdir + 'Assignment_Summary.txt','w')
 	unused = open(outdir + 'Unused_Connections.txt','w')
-	inconcount,numcon, intracount, shortcount,mediumcount,longcount = 0, 0, 0, 0, 0,0
+	inconcount,numcon, intracount, shortcount,mediumcount,longcount = 0, 0, 0, 0, 0, 0
 	Gamidecount, Tamidecount,Mamidecount = 0, 0,0
 	for val in Calibration_cns:
 		assigned.write(val.strip()+'\n')
@@ -246,21 +247,34 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 			for line in assigndict[con]:
 				if 'unused' not in line: dist.append(float(line.split()[2].split('-')[0]))
 				if 'unused' in line: dist.append(float(line.split()[3].split('-')[0]))
-				if 'unused' in line: wpass = True
 			if np.std(dist) > 0.3: 
 				inconcount += 1
 				if con in upldict.keys():
-					inconsistant.write('{:}  {:3.2f}A ({:}): {:0.2f}\n'.format(con,float(upldict[con]),len(assigndict[con]),np.std(dist)))
+					assigned.write('{:}  {:3.2f}A ({:}): {:0.2f} inconsistant distance\n'.format(con,float(upldict[con]),len(assigndict[con]),np.std(dist)))
 				if con not in upldict.keys():
-					inconsistant.write('{:} ({:}): {:0.2f}\n'.format(con,len(assigndict[con]),np.std(dist)))
-				inconsistant.writelines(assigndict[con])
-				inconsistant.write('\n')
-			if con in upldict.keys():
-				assigned.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
-			if con not in upldict.keys():
-				assigned.write('{:} ({:}):\n'.format(con,len(assigndict[con])))
-			assigned.writelines(assigndict[con])
-			assigned.write('\n')
+					assigned.write('{:} ({:}): {:0.2f} inconsistant distance\n'.format(con,len(assigndict[con]),np.std(dist)))
+				for pline,d in zip(assigndict[con],dist):
+					if abs(d - np.mean(dist)) > np.std(dist):
+						peak = int(pline.replace("#",'').split()[4])
+						plist = pline.replace("#",'').split()[6]
+						pshift = pline.replace("#",'').split()[8]
+						conect = pline.replace("#",'').split()[0]
+						questout =  eval('outlist' + plist_dict[plist])
+						used =eval('usedquestlist' + plist_dict[plist])
+						index = used.index('{:} {:}'.format(peak, conect))
+						pline2 = questout[index]
+						questout[index] = pline2.replace('\n', 'inconsistant\n')
+						assigned.write(pline.replace('\n','*\n'))
+					else:
+						assigned.write(pline)
+				assigned.write('\n')
+			if np.std(dist) < 0.3: 
+				if con in upldict.keys():
+					assigned.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
+				if con not in upldict.keys():
+					assigned.write('{:} ({:}):\n'.format(con,len(assigndict[con])))
+				assigned.writelines(assigndict[con])
+				assigned.write('\n')
 		if len(notassigndict[con]) >= 1:
 			unused.write('{:} ({:}):\n'.format(con,len(notassigndict[con])))
 			unused.writelines(notassigndict[con])
