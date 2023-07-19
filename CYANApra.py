@@ -219,6 +219,8 @@ poorpbout = open(outdir +'pseudobonds/' + outname + '_poor.pb','w')
 poorpbout.write("; halfbond = false\n; color = mediumvioletred\n; radius = 0.1\n; dashes = 0\n")
 longpbout = open(outdir +'pseudobonds/' + outname + '_long.pb','w')
 longpbout.write("; halfbond = false\n; color = firebrick\n; radius = 0.1\n; dashes = 0\n")
+pdiffpbout = open(outdir +'pseudobonds/' + outname + '_long.pb','w')
+pdiffpbout.write("; halfbond = false\n; color = firebrick\n; radius = 0.15\n; dashes = 0\n")
 shortpbout = open(outdir +'pseudobonds/' + outname + '_short.pb','w')
 shortpbout.write("; halfbond = false\n; color = light coral\n; radius = 0.1\n; dashes = 0\n")
 uviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_upls.pb','w')
@@ -302,8 +304,8 @@ for line in open(fovw).readlines():
 		hbondline = line
 
 usedupls,qupldict, upldict, upldict2 = {}, {}, {}, []
-finalupl,poorcons2, show, shortcons2,longcons2,sidelist = [],[],[],[],[],[]
-poorcons, shortcons, longcons = 'group poor, ', 'group short, ', 'group long, '
+finalupl,poorcons2, show, shortcons2,longcons2,diffcons2,sidelist = [],[],[],[],[],[],[]
+poorcons, shortcons, longcons, pdiffcons = 'group poor, ', 'group short, ', 'group long, ', 'group pdiffusion, '
 for line in open(fupl).readlines():
 	if line.split() and '#SUP' in line:
 		cns = line.split()
@@ -370,6 +372,7 @@ for line in open(fupl).readlines():
 				group1 = '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2])
 				group2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
 				outline = ' #{:3.2f} #peak {:} #plist {:}\n'.format(float(cns[6]),cns[8],cns[10])
+				cons1 = '{:}-{:}'.format(group1,group2)
 				usedupls['{:}-{:}'.format(group1,group2)] = outline
 				usedupls['{:}-{:}'.format(group2,group1)] = outline
 				## Traslate amides H to N to search input upls but don't mess up the connections drawn in pymol/chimera
@@ -386,37 +389,53 @@ for line in open(fupl).readlines():
 					sidelist.append(cns[0])
 				if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
 					sidelist.append(cns[3])
-				d = distDF.loc[group1,group2]
-				if float(cns[6]) >= 5.0:
-					if d > 7.50:
-						# members1 = distDF.dropna(subset=[group1]).index.tolist()
-						# members2 = distDF.dropna(subset=[group2]).index.tolist()
-						common = distDF.dropna(subset=[group1,group2]).index.tolist()
-						print('common')
-						print(common)
-						if len(common) > 0:
-							print('{:}-{:}'.format(group1,group2))
-							diffcount+=1
-							print(diffcount)
-				if float(cns[12]) < 0.5:
+				d = float(distDF.loc[group1,group2].split()[0])
+				# if float(cns[6]) >= 6.0 and d >= 8.0:
+				# 	common = distDF.dropna(subset=[group1,group2]).index.tolist()
+				# 	common.extend([group1,group2])
+				# 	if len(common) > 0:
+				# 		print('{:}-{:}'.format(group1,group2))
+				# 		print('long distance {:} probably diffusion {:}'.format(cns[6],d))
+				# 		print(distDF.loc[common,[group1,group2]])
+				# 		diffcount+=1
+				# 		print(diffcount)
+				# 		Filtered.append(line)
+				if d >= 8.0 and line not in Filtered:
+					common = distDF.dropna(subset=[group1,group2]).index.tolist()
+					if len(common) > 0:
+						upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
+						upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] + 1
+						qupldict['{:}-{:}'.format(group1,group2)] = "prob diffusion"
+						qupldict['{:}-{:}'.format(group2,group1)] = "prob diffusion"
+						i+=1
+						pdiffpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+						diffcons2.extend(['{:}-{:}'.format(group1,group2),'{:}-{:}'.format(group1,group2)])
+						outpml.write('distance pdiffusion{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+						pdiffcons = pdiffcons + 'pdiffusion{:} '.format(i)
+						Filtered.append(line)
+						print('{:}-{:}'.format(group1,group2))
+						print('long distance upl {:} heavy {:}'.format(cns[6],d))
+						print(distDF.loc[common,[group1,group2]])
+						diffcount+=1
+						print(diffcount)
+						Filtered.append(line)
+				if line not in Filtered and float(cns[12]) < 0.5:
 					i+=1
 					poorpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-					poorcons2.extend([cons1,cons2])
+					poorcons2.extend(['{:}-{:}'.format(group1,group2),'{:}-{:}'.format(group1,group2)])
 					outpml.write('distance poor{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 					poorcons = poorcons + 'poor{:} '.format(i)
 					Filtered.append(line)
 					finalupls[1].append(line)
-				if float(cns[12]) > 0.5:
-					# if cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR'] and cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR']: longcut = 6.00
-					# if cns[1] in ['ALA','LEU','VAL','MET','ILE','THR'] and cns[4] in ['ALA','LEU','VAL','MET','ILE','THR']:longcut = 5.00
+				if line not in Filtered and float(cns[12]) > 0.5:
 					if float(cns[6]) >= 6.0:
-						upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
+						upldf.loc[AAA_dict[cns[1]] + cns[0],'long '] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
 						upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] + 1
-						qupldict[cons1] = "long"
-						qupldict[cons2] = "long"
+						qupldict['{:}-{:}'.format(group1,group2)] = "long"
+						qupldict['{:}-{:}'.format(group1,group2)] = "long"
 						i+=1
 						longpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-						longcons2.extend([cons1,cons2])
+						longcons2.extend(['{:}-{:}'.format(group1,group2),'{:}-{:}'.format(group1,group2)])
 						outpml.write('distance long{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 						longcons = longcons + 'long{:} '.format(i)
 						Filtered.append(line)
@@ -425,10 +444,10 @@ for line in open(fupl).readlines():
 						if abs(int(cns[0])- int(cns[3])) > 1:
 							i+=1
 							shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-							shortcons2.extend([cons1,cons2])
+							shortcons2.extend(['{:}-{:}'.format(group1,group2),'{:}-{:}'.format(group1,group2)])
 							outpml.write('distance short{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-							qupldict[cons1] = "short"
-							qupldict[cons2] = "short"
+							qupldict['{:}-{:}'.format(group1,group2)] = "short"
+							qupldict['{:}-{:}'.format(group1,group2)] = "short"
 							shortcons = shortcons + 'short{:} '.format(i)
 							finalupls[3].append(line)
 							Filtered.append(line)
@@ -443,7 +462,7 @@ poorpbout.close()
 longpbout.close()
 shortpbout.close()
 uviolpbout.close()
-exit()
+
 # ---------------------------------------------------------------------------
 # Run the cycle7.noa analysis and generate peak list identifying peaks as 
 # unused, no assignment, and questionable
@@ -675,6 +694,7 @@ checkcons.write(angle_text)
 shortsum.write(angle_text)
 checkcons.write('{:3.0f} Violated Distance Restraints\n'.format(len(violpeaks)/2))
 checkcons.write('{:3.0f} Low Support Restraints\n'.format(len(poorcons2)/2))
+checkcons.write('{:3.0f} Probable Diffusion Distance Restraints\n'.format(len(diffcons2)/2))
 checkcons.write('{:3.0f} Long Distance Restraints d >= 6.0\n'.format(len(longcons2)/2))
 checkcons.write('{:3.0f} Short Distance Restraints d <= 3.0\n\n'.format(len(shortcons2)/2))
 
@@ -697,6 +717,14 @@ for con in poorcons2:
 		checkcons.writelines(assigndict[con])
 		checkcons.write('\n')
 checkcons.write('\n\n')
+#### Write out Probable Diffusion Distance constraints to the summary file
+diffcons2 = sorted(diffcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
+checkcons.write('### {:3.0f} Probable Diffusion Distance Restraints ###\n'.format(len(diffcons2)/2))
+for con in diffcons2:
+	if con in assigndict.keys():
+		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
+		checkcons.writelines(assigndict[con])
+		checkcons.write('\n')
 #### Write out Long Distance constraints to the summary file
 longcons2 = sorted(longcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 checkcons.write('### {:3.0f} Long Distance Restraints d >= 6.0 ###\n'.format(len(longcons2)/2))
@@ -776,7 +804,6 @@ for n in range(2,10,2):
 
 	indexs = [val[1:] for val in upldf[(upldf['cya'] == n-1)].index.tolist()]
 	indexs.extend([val[1:] for val in upldf[(upldf['cya'] == n)].index.tolist()])
-	print(indexs)
 	for x in range(0,len(indexs),50):
 		i = x
 		plmout = 'color c{:}, noes and resi '.format(str(n))
@@ -807,6 +834,7 @@ outpml.write('show sticks, noes and resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\nhide s
 outpml.write(sidechains[:-1].replace(",","+").replace('#1:',"sticks, noes and resi ") + '\n')
 outpml.close()
 outcmx.close()
+exit()
 # ---------------------------------------------------------------------------
 # Run the GetDihed.py to determine phi, psi, chi1 and chi2 and plot them
 # for all 20 structures
