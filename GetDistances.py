@@ -104,7 +104,7 @@ def examin(in_pdb, ADpairs,Assignments):
   n = 0
   for (start,end) in zip(Starts,Ends):
     n+=1
-    print('Reading coordinates for model {:d}'.format(n))
+    # print('Reading coordinates for model {:d}'.format(n))
     Coor = eval('Coor' + str(n))
     for x in range(start,end,1):
       line = pdb[x]
@@ -112,9 +112,8 @@ def examin(in_pdb, ADpairs,Assignments):
         index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
         Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
   DistancesDF = pd.DataFrame(columns=Assignments,index=Assignments)
-  
-  print(DistancesDF.shape)
-  ## Extract distances for the final upl no modification, and excluding ambiguous restraints
+  # from itertools import combinations
+  # ADpairs = [ '{:}-{:}'.format(comb[0],comb[1]) for comb in combinations(Assignments,2)]
   for connection in ADpairs:
       inatom1 = '{:}-{:}'.format(connection.split('-')[0],connection.split('-')[1])
       inatom2 = '{:}-{:}'.format(connection.split('-')[2],connection.split('-')[3])
@@ -129,11 +128,11 @@ def examin(in_pdb, ADpairs,Assignments):
         for mnum in range(1,21,1):
           Coor = eval('Coor' + str(mnum))
           d = getDistance(atom1, atom2, Coor)
-          if getDistance(atom1, atom2, Coor) <= 7.0:
+          if getDistance(atom1, atom2, Coor) <= 7.5:
             dist.append(getDistance(heavy1, heavy2, Coor))
-        if len(dist) >= 1:
-          DistancesDF.loc[inatom1,inatom2] = np.round(np.mean(dist),2)
-          DistancesDF.loc[inatom2,inatom1] = np.round(np.mean(dist),2)
+        if len(dist) >= 5:
+          DistancesDF.loc[inatom1,inatom2] = "{:3.2f} +/- {:0.2f}".format(np.mean(dist),np.std(dist))
+          DistancesDF.loc[inatom2,inatom1] = "{:3.2f} +/- {:0.2f}".format(np.mean(dist),np.std(dist))
   DistancesDF.to_csv(pdb_name + '_distances_heavy_v2.csv')
   print(DistancesDF)
   print(DistancesDF.shape)
