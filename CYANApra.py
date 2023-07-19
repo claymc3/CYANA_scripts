@@ -219,8 +219,8 @@ poorpbout = open(outdir +'pseudobonds/' + outname + '_poor.pb','w')
 poorpbout.write("; halfbond = false\n; color = mediumvioletred\n; radius = 0.1\n; dashes = 0\n")
 longpbout = open(outdir +'pseudobonds/' + outname + '_long.pb','w')
 longpbout.write("; halfbond = false\n; color = firebrick\n; radius = 0.1\n; dashes = 0\n")
-pdiffpbout = open(outdir +'pseudobonds/' + outname + '_long.pb','w')
-pdiffpbout.write("; halfbond = false\n; color = firebrick\n; radius = 0.15\n; dashes = 0\n")
+pdiffpbout = open(outdir +'pseudobonds/' + outname + '_pdiff.pb','w')
+pdiffpbout.write("; halfbond = false\n; color = firebrick\n; radius = 0.1\n; dashes = 0\n")
 shortpbout = open(outdir +'pseudobonds/' + outname + '_short.pb','w')
 shortpbout.write("; halfbond = false\n; color = light coral\n; radius = 0.1\n; dashes = 0\n")
 uviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_upls.pb','w')
@@ -275,7 +275,7 @@ for line in open(fovw).readlines():
 							if cns[0] != cns[3] and '#SUP' in line2:
 								upldf.loc[AAA_dict[cns[1]] + cns[0],'viol'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'viol'] + 1
 								upldf.loc[AAA_dict[cns[4]] + cns[3],'viol'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'viol'] + 1
-								violpeaks.extend([cons1,cons2])
+								violpeaks.append(cons1)
 								finalupls[0].append(line2)
 								Filtered.append(line2)
 				v+=1
@@ -400,7 +400,7 @@ for line in open(fupl).readlines():
 				# 		diffcount+=1
 				# 		print(diffcount)
 				# 		Filtered.append(line)
-				if d >= 8.0 and line not in Filtered:
+				if d >= 7.7 and line not in Filtered:
 					common = distDF.dropna(subset=[group1,group2]).index.tolist()
 					if len(common) > 0:
 						upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
@@ -409,7 +409,7 @@ for line in open(fupl).readlines():
 						qupldict['{:}-{:}'.format(group2,group1)] = "prob diffusion"
 						i+=1
 						pdiffpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-						diffcons2.extend(['{:}-{:}'.format(group1,group2),'{:}-{:}'.format(group1,group2)])
+						diffcons2.append('{:}-{:}'.format(group1,group2))
 						outpml.write('distance pdiffusion{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 						pdiffcons = pdiffcons + 'pdiffusion{:} '.format(i)
 						Filtered.append(line)
@@ -422,7 +422,7 @@ for line in open(fupl).readlines():
 				if line not in Filtered and float(cns[12]) < 0.5:
 					i+=1
 					poorpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-					poorcons2.extend(['{:}-{:}'.format(group1,group2),'{:}-{:}'.format(group1,group2)])
+					poorcons2.append('{:}-{:}'.format(group1,group2))
 					outpml.write('distance poor{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 					poorcons = poorcons + 'poor{:} '.format(i)
 					Filtered.append(line)
@@ -435,7 +435,7 @@ for line in open(fupl).readlines():
 						qupldict['{:}-{:}'.format(group1,group2)] = "long"
 						i+=1
 						longpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-						longcons2.extend(['{:}-{:}'.format(group1,group2),'{:}-{:}'.format(group1,group2)])
+						longcons2.append('{:}-{:}'.format(group1,group2))
 						outpml.write('distance long{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 						longcons = longcons + 'long{:} '.format(i)
 						Filtered.append(line)
@@ -444,7 +444,7 @@ for line in open(fupl).readlines():
 						if abs(int(cns[0])- int(cns[3])) > 1:
 							i+=1
 							shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-							shortcons2.extend(['{:}-{:}'.format(group1,group2),'{:}-{:}'.format(group1,group2)])
+							shortcons2.append('{:}-{:}'.format(group1,group2))
 							outpml.write('distance short{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 							qupldict['{:}-{:}'.format(group1,group2)] = "short"
 							qupldict['{:}-{:}'.format(group1,group2)] = "short"
@@ -483,11 +483,11 @@ for x in range(len(ConectionTypes)):
 		outpml.write(groupstr + '\n')
 		outpml.write('color {:}, {:}\n'.format(colors[x],ConectionTypes[x]))
 
-for (group, color) in [('poor','mediumvioletred'),('long','firebrick'),('short', 'lightcoral'),('viol_upls', 'deeppink')]:
+for (group, color) in [('poor','mediumvioletred'),('long','firebrick'), ('pdiff','firebrick'), ('short', 'lightcoral'),('viol_upls', 'deeppink')]:
 	mn+=1
 	outcmx.write('open pseudobonds/' + outname + '_' + group + '.pb\n')
 	# outcmx.write('color #{:} {:}\n'.format(str(mn),color))
-for (group, color) in [('poorcons','mediumvioletred'),('longcons','firebrick'),('shortcons', 'lightcoral'),('viol_upls', 'deeppink')]:
+for (group, color) in [('poorcons','mediumvioletred'),('longcons','firebrick'),('shortcons', 'lightcoral'),('viol_upls', 'deeppink'), ('pdiffcons','firebrick')]:
 	grpstr = eval(group)
 	outpml.write(grpstr + '\n')
 	outpml.write('color {:}, {:}\n'.format(color, group))
@@ -692,14 +692,14 @@ angle_text = "Total of {:} dihedral restraints:\n       input viol\n{:<6} {:^5} 
 print(angle_text[:-2])
 checkcons.write(angle_text)
 shortsum.write(angle_text)
-checkcons.write('{:3.0f} Violated Distance Restraints\n'.format(len(violpeaks)/2))
-checkcons.write('{:3.0f} Low Support Restraints\n'.format(len(poorcons2)/2))
-checkcons.write('{:3.0f} Probable Diffusion Distance Restraints\n'.format(len(diffcons2)/2))
-checkcons.write('{:3.0f} Long Distance Restraints d >= 6.0\n'.format(len(longcons2)/2))
-checkcons.write('{:3.0f} Short Distance Restraints d <= 3.0\n\n'.format(len(shortcons2)/2))
+checkcons.write('{:3.0f} Violated Distance Restraints\n'.format(len(violpeaks)))
+checkcons.write('{:3.0f} Low Support Restraints\n'.format(len(poorcons2)))
+checkcons.write('{:3.0f} Probable Diffusion Distance Restraints\n'.format(len(diffcons2)))
+checkcons.write('{:3.0f} Long Distance Restraints d >= 6.0\n'.format(len(longcons2)))
+checkcons.write('{:3.0f} Short Distance Restraints d <= 3.0\n\n'.format(len(shortcons2)))
 
 print('finished finding upls')
-checkcons.write('### {:3.0f}  Violated Distance Restraints ###\n'.format(len(violpeaks)/2))
+checkcons.write('### {:3.0f}  Violated Distance Restraints ###\n'.format(len(violpeaks)))
 # violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
 violpeaks = sorted(violpeaks, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 for viol in violpeaks:
@@ -710,7 +710,7 @@ for viol in violpeaks:
 checkcons.write('\n\n')
 #### Write out Poor/Low Support constraints to the summary file
 poorcons2 = sorted(poorcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
-checkcons.write('### {:3.0f} Low Support Restraints ###\n'.format(len(poorcons2)/2))
+checkcons.write('### {:3.0f} Low Support Restraints ###\n'.format(len(poorcons2)))
 for con in poorcons2:
 	if con in assigndict.keys():
 		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
@@ -719,7 +719,7 @@ for con in poorcons2:
 checkcons.write('\n\n')
 #### Write out Probable Diffusion Distance constraints to the summary file
 diffcons2 = sorted(diffcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
-checkcons.write('### {:3.0f} Probable Diffusion Distance Restraints ###\n'.format(len(diffcons2)/2))
+checkcons.write('### {:3.0f} Probable Diffusion Distance Restraints ###\n'.format(len(diffcons2)))
 for con in diffcons2:
 	if con in assigndict.keys():
 		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
@@ -727,7 +727,7 @@ for con in diffcons2:
 		checkcons.write('\n')
 #### Write out Long Distance constraints to the summary file
 longcons2 = sorted(longcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
-checkcons.write('### {:3.0f} Long Distance Restraints d >= 6.0 ###\n'.format(len(longcons2)/2))
+checkcons.write('### {:3.0f} Long Distance Restraints d >= 6.0 ###\n'.format(len(longcons2)))
 for con in longcons2:
 	if con in assigndict.keys():
 		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
@@ -735,7 +735,7 @@ for con in longcons2:
 		checkcons.write('\n')
 checkcons.write('\n\n')
 #### Write out Short Distance constraints to the summary file
-checkcons.write('### {:3.0f} Short Distance Restraints d <= 3.0 ###\n'.format(len(shortcons2)/2))
+checkcons.write('### {:3.0f} Short Distance Restraints d <= 3.0 ###\n'.format(len(shortcons2)))
 shortcons2 = sorted(shortcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 for con in shortcons2:
 	if con in assigndict.keys():
