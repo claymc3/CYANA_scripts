@@ -42,45 +42,17 @@ Prot2Heavy = {
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "CYSS":"C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P","cPRO":"P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 A_dict = {'C': 'CYS', 'D': 'ASP', 'S': 'SER', 'Q': 'GLN', 'K': 'LYS','I': 'ILE', 'P': 'PRO', 'T': 'THR', 'F': 'PHE', 'N': 'ASN', 'G': 'GLY', 'H': 'HIS', 'L': 'LEU', 'R': 'ARG', 'W': 'TRP', 'A': 'ALA', 'V':'VAL', 'E': 'GLU', 'Y': 'TYR', 'M': 'MET'}
 
-cwd = '/Users/mclay1/FGFR2/FGFR2_467-768_C491A/Structure_Calc/cyana_70/'
-# cwd = '/Users/mclay1/FGFR3_structure/cyana_23/'
+# cwd = '/Users/mclay1/FGFR2/FGFR2_467-768_C491A/Structure_Calc/cyana_70/'
+# # cwd = '/Users/mclay1/FGFR3_structure/cyana_23/'
 
-in_pdb = cwd + 'CNS/refinedPDB/FGFR2_r70_cya.pdb'
-pdb_name = in_pdb.split('/')[-1].replace('.pdb','')
-fupl = cwd + 'final.upl'
-calc = cwd + 'CALC.cya'
-init = cwd + 'init.cya'
+# in_pdb = cwd + 'CNS/refinedPDB/FGFR2_r70_cya.pdb'
+# pdb_name = in_pdb.split('/')[-1].replace('.pdb','')
+# fupl = cwd + 'final.upl'
+# calc = cwd + 'CALC.cya'
+# init = cwd + 'init.cya'
 
 
-prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
-Starts,Ends = [], []
-for mnum in range(1,21,1):
-  start = open(in_pdb).readlines().index('MODEL' + '%9s\n' %str(mnum))
-  exec('Coor' + str(mnum) + ' = {}')
-  Starts.append(start)
-  Ends.append(start-1)
-Ends.append(len(open(in_pdb).readlines()))
-Ends = Ends[1:]
-pdb = open(in_pdb).readlines()
-n = 0
-seq = [line.strip().split() for line in open(cwd + open(init).readlines()[0].strip().split(':=')[-1] + '.seq').readlines() if '#' != line[0]]
-Seqdict = {}
-Sequence, ASequence = [],[]
-for resn,resi in seq:
-  Seqdict[resi] = AAA_dict[resn] + resi
-  ASequence.append(AAA_dict[resn] + resi)
-  Sequence.append(resi)
-
-for (start,end) in zip(Starts,Ends):
-  n+=1
-  print('Reading coordinates for model {:d}'.format(n))
-  Coor = eval('Coor' + str(n))
-  for x in range(start,end,1):
-    line = pdb[x]
-    if line[0:4] == "ATOM" or line[0:4] == 'HETA':
-      index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
-      Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
-
+# prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
 
 def find_protons(inatom, PDBdict):
   atype = '{:}{:}'.format(inatom.split('-')[0][0], inatom.split('-')[-1])
@@ -117,41 +89,54 @@ def getDistance(donor, acceptor,PDBdict):
       d = d + np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)**-6
   reff = np.round(d**(-1/6),2)
   return reff
-Assignments= []
-for prot in prots:
-  for line in open(cwd + prot.replace('.prot','-final.prot')).readlines():
-    if line.strip():
-      if '#' != line.strip()[0]:
-        resi = line.strip().split()[4]
-        atom = line.strip().split()[3]
-        assign = Seqdict[resi] + '-' + atom
-        if assign not in Assignments and atom[0] in ['H','Q']:
-          Assignments.append(assign)
-from itertools import combinations
-ADpairs = [ '{:}_{:}'.format(comb[0],comb[1]) for comb in combinations(Assignments,2)]
 
-DistancesDF = pd.DataFrame(columns=[Assignments],index=[Assignments])
-## Extract distances for the final upl no modification, and excluding ambiguous restraints
-for connection in ADpairs:
-    inatom1 = connection.split('_')[0]
-    inatom2 = connection.split('_')[-1]
-    atom1 = find_protons(inatom1, Coor1)
-    heavy1 = find_heavy(inatom1, Coor1)
-    atom2 = find_protons(inatom2, Coor1)
-    heavy2 = find_heavy(inatom2, Coor1)
-    dist = []
-    # print(heavy1,heavy2)
-    if heavy1 != heavy2:
-      for mnum in range(1,21,1):
-        Coor = eval('Coor' + str(mnum))
-        d = getDistance(atom1, atom2, Coor)
-        if getDistance(atom1, atom2, Coor) <= 7.0:
-          dist.append(getDistance(heavy1, heavy2, Coor))
-      if len(dist) >= 1:
-        DistancesDF.loc[inatom1,inatom2] = np.round(np.mean(dist),2)
-        DistancesDF.loc[inatom2,inatom1] = np.round(np.mean(dist),2)
-DistancesDF.to_csv(pdb_name + '_distances_heavy_v2.csv')
-print(DistancesDF)
-print(DistancesDF.shape)
+def examin(in_pdb, ADpairs,Assignments):
+  pdb_name = in_pdb.split('/')[-1].replace('.pdb','')
+  Starts,Ends = [], []
+  for mnum in range(1,21,1):
+    start = open(in_pdb).readlines().index('MODEL' + '%9s\n' %str(mnum))
+    exec('Coor' + str(mnum) + ' = {}')
+    Starts.append(start)
+    Ends.append(start-1)
+  Ends.append(len(open(in_pdb).readlines()))
+  Ends = Ends[1:]
+  pdb = open(in_pdb).readlines()
+  n = 0
+  for (start,end) in zip(Starts,Ends):
+    n+=1
+    print('Reading coordinates for model {:d}'.format(n))
+    Coor = eval('Coor' + str(n))
+    for x in range(start,end,1):
+      line = pdb[x]
+      if line[0:4] == "ATOM" or line[0:4] == 'HETA':
+        index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
+        Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
+  DistancesDF = pd.DataFrame(columns=Assignments,index=Assignments)
+  
+  print(DistancesDF.shape)
+  ## Extract distances for the final upl no modification, and excluding ambiguous restraints
+  for connection in ADpairs:
+      inatom1 = '{:}-{:}'.format(connection.split('-')[0],connection.split('-')[1])
+      inatom2 = '{:}-{:}'.format(connection.split('-')[2],connection.split('-')[3])
+      Coord = eval('Coor1')
+      atom1 = find_protons(inatom1, Coord)
+      heavy1 = find_heavy(inatom1, Coord)
+      atom2 = find_protons(inatom2, Coord)
+      heavy2 = find_heavy(inatom2, Coord)
+      dist = []
+      # print(heavy1,heavy2)
+      if heavy1 != heavy2:
+        for mnum in range(1,21,1):
+          Coor = eval('Coor' + str(mnum))
+          d = getDistance(atom1, atom2, Coor)
+          if getDistance(atom1, atom2, Coor) <= 7.0:
+            dist.append(getDistance(heavy1, heavy2, Coor))
+        if len(dist) >= 1:
+          DistancesDF.loc[inatom1,inatom2] = np.round(np.mean(dist),2)
+          DistancesDF.loc[inatom2,inatom1] = np.round(np.mean(dist),2)
+  DistancesDF.to_csv(pdb_name + '_distances_heavy_v2.csv')
+  print(DistancesDF)
+  print(DistancesDF.shape)
 # print(DistancesDF.dropna(thresh=5).shape)
+  return DistancesDF
 
