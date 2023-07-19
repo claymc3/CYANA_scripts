@@ -327,6 +327,22 @@ for line in open(fovw).readlines()[fovwlines:]:
 			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[5]],hbc[6],hbc[4],AAA_dict[hbc[1]],hbc[2],hbc[0])] = ' # found in {:} structures\n'.format(hbc[7])
 			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[1]],hbc[2],doner,AAA_dict[hbc[5]],hbc[6],hbc[4])] = ' # found in {:} structures\n'.format(hbc[7])
 			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[5]],hbc[6],hbc[4],AAA_dict[hbc[1]],hbc[2],doner)] = ' # found in {:} structures\n'.format(hbc[7])
+
+ADpairs,Assignments = [],[]
+for line in open(fupl).readlines():
+	if line not in Filtered:
+		if '#SUP' not in line: ## exclude ambiguous restraints
+			pass 
+		else:
+			cns = line.split()
+			ADpairs.append('{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5]))
+			if '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2]) not in Assignments: Assignments.append('{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2]))
+			if '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5]) not in Assignments: Assignments.append('{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5]))
+
+import GetDistances as distance
+distDF = distance.examin(in_pdb,ADpairs,Assignments)
+print(distDF.shape)
+diffcount = 0
 i = 1
 for line in open(fupl).readlines():
 	if line not in Filtered:
@@ -351,11 +367,11 @@ for line in open(fupl).readlines():
 					atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
 				upldf.loc[AAA_dict[cns[1]] + cns[0],'cya'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'cya'] + 1
 				upldf.loc[AAA_dict[cns[4]] + cns[3],'cya'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'cya'] + 1
-				cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
-				cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5],AAA_dict[cns[1]],cns[0],cns[2])
+				group1 = '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2])
+				group2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
 				outline = ' #{:3.2f} #peak {:} #plist {:}\n'.format(float(cns[6]),cns[8],cns[10])
-				usedupls[cons1] = outline
-				usedupls[cons2] = outline
+				usedupls['{:}-{:}'.format(group1,group2)] = outline
+				usedupls['{:}-{:}'.format(group2,group1)] = outline
 				## Traslate amides H to N to search input upls but don't mess up the connections drawn in pymol/chimera
 				atoms1 = atom1
 				atoms2 = atom2
@@ -370,6 +386,18 @@ for line in open(fupl).readlines():
 					sidelist.append(cns[0])
 				if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
 					sidelist.append(cns[3])
+				d = distDF.loc[group1,group2]
+				if float(cns[6]) >= 5.0:
+					if d > 7.50:
+						# members1 = distDF.dropna(subset=[group1]).index.tolist()
+						# members2 = distDF.dropna(subset=[group2]).index.tolist()
+						common = distDF.dropna(subset=[group1,group2]).index.tolist()
+						print('common')
+						print(common)
+						if len(common) > 0:
+							print('{:}-{:}'.format(group1,group2))
+							diffcount+=1
+							print(diffcount)
 				if float(cns[12]) < 0.5:
 					i+=1
 					poorpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
@@ -415,7 +443,7 @@ poorpbout.close()
 longpbout.close()
 shortpbout.close()
 uviolpbout.close()
-
+exit()
 # ---------------------------------------------------------------------------
 # Run the cycle7.noa analysis and generate peak list identifying peaks as 
 # unused, no assignment, and questionable
