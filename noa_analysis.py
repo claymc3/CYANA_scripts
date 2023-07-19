@@ -126,7 +126,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 					group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
 					group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
 					note = ''
-					if 'increased' in line: note = note + 'increased '
+					# if 'increased' in line: note = note + 'increased '
 					if group1 in Swapped.keys(): group1 = Swapped[group1]; note = note + 'swapped '
 					if group2 in Swapped.keys(): group2 = Swapped[group2]; note = note + 'swapped '
 					conect = '{:}-{:}'.format(group1,group2)
@@ -241,7 +241,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 		assigned.write(val.strip()+'\n')
 	assigned.write('\n\n')
 	for con in ADpairs:
-		if len(assigndict[con]) > 1:
+		if len(assigndict[con]) >= 1:
 			numcon += 1
 			dist = []
 			for line in assigndict[con]:
@@ -303,6 +303,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 			index = used.index('{:} {:}'.format(peak, conect))
 			pline = questout[index]
 			questout[index] = pline.replace('\n', 'lone\n')
+
 
 	for x in range(len(cya_plists)):
 		exec("good{:} = open('{:}{:}.list','w')".format(str(x), outdir, cya_plists[x].replace('.peaks','')))
