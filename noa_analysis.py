@@ -22,7 +22,7 @@ import glob
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H", "HIST": "H","HIS+": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 
 
-def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad,upldict2):
+def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad,upldict2,distDF):
 	cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
 	prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
 	log = glob.glob(os.path.join(cwd + 'log*'))[0]
@@ -126,11 +126,10 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 					group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
 					group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
 					note = ''
-					# if 'increased' in line: note = note + 'increased '
 					if group1 in Swapped.keys(): group1 = Swapped[group1]; note = note + 'swapped '
 					if group2 in Swapped.keys(): group2 = Swapped[group2]; note = note + 'swapped '
 					conect = '{:}-{:}'.format(group1,group2)
-					if '{:} peak {:} from {:}'.format(conect,peak,plist) in upldict2: 
+					if '{:} peak {:} from {:}'.format(conect,peak,plist) in upldict2:
 						note = 'UPL ' + note
 					if float(intdict[peak][y-2]) != 0.0: 
 						dist = (Calconst/float(intdict[peak][y-2]))**(1/6)
@@ -158,12 +157,11 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 					if pshift <= 0.60 and '{:} {:}'.format(peak, conect) not in used:
 						note = note + 'poor chem shift '
 						if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
-					note.replace('increased ','')
 					outlist.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^5}  {:^10}  {:^6.2f}   {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,note))
 					if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
 
 	print('finished assigned')
-
+	pdiffcount,unassignedcount = 0,0
 	ADpairs2 = []
 	UNAssigned = []
 	for con in ADpairs:
@@ -182,6 +180,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 			outlist = eval('outlist' + plist_dict[plist])
 			linepad = pad[len(plist):]
 			if '0 out of 0' not in noalines[x+1]:
+				unassignedcount+=1
 				nopt = int(noalines[x+1].split()[3])
 				for y in range(2,int(noalines[x+1].split()[3])+2,1):
 					cns = noalines[x+y].strip().split()
@@ -195,33 +194,41 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						if group1 in Swapped.keys(): group1 = Swapped[group1]
 						if group2 in Swapped.keys(): group2 = Swapped[group2]
 						conect = '{:}-{:}'.format(group1,group2)
-						if float(intdict[peak][0]) != 0.0: 
-							dist = (Calconst/float(intdict[peak][0]))**(1/6)
-							drange = '{:3.2f}-{:3.2f}'.format(dist, dist*1.25)
-						if float(intdict[peak][0]) == 0.0: 
-							print('Warning Peak {:>4} from {:} has zero intensity !'.format(peak, plist))
-						outline = '#{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:0.2f} unused\n'.format(conect,intdict[peak][0],drange,peak,plist,linepad,pshift)
-						if '{:}-{:}'.format(group1,group2)in ADpairs2:
-							assigndict['{:}-{:}'.format(group1,group2)].append(outline)
-							assigndict2['{:}-{:}'.format(group1,group2)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
-						if '{:}-{:}'.format(group2,group1)in ADpairs2:
-							assigndict['{:}-{:}'.format(group2,group1)].append(outline)
-							assigndict2['{:}-{:}'.format(group2,group1)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
-						# if noalines[x+1].split()[3] == "1":
-						outline = '#{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:0.2f} {:} out of {:} unused\n'.format(conect,intdict[peak][0],drange,peak,plist,linepad,pshift,y-1,noalines[x+1].split()[3])
-						if '{:}-{:}'.format(group1,group2)in UNAssigned:
-							notassigndict['{:}-{:}'.format(group1,group2)].append(outline)
-						if '{:}-{:}'.format(group2,group1)in UNAssigned:
-							notassigndict['{:}-{:}'.format(group2,group1)].append(outline)
+						print(conect)
+						print(distDF.loc[group1,group2])
+						print(noalines[x])
+						d = float(distDF.loc[group1,group2].split()[0])
 						note = 'unused {:}'.format(noalines[x+1].split()[3])
-						if conect in upldict.keys(): udist = upldict[conect]+'A'
-						if conect not in upldict.keys(): udist =' '
-						if pshift > 0.75 and conect in upldict.keys():
-							note = note + noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures ','') + ' '
-						if pshift < 0.75 and int(noalines[x+1].split()[3]) == 1:
-							note = note + noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures ','') + ' '
-						outlist.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^5}  {:^10}  {:^6.2f}   {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,note))
-						used.append('{:} {:}'.format(peak, conect))
+						common = distDF.dropna(subset=[group1,group2]).index.tolist()
+						if d <= 9.0 and len(common) > 2:
+							note = note + ' prob diff'
+							pdiffcount+=1
+							if float(intdict[peak][0]) != 0.0: 
+								dist = (Calconst/float(intdict[peak][0]))**(1/6)
+								drange = '{:3.2f}-{:3.2f}'.format(dist, dist*1.25)
+							if float(intdict[peak][0]) == 0.0: 
+								print('Warning Peak {:>4} from {:} has zero intensity !'.format(peak, plist))
+							outline = '#{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:0.2f} unused\n'.format(conect,intdict[peak][0],drange,peak,plist,linepad,pshift)
+							if '{:}-{:}'.format(group1,group2)in ADpairs2:
+								assigndict['{:}-{:}'.format(group1,group2)].append(outline)
+								assigndict2['{:}-{:}'.format(group1,group2)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
+							if '{:}-{:}'.format(group2,group1)in ADpairs2:
+								assigndict['{:}-{:}'.format(group2,group1)].append(outline)
+								assigndict2['{:}-{:}'.format(group2,group1)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
+							# if noalines[x+1].split()[3] == "1":
+							outline = '#{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:0.2f} {:} out of {:} unused\n'.format(conect,intdict[peak][0],drange,peak,plist,linepad,pshift,y-1,noalines[x+1].split()[3])
+							if '{:}-{:}'.format(group1,group2)in UNAssigned:
+								notassigndict['{:}-{:}'.format(group1,group2)].append(outline)
+							if '{:}-{:}'.format(group2,group1)in UNAssigned:
+								notassigndict['{:}-{:}'.format(group2,group1)].append(outline)
+							if conect in upldict.keys(): udist = upldict[conect]+'A'
+							if conect not in upldict.keys(): udist =' '
+							# if pshift > 0.75 and conect in upldict.keys():
+							# 	note = note + noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures ','') + ' '
+							# if pshift < 0.75 and int(noalines[x+1].split()[3]) == 1:
+							# 	note = note + noalines[x+nopt+2].strip()[:-1].replace('Violated','Viol').replace('structures ','') + ' '
+							outlist.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^5}  {:^10}  {:^6.2f}   {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,note))
+							used.append('{:} {:}'.format(peak, conect))
 			if '0 out of 0' in noalines[x+1]:
 				drange = ''
 				if float(intdict[peak][0]) != 0.0: 
@@ -231,7 +238,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 					print('Warning Peak {:>4} from {:} has zero intensity !'.format(peak, plist))
 				pdict = eval('peaks' + plist_dict[plist])
 				outlist.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^5}  {:^10}  {:^6}   no assignmnet\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2], 'none','', drange+'A','na'))
-
+	print('{:} probable diffusion peaks identified of {:}'.format(pdiffcount,unassignedcount))
 	inconsistant = open(outdir + 'Inconsistant_distances.txt','w')
 	assigned = open(outdir + 'Assignment_Summary.txt','w')
 	unused = open(outdir + 'Unused_Connections.txt','w')
