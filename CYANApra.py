@@ -7,6 +7,7 @@ import numpy as np
 import GetDihe as Dihed
 import noa_analysis as noaa
 from datetime import datetime
+import glob
 
 # datetime object containing current date and time
 now = datetime.now()
@@ -331,15 +332,67 @@ for line in open(fovw).readlines()[fovwlines:]:
 			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[5]],hbc[6],hbc[4],AAA_dict[hbc[1]],hbc[2],doner)] = ' # found in {:} structures\n'.format(hbc[7])
 
 ADpairs,Assignments = [],[]
-for line in open(fupl).readlines():
-	if line not in Filtered:
-		if '#SUP' not in line: ## exclude ambiguous restraints
-			pass 
-		else:
-			cns = line.split()
-			ADpairs.append('{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5]))
-			if '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2]) not in Assignments: Assignments.append('{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2]))
-			if '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5]) not in Assignments: Assignments.append('{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5]))
+noalines = open(noa).readlines()
+# for line in open(fupl).readlines():
+# 	if line not in Filtered:
+# 		if '#SUP' not in line: ## exclude ambiguous restraints
+# 			pass 
+# 		else:
+# 			cns = line.split()
+# 			ADpairs.append('{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5]))
+# 			if '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2]) not in Assignments: Assignments.append('{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2]))
+# 			if '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5]) not in Assignments: Assignments.append('{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5]))
+
+Swapped = {}
+log = glob.glob(os.path.join(cwd + 'log*'))[0]
+for line in open(log).readlines():
+	if line.strip() and line.strip().split()[-1] == 'swapped':
+		res = line.strip().split()
+		group1 = '{:}{:}-{:}'.format(AAA_dict[res[1]],res[0], res[2])
+		group2 = '{:}{:}-{:}'.format(AAA_dict[res[1]],res[0], res[3])
+		Swapped[group1] = group2
+		Swapped[group2] = group1
+for x in range(len(noalines)):
+	if 'Peak' in noalines[x] and 'out of' in noalines[x+1]:
+		if '0 out of' not in noalines[x+1] and 'diagonal' not in noalines[x]: 
+			index = 0
+		if '0 out of 0' not in noalines[x+1]:
+			index = 3
+			for y in range(2,int(noalines[x+1].split()[index])+2,1):
+				cns = noalines[x+y].strip().split()
+				if not re.match('^\s*[A-Z]*',noalines[x+y]):
+					atom1,resn1, resi1, atom2, resn2, resi2 = cns[1],cns[2],int(cns[3]), cns[5], cns[6], int(cns[7])
+				if re.match('^\s*[A-Z]*',noalines[x+y]):
+					atom1,resn1, resi1, atom2, resn2, resi2 = cns[0],cns[1],int(cns[2]), cns[4], cns[5], int(cns[6])
+				group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
+				group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
+				if group1 in Swapped.keys(): group1 = Swapped[group1]
+				if group2 in Swapped.keys(): group2 = Swapped[group2]
+				if '{:}-{:}'.format(group1,group2) not in ADpairs or '{:}-{:}'.format(group2,group1) not in ADpairs:
+					ADpairs.append('{:}-{:}'.format(group1,group2))
+				if group1 not in Assignments: Assignments.append(group1)
+				if group2 not in Assignments: Assignments.append(group2)
+	# if 'Peak' in noalines[x] and '0 out of' in noalines[x+1]:
+	# 	if '0 out of 0' not in noalines[x+1]:
+	# 		# print(noalines[x])
+	# 		for y in range(2,int(noalines[x+1].split()[3])+2,1):
+	# 			cns = noalines[x+y].strip().split()
+	# 			if not re.match('^\s*[A-Z]*',noalines[x+y]):
+	# 				atom1,resn1, resi1, atom2, resn2, resi2 = cns[1],cns[2],int(cns[3]), cns[5], cns[6], int(cns[7])
+	# 			if re.match('^\s*[A-Z]*',noalines[x+y]):
+	# 				atom1,resn1, resi1, atom2, resn2, resi2 = cns[0],cns[1],int(cns[2]), cns[4], cns[5], int(cns[6])
+	# 			group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
+	# 			group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
+	# 			print(noalines[x])
+	# 			print(group1,group2)
+	# 			if group1 in Swapped.keys(): group1 = Swapped[group1]
+	# 			if group2 in Swapped.keys(): group2 = Swapped[group2]
+	# 			if '{:}-{:}'.format(group1,group2) not in ADpairs or '{:}-{:}'.format(group2,group1) not in ADpairs:
+	# 				ADpairs.append('{:}-{:}'.format(group1,group2))
+	# 			if group1 not in Assignments: Assignments.append(group1)
+	# 			if group2 not in Assignments: Assignments.append(group2)
+
+Assignments = sorted(Assignments , key = lambda x:(x.split('-')[0][1:], x.split('-')[1]))
 
 import GetDistances as distance
 distDF = distance.examin(in_pdb,ADpairs,Assignments)
@@ -390,16 +443,6 @@ for line in open(fupl).readlines():
 				if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
 					sidelist.append(cns[3])
 				d = float(distDF.loc[group1,group2].split()[0])
-				# if float(cns[6]) >= 6.0 and d >= 8.0:
-				# 	common = distDF.dropna(subset=[group1,group2]).index.tolist()
-				# 	common.extend([group1,group2])
-				# 	if len(common) > 0:
-				# 		print('{:}-{:}'.format(group1,group2))
-				# 		print('long distance {:} probably diffusion {:}'.format(cns[6],d))
-				# 		print(distDF.loc[common,[group1,group2]])
-				# 		diffcount+=1
-				# 		print(diffcount)
-				# 		Filtered.append(line)
 				if d >= 7.7 and line not in Filtered:
 					common = distDF.dropna(subset=[group1,group2]).index.tolist()
 					if len(common) > 0:
@@ -467,7 +510,7 @@ uviolpbout.close()
 # Run the cycle7.noa analysis and generate peak list identifying peaks as 
 # unused, no assignment, and questionable
 
-assigndict = noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict, upldict, pad, upldict2)
+assigndict = noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF)
 
 mn = 1
 for x in range(len(ConectionTypes)):
