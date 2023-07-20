@@ -115,24 +115,24 @@ def examin(in_pdb, ADpairs,Assignments):
   # from itertools import combinations
   # ADpairs = [ '{:}-{:}'.format(comb[0],comb[1]) for comb in combinations(Assignments,2)]
   for connection in ADpairs:
-      inatom1 = '{:}-{:}'.format(connection.split('-')[0],connection.split('-')[1])
-      inatom2 = '{:}-{:}'.format(connection.split('-')[2],connection.split('-')[3])
-      Coord = eval('Coor1')
-      atom1 = find_protons(inatom1, Coord)
-      heavy1 = find_heavy(inatom1, Coord)
-      atom2 = find_protons(inatom2, Coord)
-      heavy2 = find_heavy(inatom2, Coord)
-      dist = []
-      # print(heavy1,heavy2)
-      if heavy1 != heavy2:
-        for mnum in range(1,21,1):
-          Coor = eval('Coor' + str(mnum))
-          d = getDistance(atom1, atom2, Coor)
-          if getDistance(atom1, atom2, Coor) <= 7.5:
-            dist.append(getDistance(heavy1, heavy2, Coor))
-        if len(dist) >= 5:
-          DistancesDF.loc[inatom1,inatom2] = "{:3.2f} +/- {:0.2f}".format(np.mean(dist),np.std(dist))
-          DistancesDF.loc[inatom2,inatom1] = "{:3.2f} +/- {:0.2f}".format(np.mean(dist),np.std(dist))
+    inatom1 = '{:}-{:}'.format(connection.split('-')[0],connection.split('-')[1])
+    inatom2 = '{:}-{:}'.format(connection.split('-')[2],connection.split('-')[3])
+    Coord = eval('Coor1')
+    atom1 = find_protons(inatom1, Coord)
+    heavy1 = find_heavy(inatom1, Coord)
+    atom2 = find_protons(inatom2, Coord)
+    heavy2 = find_heavy(inatom2, Coord)
+    dist = []
+    # print(heavy1,heavy2)
+    if heavy1 != heavy2:
+      for mnum in range(1,21,1):
+        Coor = eval('Coor' + str(mnum))
+        d = getDistance(atom1, atom2, Coor)
+        # if getDistance(atom1, atom2, Coor) <= 7.5:
+        dist.append(getDistance(heavy1, heavy2, Coor))
+      if len(dist) >= 5:
+        DistancesDF.loc[inatom1,inatom2] = "{:3.2f} +/- {:0.2f}".format(np.mean(dist),np.std(dist))
+        DistancesDF.loc[inatom2,inatom1] = "{:3.2f} +/- {:0.2f}".format(np.mean(dist),np.std(dist))
   DistancesDF.to_csv(pdb_name + '_distances_heavy_v2.csv')
   print(DistancesDF)
   print(DistancesDF.shape)
