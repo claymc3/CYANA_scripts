@@ -498,10 +498,10 @@ for (group, color) in [('poor','mediumvioletred'),('long','firebrick'), ('pdiff'
 	mn+=1
 	outcmx.write('open pseudobonds/' + outname + '_' + group + '.pb\n')
 	# outcmx.write('color #{:} {:}\n'.format(str(mn),color))
-for (group, color) in [('poorcons','mediumvioletred'),('longcons','firebrick'),('shortcons', 'lightcoral'),('viol_upls', 'deeppink'), ('pdiffcons','firebrick')]:
+for (group,gname, color) in [('poorcons','poor','mediumvioletred'),('longcons','long','firebrick'), ('pdiffcons','pdiffusion','firebrick'),('shortcons','short', 'lightcoral'),('viol_upls','viol_upl', 'deeppink')]:
 	grpstr = eval(group)
 	outpml.write(grpstr + '\n')
-	outpml.write('color {:}, {:}\n'.format(color, group))
+	outpml.write('color {:}, {:}\n'.format(color, gname))
 
 #### Write out the filtered upl list, which does not contain ambiguous (QQ) restraints 
 #### and has sorted the restraints into 5 labeled categories
@@ -551,7 +551,7 @@ for uplfile in upls:
 	mn+=1
 	outcmx.write('open pseudobonds/' + uplfile.replace('.upl','.pb') + '\n')
 sidechains = 'show #1:'
-selhbond = 'name hbond  #1.1:'
+selhbond = 'name hbond #1.1:'
 hbonsl = []
 hbond = open(outdir +'pseudobonds/' + 'hbond.pb','w')
 hbond.write("; halfbond = false\n; color = pink\n; radius = 0.2\n; dashes = 10\n")
@@ -582,9 +582,11 @@ hbond.close()
 for res in sidelist:
 	sidechains = sidechains + res + ','
 outcmx.write(sidechains[:-1] + '\n')
+outpml.write('show sticks, resi '+ sidechains.split(':')[-1][:-1].replace(',','+')+'\n')
 outcmx.write('hide H\n''show #1.1@H,N target a\n')
 outpml.write(hbgroupline + '\n')
 outpml.write('color pink, hbond\n')
+outpml.write('show sticks,name N+O+C+H and resi '+ selhbond.split(':')[-1][:-1].replace(',','+')+'\n')
 selhbond = selhbond[:-1] + '@O,N\nshow hbond target a\n'
 outcmx.write('open pseudobonds/' + 'hbond.pb\n')
 outcmx.write(selhbond)
@@ -841,7 +843,7 @@ for x in range(0,len(indexs),50):
 outcmx.write(sidechains[:-1].replace('#1',"#{:}".format(mn)) + '\n')
 outcmx.write("show #{:}:thr,met,ala,leu,val,ile,phe,tyr\nhide #{:}@H*\ncolor byhetero\n".format(mn,mn))
 outcmx.write('key c0:0 c2:2 c4:4 c6:6 c8:8 c10:10 fontsize 14 colorTreatment distinct numericLabelSpacing equal\n')
-outpml.write('show sticks, noes and resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\nhide sticks, elem H\ncolor blue, elem N, blue\ncolor gold, elem S\n, color red, elem O\ncolor orange, elem P\ncolor white, elem H\n')
+outpml.write('show sticks, noes and resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\nhide sticks, elem H\ncolor blue, elem N\ncolor gold, elem S\ncolor red, elem O\ncolor orange, elem P\ncolor white, elem H\nshow sticks, name N+H\n')
 outpml.write(sidechains[:-1].replace(",","+").replace('#1:',"sticks, noes and resi ") + '\n')
 outpml.close()
 outcmx.close()
