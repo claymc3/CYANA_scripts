@@ -133,9 +133,9 @@ def examin(in_pdb, ADpairs,Assignments):
       if len(dist) >= 5:
         DistancesDF.loc[inatom1,inatom2] = "{:3.2f} +/- {:0.2f}".format(np.mean(dist),np.std(dist))
         DistancesDF.loc[inatom2,inatom1] = "{:3.2f} +/- {:0.2f}".format(np.mean(dist),np.std(dist))
-  DistancesDF.to_csv(pdb_name + '_distances_heavy_v2.csv')
-  print(DistancesDF)
-  print(DistancesDF.shape)
+  DistancesDF.to_csv('post_cyana_analysis/' + pdb_name + '_distances_heavy_v2.csv')
+  # print(DistancesDF)
+  # print(DistancesDF.shape)
 # print(DistancesDF.dropna(thresh=5).shape)
   return DistancesDF
 
