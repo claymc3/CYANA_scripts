@@ -333,15 +333,6 @@ for line in open(fovw).readlines()[fovwlines:]:
 
 ADpairs,Assignments = [],[]
 noalines = open(noa).readlines()
-# for line in open(fupl).readlines():
-# 	if line not in Filtered:
-# 		if '#SUP' not in line: ## exclude ambiguous restraints
-# 			pass 
-# 		else:
-# 			cns = line.split()
-# 			ADpairs.append('{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5]))
-# 			if '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2]) not in Assignments: Assignments.append('{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2]))
-# 			if '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5]) not in Assignments: Assignments.append('{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5]))
 
 Swapped = {}
 log = glob.glob(os.path.join(cwd + 'log*'))[0]
@@ -372,32 +363,11 @@ for x in range(len(noalines)):
 					ADpairs.append('{:}-{:}'.format(group1,group2))
 				if group1 not in Assignments: Assignments.append(group1)
 				if group2 not in Assignments: Assignments.append(group2)
-	# if 'Peak' in noalines[x] and '0 out of' in noalines[x+1]:
-	# 	if '0 out of 0' not in noalines[x+1]:
-	# 		# print(noalines[x])
-	# 		for y in range(2,int(noalines[x+1].split()[3])+2,1):
-	# 			cns = noalines[x+y].strip().split()
-	# 			if not re.match('^\s*[A-Z]*',noalines[x+y]):
-	# 				atom1,resn1, resi1, atom2, resn2, resi2 = cns[1],cns[2],int(cns[3]), cns[5], cns[6], int(cns[7])
-	# 			if re.match('^\s*[A-Z]*',noalines[x+y]):
-	# 				atom1,resn1, resi1, atom2, resn2, resi2 = cns[0],cns[1],int(cns[2]), cns[4], cns[5], int(cns[6])
-	# 			group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
-	# 			group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
-	# 			print(noalines[x])
-	# 			print(group1,group2)
-	# 			if group1 in Swapped.keys(): group1 = Swapped[group1]
-	# 			if group2 in Swapped.keys(): group2 = Swapped[group2]
-	# 			if '{:}-{:}'.format(group1,group2) not in ADpairs or '{:}-{:}'.format(group2,group1) not in ADpairs:
-	# 				ADpairs.append('{:}-{:}'.format(group1,group2))
-	# 			if group1 not in Assignments: Assignments.append(group1)
-	# 			if group2 not in Assignments: Assignments.append(group2)
 
 Assignments = sorted(Assignments , key = lambda x:(x.split('-')[0][1:], x.split('-')[1]))
 
 import GetDistances as distance
 distDF = distance.examin(in_pdb,ADpairs,Assignments)
-print(distDF.shape)
-diffcount = 0
 i = 1
 for line in open(fupl).readlines():
 	if line not in Filtered:
@@ -448,8 +418,8 @@ for line in open(fupl).readlines():
 					if len(common) > 0:
 						upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
 						upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] + 1
-						qupldict['{:}-{:}'.format(group1,group2)] = "prob diffusion"
-						qupldict['{:}-{:}'.format(group2,group1)] = "prob diffusion"
+						qupldict['{:}-{:}'.format(group1,group2)] = "prob diffusion "
+						qupldict['{:}-{:}'.format(group2,group1)] = "prob diffusion "
 						i+=1
 						pdiffpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 						diffcons2.append('{:}-{:}'.format(group1,group2))
@@ -459,8 +429,6 @@ for line in open(fupl).readlines():
 						print('{:}-{:}'.format(group1,group2))
 						print('long distance upl {:} heavy {:}'.format(cns[6],d))
 						print(distDF.loc[common,[group1,group2]])
-						diffcount+=1
-						print(diffcount)
 						Filtered.append(line)
 				if line not in Filtered and float(cns[12]) < 0.5:
 					i+=1
@@ -472,7 +440,7 @@ for line in open(fupl).readlines():
 					finalupls[1].append(line)
 				if line not in Filtered and float(cns[12]) > 0.5:
 					if float(cns[6]) >= 6.0:
-						upldf.loc[AAA_dict[cns[1]] + cns[0],'long '] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
+						upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
 						upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] + 1
 						qupldict['{:}-{:}'.format(group1,group2)] = "long"
 						qupldict['{:}-{:}'.format(group1,group2)] = "long"
@@ -877,7 +845,7 @@ outpml.write('show sticks, noes and resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\nhide s
 outpml.write(sidechains[:-1].replace(",","+").replace('#1:',"sticks, noes and resi ") + '\n')
 outpml.close()
 outcmx.close()
-exit()
+
 # ---------------------------------------------------------------------------
 # Run the GetDihed.py to determine phi, psi, chi1 and chi2 and plot them
 # for all 20 structures
