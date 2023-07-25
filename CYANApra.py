@@ -418,8 +418,8 @@ for line in open(fupl).readlines():
 					if len(common) > 0:
 						upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
 						upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] + 1
-						qupldict['{:}-{:}'.format(group1,group2)] = "prob diffusion "
-						qupldict['{:}-{:}'.format(group2,group1)] = "prob diffusion "
+						qupldict['{:}-{:}'.format(group1,group2)] = "prob diff {:}A".format(distDF.loc[group1,group2])
+						qupldict['{:}-{:}'.format(group2,group1)] = "prob diff {:}A".format(distDF.loc[group1,group2])
 						i+=1
 						pdiffpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 						diffcons2.append('{:}-{:}'.format(group1,group2))
