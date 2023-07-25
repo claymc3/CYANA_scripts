@@ -206,7 +206,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 							print(conect)
 							print(distDF.loc[group1,group2])
 							print(distDF.loc[common,[group1,group2]])
-							note = note + ' prob diff '
+							note = note + ' prob diff {:}A'.format(distDF.loc[group1,group2])
 							localpdif+=1
 						if float(intdict[peak][0]) != 0.0: 
 							dist = (Calconst/float(intdict[peak][0]))**(1/6)
