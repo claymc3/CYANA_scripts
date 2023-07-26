@@ -10,6 +10,7 @@
 # Updated January 30, 2023 to include peak intensities 
 # Updated March 09, 2023 to account for old cycle7.peaks format missing information for multiple assignment crosspeaks
 # Updated March 14, 2023 to add header to output list, and short constraints tag
+# Updated July 17, 2023 to include heavy atom distances to assess possible diffusion peaks
 # ------------------------------------------------------------------------------
 
 '''
@@ -22,7 +23,11 @@ import glob
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H", "HIST": "H","HIS+": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 
 
-def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad,upldict2,distDF):
+def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF, posdiffout):
+	cwd = os.getcwd() + '/'
+	calc = cwd + 'CALC.cya'
+	outdir = cwd +'noa_analysis/'
+	noa7 = cwd +'cycle7.noa'
 	cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
 	prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
 	log = glob.glob(os.path.join(cwd + 'log*'))[0]
@@ -152,7 +157,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						note = note + violdict[conect].replace(' #','').replace("\n",'') + ' '
 						if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
 					if conect in qupldict.keys():
-						note = note + qupldict[conect] + ' '
+						note = note + qupldict[conect]
 						if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
 					if pshift <= 0.60 and '{:} {:}'.format(peak, conect) not in used:
 						note = note + 'poor chem shift '
@@ -183,6 +188,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 				print(noalines[x].strip())
 				unassignedcount+=1
 				localpdif = 0
+				probdiffoutlines = []
 				nopt = int(noalines[x+1].split()[3])
 				for y in range(2,int(noalines[x+1].split()[3])+2,1):
 					cns = noalines[x+y].strip().split()
@@ -203,10 +209,11 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						pass
 					else: 
 						if d >= 8.0 and len(common) > 2:
+							probdiffoutlines.append('{:}\nlong distance heavy {:}\n{:}\n'.format(conect,distDF.loc[group1,group2],distDF.loc[common,[group1,group2]].to_string()))
 							print(conect)
 							print(distDF.loc[group1,group2])
 							print(distDF.loc[common,[group1,group2]])
-							note = note + ' prob diff {:}A'.format(distDF.loc[group1,group2])
+							note = note + 'prob diff {:}A '.format(distDF.loc[group1,group2])
 							localpdif+=1
 						if float(intdict[peak][0]) != 0.0: 
 							dist = (Calconst/float(intdict[peak][0]))**(1/6)
@@ -220,7 +227,7 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						if '{:}-{:}'.format(group2,group1)in ADpairs2:
 							assigndict['{:}-{:}'.format(group2,group1)].append(outline)
 							assigndict2['{:}-{:}'.format(group2,group1)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
-						outline = '#{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:0.2f} {:} out of {:} unused\n'.format(conect,intdict[peak][0],drange,peak,plist,linepad,pshift,y-1,noalines[x+1].split()[3])
+						outline = '#{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:0.2f} {:} out of {:} unused {:}\n'.format(conect,intdict[peak][0],drange,peak,plist,linepad,pshift,y-1,noalines[x+1].split()[3],noalines[x+1].split()[3])
 						if '{:}-{:}'.format(group1,group2)in UNAssigned:
 							notassigndict['{:}-{:}'.format(group1,group2)].append(outline)
 						if '{:}-{:}'.format(group2,group1)in UNAssigned:
@@ -231,6 +238,8 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 						used.append('{:} {:}'.format(peak, conect))
 				if localpdif >=1:
 					pdiffcount+=1
+					posdiffout.write(noalines[x])
+					posdiffout.writelines(probdiffoutlines)
 			if '0 out of 0' in noalines[x+1]:
 				drange = ''
 				if float(intdict[peak][0]) != 0.0: 
@@ -258,23 +267,35 @@ def analize_noa(cwd, outdir, calc, noa7, Seqdict, violdict, qupldict,upldict,pad
 			if np.std(dist) > 0.3: 
 				inconcount += 1
 				if con in upldict.keys():
+					dref = float(upldict[con])
+					if dref < np.min(dist): dref = np.min(dist)
 					assigned.write('{:}  {:3.2f}A ({:}): {:0.2f} inconsistent distance\n'.format(con,float(upldict[con]),len(assigndict[con]),np.std(dist)))
 				if con not in upldict.keys():
+					dref = np.mean(dist)
 					assigned.write('{:} ({:}): {:0.2f} inconsistent distance\n'.format(con,len(assigndict[con]),np.std(dist)))
-				for pline,d in zip(assigndict[con],dist):
-					if abs(d - np.mean(dist)) > np.std(dist):
-						peak = int(pline.replace("#",'').split()[4])
-						plist = pline.replace("#",'').split()[6]
-						pshift = pline.replace("#",'').split()[8]
-						conect = pline.replace("#",'').split()[0]
-						questout =  eval('outlist' + plist_dict[plist])
-						used =eval('usedquestlist' + plist_dict[plist])
-						index = used.index('{:} {:}'.format(peak, conect))
-						pline2 = questout[index]
-						questout[index] = pline2.replace('\n', ' inconsistent\n')
-						assigned.write(pline.replace('\n','*\n'))
-					else:
-						assigned.write(pline)
+				if np.mean(dist) > dref: ## there are more longer distaces in the set than shorter
+					for pline,d in zip(assigndict[con],dist):
+						if d <= dref:
+							questout =  eval('outlist' + plist_dict[pline.replace("#",'').split()[6]])
+							used =eval('usedquestlist' + plist_dict[pline.replace("#",'').split()[6]])
+							index = used.index('{:} {:}'.format(int(pline.replace("#",'').split()[4]), pline.replace("#",'').split()[0]))
+							pline2 = questout[index]
+							questout[index] = pline2.replace('\n', 'inconsistent \n')
+							assigned.write(pline.replace('\n',' *\n'))
+						else:
+							assigned.write(pline)
+				assigned.write('\n')
+				if np.mean(dist) <= dref:
+					for pline,d in zip(assigndict[con],dist):
+						if abs(d - np.mean(dist)) > np.std(dist):
+							questout =  eval('outlist' + plist_dict[pline.replace("#",'').split()[6]])
+							used =eval('usedquestlist' + plist_dict[pline.replace("#",'').split()[6]])
+							index = used.index('{:} {:}'.format(int(pline.replace("#",'').split()[4]), pline.replace("#",'').split()[0]))
+							pline2 = questout[index]
+							questout[index] = pline2.replace('\n', ' inconsistent\n')
+							assigned.write(pline.replace('\n','*\n'))
+						else:
+							assigned.write(pline)
 				assigned.write('\n')
 			if np.std(dist) < 0.3: 
 				if con in upldict.keys():
