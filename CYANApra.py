@@ -365,7 +365,7 @@ for x in range(len(noalines)):
 				if group2 not in Assignments: Assignments.append(group2)
 
 Assignments = sorted(Assignments , key = lambda x:(x.split('-')[0][1:], x.split('-')[1]))
-
+posdiffout = open(outdir + 'probable_diffusion_log.txt','w')
 import GetDistances as distance
 distDF = distance.examin(in_pdb,ADpairs,Assignments)
 i = 1
@@ -418,14 +418,18 @@ for line in open(fupl).readlines():
 					if len(common) > 0:
 						upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
 						upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] + 1
-						qupldict['{:}-{:}'.format(group1,group2)] = "prob diff {:}A".format(distDF.loc[group1,group2])
-						qupldict['{:}-{:}'.format(group2,group1)] = "prob diff {:}A".format(distDF.loc[group1,group2])
+						qupldict['{:}-{:}'.format(group1,group2)] = "prob diff {:}A ".format(distDF.loc[group1,group2])
+						qupldict['{:}-{:}'.format(group2,group1)] = "prob diff {:}A ".format(distDF.loc[group1,group2])
 						i+=1
 						pdiffpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 						diffcons2.append('{:}-{:}'.format(group1,group2))
 						outpml.write('distance pdiffusion{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
 						pdiffcons = pdiffcons + 'pdiffusion{:} '.format(i)
 						Filtered.append(line)
+						posdiffout.write('{:}-{:}\n'.format(group1,group2))
+						posdiffout.write('long distance upl {:} heavy {:}\n'.format(cns[6],d))
+						posdiffout.write(distDF.loc[common,[group1,group2]].to_string())
+						posdiffout.write('\n')
 						print('{:}-{:}'.format(group1,group2))
 						print('long distance upl {:} heavy {:}'.format(cns[6],d))
 						print(distDF.loc[common,[group1,group2]])
@@ -442,8 +446,8 @@ for line in open(fupl).readlines():
 					if float(cns[6]) >= 6.0:
 						upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
 						upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] + 1
-						qupldict['{:}-{:}'.format(group1,group2)] = "long"
-						qupldict['{:}-{:}'.format(group1,group2)] = "long"
+						qupldict['{:}-{:}'.format(group1,group2)] = "long "
+						qupldict['{:}-{:}'.format(group1,group2)] = "long "
 						i+=1
 						longpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 						longcons2.append('{:}-{:}'.format(group1,group2))
@@ -457,8 +461,8 @@ for line in open(fupl).readlines():
 							shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
 							shortcons2.append('{:}-{:}'.format(group1,group2))
 							outpml.write('distance short{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-							qupldict['{:}-{:}'.format(group1,group2)] = "short"
-							qupldict['{:}-{:}'.format(group1,group2)] = "short"
+							qupldict['{:}-{:}'.format(group1,group2)] = "short "
+							qupldict['{:}-{:}'.format(group1,group2)] = "short "
 							shortcons = shortcons + 'short{:} '.format(i)
 							finalupls[3].append(line)
 							Filtered.append(line)
@@ -478,7 +482,7 @@ uviolpbout.close()
 # Run the cycle7.noa analysis and generate peak list identifying peaks as 
 # unused, no assignment, and questionable
 
-assigndict = noaa.analize_noa(cwd, noadir, calc, noa, Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF)
+assigndict = noaa.analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,posdiffout)
 
 mn = 1
 for x in range(len(ConectionTypes)):
