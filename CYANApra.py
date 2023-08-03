@@ -367,7 +367,7 @@ for x in range(len(noalines)):
 Assignments = sorted(Assignments , key = lambda x:(x.split('-')[0][1:], x.split('-')[1]))
 posdiffout = open(outdir + 'probable_diffusion_log.txt','w')
 import GetDistances as distance
-distDF = distance.examin(in_pdb,ADpairs,Assignments)
+distDF,fillteredDF = distance.examin(in_pdb,ADpairs,Assignments)
 i = 1
 for line in open(fupl).readlines():
 	if line not in Filtered:
@@ -414,8 +414,9 @@ for line in open(fupl).readlines():
 					sidelist.append(cns[3])
 				d = float(distDF.loc[group1,group2].split()[0])
 				if d >= 7.7 and line not in Filtered:
-					common = distDF.dropna(subset=[group1,group2]).index.tolist()
+					common = fillteredDF.dropna(subset=[group1,group2]).index.tolist()
 					if len(common) > 0:
+						common.extend([group1,group2])
 						upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
 						upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] + 1
 						qupldict['{:}-{:}'.format(group1,group2)] = "prob diff {:}A ".format(distDF.loc[group1,group2])
@@ -428,11 +429,11 @@ for line in open(fupl).readlines():
 						Filtered.append(line)
 						posdiffout.write('{:}-{:}\n'.format(group1,group2))
 						posdiffout.write('long distance upl {:} heavy {:}\n'.format(cns[6],d))
-						posdiffout.write(distDF.loc[common,[group1,group2]].to_string())
+						posdiffout.write(fillteredDF.loc[common,common].to_string())
 						posdiffout.write('\n')
-						print('{:}-{:}'.format(group1,group2))
-						print('long distance upl {:} heavy {:}'.format(cns[6],d))
-						print(distDF.loc[common,[group1,group2]])
+						# print('{:}-{:}'.format(group1,group2))
+						# print('long distance upl {:} heavy {:}'.format(cns[6],d))
+						# print(fillteredDF.loc[common,common])
 						Filtered.append(line)
 				if line not in Filtered and float(cns[12]) < 0.5:
 					i+=1
@@ -482,7 +483,7 @@ uviolpbout.close()
 # Run the cycle7.noa analysis and generate peak list identifying peaks as 
 # unused, no assignment, and questionable
 
-assigndict = noaa.analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,posdiffout)
+assigndict = noaa.analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF, fillteredDF ,posdiffout)
 
 mn = 1
 for x in range(len(ConectionTypes)):
