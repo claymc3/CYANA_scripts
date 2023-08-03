@@ -112,6 +112,7 @@ def examin(in_pdb, ADpairs,Assignments):
         index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
         Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
   DistancesDF = pd.DataFrame(columns=Assignments,index=Assignments)
+  FilteredDF = pd.DataFrame(columns=Assignments,index=Assignments)
   # from itertools import combinations
   # ADpairs = [ '{:}-{:}'.format(comb[0],comb[1]) for comb in combinations(Assignments,2)]
   for connection in ADpairs:
@@ -133,9 +134,12 @@ def examin(in_pdb, ADpairs,Assignments):
       if len(dist) >= 5:
         DistancesDF.loc[inatom1,inatom2] = "{:3.2f} +/- {:0.2f}".format(np.mean(dist),np.std(dist))
         DistancesDF.loc[inatom2,inatom1] = "{:3.2f} +/- {:0.2f}".format(np.mean(dist),np.std(dist))
+        if np.mean(dist) <= 7.5:
+          FilteredDF.loc[inatom1,inatom2] = "{:3.2f} +/- {:0.2f}".format(np.mean(dist),np.std(dist))
+          FilteredDF.loc[inatom2,inatom1] = "{:3.2f} +/- {:0.2f}".format(np.mean(dist),np.std(dist))
   DistancesDF.to_csv('post_cyana_analysis/' + pdb_name + '_distances_heavy_v2.csv')
   # print(DistancesDF)
   # print(DistancesDF.shape)
 # print(DistancesDF.dropna(thresh=5).shape)
-  return DistancesDF
+  return DistancesDF, FilteredDF
 
