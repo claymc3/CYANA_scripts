@@ -23,7 +23,7 @@ import glob
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H", "HIST": "H","HIS+": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
 
 
-def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF, posdiffout):
+def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fillteredDF, posdiffout):
 	cwd = os.getcwd() + '/'
 	calc = cwd + 'CALC.cya'
 	outdir = cwd +'noa_analysis/'
@@ -184,8 +184,8 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF, pos
 			intdict = eval('intensity' + plist_dict[plist])
 			outlist = eval('outlist' + plist_dict[plist])
 			linepad = pad[len(plist):]
+			Calconst = float(Calibration_cns[int(plist_dict[plist])].split()[-1])
 			if '0 out of 0' not in noalines[x+1]:
-				print(noalines[x].strip())
 				unassignedcount+=1
 				localpdif = 0
 				probdiffoutlines = []
@@ -204,15 +204,16 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF, pos
 					conect = '{:}-{:}'.format(group1,group2)
 					d = float(distDF.loc[group1,group2].split()[0])
 					note = 'unused {:} '.format(noalines[x+1].split()[3])
-					common = distDF.dropna(subset=[group1,group2]).index.tolist()
+					common = fillteredDF.dropna(subset=[group1,group2]).index.tolist()
 					if d >= 12.0:
 						pass
 					else: 
-						if d >= 8.0 and len(common) > 2:
-							probdiffoutlines.append('{:}\nlong distance heavy {:}\n{:}\n'.format(conect,distDF.loc[group1,group2],distDF.loc[common,[group1,group2]].to_string()))
-							print(conect)
-							print(distDF.loc[group1,group2])
-							print(distDF.loc[common,[group1,group2]])
+						if d >= 8.0 and len(common) > 0:
+							common.extend([group1,group2])
+							probdiffoutlines.append('{:}\nlong distance heavy {:}\n{:}\n'.format(conect,distDF.loc[group1,group2],fillteredDF.loc[common,common].to_string()))
+							# print(conect)
+							# print(distDF.loc[group1,group2])
+							# print(fillteredDF.loc[common,common])
 							note = note + 'prob diff {:}A '.format(distDF.loc[group1,group2])
 							localpdif+=1
 						if float(intdict[peak][0]) != 0.0: 
