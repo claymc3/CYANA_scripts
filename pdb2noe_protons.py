@@ -113,10 +113,10 @@ def getDistance(donor, acceptor,PDBdict):
 		for a2 in atoms2list:
 			(x1,y1,z1) = PDBdict[a1]
 			(x2,y2,z2) = PDBdict[a2]
-			# d = d + np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)**-6
+			d = d + np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)**-6
 			dist.append(np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2))
-	reff = np.min(dist)
-	# reff = np.round(d**(-1/6),2)
+	# reff = np.min(dist)
+	reff = np.round(d**(-1/6),2)
 	# print('used %s %s d=%1.2f' %(donor, acceptor,reff))
 	return reff
 
@@ -312,10 +312,20 @@ if len(chains) == 1:
 				if dist < max_dist: 
 					Cm_NHn_Dist.append(dist)
 
-	print('{:>30} {:^9} {:^9} {:^9} {:^9} {:^9} {:^9} {:^9}'.format('NOESY','Cm-CmHm','Hall-CmHm','Ca-CmHm','Hall-CaHa','Hn-NHn','Hall-NHn','Cm-NHn'))
-	print('{:30} {:^9d} {:^9d} {:^9d} {:^9d} {:^9d} {:^9d} {:^9d}'.format('Number of crosspeaks',len(Me_Me_Dist),len(Hall_Me_Dist),len(Ca_Me_Dist),len(Hall_Ca_Dist),len(Hn_NHn_Dist),len(Hall_NHn_Dist),len(Cm_NHn_Dist)))
-	print('{:30} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f}'.format('Median Distance (Å)',median(Me_Me_Dist),median(Hall_Me_Dist),median(Ca_Me_Dist),median(Hall_Ca_Dist),median(Hn_NHn_Dist),median(Hall_NHn_Dist),median(Cm_NHn_Dist)))
-	print('{:30} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f}'.format('Average # crosspeaks per group',len(Me_Me_Dist)/len(Methyls),len(Hall_Me_Dist)/len(Methyls),len(Ca_Me_Dist)/len(Methyls),len(Hall_Ca_Dist)/len(Aromatics),len(Hn_NHn_Dist)/len(Backbone),len(Hall_NHn_Dist)/len(Backbone),len(Cm_NHn_Dist)/len(Backbone)))
+	N_CmHm_Dist = []
+	for atom1 in Methyls:
+		resn1, resi1, name1 = atom1.split()
+		for atom2 in Backbone:
+			resn2, resi2, name2 = atom2.split()
+			if atom1 != atom2:
+				dist = getDistance(atom1, atom2,Coor)
+				if dist < max_dist: 
+					N_CmHm_Dist.append(dist)
+
+	print('{:>30} {:^9} {:^9} {:^9} {:^9} {:^9} {:^9} {:^9} {:^9}'.format('NOESY','Cm-CmHm','Hall-CmHm','Ca-CmHm','Hall-CaHa','Hn-NHn','Hall-NHn','Cm-NHn','N-CmHm'))
+	print('{:30} {:^9d} {:^9d} {:^9d} {:^9d} {:^9d} {:^9d} {:^9d} {:^9d}'.format('Number of crosspeaks',len(Me_Me_Dist),len(Hall_Me_Dist),len(Ca_Me_Dist),len(Hall_Ca_Dist),len(Hn_NHn_Dist),len(Hall_NHn_Dist),len(Cm_NHn_Dist),len(N_CmHm_Dist)))
+	print('{:30} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f}'.format('Median Distance (Å)',median(Me_Me_Dist),median(Hall_Me_Dist),median(Ca_Me_Dist),median(Hall_Ca_Dist),median(Hn_NHn_Dist),median(Hall_NHn_Dist),median(Cm_NHn_Dist),median(N_CmHm_Dist)))
+	print('{:30} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f} {:^9.1f}'.format('Average # crosspeaks per group',len(Me_Me_Dist)/len(Methyls),len(Hall_Me_Dist)/len(Methyls),len(Ca_Me_Dist)/len(Methyls),len(Hall_Ca_Dist)/len(Aromatics),len(Hn_NHn_Dist)/len(Backbone),len(Hall_NHn_Dist)/len(Backbone),len(Cm_NHn_Dist)/len(Backbone),len(N_CmHm_Dist)/len(Methyls)))
 
 
 

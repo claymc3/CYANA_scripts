@@ -176,19 +176,28 @@ for line in dihed_lines:
 	dline = line.split()
 	if dline[-1] in scale.keys():
 		dphi = float(dline[4])
-		if dphi<10: dphi = 15.0
-		if dphi>35: dphi = 35
+		if dphi<10: dphi = 20.0
+		if dphi>35: dphi = 35.0
 		dpsi = float(dline[5])
-		if dpsi<10: dpsi = 15.0
+		if dpsi<10: dpsi = 20.0
 		if dpsi>35: dpsi = 35.0
 		aco.write("#  " + line + "\n")
 		if dline[1] != 'P':
 			phicount+=1
 			#print "%4d  %4s  PHI  %8.1f%8.1f" % (int(dline[0]), A_dict[dline[1]], float(dline[2])-scale[dline[-1]]*dphi, float(dline[2])+ scale[dline[-1]]*dphi)
-			aco.write("{:>5}  {:<4}  PHI  {:8.1f}{:8.1f}\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[2])-scale[dline[-1]]*dphi/2, float(dline[2])+scale[dline[-1]]*dphi/2))
+			aco.write("{:>5}  {:<4}  PHI  {:8.1f}{:8.1f}\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[2])-scale[dline[-1]]*dphi, float(dline[2])+scale[dline[-1]]*dphi))
 		#print "%4d  %4s  PSI  %8.1f%8.1f\n" % (int(dline[0]), A_dict[dline[1]], float(dline[3])-scale[dline[-1]]*dpsi, float(dline[2])+scale[dline[-1]]*dpsi)
-		aco.write("{:>5}  {:<4}  PSI  {:8.1f}{:8.1f}\n\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[3])-scale[dline[-1]]*dpsi/2, float(dline[3])+scale[dline[-1]]*dpsi/2))
+		aco.write("{:>5}  {:<4}  PSI  {:8.1f}{:8.1f}\n\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[3])-scale[dline[-1]]*dpsi, float(dline[3])+scale[dline[-1]]*dpsi))
 		psicount+= 1
+for line in dihed_lines:
+	if dline[-1] == 'Dyn':
+		dphi = 30.0
+		dpsi = 30.0
+		aco.write("#  " + line + "\n")
+		if dline[1] != 'P':
+			aco.write("#{:>5}  {:<4}  PHI  {:8.1f}{:8.1f}\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[2])-scale[dline[-1]]*dphi, float(dline[2])+scale[dline[-1]]*dphi)
+		aco.write("#{:>5}  {:<4}  PSI  {:8.1f}{:8.1f}\n\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[3])-scale[dline[-1]]*dpsi, float(dline[3])+scale[dline[-1]]*dpsi))
+
 aco.close()
 log.write('Extracted {:} PHI angles and {:} PSI angles form TALOS\n'.format(phicount,psicount))
 
