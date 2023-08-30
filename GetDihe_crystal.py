@@ -165,6 +165,7 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames):
 	normals = {"phi":[],"psi":[]}
 	outliers = {"phi":[],"psi":[]}
 	aa_type = PhiDF.loc[res,'type']
+	if pd.isna(PhiDF.loc[res,'type']): aa_type = 'General'
 	outline = "   "
 	outcount = 0
 	for mnum in colnames:
@@ -179,10 +180,10 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames):
 				normals["psi"].append(PsiDF.loc[res,mnum])
 	if outcount != 0:
 		outtext.append([r"$\phi, \psi$ disallowed in:",'red'])
-		for x in range(0,len(outline.split()),7):
+		for x in range(0,len(outline.split()),3):
 			i = x
 			outline2 = '   '
-			for j in range(7):
+			for j in range(3):
 				outline2 = outline2 + '{:>2} '.format(outline.split()[i])
 				i+=1
 				if i== len(outline.split()): break
@@ -203,7 +204,7 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames):
 	ax.set_title(title, color = tcolor)
 	if len(outtext) > 0:
 		for text, col in outtext:
-			axtext.text(-0.3,ypos, text, color = col, fontsize = 8)
+			axtext.text(-0.3,ypos, text, color = col, fontsize = 7)
 			ypos = ypos - 0.06
 	ax.set_xlim([-180,180])
 	ax.set_xticks([-180,-120,-60,0,60,120,180])
@@ -253,10 +254,10 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames):
 				normals["chi2"].append(chi2DF.loc[res,mnum])
 	if outcount != 0: 
 		outtext.append([r"$\chi1, \chi2$ disallowed in:",'red'])
-		for x in range(0,len(outline.split()),7):
+		for x in range(0,len(outline.split()),3):
 			i = x
 			outline2 = '   '
-			for j in range(7):
+			for j in range(3):
 				outline2 = outline2 + '{:>2} '.format(outline.split()[i])
 				i+=1
 				if i== len(outline.split()): break
@@ -283,7 +284,7 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames):
 	ax.set_title(title, color = tcolor)
 	if len(outtext) > 0:
 		for text, col in outtext:
-			axtext.text(-0.3,ypos, text, color = col, fontsize = 8)
+			axtext.text(-0.3,ypos, text, color = col, fontsize = 7)
 			ypos = ypos - 0.06
 	ax.set_xlim([0,360])
 	ax.set_xticks([0,60,120,180,240,300,360])
@@ -317,14 +318,12 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames):
 ##	where A# is the residue single letter code and index 						##
 ###----------------------------------------------------------------------------###
 # def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihedviol):
-uniprotid = 'P21802'
-seqbounds = '468-768'
-inpdbs = ['1GJO', '1OEC', '2PSQ', '2PVF', '2PVY']
+uniprotid = 'P11362'
+seqbounds = '478-767'
+inpdbs = ['1FGK', '3KY2','3GQI']
+outname = 'FGFR1_test'
 
-outname = 'FGFR2_test'
-# inpdbs = ['2PSQ','2PVF']
-#['2PWL','2PY3','2PZ5','2PZP','2PZR','2Q0B','3B2T','3CLY','3RI1','4J95','4J96','4J97',
-#'4J98','4J99','5EG3','5UGL','5UGX','5UHN','5UI0','6AGX','6LVK','6LVL','6V6Q','7KIA','7KIE','7OZY']
+
 UNPdict,UNPnseq = {},[]
 UNPseq = ''
 dbsb = int(seqbounds.split('-')[0])
@@ -357,15 +356,16 @@ for in_pdb in inpdbs:
 		colnames.append('{:}_{:}'.format(in_pdb,chain))
 	for line in pdblines:
 		if line[0:4] == "ATOM" or line[0:4] == 'HETA':
-			chain = line[21]
-			Coor = eval('Coor_{:}_{:}'.format(in_pdb,chain))
-			if line[17:20].strip() in AAA_dict.keys():
-				if line[22:26].strip() not in pSEQ: 
-					pSEQ.append(line[22:26].strip())
-					pSEQ_dict[line[22:26].strip()] = line[17:20].strip()
-					SEQdict[int(line[22:26].strip())] = '{:}{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip())
-				resid = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()], line[22:26].strip(),line[12:16].strip())
-				Coor[resid]= [float(line[30:38]), float(line[38:46]), float(line[46:54])]
+			if line[21] in chains:
+				chain = line[21]
+				Coor = eval('Coor_{:}_{:}'.format(in_pdb,chain))
+				if line[17:20].strip() in AAA_dict.keys():
+					if line[22:26].strip() not in pSEQ: 
+						pSEQ.append(line[22:26].strip())
+						pSEQ_dict[line[22:26].strip()] = line[17:20].strip()
+						SEQdict[int(line[22:26].strip())] = '{:}{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip())
+					resid = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()], line[22:26].strip(),line[12:16].strip())
+					Coor[resid]= [float(line[30:38]), float(line[38:46]), float(line[46:54])]
 	print(in_pdb)
 	for x in range(dbsb,dbse):
 		if str(x) in pSEQ_dict.keys():
@@ -379,6 +379,7 @@ PhiDF =  pd.DataFrame(columns=colnames)
 PsiDF =  pd.DataFrame(columns=colnames)
 chi1DF = pd.DataFrame(columns=colnames)
 chi2DF = pd.DataFrame(columns=colnames)
+
 for entry in colnames:
 	Coords = eval('Coor_' + entry)
 	Sequence = eval('Seq_{:}'.format(entry[0:-2]))
@@ -406,7 +407,14 @@ for i in range(1,len(UNPnseq)-1,1):
 for res in UNPnseq: 
 	if res[0] in SideDihe.keys() and res in chi1DF.index.to_list():
 		chi1DF.loc[res,'type'] = res[0]
-
+# PhiDF['mean'] = PhiDF.mean(axis=1).astype(float).round(2)
+# PhiDF['stdv'] = PhiDF.std(axis=1).astype(float).round(2)
+# PsiDF['mean'] = PsiDF.mean(axis=1).astype(float).round(2)
+# PsiDF['stdv'] = PsiDF.std(axis=1).astype(float).round(2)
+# chi1DF['mean'] = chi1DF.mean(axis=1).astype(float).round(2)
+# chi1DF['stdv'] = chi1DF.std(axis=1).astype(float).round(2)
+# chi2DF['mean'] = chi2DF.mean(axis=1).astype(float).round(2)
+# chi2DF['stdv'] = chi2DF.std(axis=1).astype(float).round(2)
 PhiDF.to_csv(outname + '_Phi.csv')
 PsiDF.to_csv(outname + '_Psi.csv')
 chi1DF.to_csv(outname + '_Chi1.csv')
