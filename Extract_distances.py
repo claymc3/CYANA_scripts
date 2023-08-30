@@ -13,7 +13,6 @@ import os
 import sys
 import pandas as pd
 import numpy as np
-print(pd.__version__)
 '''
 CNS noe.tbl fomat
  assign (resid 632 and name HN   )  (resid 633 and name HN   )  3.24  1.44  1.44 !peak 1 #plist 1 #SUP 0.91 #QF 0.91 
