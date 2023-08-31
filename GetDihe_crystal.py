@@ -164,6 +164,8 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames):
 	if pd.isna(PhiDF.loc[res,'type']): aa_type = 'General'
 	outline = "   "
 	outcount = 0
+	outtext.append([r"$\phi$ = {:} $\pm$ {:}".format(PhiDF.loc[res,'mean'],PhiDF.loc[res,'stdv']),'black'])
+	outtext.append([r"$\psi$ = {:} $\pm$ {:}".format(PsiDF.loc[res,'mean'],PsiDF.loc[res,'stdv']),'black'])
 	for mnum in colnames:
 		if not np.isnan(PsiDF.loc[res,mnum]) and not np.isnan(PhiDF.loc[res,mnum]):
 			if RAMA_PREF_VALUES[aa_type][int(PsiDF.loc[res,mnum])+ 180][int(PhiDF.loc[res,mnum]) + 180] < RAMA_PREFERENCES[aa_type]["bounds"][1]:
@@ -218,6 +220,8 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames):
 	outline = "   "
 	aa_type = res[0]
 	outcount = 0
+	outtext.append([r"$\chi1$ = {:} $\pm$ {:}".format(chi1DF.loc[res,'mean'],chi1DF.loc[res,'stdv']),'black'])
+	outtext.append([r"$\chi2$ = {:} $\pm$ {:}".format(chi2DF.loc[res,'mean'],chi2DF.loc[res,'stdv']),'black'])
 	for mnum in colnames:
 		if not np.isnan(chi1DF.loc[res,mnum]) and not np.isnan(chi2DF.loc[res,mnum]):
 			if ROTA_PREF_VALUES[aa_type][int(chi2DF.loc[res,mnum])][int(chi1DF.loc[res,mnum])] < ROTA_PREFERENCES[aa_type]["bounds"][1]:
@@ -268,35 +272,42 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames):
 ##	where A# is the residue single letter code and index 						##
 ###----------------------------------------------------------------------------###
 # def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihedviol):
-if len(sys.argv)==1:
-	print('''
-Usage:
-	getdihe [UniProt_id] [residues] [PDB_IDs] [outname]
+# if len(sys.argv)==1:
+# 	print('''
+# Usage:
+# 	getdihe [UniProt_id] [residues] [outname] [PDB_IDs]
 
-	UniProt_id: UniProt accession id number for protin, the script 
-				will pull that fasts file from https://www.uniprot.org
-				P11362
+# 	gitdihe P11362 478-767 FGFR1_inhib_vs_phos 1FGK,3KY2,3GQI
 
-	resdues:	start-end index of the residues you are intersted in 
-				468-768
+# 	UniProt_id: UniProt accession id number for protin, the script 
+# 				will pull that fasts file from https://www.uniprot.org
+# 				P11362
 
-	PDB_IDs:	comma separated list of PDB ids to be examined, 
-				not case sensative, and PDB does not need to be 
-				saved to the directory the script pulls the PDB
-				file directly from https://www.rcsb.org
+# 	resdues:	start-end index of the residues you are intersted in 
+# 				468-768
 
-	outname:	name t
-		''')
+# 	outname:	name to give output files, not spaces allowed
+
+# 	PDB_IDs:	comma separated list of PDB ids to be examined, 
+# 				not case sensative, and PDB does not need to be 
+# 				saved to the directory the script pulls the PDB
+# 				file directly from https://www.rcsb.org
+
+# 	The script will extract all the possible phi,psi and chi1/chi2
+# 	dihedral angles. It also checks the protin sequence from the 
+# 	PDB and identifies mutation and phosphorylation sites.
+# 		''')
+# 	exit()
 
 # uniprotid  = sys.argv[1]
 # seqbounds = sys.argv[2]
-# inpdbs = sys.argv[3].split(',')
-
+# inpdbs = sys.argv[4].split(',')
+# outname = sys.argv[3]
 
 uniprotid = 'P11362'
 seqbounds = '478-767'
 inpdbs = ['1FGK', '3KY2','3GQI']
-outname = 'FGFR1_test'
+outname = 'FGFR1_inhib_vs_phos'
 
 
 UNPdict,UNPnseq = {},[]
@@ -382,14 +393,14 @@ for i in range(1,len(UNPnseq)-1,1):
 for res in UNPnseq: 
 	if res[0] in SideDihe.keys() and res in chi1DF.index.to_list():
 		chi1DF.loc[res,'type'] = res[0]
-# PhiDF['mean'] = PhiDF.mean(axis=1).astype(float).round(2)
-# PhiDF['stdv'] = PhiDF.std(axis=1).astype(float).round(2)
-# PsiDF['mean'] = PsiDF.mean(axis=1).astype(float).round(2)
-# PsiDF['stdv'] = PsiDF.std(axis=1).astype(float).round(2)
-# chi1DF['mean'] = chi1DF.mean(axis=1).astype(float).round(2)
-# chi1DF['stdv'] = chi1DF.std(axis=1).astype(float).round(2)
-# chi2DF['mean'] = chi2DF.mean(axis=1).astype(float).round(2)
-# chi2DF['stdv'] = chi2DF.std(axis=1).astype(float).round(2)
+PhiDF['mean'] = PhiDF[colnames].mean(axis=1).astype(float).round(2)
+PhiDF['stdv'] = PhiDF[colnames].std(axis=1).astype(float).round(2)
+PsiDF['mean'] = PsiDF[colnames].mean(axis=1).astype(float).round(2)
+PsiDF['stdv'] = PsiDF[colnames].std(axis=1).astype(float).round(2)
+chi1DF['mean'] = chi1DF[colnames].mean(axis=1).astype(float).round(2)
+chi1DF['stdv'] = chi1DF[colnames].std(axis=1).astype(float).round(2)
+chi2DF['mean'] = chi2DF[colnames].mean(axis=1).astype(float).round(2)
+chi2DF['stdv'] = chi2DF[colnames].std(axis=1).astype(float).round(2)
 PhiDF.to_csv(outname + '_Phi.csv')
 PsiDF.to_csv(outname + '_Psi.csv')
 chi1DF.to_csv(outname + '_Chi1.csv')
@@ -410,33 +421,33 @@ for res in UNPnseq:
 	count+=1
 	if count in np.arange(1,len(UNPnseq),25):
 		print('Plotting results for {:} ({:} of {:})'.format(res, count, len(Sequence)))
-	if res in PhiDF.index.to_list() and res in chi1DF.index.to_list():
-		fig = plt.figure(figsize=(7.5,3))
-		gs = GridSpec(1,3,width_ratios = (2,2,1))
-		ax1 = fig.add_subplot(gs[0])
-		ax2 = fig.add_subplot(gs[1])
-		ax0 = fig.add_subplot(gs[2])
-		# fig, (ax1,ax2,ax3,ax0) =plt.subplots(1,4,figsize=(9,3), width_ratios = [6,6,3,3])
-		plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0, 0.60,colnames)
-		plot_chi1_chi2_ramachandran(res, ax2, chi1DF, chi2DF,ax0, 0.35,colnames)
-	if res in PhiDF.index.to_list() and res not in chi1DF.index.to_list():
-		fig = plt.figure(figsize=(4.5,3))
-		gs = GridSpec(1,2,width_ratios = (2,1))
-		ax1 = fig.add_subplot(gs[0])
-		ax0 = fig.add_subplot(gs[1])
-		# fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3), width_ratios = [2,1,1])
-		plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0, 0.60, colnames)
-	if res not in PhiDF.index.to_list() and res in chi1DF.index.to_list():
-		fig = plt.figure(figsize=(4.5,3))
-		gs = GridSpec(1,2,width_ratios = (2,1))
-		ax1 = fig.add_subplot(gs[0])
-		ax0 = fig.add_subplot(gs[1])
-		# fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3),width_ratios = [2,1,1])
-		plot_chi1_chi2_ramachandran(res, ax1, chi1DF, chi2DF,ax0, 0.60, colnames)
-	ax0.axis('off')
-	y = 0.99
 	if res in PhiDF.index.to_list() or res in chi1DF.index.to_list():
-		# plt.tight_layout()
+		if res in PhiDF.index.to_list() and res in chi1DF.index.to_list():
+			fig = plt.figure(figsize=(9,3))
+			gs = GridSpec(1,3,width_ratios = (1,1,1))
+			ax1 = fig.add_subplot(gs[0])
+			ax2 = fig.add_subplot(gs[1])
+			ax0 = fig.add_subplot(gs[2])
+			# fig, (ax1,ax2,ax3,ax0) =plt.subplots(1,4,figsize=(9,3), width_ratios = [6,6,3,3])
+			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0, 0.90,colnames)
+			plot_chi1_chi2_ramachandran(res, ax2, chi1DF, chi2DF,ax0, 0.50,colnames)
+		if res in PhiDF.index.to_list() and res not in chi1DF.index.to_list():
+			fig = plt.figure(figsize=(6,3))
+			gs = GridSpec(1,2,width_ratios = (1,1))
+			ax1 = fig.add_subplot(gs[0])
+			ax0 = fig.add_subplot(gs[1])
+			# fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3), width_ratios = [2,1,1])
+			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0, 0.90, colnames)
+		if res not in PhiDF.index.to_list() and res in chi1DF.index.to_list():
+			fig = plt.figure(figsize=(6,3))
+			gs = GridSpec(1,2,width_ratios = (1,1))
+			ax1 = fig.add_subplot(gs[0])
+			ax0 = fig.add_subplot(gs[1])
+			# fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3),width_ratios = [2,1,1])
+			plot_chi1_chi2_ramachandran(res, ax1, chi1DF, chi2DF,ax0, 0.50, colnames)
+		ax0.axis('off')
+		y = 0.99
+		plt.tight_layout()
 		pdf.savefig(transparent=True)
 		plt.close()
 pdf.close()
