@@ -158,10 +158,6 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames):
 	if RAMA_PREF_VALUES is None:
 		RAMA_PREF_VALUES = _cache_RAMA_PREF_VALUES()
 	outtext = []
-	boundbox = 0
-	# if res in pdict.keys():
-	# 	outtext.extend(pdict[res])
-	# 	boundbox = len(pdict[res])
 	normals = {"phi":[],"psi":[]}
 	outliers = {"phi":[],"psi":[]}
 	aa_type = PhiDF.loc[res,'type']
@@ -197,9 +193,6 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames):
 	ax.set_xlabel(r'$\mathrm{\phi}$')
 	ax.set_ylabel(r'$\mathrm{\psi}$')
 	tcolor = 'black'
-	# if res in pdict.keys():
-	# 	title = res + " *"
-	# else:
 	title = res
 	ax.set_title(title, color = tcolor)
 	if len(outtext) > 0:
@@ -210,25 +203,9 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames):
 	ax.set_xticks([-180,-120,-60,0,60,120,180])
 	ax.set_yticks([-180,-120,-60,0,60,120,180])
 	ax.set_ylim([-180,180])
-	# x1,x2 = [-180,180]
-	# y1,y2 = [-180,180]
-	# if res + 'PHI'in plotdict.keys():
-	# 	x1, x2 = plotdict[res +'PHI']
-	# if res + 'PSI' in plotdict.keys():
-	# 	y1, y2 = plotdict[res +'PSI']
-	# if boundbox == 1 and res + 'PHI'in plotdict.keys():
-	# 	ax.plot([x1, x1], [y1, y2], color="black",linewidth = 1.0)
-	# 	ax.plot([x2, x2], [y1, y2], color="black",linewidth = 1.0)
-	# if boundbox == 1 and res + 'PSI'in plotdict.keys():
-	# 	ax.plot([x1, x2], [y1, y1], color="black",linewidth = 1.0)
-	# 	ax.plot([x1, x2], [y2, y2], color="black",linewidth = 1.0)
-	# if boundbox == 2:
-	# 		ax.plot([x1, x1], [y1, y2], color="black",linewidth = 1.0)
-	# 		ax.plot([x2, x2], [y1, y2], color="black",linewidth = 1.0)
-	# 		ax.plot([x1, x2], [y1, y1], color="black",linewidth = 1.0)
-	# 		ax.plot([x1, x2], [y2, y2], color="black",linewidth = 1.0)
 	ax.grid(visible=True, which='major', axis='both',linestyle='--')
 	# plt.tight_layout(w_pad = 0.0001)
+
 def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames):
 
 	global ROTA_PREF_VALUES
@@ -238,7 +215,6 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames):
 	outtext = []
 	normals = {"chi1":[],"chi2":[]}
 	outliers = {"chi1":[],"chi2":[]}
-	boundbox = 0
 	outline = "   "
 	aa_type = res[0]
 	outcount = 0
@@ -271,16 +247,7 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames):
 	ax.set_xlabel(r'$\mathrm{\chi}1$')
 	ax.set_ylabel(r'$\mathrm{\chi}2$')
 	tcolor = 'black'
-	# if res in pdict.keys():
-	# 	title = res + " *"
-	# else:
 	title = res
-	# if res + 'CHI1' in dihedviol.keys():
-	# 	tcolor = 'red'
-	# 	outtext.append([dihedviol[res + 'CHI1' ],'red'])
-	# if res + 'CHI2' in dihedviol.keys():
-	# 	tcolor = 'red'
-	# 	outtext.append([dihedviol[res + 'CHI2' ],'red'])
 	ax.set_title(title, color = tcolor)
 	if len(outtext) > 0:
 		for text, col in outtext:
@@ -290,23 +257,6 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames):
 	ax.set_xticks([0,60,120,180,240,300,360])
 	ax.set_yticks([0,60,120,180,240,300,360])
 	ax.set_ylim([0,360])
-	# x1,x2 = [0,360]
-	# y1,y2 = [0,360]
-	# if res + 'CHI1'in plotdict.keys():
-	# 	x1, x2 = plotdict[res +'CHI1']
-	# if res + 'CHI2' in plotdict.keys():
-	# 	y1, y2 = plotdict[res +'CHI2']
-	# if boundbox == 1 and res + 'CHI1'in plotdict.keys():
-	# 	ax.plot([x1, x1], [y1, y2], color="black",linewidth = 1.0)
-	# 	ax.plot([x2, x2], [y1, y2], color="black",linewidth = 1.0)
-	# if boundbox == 1 and res + 'CHI2'in plotdict.keys():
-	# 	ax.plot([x1, x2], [y1, y1], color="black",linewidth = 1.0)
-	# 	ax.plot([x1, x2], [y2, y2], color="black",linewidth = 1.0)
-	# if boundbox == 2:
-	# 		ax.plot([x1, x1], [y1, y2], color="black",linewidth = 1.0)
-	# 		ax.plot([x2, x2], [y1, y2], color="black",linewidth = 1.0)
-	# 		ax.plot([x1, x2], [y1, y1], color="black",linewidth = 1.0)
-	# 		ax.plot([x1, x2], [y2, y2], color="black",linewidth = 1.0)
 	ax.grid(visible=True, which='major', axis='both',linestyle='--')
 	# plt.tight_layout(w_pad = 0.0001)
 
@@ -318,6 +268,31 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames):
 ##	where A# is the residue single letter code and index 						##
 ###----------------------------------------------------------------------------###
 # def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihedviol):
+if len(sys.argv)==1:
+	print('''
+Usage:
+	getdihe [UniProt_id] [residues] [PDB_IDs] [outname]
+
+	UniProt_id: UniProt accession id number for protin, the script 
+				will pull that fasts file from https://www.uniprot.org
+				P11362
+
+	resdues:	start-end index of the residues you are intersted in 
+				468-768
+
+	PDB_IDs:	comma separated list of PDB ids to be examined, 
+				not case sensative, and PDB does not need to be 
+				saved to the directory the script pulls the PDB
+				file directly from https://www.rcsb.org
+
+	outname:	name t
+		''')
+
+# uniprotid  = sys.argv[1]
+# seqbounds = sys.argv[2]
+# inpdbs = sys.argv[3].split(',')
+
+
 uniprotid = 'P11362'
 seqbounds = '478-767'
 inpdbs = ['1FGK', '3KY2','3GQI']
