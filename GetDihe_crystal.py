@@ -178,10 +178,10 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames):
 				normals["psi"].append(PsiDF.loc[res,mnum])
 	if outcount != 0:
 		outtext.append([r"$\phi, \psi$ disallowed in:",'red'])
-		for x in range(0,len(outline.split()),3):
+		for x in range(0,len(outline.split()),5):
 			i = x
 			outline2 = '   '
-			for j in range(3):
+			for j in range(5):
 				outline2 = outline2 + '{:>2} '.format(outline.split()[i])
 				i+=1
 				if i== len(outline.split()): break
@@ -234,10 +234,10 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames):
 				normals["chi2"].append(chi2DF.loc[res,mnum])
 	if outcount != 0: 
 		outtext.append([r"$\chi1, \chi2$ disallowed in:",'red'])
-		for x in range(0,len(outline.split()),3):
+		for x in range(0,len(outline.split()),5):
 			i = x
 			outline2 = '   '
-			for j in range(3):
+			for j in range(5):
 				outline2 = outline2 + '{:>2} '.format(outline.split()[i])
 				i+=1
 				if i== len(outline.split()): break
@@ -271,44 +271,37 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames):
 ##								A#-atom:[x,y,z] 								##
 ##	where A# is the residue single letter code and index 						##
 ###----------------------------------------------------------------------------###
-# def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihedviol):
-# if len(sys.argv)==1:
-# 	print('''
-# Usage:
-# 	getdihe [UniProt_id] [residues] [outname] [PDB_IDs]
+if len(sys.argv)==1:
+	print('''
+Usage:
+	getdihe [UniProt_id] [residues] [outname] [PDB_IDs]
 
-# 	gitdihe P11362 478-767 FGFR1_inhib_vs_phos 1FGK,3KY2,3GQI
+	gitdihe P11362 478-767 FGFR1_inhib_vs_phos 1FGK,3KY2,3GQI
 
-# 	UniProt_id: UniProt accession id number for protin, the script 
-# 				will pull that fasts file from https://www.uniprot.org
-# 				P11362
+	UniProt_id: UniProt accession id number for protin, the script 
+				will pull that fasts file from https://www.uniprot.org
+				P11362
 
-# 	resdues:	start-end index of the residues you are intersted in 
-# 				468-768
+	resdues:	start-end index of the residues you are intersted in 
+				468-768
 
-# 	outname:	name to give output files, not spaces allowed
+	outname:	name to give output files, not spaces allowed
 
-# 	PDB_IDs:	comma separated list of PDB ids to be examined, 
-# 				not case sensative, and PDB does not need to be 
-# 				saved to the directory the script pulls the PDB
-# 				file directly from https://www.rcsb.org
+	PDB_IDs:	comma separated list of PDB ids to be examined, 
+				not case sensative, and PDB does not need to be 
+				saved to the directory the script pulls the PDB
+				file directly from https://www.rcsb.org
 
-# 	The script will extract all the possible phi,psi and chi1/chi2
-# 	dihedral angles. It also checks the protin sequence from the 
-# 	PDB and identifies mutation and phosphorylation sites.
-# 		''')
-# 	exit()
+	The script will extract all the possible phi,psi and chi1/chi2
+	dihedral angles. It also checks the protin sequence from the 
+	PDB and identifies mutation and phosphorylation sites.
+		''')
+	exit()
 
-# uniprotid  = sys.argv[1]
-# seqbounds = sys.argv[2]
-# inpdbs = sys.argv[4].split(',')
-# outname = sys.argv[3]
-
-uniprotid = 'P11362'
-seqbounds = '478-767'
-inpdbs = ['1FGK', '3KY2','3GQI']
-outname = 'FGFR1_inhib_vs_phos'
-
+uniprotid  = sys.argv[1]
+seqbounds = sys.argv[2]
+inpdbs = sys.argv[4].split(',')
+outname = sys.argv[3]
 
 UNPdict,UNPnseq = {},[]
 UNPseq = ''
@@ -406,21 +399,15 @@ PsiDF.to_csv(outname + '_Psi.csv')
 chi1DF.to_csv(outname + '_Chi1.csv')
 chi2DF.to_csv(outname + '_Chi2.csv')
 
-# PhiDF.to_csv(outdir + outname + '_Phi.csv')
-# PsiDF.to_csv(outdir + outname + '_Psi.csv')
-# chi1DF.to_csv(outdir + outname + '_Chi1.csv')
-# chi2DF.to_csv(outdir + outname + '_Chi2.csv')
 import time
 start_time = time.time()
-# pdf = PdfPages(outdir + '{:}_overview.pdf'.format(outname))
 pdf = PdfPages('{:}_overview.pdf'.format(outname))
-text = [['CYANA UPL','#9acd32'],['long UPL','#800080'],['Violated UPL','#ffa500'],['Input UPL','#6495ed'],['Found Input UPL','navy'],['Violate Input UPL','#db7093']]
 count = 0
 from matplotlib.gridspec import GridSpec
 for res in UNPnseq:
 	count+=1
 	if count in np.arange(1,len(UNPnseq),25):
-		print('Plotting results for {:} ({:} of {:})'.format(res, count, len(Sequence)))
+		print('Plotting results for {:} ({:} of {:})'.format(res, count, len(UNPnseq)))
 	if res in PhiDF.index.to_list() or res in chi1DF.index.to_list():
 		if res in PhiDF.index.to_list() and res in chi1DF.index.to_list():
 			fig = plt.figure(figsize=(9,3))
