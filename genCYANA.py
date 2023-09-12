@@ -157,7 +157,6 @@ dihed_lines = [line.strip() for line in open(indihed).readlines() if line.strip(
 chi1_lines = [line.strip() for line in open(inchi1).readlines() if line.strip() and not re.search('[A-Z]', line[0])]
 # (resid, slc, phi, psi, dphi, dpsi, s2, count, cs_cound, Class)
 aco = open('dihed.aco','w')
-scale = {"Strong":2.0, "Generous":3.0}
 # aco.write('## Chi1 values from TALOS\n')
 # for line in chi1_lines:
 # 	cline = line.strip().split()
@@ -177,17 +176,17 @@ for line in dihed_lines:
 	if dline[-1] in scale.keys():
 		dphi = float(dline[4])
 		if dphi<10: dphi = 20.0
-		if dphi>35: dphi = 35.0
+		if dphi>35: dphi = 30.0
 		dpsi = float(dline[5])
 		if dpsi<10: dpsi = 20.0
-		if dpsi>35: dpsi = 35.0
+		if dpsi>35: dpsi = 30.0
 		aco.write("#  " + line + "\n")
 		if dline[1] != 'P':
 			phicount+=1
 			#print "%4d  %4s  PHI  %8.1f%8.1f" % (int(dline[0]), A_dict[dline[1]], float(dline[2])-scale[dline[-1]]*dphi, float(dline[2])+ scale[dline[-1]]*dphi)
-			aco.write("{:>5}  {:<4}  PHI  {:8.1f}{:8.1f}\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[2])-scale[dline[-1]]*dphi, float(dline[2])+scale[dline[-1]]*dphi))
+			aco.write("{:>5}  {:<4}  PHI  {:8.1f}{:8.1f}\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[2])-dphi, float(dline[2])+dphi))
 		#print "%4d  %4s  PSI  %8.1f%8.1f\n" % (int(dline[0]), A_dict[dline[1]], float(dline[3])-scale[dline[-1]]*dpsi, float(dline[2])+scale[dline[-1]]*dpsi)
-		aco.write("{:>5}  {:<4}  PSI  {:8.1f}{:8.1f}\n\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[3])-scale[dline[-1]]*dpsi, float(dline[3])+scale[dline[-1]]*dpsi))
+		aco.write("{:>5}  {:<4}  PSI  {:8.1f}{:8.1f}\n\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[3])-dpsi, float(dline[3])+dpsi))
 		psicount+= 1
 for line in dihed_lines:
 	if dline[-1] == 'Dyn':
@@ -195,8 +194,8 @@ for line in dihed_lines:
 		dpsi = 30.0
 		aco.write("#  " + line + "\n")
 		if dline[1] != 'P':
-			aco.write("#{:>5}  {:<4}  PHI  {:8.1f}{:8.1f}\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[2])-scale[dline[-1]]*dphi, float(dline[2])+scale[dline[-1]]*dphi)
-		aco.write("#{:>5}  {:<4}  PSI  {:8.1f}{:8.1f}\n\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[3])-scale[dline[-1]]*dpsi, float(dline[3])+scale[dline[-1]]*dpsi))
+			aco.write("#{:>5}  {:<4}  PHI  {:8.1f}{:8.1f}\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[2])-dphi, float(dline[2])+dphi))
+		aco.write("#{:>5}  {:<4}  PSI  {:8.1f}{:8.1f}\n\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[3])-dpsi, float(dline[3])+dpsi))
 
 aco.close()
 log.write('Extracted {:} PHI angles and {:} PSI angles form TALOS\n'.format(phicount,psicount))
@@ -339,7 +338,7 @@ for i in range(len(N_list)):
 			dist = np.round(np.sqrt(((PDB_df.loc[N_list[i],'X'] - PDB_df.loc[N_list[x],'X'])**2) + ((PDB_df.loc[N_list[i],'Y'] - PDB_df.loc[N_list[x],'Y'])**2) + ((PDB_df.loc[N_list[i],'Z'] - PDB_df.loc[N_list[x],'Z'])**2)),1)
 			if dist < 3.1: 
 				print('N-N distance shorter than 3.1, likely van der Waals clash refine PDB model and try again')
-				exit()
+				#exit()
 			if dist < 5.0:
 				constraint = N_list[x] + '-' + N_list[i]
 				atom1 = str(PDB_df.loc[N_list[i],'resid']) + '-' + PDB_df.loc[N_list[i],'name']
@@ -367,7 +366,7 @@ for i in range(len(N_list)):
 			if dist < 3.1:
 				NC_out = "{:>5}  {:<4}  {:<4}   {:>5}  {:<4}  {:<4}   {:6.2f}\n".format(PDB_df.loc[N_list[i],'resid'],PDB_df.loc[N_list[i],'resn'],PDB_df.loc[N_list[i],'name'], PDB_df.loc[C_list[x],'resid'],PDB_df.loc[C_list[x],'resn'],PDB_df.loc[C_list[x],'name'],dist)
 				print('{:} distance shorter than 3.1, likely van der Waals clash refine PDB model and try again'.format(NC_out))
-				exit()
+				#exit()
 			if dist < 6.0:
 				atom1 = str(PDB_df.loc[N_list[i],'resid']) + '-' + PDB_df.loc[N_list[i],'name']
 				atom2 = str(PDB_df.loc[C_list[x],'resid']) + '-' + PDB_df.loc[C_list[x],'name']
@@ -391,7 +390,7 @@ for i in range(len(C_list)):
 			if dist < 3.1:
 				CC_out = "{:>5}  {:<4}  {:<4}   {:>5}  {:<4}  {:<4}   {:6.2f}\n".format(PDB_df.loc[C_list[i],'resid'],PDB_df.loc[C_list[i],'resn'],PDB_df.loc[C_list[i],'name'], PDB_df.loc[C_list[x],'resid'],PDB_df.loc[C_list[x],'resn'],PDB_df.loc[C_list[x],'name'],dist)
 				print('{:} distance shorter than 3.1, likely van der Waals clash refine PDB model and try again'.format(CC_out))
-				exit()
+				#exit()
 			if dist < 6.0:
 				constraint = C_list[x] + '-' + C_list[i]
 				atom1 = str(PDB_df.loc[C_list[i],'resid']) + '-' + PDB_df.loc[C_list[i],'name']
