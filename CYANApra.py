@@ -847,7 +847,7 @@ for x in range(0,len(indexs),50):
 	outcmx.write(cmxout[:-1] + ' c10 target ac\n')
 outcmx.write(sidechains[:-1].replace('#1',"#{:}".format(mn)) + '\n')
 outcmx.write("show #{:}:thr,met,ala,leu,val,ile,phe,tyr\nhide #{:}@H*\ncolor byhetero\n".format(mn,mn))
-outcmx.write('key c0:0 c2:2 c4:4 c6:6 c8:8 c10:10 fontsize 14 colorTreatment distinct numericLabelSpacing equal\n')
+outcmx.write('key c0:0 c2:2 c4:4 c6:6 c8:8 c10:10 fontsize 14 colorTreatment distinct numericLabelSpacing equal\nkey size 0.25000,0.03000\n')
 outpml.write('show sticks, noes and resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\nhide sticks, elem H\ncolor blue, elem N\ncolor gold, elem S\ncolor red, elem O\ncolor orange, elem P\ncolor white, elem H\nshow sticks, name N+H\n')
 outpml.write(sidechains[:-1].replace(",","+").replace('#1:',"sticks, noes and resi ") + '\n')
 outpml.close()
