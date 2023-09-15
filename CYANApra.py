@@ -140,11 +140,6 @@ lols = [con for con in manualcons if 'lol' in con and 'hbond' not in con]
 dihed = [con for con in manualcons if 'aco' in con if con != 'inital.aco']
 noa = cwd + 'cycle7.noa'
 noalines = open(noa).readlines()
-for upl in [con for con in manualcons if 'upl' in con]:
-	upllengths.append(len(upl))
-uplpad = ''
-for x in range(max(upllengths)):
-	uplpad = uplpad + ' '
 print('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl    %'.format(pad,pad))
 shortsum.write('{:} #peaks  % Assignment\n'.format(pad))
 ## Open Summary file and check the peak list files, upl, and ovw to determine the number of assignments and violations and write out the summary file 
@@ -252,7 +247,7 @@ for line in open(fovw).readlines():
 				atom2 = replacements[dviol[6]+dviol[5]]
 			cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[2]],dviol[3],dviol[1],AAA_dict[dviol[6]],dviol[7],dviol[5])
 			cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[6]],dviol[7],dviol[5],AAA_dict[dviol[2]],dviol[3],dviol[1])
-			if int(dviol[9]) >= 10:
+			if int(dviol[9]) >= 6:
 				pbout = uviolpbout
 				grpstr = "uplviol"
 				outline = ' #viol in {:} by +{:}\n'.format(dviol[9],dviol[10])
@@ -567,9 +562,9 @@ for hbondf in hbonds:
 	for line in open(hbondf).readlines():
 		cns = line.split()
 		if line.strip() and "#" not in cns[0]:
-			if (cns[0],cns[3]) not in hbonsl:
+			if (cns[0],cns[3],cns[5]) not in hbonsl:
 				h+=1 
-				hbonsl.append((cns[0],cns[3]))
+				hbonsl.append((cns[0],cns[3],cns[5].replace('N','H')))
 				cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
 				if cons in Upperdict.keys():
 					hbond.write('#1.1:{:}@{:} #1.1:{:}@{:} hotpink\n'.format(cns[0], cns[2], cns[3],cns[5]))
