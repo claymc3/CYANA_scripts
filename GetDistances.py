@@ -87,7 +87,8 @@ def getDistance(donor, acceptor,PDBdict):
       (x1,y1,z1) = PDBdict[a1]
       (x2,y2,z2) = PDBdict[a2]
       d = d + np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)**-6
-  reff = np.round(d**(-1/6),2)
+  if d != 0.0: reff = np.round(d**(-1/6),2)
+  else: reff = 0.0
   return reff
 
 def examin(in_pdb, ADpairs,Assignments):
