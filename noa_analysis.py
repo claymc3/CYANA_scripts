@@ -311,12 +311,6 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
 			unused.write('\n')
 			rn1 = con.split('-')[0][0]
 			rn2 = con.split('-')[2][0]
-			if con.split('-')[0][0] == 'G' and con.split('-')[1] == 'H': Gamidecount+= 1
-			if con.split('-')[2][0] == 'G' and con.split('-')[3] == 'H': Gamidecount+= 1
-			if con.split('-')[0][0] == 'T' and con.split('-')[1] == 'H': Tamidecount+= 1
-			if con.split('-')[2][0] == 'T' and con.split('-')[3] == 'H': Tamidecount+= 1
-			if con.split('-')[0][0] == 'M' and con.split('-')[1] == 'H': Mamidecount+= 1
-			if con.split('-')[2][0] == 'M' and con.split('-')[3] == 'H': Mamidecount+= 1
 			if abs(float(con.split('-')[0][1:]) - float(con.split('-')[2][1:])) == 0: intracount+= 1
 			if abs(float(con.split('-')[0][1:]) - float(con.split('-')[2][1:])) <= 4 and abs(float(con.split('-')[0][1:]) - float(con.split('-')[2][1:])) != 0: shortcount+= 1
 			if abs(float(con.split('-')[0][1:]) - float(con.split('-')[2][1:])) <= 5 and abs(float(con.split('-')[0][1:]) - float(con.split('-')[2][1:])) >= 2: mediumcount+= 1
@@ -344,14 +338,11 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
 		eval("good{:}.writelines(olist)".format(str(x)))
 		eval("good{:}.close()".format(str(x)))
 	assigned.close()
-	print('Fount {:} inconsistant distances of {:} connections'.format(inconcount, numcon))
-	print('Found {:} unused intra molecular contacts'.format(intracount))
-	print('Found {:} unused short contacts'.format(shortcount))
-	print('Found {:} unused medium molecular contacts'.format(mediumcount))
-	print('Found {:} unused long molecular contacts'.format(longcount))
-	print('Found {:} unused G-H assignment'.format(Gamidecount))
-	print('Found {:} unused M-H assignment'.format(Mamidecount))
-	print('Found {:} unused T-H assignment'.format(Tamidecount))
+	# print('Fount {:} inconsistant distances of {:} connections'.format(inconcount, numcon))
+	# print('Found {:} unused intra molecular contacts'.format(intracount))
+	# print('Found {:} unused short contacts'.format(shortcount))
+	# print('Found {:} unused medium molecular contacts'.format(mediumcount))
+	# print('Found {:} unused long molecular contacts'.format(longcount))
 	print("Finished cycle7.noa analysis")
 
 	return assigndict2
