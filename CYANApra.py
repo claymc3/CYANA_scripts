@@ -101,7 +101,6 @@ init = cwd + 'init.cya'
 seq = [line.strip().split() for line in open(cwd + open(init).readlines()[0].strip().split(':=')[-1] + '.seq').readlines() if '#' != line[0] and line.split()[0] in AAA_dict.keys()]
 Seqdict = {}
 Sequence, ASequence = [],[]
-print(seq)
 for resn,resi in seq:
 	if resn in AAA_dict.keys():
 		Seqdict[resi] = AAA_dict[resn] + resi
