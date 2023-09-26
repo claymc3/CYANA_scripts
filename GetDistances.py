@@ -39,7 +39,7 @@ Prot2Heavy = {
 'WHA':'CA','WHB2':'CB','WHB3':'CB','WQB':'CB','WHD1':'CD1','WHE3':'CE3','WHE1':'NE1','WHZ3':'CZ3','WHZ2':'CZ2','WHH2':'CH2','WH':'N',
 'YHA':'CA','YHB2':'CB','YHB3':'CB','YQB':'CB','YQD':'CD1,CD2','YQE':'CE1,CE2','YHD1':'CD1','YHE1':'CE1','YHE2':'CE2','YHD2':'CD2','YHH':'OH','YH':'N',}
 
-AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "CYSS":"C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P","cPRO":"P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S'}
+AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "CYSS":"C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H","HISE": "H","HIS+": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "PROO":"P","PROU":"P","CPRO":"P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S',"ADE":"A","RADE":"A","CYT":"C","RCYT":"C","GUA":"G","RGUA":"G","THY":"T","URA":"U"}
 A_dict = {'C': 'CYS', 'D': 'ASP', 'S': 'SER', 'Q': 'GLN', 'K': 'LYS','I': 'ILE', 'P': 'PRO', 'T': 'THR', 'F': 'PHE', 'N': 'ASN', 'G': 'GLY', 'H': 'HIS', 'L': 'LEU', 'R': 'ARG', 'W': 'TRP', 'A': 'ALA', 'V':'VAL', 'E': 'GLU', 'Y': 'TYR', 'M': 'MET'}
 
 # cwd = '/Users/mclay1/FGFR2/FGFR2_467-768_C491A/Structure_Calc/cyana_70/'
@@ -110,8 +110,9 @@ def examin(in_pdb, ADpairs,Assignments):
     for x in range(start,end,1):
       line = pdb[x]
       if line[0:4] == "ATOM" or line[0:4] == 'HETA':
-        index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
-        Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
+        if line[17:20].strip() in AAA_dict.keys():
+          index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
+          Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
   DistancesDF = pd.DataFrame(columns=Assignments,index=Assignments)
   FilteredDF = pd.DataFrame(columns=Assignments,index=Assignments)
   # from itertools import combinations
