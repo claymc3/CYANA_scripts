@@ -49,43 +49,43 @@ AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "CYSS":"
 Ambiguous = {'ARGQB':'HB2,HB3','ARGQG':'HG2,HG3','ARGQG':'HG2,HG3','ARGQH1':'HH11,HH12','ARGQH2':'HH21,HH22','ASNQB':'HB2,HB3','ASNQD2':'HD21,HD22','ASPQB':'HB2,HB3','CYSQB':'HB2,HB3','CYSSQB':'HB2,HB3','GLNQB':'HB2,HB3','GLNQG':'HG2,HG3','GLNQE2':'HE21,HE22','GLUQB':'HB2,HB3','GLUQG':'HG2,HG3','GLYQA':'HA2,HA3','HISQB':'HB2,HB3','HISTQB':'HB2,HB3','ILEQG1':'HG12,HG13','LEUQB':'HB2,HB3','LEUQQD':'QD1,QD2','LYSQB':'HB2,HB3','LYSQG':'HG2,HG3','LYSQD':'HD2,HD3','LYSQE':'HE2,HE3','METQB':'HB2,HB3','METQG':'HG2,HG3','PHEQB':'HB2,HB3','PHEQG':'HG2,HG3','PHEQD':'HD2,HD3','PHEQE':'HE1,HE2','PROQB':'HB2,HB3','PROQG':'HG2,HG3','PROQD':'HD2,HD3','SERQB':'HB2,HB3','TRPQB':'HB2,HB3','TYRQB':'HB2,HB3','TYRQG':'HG2,HG3','TYRQD':'HD2,HD3','TYRQE':'HE1,HE2','PTRQB':'HB2,HB3','PTRQG':'HG2,HG3','PTRQD':'HD2,HD3','PTRQE':'HE1,HE2','VALQQG':'QG1,QG2'}
 
 if len(sys.argv)==1:
-	print('''
+    print('''
 
 Usage: 
-	cyanapra [pdb] [upl]
+    cyanapra [pdb] [upl]
 
 Required Input:
 
-	PDB			PDB to be used typically the final.pdb or pdb after CNS refinement
-				If this is not located in current directory provide path
-					CNS/refinePDB/r12_cya.pdb
+    PDB         PDB to be used typically the final.pdb or pdb after CNS refinement
+                If this is not located in current directory provide path
+                    CNS/refinePDB/r12_cya.pdb
 
-	upl				What upl file would you like to use? final.upl cycle?.upl
-					Which ever upl you specify determines the overview file used. 
+    upl             What upl file would you like to use? final.upl cycle?.upl
+                    Which ever upl you specify determines the overview file used. 
 
 OutPut:
-	post_cyana_analysis/
-		pdb_pra.cxc
-		pdb_pra.pml
-		upl_summary.txt
-		upl_overview.pdf
-		pdb_Phi.csv, pdb_Psi.csv, pdb_Chi1.csv, pdb_Chi2.csv 
-		Annotated upl files 
-		pseudobonds/ (Groups of Distance restraints)
-			upl_constraint_type.pb
-			upl_poor.pb: restraints with SUP < 0.5
-			upl_short.pb:  non intramolecular distance restraints d < 3.0
-			upl_long.pb: Long distance restraints d > 6.0
-			upl_viol_upls.pb: UPLs violated in 10 or more structures 
-			input.pb(s): input upl file(s) specified in CALC.cya
-			hbond.pb
-	noa_analysis/ 
-		Assignment_Summary.txt 
-		peak-list.list
+    post_cyana_analysis/
+        pdb_pra.cxc
+        pdb_pra.pml
+        upl_summary.txt
+        upl_overview.pdf
+        pdb_Phi.csv, pdb_Psi.csv, pdb_Chi1.csv, pdb_Chi2.csv 
+        Annotated upl files 
+        pseudobonds/ (Groups of Distance restraints)
+            upl_constraint_type.pb
+            upl_poor.pb: restraints with SUP < 0.5
+            upl_short.pb:  non intramolecular distance restraints d < 3.0
+            upl_long.pb: Long distance restraints d > 6.0
+            upl_viol_upls.pb: UPLs violated in 10 or more structures 
+            input.pb(s): input upl file(s) specified in CALC.cya
+            hbond.pb
+    noa_analysis/ 
+        Assignment_Summary.txt 
+        peak-list.list
 ''')
-	exit()
-colors = ['royalblue','forest','yellowgreen', 'darkorange','purple','lightseagreen ','darkkhaki','peru','saddlebrown','mediumpurple','blue']
-ConectionTypes = ['N_N','N_Methyl','N_Aro','Methyl_Methyl','Methyl_Aro','Aro_Aro','N_Ali','Ali_Ali','Ali_Aro','Ali_Methyl','Other']
+    exit()
+colors = ['royalblue','forest','yellowgreen', 'darkorange','purple','lightseagreen ','darkkhaki','peru','saddlebrown','mediumpurple','blue','purple']
+ConectionTypes = ['N_N','N_Methyl','N_Aro','Methyl_Methyl','Methyl_Aro','Aro_Aro','N_Ali','Ali_Ali','Ali_Aro','Ali_Methyl','Other','Intramolecular']
 
 cwd = os.getcwd() + '/'
 outdir = cwd + 'post_cyana_analysis/'
@@ -97,15 +97,14 @@ fovw = fupl.replace('.upl','.ovw')
 calc = cwd + 'CALC.cya'
 outname = fupl.split('.')[0]
 init = cwd + 'init.cya'
-# print(open(init).readlines()[0].strip().split(':=')[-1])
 seq = [line.strip().split() for line in open(cwd + open(init).readlines()[0].strip().split(':=')[-1] + '.seq').readlines() if '#' != line[0] and line.split()[0] in AAA_dict.keys()]
 Seqdict = {}
 Sequence, ASequence = [],[]
 for resn,resi in seq:
-	if resn in AAA_dict.keys():
-		Seqdict[resi] = AAA_dict[resn] + resi
-		ASequence.append(AAA_dict[resn] + resi)
-		Sequence.append(resi)
+    if resn in AAA_dict.keys():
+        Seqdict[resi] = AAA_dict[resn] + resi
+        ASequence.append(AAA_dict[resn] + resi)
+        Sequence.append(resi)
 upldf = pd.DataFrame(index = ASequence, columns=['cya','long','viol','input','viol input','vdihed'])
 upldf['cya'] = np.zeros(len(Sequence))
 upldf['long'] = np.zeros(len(Sequence))
@@ -115,20 +114,20 @@ upldf['found input'] = np.zeros(len(Sequence))
 upldf['viol input'] = np.zeros(len(Sequence))
 ## Check for the output directory if it does not exist make it
 if not os.path.exists(outdir):
-	os.makedirs(outdir)
+    os.makedirs(outdir)
 if not os.path.exists(outdir +'pseudobonds/'):
-	os.makedirs(outdir +'pseudobonds/')
+    os.makedirs(outdir +'pseudobonds/')
 if not os.path.exists(noadir):
-	os.makedirs(noadir)
+    os.makedirs(noadir)
 checkcons = open(outdir + outname + '_summary.txt','w')
 ## open the CALC.cya file to get the peaks list and additional constraint files used in the calculation. 
 cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
 lengths,upllengths = [], []
 for plist in cya_plists:
-	lengths.append(len(plist))
+    lengths.append(len(plist))
 pad = ''
 for x in range(max(lengths)):
-	pad = pad + ' '
+    pad = pad + ' '
 
 shortsum = open(outdir + 'Short_stats.txt','w')
 checkcons.write('## Generated using CYANApra_{:} on {:} \n'.format(Vnum,dt_string))
@@ -148,40 +147,40 @@ shortsum.write('{:} #peaks  % Assignment\n'.format(pad))
 tpeak,tsingle,tamb,tnotused,tnota,tdia,tincr,tupl,tviol  = 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 for x in range(len(cya_plists)):
-	plistn = cya_plists[x]
-	plist = cya_plists[x]
-	upl = [line.strip() for line in open(fupl).readlines() if line.strip() and 'plist '+ str(x+1) in line]
-	tupl = tupl + len(upl)
-	viol = [line.strip() for line in open(fovw).readlines() if line.strip() and 'list '+ str(x+1) in line]
-	tviol = tviol + len(viol)
-	peak,single,amb,notused,nota,dia,incr = 0, 0, 0, 0, 0, 0, 0
-	for y in range(len(noalines)):
-		line = noalines[y]
-		if ' ' + plistn in line and 'out of' in noalines[y+1]:
-			peak+=1
-			tpeak+=1
-			if '0 out of 0' in noalines[y+1]:
-				nota+=1
-				tnota+=1
-			if '0 out of' in noalines[y+1] and '0 out of 0' not in noalines[y+1]:
-				notused+=1
-				tnotused+=1
-			if '1 out of' in noalines[y+1] and 'diagonal' not in line:
-				single+= 1
-				tsingle+=1
-			if noalines[y+1].strip().split()[0] > '1' and 'diagonal' not in line:
-				amb+=1
-				tamb+=1
-			if 'increased' in line:
-				incr+=1 
-				tincr+=1
-			if 'diagonal' in line and '0 out of' not in noalines[y+1]:
-				dia+=1
-				tdia+=1
-	linepad = pad[len(plist):]
-	checkcons.write("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%\n".format(plist,linepad,peak,len(upl),len(viol), single,amb,notused,nota,dia,incr, 100*((single+amb+dia)/peak)))
-	shortsum.write("{:<}{:} {:^6d}   {:^3.1f}% ({:})\n".format(plist,linepad,peak,100*((single+amb+dia)/peak),(single+amb+dia)))
-	print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%".format(plist,linepad, peak,len(upl),len(viol),single,amb,notused,nota,dia,incr, 100*((single+amb+dia)/peak)))
+    plistn = cya_plists[x]
+    plist = cya_plists[x]
+    upl = [line.strip() for line in open(fupl).readlines() if line.strip() and 'plist '+ str(x+1) in line]
+    tupl = tupl + len(upl)
+    viol = [line.strip() for line in open(fovw).readlines() if line.strip() and 'list '+ str(x+1) in line]
+    tviol = tviol + len(viol)
+    peak,single,amb,notused,nota,dia,incr = 0, 0, 0, 0, 0, 0, 0
+    for y in range(len(noalines)):
+        line = noalines[y]
+        if ' ' + plistn in line and 'out of' in noalines[y+1]:
+            peak+=1
+            tpeak+=1
+            if '0 out of 0' in noalines[y+1]:
+                nota+=1
+                tnota+=1
+            if '0 out of' in noalines[y+1] and '0 out of 0' not in noalines[y+1]:
+                notused+=1
+                tnotused+=1
+            if '1 out of' in noalines[y+1] and 'diagonal' not in line:
+                single+= 1
+                tsingle+=1
+            if noalines[y+1].strip().split()[0] > '1' and 'diagonal' not in line:
+                amb+=1
+                tamb+=1
+            if 'increased' in line:
+                incr+=1 
+                tincr+=1
+            if 'diagonal' in line and '0 out of' not in noalines[y+1]:
+                dia+=1
+                tdia+=1
+    linepad = pad[len(plist):]
+    checkcons.write("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%\n".format(plist,linepad,peak,len(upl),len(viol), single,amb,notused,nota,dia,incr, 100*((single+amb+dia)/peak)))
+    shortsum.write("{:<}{:} {:^6d}   {:^3.1f}% ({:})\n".format(plist,linepad,peak,100*((single+amb+dia)/peak),(single+amb+dia)))
+    print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%".format(plist,linepad, peak,len(upl),len(viol),single,amb,notused,nota,dia,incr, 100*((single+amb+dia)/peak)))
 checkcons.write("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%\n".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr,100*((tsingle+ tamb+ tdia)/tpeak)))
 shortsum.write("{:<}{:} {:^6d}   {:^3.1f}% ({:})\n\n".format('Total',pad[5:],tpeak,100*((tsingle+ tamb+ tdia)/tpeak),(tsingle+ tamb+ tdia)))
 print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr, 100*((tsingle+ tamb+ tdia)/tpeak)))
@@ -210,8 +209,8 @@ outcmx.write('ui tool show "Side View"\n#ui mousemode right distance\n')
 
 ### Make pseudo bond and gorup statements for poor, long, and short upl entries from designated upl file 
 for conect in ConectionTypes:
-	exec("{:}_pb = []".format(conect))
-	exec("group{:} = 'group {:}, '".format(conect, conect))
+    exec("{:}_pb = []".format(conect))
+    exec("group{:} = 'group {:}, '".format(conect, conect))
 poorpbout = open(outdir +'pseudobonds/' + outname + '_poor.pb','w')
 poorpbout.write("; halfbond = false\n; color = mediumvioletred\n; radius = 0.1\n; dashes = 0\n")
 longpbout = open(outdir +'pseudobonds/' + outname + '_long.pb','w')
@@ -237,95 +236,95 @@ vphicount, vpsicount,vchi1count,vchi2count, vothercount = 0,0,0,0,0
 phiv, chiv, violpeaks = [], [], []
 hbondline = ''
 for line in open(fovw).readlines():
-	if line[4:9] == 'Upper' or line[4:9] == 'Lower':
-		dviol = line.split()
-		if dviol[2]+dviol[1] not in Ambiguous.keys() and dviol[6]+dviol[5] not in Ambiguous.keys(): ## skip the ambiguous entries they are not used in refinement 
-			atom1 = dviol[1]
-			if dviol[2]+dviol[1] in replacements.keys():
-				atom1 = replacements[dviol[2]+dviol[1]]
-			atom2 = dviol[5]
-			if dviol[6]+dviol[5] in replacements.keys():
-				atom2 = replacements[dviol[6]+dviol[5]]
-			cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[2]],dviol[3],dviol[1],AAA_dict[dviol[6]],dviol[7],dviol[5])
-			cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[6]],dviol[7],dviol[5],AAA_dict[dviol[2]],dviol[3],dviol[1])
-			if int(dviol[9]) >= 6:
-				pbout = uviolpbout
-				grpstr = "uplviol"
-				outline = ' #viol in {:} by +{:}\n'.format(dviol[9],dviol[10])
-				if 'peak' not in line:
-					if line[4:9] == 'Upper':
-						if 'O' not in dviol[1]:
-							upldf.loc[AAA_dict[dviol[6]] + dviol[7],'viol input'] = upldf.loc[AAA_dict[dviol[6]] + dviol[7],'viol input'] + 1
-							upldf.loc[AAA_dict[dviol[2]] + dviol[3],'viol input'] = upldf.loc[AAA_dict[dviol[2]] + dviol[3],'viol input'] + 1
-							Upperdict[cons1] = outline
-							Upperdict[cons2] = outline
-					if line[4:9] == 'Lower':
-						outline = ' #viol in {:} by -{:}\n'.format(dviol[9],dviol[10])
-						Lowerdict[cons1] = outline
-						Lowerdict[cons2] = outline
-				if 'peak' in line and 'list' in line:
-					violdict[cons1] = outline
-					violdict[cons2] = outline
-					for line2 in open(fupl).readlines():
-						cns = line2.split()
-						if cns[8] == line[90:].split()[1] and cns[10] == line[90:].split()[3] and cns[2] == dviol[1] and cns[5] == dviol[5]:
-							if cns[0] != cns[3] and '#SUP' in line2:
-								upldf.loc[AAA_dict[cns[1]] + cns[0],'viol'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'viol'] + 1
-								upldf.loc[AAA_dict[cns[4]] + cns[3],'viol'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'viol'] + 1
-								violpeaks.append(cons1)
-								finalupls[0].append(line2)
-								Filtered.append(line2)
-				v+=1
-				pbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(dviol[3], atom1, dviol[7],atom2))
-				outpml.write('distance viol{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(v), pdbname, dviol[3], atom1, pdbname, dviol[7], atom2))
-				viol_upls = viol_upls + "viol"+str(v) + ' '
-	if line[4:9] == 'Angle':
-		dang = line.split()
-		dihedviol[AAA_dict[dang[2]] + dang[3] + dang[1].replace('CHI21','CHI2')] = r'$\{:}$ viol in {:} by {:}'.format(dang[1].lower(), dang[6], dang[7])
-		angle = dang[1].replace('CHI21','CHI2')
-		try:
-			exec('v{:}count = v{:}count + 1'.format(angle.lower(),angle.lower()))
-		except NameError:
-			vothercount+=1
-		if dang[1] == 'PHI' or dang[1] == 'PSI':
-			if dang[3] not in phiv:
-				phiv.append(dang[3])
-				cmxphiviol = cmxphiviol + dang[3] + ','
-				pmlphiviol = pmlphiviol + dang[3] + '+'
-		if 'CHI' in dang[1]:
-			if dang[3] not in chiv:
-				chiv.append(dang[3])
-				cmxchiviol = cmxchiviol + dang[3] + ','
-				pmlchiviol = pmlchiviol + dang[3] + '+'
-	if 'Hydrogen bonds in 6' in line:
-		hbondline = line
+    if line[4:9] == 'Upper' or line[4:9] == 'Lower':
+        dviol = line.split()
+        if dviol[2]+dviol[1] not in Ambiguous.keys() and dviol[6]+dviol[5] not in Ambiguous.keys(): ## skip the ambiguous entries they are not used in refinement 
+            atom1 = dviol[1]
+            if dviol[2]+dviol[1] in replacements.keys():
+                atom1 = replacements[dviol[2]+dviol[1]]
+            atom2 = dviol[5]
+            if dviol[6]+dviol[5] in replacements.keys():
+                atom2 = replacements[dviol[6]+dviol[5]]
+            cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[2]],dviol[3],dviol[1],AAA_dict[dviol[6]],dviol[7],dviol[5])
+            cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[dviol[6]],dviol[7],dviol[5],AAA_dict[dviol[2]],dviol[3],dviol[1])
+            if int(dviol[9]) >= 6:
+                pbout = uviolpbout
+                grpstr = "uplviol"
+                outline = ' #viol in {:} by +{:}\n'.format(dviol[9],dviol[10])
+                if 'peak' not in line:
+                    if line[4:9] == 'Upper':
+                        if 'O' not in dviol[1]:
+                            upldf.loc[AAA_dict[dviol[6]] + dviol[7],'viol input'] = upldf.loc[AAA_dict[dviol[6]] + dviol[7],'viol input'] + 1
+                            upldf.loc[AAA_dict[dviol[2]] + dviol[3],'viol input'] = upldf.loc[AAA_dict[dviol[2]] + dviol[3],'viol input'] + 1
+                            Upperdict[cons1] = outline
+                            Upperdict[cons2] = outline
+                    if line[4:9] == 'Lower':
+                        outline = ' #viol in {:} by -{:}\n'.format(dviol[9],dviol[10])
+                        Lowerdict[cons1] = outline
+                        Lowerdict[cons2] = outline
+                if 'peak' in line and 'list' in line:
+                    violdict[cons1] = outline
+                    violdict[cons2] = outline
+                    for line2 in open(fupl).readlines():
+                        cns = line2.split()
+                        if cns[8] == line[90:].split()[1] and cns[10] == line[90:].split()[3] and cns[2] == dviol[1] and cns[5] == dviol[5]:
+                            if cns[0] != cns[3] and '#SUP' in line2:
+                                upldf.loc[AAA_dict[cns[1]] + cns[0],'viol'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'viol'] + 1
+                                upldf.loc[AAA_dict[cns[4]] + cns[3],'viol'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'viol'] + 1
+                                violpeaks.append(cons1)
+                                finalupls[0].append(line2)
+                                Filtered.append(line2)
+                v+=1
+                pbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(dviol[3], atom1, dviol[7],atom2))
+                outpml.write('distance viol{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(v), pdbname, dviol[3], atom1, pdbname, dviol[7], atom2))
+                viol_upls = viol_upls + "viol"+str(v) + ' '
+    if line[4:9] == 'Angle':
+        dang = line.split()
+        dihedviol[AAA_dict[dang[2]] + dang[3] + dang[1].replace('CHI21','CHI2')] = r'$\{:}$ viol in {:} by {:}'.format(dang[1].lower(), dang[6], dang[7])
+        angle = dang[1].replace('CHI21','CHI2')
+        try:
+            exec('v{:}count = v{:}count + 1'.format(angle.lower(),angle.lower()))
+        except NameError:
+            vothercount+=1
+        if dang[1] == 'PHI' or dang[1] == 'PSI':
+            if dang[3] not in phiv:
+                phiv.append(dang[3])
+                cmxphiviol = cmxphiviol + dang[3] + ','
+                pmlphiviol = pmlphiviol + dang[3] + '+'
+        if 'CHI' in dang[1]:
+            if dang[3] not in chiv:
+                chiv.append(dang[3])
+                cmxchiviol = cmxchiviol + dang[3] + ','
+                pmlchiviol = pmlchiviol + dang[3] + '+'
+    if 'Hydrogen bonds in 6' in line:
+        hbondline = line
 
 usedupls,qupldict, upldict, upldict2 = {}, {}, {}, []
 finalupl,poorcons2, show, shortcons2,longcons2,diffcons2,sidelist = [],[],[],[],[],[],[]
 poorcons, shortcons, longcons, pdiffcons = 'group poor, ', 'group short, ', 'group long, ', 'group pdiffusion, '
 for line in open(fupl).readlines():
-	if line.split() and '#SUP' in line:
-		cns = line.split()
-		cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
-		cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5],AAA_dict[cns[1]],cns[0],cns[2])
-		if cons1 not in upldict.keys():
-			upldict[cons1] = "{:3.2f}".format(float(cns[6]))
-		if cons2 not in upldict.keys():
-			upldict[cons2] = "{:3.2f}".format(float(cns[6]))
-		upldict2.append("{:} peak {:} from {:}".format(cons1,cns[8],cya_plists[int(cns[10])-1]))
-		upldict2.append("{:} peak {:} from {:}".format(cons2,cns[8],cya_plists[int(cns[10])-1]))
+    if line.split() and '#SUP' in line:
+        cns = line.split()
+        cons1 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+        cons2 = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5],AAA_dict[cns[1]],cns[0],cns[2])
+        if cons1 not in upldict.keys():
+            upldict[cons1] = "{:3.2f}".format(float(cns[6]))
+        if cons2 not in upldict.keys():
+            upldict[cons2] = "{:3.2f}".format(float(cns[6]))
+        upldict2.append("{:} peak {:} from {:}".format(cons1,cns[8],cya_plists[int(cns[10])-1]))
+        upldict2.append("{:} peak {:} from {:}".format(cons2,cns[8],cya_plists[int(cns[10])-1]))
 fovwlines = open(fovw).readlines().index(hbondline) + 2 
 
 for line in open(fovw).readlines()[fovwlines:]:
-	if line.strip():
-		if line.strip()[0] == 'H':
-			hbc = line.split()
-			if len(hbc[0]) <= 3: doner = hbc[0].replace('H','N')
-			if len(hbc[0]) == 4: doner = hbc[0][:-1].replace('H','N')
-			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[1]],hbc[2],hbc[0],AAA_dict[hbc[5]],hbc[6],hbc[4])] = ' # found in {:} structures\n'.format(hbc[7])
-			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[5]],hbc[6],hbc[4],AAA_dict[hbc[1]],hbc[2],hbc[0])] = ' # found in {:} structures\n'.format(hbc[7])
-			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[1]],hbc[2],doner,AAA_dict[hbc[5]],hbc[6],hbc[4])] = ' # found in {:} structures\n'.format(hbc[7])
-			usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[5]],hbc[6],hbc[4],AAA_dict[hbc[1]],hbc[2],doner)] = ' # found in {:} structures\n'.format(hbc[7])
+    if line.strip():
+        if line.strip()[0] == 'H':
+            hbc = line.split()
+            if len(hbc[0]) <= 3: doner = hbc[0].replace('H','N')
+            if len(hbc[0]) == 4: doner = hbc[0][:-1].replace('H','N')
+            usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[1]],hbc[2],hbc[0],AAA_dict[hbc[5]],hbc[6],hbc[4])] = ' # found in {:} structures\n'.format(hbc[7])
+            usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[5]],hbc[6],hbc[4],AAA_dict[hbc[1]],hbc[2],hbc[0])] = ' # found in {:} structures\n'.format(hbc[7])
+            usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[1]],hbc[2],doner,AAA_dict[hbc[5]],hbc[6],hbc[4])] = ' # found in {:} structures\n'.format(hbc[7])
+            usedupls['{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[hbc[5]],hbc[6],hbc[4],AAA_dict[hbc[1]],hbc[2],doner)] = ' # found in {:} structures\n'.format(hbc[7])
 
 ADpairs,Assignments = [],[]
 noalines = open(noa).readlines()
@@ -333,143 +332,149 @@ noalines = open(noa).readlines()
 Swapped = {}
 log = glob.glob(os.path.join(cwd + 'log*'))[0]
 for line in open(log).readlines():
-	if line.strip() and line.strip().split()[-1] == 'swapped':
-		res = line.strip().split()
-		group1 = '{:}{:}-{:}'.format(AAA_dict[res[1]],res[0], res[2])
-		group2 = '{:}{:}-{:}'.format(AAA_dict[res[1]],res[0], res[3])
-		Swapped[group1] = group2
-		Swapped[group2] = group1
+    if line.strip() and line.strip().split()[-1] == 'swapped':
+        res = line.strip().split()
+        group1 = '{:}{:}-{:}'.format(AAA_dict[res[1]],res[0], res[2])
+        group2 = '{:}{:}-{:}'.format(AAA_dict[res[1]],res[0], res[3])
+        Swapped[group1] = group2
+        Swapped[group2] = group1
 for x in range(len(noalines)):
-	if 'Peak' in noalines[x] and 'out of' in noalines[x+1]:
-		if '0 out of' not in noalines[x+1] and 'diagonal' not in noalines[x]: 
-			index = 0
-		if '0 out of 0' not in noalines[x+1]:
-			index = 3
-			for y in range(2,int(noalines[x+1].split()[index])+2,1):
-				cns = noalines[x+y].strip().split()
-				if not re.match('^\s*[A-Z]*',noalines[x+y]):
-					atom1,resn1, resi1, atom2, resn2, resi2 = cns[1],cns[2],int(cns[3]), cns[5], cns[6], int(cns[7])
-				if re.match('^\s*[A-Z]*',noalines[x+y]):
-					atom1,resn1, resi1, atom2, resn2, resi2 = cns[0],cns[1],int(cns[2]), cns[4], cns[5], int(cns[6])
-				group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
-				group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
-				if group1 in Swapped.keys(): group1 = Swapped[group1]
-				if group2 in Swapped.keys(): group2 = Swapped[group2]
-				if '{:}-{:}'.format(group1,group2) not in ADpairs or '{:}-{:}'.format(group2,group1) not in ADpairs:
-					ADpairs.append('{:}-{:}'.format(group1,group2))
-				if group1 not in Assignments: Assignments.append(group1)
-				if group2 not in Assignments: Assignments.append(group2)
+    if 'Peak' in noalines[x] and 'out of' in noalines[x+1]:
+        if '0 out of' not in noalines[x+1] and 'diagonal' not in noalines[x]: 
+            index = 0
+        if '0 out of 0' not in noalines[x+1]:
+            index = 3
+            for y in range(2,int(noalines[x+1].split()[index])+2,1):
+                cns = noalines[x+y].strip().split()
+                if not re.match('^\s*[A-Z]*',noalines[x+y]):
+                    atom1,resn1, resi1, atom2, resn2, resi2 = cns[1],cns[2],int(cns[3]), cns[5], cns[6], int(cns[7])
+                if re.match('^\s*[A-Z]*',noalines[x+y]):
+                    atom1,resn1, resi1, atom2, resn2, resi2 = cns[0],cns[1],int(cns[2]), cns[4], cns[5], int(cns[6])
+                group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
+                group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
+                if group1 in Swapped.keys(): group1 = Swapped[group1]
+                if group2 in Swapped.keys(): group2 = Swapped[group2]
+                if '{:}-{:}'.format(group1,group2) not in ADpairs or '{:}-{:}'.format(group2,group1) not in ADpairs:
+                    ADpairs.append('{:}-{:}'.format(group1,group2))
+                if group1 not in Assignments: Assignments.append(group1)
+                if group2 not in Assignments: Assignments.append(group2)
 
 Assignments = sorted(Assignments , key = lambda x:(x.split('-')[0][1:], x.split('-')[1]))
 posdiffout = open(outdir + 'probable_diffusion_log.txt','w')
 import GetDistances as distance
 distDF,fillteredDF = distance.examin(in_pdb,ADpairs,Assignments)
 i = 1
+im = 0
 for line in open(fupl).readlines():
-	if line not in Filtered:
-		if '#SUP' not in line: ## exclude ambiguous restraints
-			pass 
-		else:
-			cns = line.split()
-			if cns[0] == cns[3]: ## exclude intramolecular restraints
-				pass
-			if cns[0] != cns[3]:
-				if cns[1]+cns[2] in ConTypeDict.keys():ct1 = ConTypeDict[cns[1]+cns[2]]
-				if cns[1]+cns[2] not in ConTypeDict.keys(): ct1 = 'Other'
-				if cns[4]+cns[5] in ConTypeDict.keys():ct2 = ConTypeDict[cns[4]+cns[5]]
-				if cns[4]+cns[5] not in ConTypeDict.keys(): ct2 = 'Other'
-				ctype = ConTypeDict["{:}-{:}".format(ct1,ct2)]
-				pblist = eval(ctype + '_pb')
-				atom1 = cns[2]
-				atom2 = cns[5]
-				if cns[1]+cns[2] in replacements.keys():
-					atom1 = atom1.replace(cns[2], replacements[cns[1]+cns[2]])
-				if cns[4]+cns[5] in replacements.keys():
-					atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
-				upldf.loc[AAA_dict[cns[1]] + cns[0],'cya'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'cya'] + 1
-				upldf.loc[AAA_dict[cns[4]] + cns[3],'cya'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'cya'] + 1
-				group1 = '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2])
-				group2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
-				outline = ' #{:3.2f} #peak {:} #plist {:}\n'.format(float(cns[6]),cns[8],cns[10])
-				cons1 = '{:}-{:}'.format(group1,group2)
-				usedupls['{:}-{:}'.format(group1,group2)] = outline
-				usedupls['{:}-{:}'.format(group2,group1)] = outline
-				## Traslate amides H to N to search input upls but don't mess up the connections drawn in pymol/chimera
-				atoms1 = atom1
-				atoms2 = atom2
-				if atom1 == 'H': atoms1 = 'N'
-				if atom2 == 'H': atoms2 = 'N'
-				cons1a = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atoms1,AAA_dict[cns[4]],cns[3],atoms2)
-				cons2a = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],atoms2,AAA_dict[cns[1]],cns[0],atoms1)
-				usedupls[cons1a] = outline
-				usedupls[cons2a] = outline
-				## Make sure all connections to side chains are shown
-				if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
-					sidelist.append(cns[0])
-				if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
-					sidelist.append(cns[3])
-				d = float(distDF.loc[group1,group2].split()[0])
-				if d >= 7.7 and line not in Filtered:
-					common = fillteredDF.dropna(subset=[group1,group2]).index.tolist()
-					if len(common) > 0:
-						common.extend([group1,group2])
-						upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
-						upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] + 1
-						qupldict['{:}-{:}'.format(group1,group2)] = "prob diff {:}A ".format(distDF.loc[group1,group2])
-						qupldict['{:}-{:}'.format(group2,group1)] = "prob diff {:}A ".format(distDF.loc[group1,group2])
-						i+=1
-						pdiffpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-						diffcons2.append('{:}-{:}'.format(group1,group2))
-						outpml.write('distance pdiffusion{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-						pdiffcons = pdiffcons + 'pdiffusion{:} '.format(i)
-						Filtered.append(line)
-						posdiffout.write('{:}-{:}\n'.format(group1,group2))
-						posdiffout.write('long distance upl {:} heavy {:}\n'.format(cns[6],d))
-						posdiffout.write(fillteredDF.loc[common,common].to_string())
-						posdiffout.write('\n')
-						# print('{:}-{:}'.format(group1,group2))
-						# print('long distance upl {:} heavy {:}'.format(cns[6],d))
-						# print(fillteredDF.loc[common,common])
-						Filtered.append(line)
-				if line not in Filtered and float(cns[12]) < 0.5:
-					i+=1
-					poorpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-					poorcons2.append('{:}-{:}'.format(group1,group2))
-					outpml.write('distance poor{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-					poorcons = poorcons + 'poor{:} '.format(i)
-					Filtered.append(line)
-					finalupls[1].append(line)
-				if line not in Filtered and float(cns[12]) > 0.5:
-					if float(cns[6]) >= 6.0:
-						upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
-						upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] + 1
-						qupldict['{:}-{:}'.format(group1,group2)] = "long "
-						qupldict['{:}-{:}'.format(group1,group2)] = "long "
-						i+=1
-						longpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-						longcons2.append('{:}-{:}'.format(group1,group2))
-						outpml.write('distance long{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-						longcons = longcons + 'long{:} '.format(i)
-						Filtered.append(line)
-						finalupls[2].append(line)
-					if float(cns[6]) <= 3.00:
-						if abs(int(cns[0])- int(cns[3])) > 1:
-							i+=1
-							shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-							shortcons2.append('{:}-{:}'.format(group1,group2))
-							outpml.write('distance short{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-							qupldict['{:}-{:}'.format(group1,group2)] = "short "
-							qupldict['{:}-{:}'.format(group1,group2)] = "short "
-							shortcons = shortcons + 'short{:} '.format(i)
-							finalupls[3].append(line)
-							Filtered.append(line)
-					if float(cns[6]) > 3.00 and float(cns[6]) < 6.0:
-						i+=1
-						outpml.write('distance UPL{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-						pblist.append('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-						exec('group' + ctype + '=' + 'group' + ctype + '+ "UPL{:} "'.format(i))
-						Filtered.append(line)
-						finalupls[4].append(line)
+    if line not in Filtered:
+        if '#SUP' not in line: ## exclude ambiguous restraints
+            pass 
+        else:
+            cns = line.split()
+            if cns[0] == cns[3]: ## exclude intramolecular restraints
+                pass
+            if cns[0] != cns[3]:
+                if cns[1]+cns[2] in ConTypeDict.keys():ct1 = ConTypeDict[cns[1]+cns[2]]
+                if cns[1]+cns[2] not in ConTypeDict.keys(): ct1 = 'Other'
+                if cns[4]+cns[5] in ConTypeDict.keys():ct2 = ConTypeDict[cns[4]+cns[5]]
+                if cns[4]+cns[5] not in ConTypeDict.keys(): ct2 = 'Other'
+                ctype = ConTypeDict["{:}-{:}".format(ct1,ct2)]
+                pblist = eval(ctype + '_pb')
+                atom1 = cns[2]
+                atom2 = cns[5]
+                if cns[1]+cns[2] in replacements.keys():
+                    atom1 = atom1.replace(cns[2], replacements[cns[1]+cns[2]])
+                if cns[4]+cns[5] in replacements.keys():
+                    atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
+                upldf.loc[AAA_dict[cns[1]] + cns[0],'cya'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'cya'] + 1
+                upldf.loc[AAA_dict[cns[4]] + cns[3],'cya'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'cya'] + 1
+                group1 = '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2])
+                group2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
+                outline = ' #{:3.2f} #peak {:} #plist {:}\n'.format(float(cns[6]),cns[8],cns[10])
+                cons1 = '{:}-{:}'.format(group1,group2)
+                usedupls['{:}-{:}'.format(group1,group2)] = outline
+                usedupls['{:}-{:}'.format(group2,group1)] = outline
+                ## Traslate amides H to N to search input upls but don't mess up the connections drawn in pymol/chimera
+                atoms1 = atom1
+                atoms2 = atom2
+                if atom1 == 'H': atoms1 = 'N'
+                if atom2 == 'H': atoms2 = 'N'
+                cons1a = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atoms1,AAA_dict[cns[4]],cns[3],atoms2)
+                cons2a = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],atoms2,AAA_dict[cns[1]],cns[0],atoms1)
+                usedupls[cons1a] = outline
+                usedupls[cons2a] = outline
+                if (float(cns[0]) > 1000 and float(cns[3]) < 1000) or (float(cns[0]) < 1000 and float(cns[3]) > 1000):
+                    im+=1
+                    ctype = 'Intramolecular'
+                    pblist = eval('Intramolecular_pb')
+                    outpml.write('distance intramol{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(im), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+                    exec('groupIntramolecular = groupIntramolecular+ "intramo{:} "'.format(im))
+                    pblist.append('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+                ## Make sure all connections to side chains are shown
+                if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
+                    sidelist.append(cns[0])
+                if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
+                    sidelist.append(cns[3])
+                d = float(distDF.loc[group1,group2].split()[0])
+                if d >= 7.7 and line not in Filtered:
+                    common = fillteredDF.dropna(subset=[group1,group2]).index.tolist()
+                    if len(common) > 2:
+                        common.extend([group1,group2])
+                        upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
+                        upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] + 1
+                        qupldict['{:}-{:}'.format(group1,group2)] = "prob diff {:}A ".format(distDF.loc[group1,group2])
+                        qupldict['{:}-{:}'.format(group2,group1)] = "prob diff {:}A ".format(distDF.loc[group1,group2])
+                        i+=1
+                        pdiffpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+                        diffcons2.append('{:}-{:}'.format(group1,group2))
+                        outpml.write('distance pdiffusion{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+                        pdiffcons = pdiffcons + 'pdiffusion{:} '.format(i)
+                        Filtered.append(line)
+                        posdiffout.write('{:}-{:}\n'.format(group1,group2))
+                        posdiffout.write('long distance upl {:} heavy {:}\n'.format(cns[6],d))
+                        posdiffout.write(fillteredDF.loc[common,common].to_string())
+                        posdiffout.write('\n')
+                        Filtered.append(line)
+                if line not in Filtered and float(cns[12]) < 0.5:
+                    i+=1
+                    poorpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+                    poorcons2.append('{:}-{:}'.format(group1,group2))
+                    outpml.write('distance poor{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+                    poorcons = poorcons + 'poor{:} '.format(i)
+                    Filtered.append(line)
+                    finalupls[1].append(line)
+                if line not in Filtered and float(cns[12]) > 0.5:
+                    if float(cns[6]) >= 6.0:
+                        upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'long'] + 1
+                        upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'long'] + 1
+                        qupldict['{:}-{:}'.format(group1,group2)] = "long "
+                        qupldict['{:}-{:}'.format(group1,group2)] = "long "
+                        i+=1
+                        longpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+                        longcons2.append('{:}-{:}'.format(group1,group2))
+                        outpml.write('distance long{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+                        longcons = longcons + 'long{:} '.format(i)
+                        Filtered.append(line)
+                        finalupls[2].append(line)
+                    if float(cns[6]) <= 3.00:
+                        if abs(int(cns[0])- int(cns[3])) > 1:
+                            i+=1
+                            shortpbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+                            shortcons2.append('{:}-{:}'.format(group1,group2))
+                            outpml.write('distance short{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+                            qupldict['{:}-{:}'.format(group1,group2)] = "short "
+                            qupldict['{:}-{:}'.format(group1,group2)] = "short "
+                            shortcons = shortcons + 'short{:} '.format(i)
+                            finalupls[3].append(line)
+                            Filtered.append(line)
+                    if float(cns[6]) > 3.00 and float(cns[6]) < 6.0:
+                        i+=1
+                        outpml.write('distance UPL{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+                        pblist.append('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+                        exec('group' + ctype + '=' + 'group' + ctype + '+ "UPL{:} "'.format(i))
+                        Filtered.append(line)
+                        finalupls[4].append(line)
+print('found {:} intramolecuar connections'.format(im))
 poorpbout.close()
 longpbout.close()
 shortpbout.close()
@@ -483,74 +488,74 @@ assigndict = noaa.analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict
 
 mn = 1
 for x in range(len(ConectionTypes)):
-	pbs = eval('{:}_pb'.format(ConectionTypes[x]))
-	if len(pbs) > 1:
-		mn+=1
-		pbout = open('{:}pseudobonds/{:}_{:}.pb'.format(outdir, outname, ConectionTypes[x]),'w')
-		pbout.write("; halfbond = false\n; color = " + colors[x] + "\n; radius = 0.1\n; dashes = 0\n")
-		pbout.writelines(pbs)
-		outcmx.write('open pseudobonds/{:}_{:}.pb\n'.format(outname, ConectionTypes[x]))
-		# outcmx.write('color #{:} {:}\n'.format(str(mn),colors[x]))
-		groupstr = eval('group' + ConectionTypes[x])
-		outpml.write(groupstr + '\n')
-		outpml.write('color {:}, {:}\n'.format(colors[x],ConectionTypes[x]))
+    pbs = eval('{:}_pb'.format(ConectionTypes[x]))
+    if len(pbs) > 1:
+        mn+=1
+        pbout = open('{:}pseudobonds/{:}_{:}.pb'.format(outdir, outname, ConectionTypes[x]),'w')
+        pbout.write("; halfbond = false\n; color = " + colors[x] + "\n; radius = 0.1\n; dashes = 0\n")
+        pbout.writelines(pbs)
+        outcmx.write('open pseudobonds/{:}_{:}.pb\n'.format(outname, ConectionTypes[x]))
+        # outcmx.write('color #{:} {:}\n'.format(str(mn),colors[x]))
+        groupstr = eval('group' + ConectionTypes[x])
+        outpml.write(groupstr + '\n')
+        outpml.write('color {:}, {:}\n'.format(colors[x],ConectionTypes[x]))
 
 for (group, color) in [('poor','mediumvioletred'),('long','firebrick'), ('pdiff','firebrick'), ('short', 'lightcoral'),('viol_upls', 'deeppink')]:
-	mn+=1
-	outcmx.write('open pseudobonds/' + outname + '_' + group + '.pb\n')
-	# outcmx.write('color #{:} {:}\n'.format(str(mn),color))
+    mn+=1
+    outcmx.write('open pseudobonds/' + outname + '_' + group + '.pb\n')
+    # outcmx.write('color #{:} {:}\n'.format(str(mn),color))
 for (group,gname, color) in [('poorcons','poor','mediumvioletred'),('longcons','long','firebrick'), ('pdiffcons','pdiffusion','firebrick'),('shortcons','short', 'lightcoral'),('viol_upls','viol_upl', 'deeppink')]:
-	grpstr = eval(group)
-	outpml.write(grpstr + '\n')
-	outpml.write('color {:}, {:}\n'.format(color, gname))
+    grpstr = eval(group)
+    outpml.write(grpstr + '\n')
+    outpml.write('color {:}, {:}\n'.format(color, gname))
 
 #### Write out the filtered upl list, which does not contain ambiguous (QQ) restraints 
 #### and has sorted the restraints into 5 labeled categories
 filtered_upl = open(outdir + fupl.replace('.upl','4cns.upl'),'w')
 for upllist in finalupls:
-	for upl in upllist:
-		filtered_upl.write(upl)
+    for upl in upllist:
+        filtered_upl.write(upl)
 filtered_upl.close()
 
 u = 1
 for uplfile in upls:
-	fin = open(uplfile,'r')
-	outpb = open(outdir +'pseudobonds/' + uplfile.replace('.upl','.pb'),'w')
-	pmlgroup = 'group {:}, '.format(uplfile.replace('.upl',''))
-	outpb.write("; halfbond = false\n; color = cyan\n; radius = 0.15\n; dashes = 10\n")
-	for line in fin.readlines():
-		cns = line.split()
-		if line.strip() and "#" not in cns[0]:
-			atom1 = cns[2]
-			atom2 = cns[5]
-			if cns[1]+cns[2] in replacements.keys():
-				atom1 = atom1.replace(cns[2], replacements[cns[1]+cns[2]])
-			if cns[4]+cns[5] in replacements.keys():
-				atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
-			atoms2 = atom2.split(',')
-			atoms1 = atom1.split(',')
-			upldf.loc[AAA_dict[cns[1]] + cns[0],'input'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'input'] + 1
-			upldf.loc[AAA_dict[cns[4]] + cns[3],'input'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'input'] + 1
-			cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
-			for atom1 in atoms1:
-				for atom2 in atoms2:
-					u+=1
-					outpml.write('distance {:}{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
-					pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
-					if 'missing' in line:
-						outpb.write('#1.1:{:}@{:} #1.1:{:}@{:} blue\n'.format(cns[0], atom1, cns[3],atom2))
-					if cons in Upperdict.keys():
-						outpb.write('#1.1:{:}@{:} #1.1:{:}@{:} hotpink\n'.format(cns[0], atom1, cns[3],atom2))
-					else:
-						outpb.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
-			if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
-				sidelist.append(cns[0])
-			if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
-				sidelist.append(cns[3])
-	outpml.write(pmlgroup + '\n')
-	outpml.write('color cyan,' + uplfile.replace('.upl','') + '\n')
-	mn+=1
-	outcmx.write('open pseudobonds/' + uplfile.replace('.upl','.pb') + '\n')
+    fin = open(uplfile,'r')
+    outpb = open(outdir +'pseudobonds/' + uplfile.replace('.upl','.pb'),'w')
+    pmlgroup = 'group {:}, '.format(uplfile.replace('.upl',''))
+    outpb.write("; halfbond = false\n; color = cyan\n; radius = 0.15\n; dashes = 10\n")
+    for line in fin.readlines():
+        cns = line.split()
+        if line.strip() and "#" not in cns[0]:
+            atom1 = cns[2]
+            atom2 = cns[5]
+            if cns[1]+cns[2] in replacements.keys():
+                atom1 = atom1.replace(cns[2], replacements[cns[1]+cns[2]])
+            if cns[4]+cns[5] in replacements.keys():
+                atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
+            atoms2 = atom2.split(',')
+            atoms1 = atom1.split(',')
+            upldf.loc[AAA_dict[cns[1]] + cns[0],'input'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'input'] + 1
+            upldf.loc[AAA_dict[cns[4]] + cns[3],'input'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'input'] + 1
+            cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+            for atom1 in atoms1:
+                for atom2 in atoms2:
+                    u+=1
+                    outpml.write('distance {:}{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(uplfile.replace('.upl',''),str(u), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
+                    pmlgroup = pmlgroup + uplfile.replace('.upl','') + str(u) + ' '
+                    if 'missing' in line:
+                        outpb.write('#1.1:{:}@{:} #1.1:{:}@{:} blue\n'.format(cns[0], atom1, cns[3],atom2))
+                    if cons in Upperdict.keys():
+                        outpb.write('#1.1:{:}@{:} #1.1:{:}@{:} hotpink\n'.format(cns[0], atom1, cns[3],atom2))
+                    else:
+                        outpb.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
+            if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
+                sidelist.append(cns[0])
+            if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
+                sidelist.append(cns[3])
+    outpml.write(pmlgroup + '\n')
+    outpml.write('color cyan,' + uplfile.replace('.upl','') + '\n')
+    mn+=1
+    outcmx.write('open pseudobonds/' + uplfile.replace('.upl','.pb') + '\n')
 sidechains = 'show #1:'
 selhbond = 'name hbond #1.1:'
 hbonsl = []
@@ -560,28 +565,28 @@ hbgroupline = 'group hbond , '
 h = 1
 mn+=1
 for hbondf in hbonds:
-	for line in open(hbondf).readlines():
-		cns = line.split()
-		if line.strip() and "#" not in cns[0]:
-			if (cns[0],cns[3],cns[5]) not in hbonsl:
-				h+=1 
-				hbonsl.append((cns[0],cns[3],cns[5].replace('N','H')))
-				cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
-				if cons in Upperdict.keys():
-					hbond.write('#1.1:{:}@{:} #1.1:{:}@{:} hotpink\n'.format(cns[0], cns[2], cns[3],cns[5]))
-				else:
-					hbond.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], cns[2], cns[3],cns[5]))
-				outpml.write('distance hbond{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(h), pdbname, cns[0], cns[2].replace('H','N'), pdbname, cns[3], cns[5].replace('H','N')))
-				hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
-				if cns[0] not in selhbond:
-					selhbond = selhbond +'{:},'.format(cns[0])
-				if cns[3] not in selhbond:
-					selhbond = selhbond +'{:},'.format(cns[3])
-				if cns[2] not in ['O','H','N']: sidelist.append(cns[0])
-				if cns[5] not in ['O','H','N']: sidelist.append(cns[3])
+    for line in open(hbondf).readlines():
+        cns = line.split()
+        if line.strip() and "#" not in cns[0]:
+            if (cns[0],cns[3],cns[5]) not in hbonsl:
+                h+=1 
+                hbonsl.append((cns[0],cns[3],cns[5].replace('N','H')))
+                cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+                if cons in Upperdict.keys():
+                    hbond.write('#1.1:{:}@{:} #1.1:{:}@{:} hotpink\n'.format(cns[0], cns[2], cns[3],cns[5]))
+                else:
+                    hbond.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], cns[2], cns[3],cns[5]))
+                outpml.write('distance hbond{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(h), pdbname, cns[0], cns[2].replace('H','N'), pdbname, cns[3], cns[5].replace('H','N')))
+                hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
+                if cns[0] not in selhbond:
+                    selhbond = selhbond +'{:},'.format(cns[0])
+                if cns[3] not in selhbond:
+                    selhbond = selhbond +'{:},'.format(cns[3])
+                if cns[2] not in ['O','H','N']: sidelist.append(cns[0])
+                if cns[5] not in ['O','H','N']: sidelist.append(cns[3])
 hbond.close()
 for res in sidelist:
-	sidechains = sidechains + res + ','
+    sidechains = sidechains + res + ','
 outcmx.write(sidechains[:-1] + '\n')
 outpml.write('show sticks, resi '+ sidechains.split(':')[-1][:-1].replace(',','+')+'\n')
 outcmx.write('hide H\n''show #1.1@H,N target a\n')
@@ -597,109 +602,109 @@ mn+=1
 ## Examine input upl files and update lines for entries which are violated 10 or more times, and identify proton-proton restraints that support heavy atoms based restraints 
 
 for uplfile in upls:
-	found_upls, tupls, mupls, vupls  = 0, 0, 0, 0
-	newlines = []
-	violupl = open(outdir + uplfile.replace('.upl','_viol.upl'),'w')
-	matchedupl = open(outdir + uplfile.replace('.upl','_found.upl'),'w')
-	for line in open(uplfile).readlines():
-		newline = ''
-		if line.strip():
-			if '#' not in line.split()[0]:
-				if 'missing' not in line: tupls+=1
-				if 'missing' in line: mupls+=1
-				cns = line.split()
-				atoms1 = [cns[2]]
-				atoms2 = [cns[5]]
-				cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
-				if cns[1]+cns[2] in Ambiguous.keys(): atoms1 = Ambiguous[cns[1]+cns[2]].split(',')
-				if cns[4]+cns[5] in Ambiguous.keys(): atoms2 = Ambiguous[cns[4]+cns[5]].split(',')
-				for atom1 in atoms1:
-					for atom2 in atoms2: 
-						cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atom1,AAA_dict[cns[4]],cns[3],atom2)
-						if cons in Upperdict.keys():
-							vupls+= 1
-							newline = line.replace('\n', Upperdict[cons])
-							violupl.write(newline)
-						if cons in usedupls.keys():
-							found_upls+= 1
-							if 'hbond' not in uplfile:
-								upldf.loc[AAA_dict[cns[1]] + cns[0],'found input'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'found input'] + 1
-								upldf.loc[AAA_dict[cns[4]] + cns[3],'found input'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'found input'] + 1
-							if len(newline) > 1: newline = newline.replace('\n', usedupls[cons])
-							if len(newline) < 1: newline = line.replace('\n', usedupls[cons])
-							matchedline = line.replace('\n', usedupls[cons])
-							matchedupl.write(matchedline)
-		if len(newline) < 1:
-			newline = line
-		newlines.append(newline)
-	checkcons.write('{:} input upls from {:}\n'.format(mupls + tupls, uplfile))
-	shortsum.write('{:} input upls from {:}\n'.format(mupls + tupls, uplfile))
-	checkcons.write('    {:} of {:} of assignable input upls found\n'.format(found_upls,tupls))
-	# shortsum.write('    {:} of {:} of assignable input upls found\n'.format(found_upls,tupls))
-	checkcons.write('    {:} of upls violated in 10 or more structures\n'.format(vupls))
-	shortsum.write('    {:} of upls violated in 10 or more structures\n'.format(vupls))
-	if mupls >=1:
-		checkcons.write('    {:} of upls missing assignment\n'.format(mupls))
-		# shortsum.write('    {:} of upls missing assignment\n'.format(mupls))
+    found_upls, tupls, mupls, vupls  = 0, 0, 0, 0
+    newlines = []
+    violupl = open(outdir + uplfile.replace('.upl','_viol.upl'),'w')
+    matchedupl = open(outdir + uplfile.replace('.upl','_found.upl'),'w')
+    for line in open(uplfile).readlines():
+        newline = ''
+        if line.strip():
+            if '#' not in line.split()[0]:
+                if 'missing' not in line: tupls+=1
+                if 'missing' in line: mupls+=1
+                cns = line.split()
+                atoms1 = [cns[2]]
+                atoms2 = [cns[5]]
+                cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+                if cns[1]+cns[2] in Ambiguous.keys(): atoms1 = Ambiguous[cns[1]+cns[2]].split(',')
+                if cns[4]+cns[5] in Ambiguous.keys(): atoms2 = Ambiguous[cns[4]+cns[5]].split(',')
+                for atom1 in atoms1:
+                    for atom2 in atoms2: 
+                        cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],atom1,AAA_dict[cns[4]],cns[3],atom2)
+                        if cons in Upperdict.keys():
+                            vupls+= 1
+                            newline = line.replace('\n', Upperdict[cons])
+                            violupl.write(newline)
+                        if cons in usedupls.keys():
+                            found_upls+= 1
+                            if 'hbond' not in uplfile:
+                                upldf.loc[AAA_dict[cns[1]] + cns[0],'found input'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'found input'] + 1
+                                upldf.loc[AAA_dict[cns[4]] + cns[3],'found input'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'found input'] + 1
+                            if len(newline) > 1: newline = newline.replace('\n', usedupls[cons])
+                            if len(newline) < 1: newline = line.replace('\n', usedupls[cons])
+                            matchedline = line.replace('\n', usedupls[cons])
+                            matchedupl.write(matchedline)
+        if len(newline) < 1:
+            newline = line
+        newlines.append(newline)
+    checkcons.write('{:} input upls from {:}\n'.format(mupls + tupls, uplfile))
+    shortsum.write('{:} input upls from {:}\n'.format(mupls + tupls, uplfile))
+    checkcons.write('    {:} of {:} of assignable input upls found\n'.format(found_upls,tupls))
+    # shortsum.write('    {:} of {:} of assignable input upls found\n'.format(found_upls,tupls))
+    checkcons.write('    {:} of upls violated in 10 or more structures\n'.format(vupls))
+    shortsum.write('    {:} of upls violated in 10 or more structures\n'.format(vupls))
+    if mupls >=1:
+        checkcons.write('    {:} of upls missing assignment\n'.format(mupls))
+        # shortsum.write('    {:} of upls missing assignment\n'.format(mupls))
 
-	fout = open(outdir + uplfile,'w')
-	fout.writelines(newlines)
-	fout.close()
-	violupl.close()
-	matchedupl.close()
+    fout = open(outdir + uplfile,'w')
+    fout.writelines(newlines)
+    fout.close()
+    violupl.close()
+    matchedupl.close()
 shortsum.write('\n')
 for lolfile in lols:
-	newlines = []
-	for line in open(lolfile).readlines():
-		newline = ''
-		if line.strip():
-			if '#' not in line.split()[0]:
-				cns = line.split()
-				cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
-				if cons in Lowerdict.keys():
-					newline = line.replace('\n', Lowerdict[cons])
-		if len(newline) < 1:
-			newline = line
-		newlines.append(newline)
-	fout = open(outdir + lolfile,'w')
-	fout.writelines(newlines)
-	fout.close()
+    newlines = []
+    for line in open(lolfile).readlines():
+        newline = ''
+        if line.strip():
+            if '#' not in line.split()[0]:
+                cns = line.split()
+                cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
+                if cons in Lowerdict.keys():
+                    newline = line.replace('\n', Lowerdict[cons])
+        if len(newline) < 1:
+            newline = line
+        newlines.append(newline)
+    fout = open(outdir + lolfile,'w')
+    fout.writelines(newlines)
+    fout.close()
 checkcons.write('\n\n')
 
 phicount, psicount,chi1count,chi2count, othercount, total = 0,0,0,0,0, 0 
 phipsidict,chidict,plotdict = {}, {}, {}
 phir, chir = [],[]
 for aco in dihed:
-	for line in open(aco):
-		if line.split():
-			if re.match('^\s*#', line):
-				continue
-			else:
-				total+=1
-				ang = line.split()
-				angle = ang[2].replace('CHI21','CHI2')
-				try:
-					exec('{:}count = {:}count + 1'.format(angle.lower(),angle.lower()))
-				except NameError:
-					othercount+=1
-				if 'P' in ang[2]:
-					angdict = phipsidict
-					if ang[0] not in phir:
-						phir.append(ang[0])
-						cmxphisel = cmxphisel + ang[0] + ','
-						pmlphisel = pmlphisel + ang[0] + '+'
-				if 'CHI' in ang[2]:
-					angdict = chidict
-					if ang[0] not in chir:
-						chir.append(ang[0])
-						cmxchisel = cmxchisel + ang[0] + ','
-						pmlchisel = pmlchisel  + ang[0] + '+'
-				outline = r"$\{:}$  {:} - {:}".format(angle.lower(), ang[3],ang[4])
-				plotdict[AAA_dict[ang[1]] + ang[0] + angle] = [float(ang[3]), float(ang[4])]
-				if AAA_dict[ang[1]] + ang[0] not in angdict.keys():
-					angdict[AAA_dict[ang[1]] + ang[0]] = [[outline,'black']]
-				else: 
-					angdict[AAA_dict[ang[1]] + ang[0]].append([outline,'black'])
+    for line in open(aco):
+        if line.split():
+            if re.match('^\s*#', line):
+                continue
+            else:
+                total+=1
+                ang = line.split()
+                angle = ang[2].replace('CHI21','CHI2')
+                try:
+                    exec('{:}count = {:}count + 1'.format(angle.lower(),angle.lower()))
+                except NameError:
+                    othercount+=1
+                if 'P' in ang[2]:
+                    angdict = phipsidict
+                    if ang[0] not in phir:
+                        phir.append(ang[0])
+                        cmxphisel = cmxphisel + ang[0] + ','
+                        pmlphisel = pmlphisel + ang[0] + '+'
+                if 'CHI' in ang[2]:
+                    angdict = chidict
+                    if ang[0] not in chir:
+                        chir.append(ang[0])
+                        cmxchisel = cmxchisel + ang[0] + ','
+                        pmlchisel = pmlchisel  + ang[0] + '+'
+                outline = r"$\{:}$  {:} - {:}".format(angle.lower(), ang[3],ang[4])
+                plotdict[AAA_dict[ang[1]] + ang[0] + angle] = [float(ang[3]), float(ang[4])]
+                if AAA_dict[ang[1]] + ang[0] not in angdict.keys():
+                    angdict[AAA_dict[ang[1]] + ang[0]] = [[outline,'black']]
+                else: 
+                    angdict[AAA_dict[ang[1]] + ang[0]].append([outline,'black'])
 
 angle_text = "Total of {:} dihedral restraints:\n       input viol\n{:<6} {:^5} {:^4}\n{:<6} {:^5} {:^4}\n{:<6} {:^5} {:^4}\n{:<6} {:^5} {:^4}\n\n".format(total, 'Phi', phicount, vphicount, 'Psi', psicount, vpsicount , 'Chi1', chi1count ,vchi1count, 'Chi2', chi2count, vchi2count)
 
@@ -717,71 +722,71 @@ checkcons.write('### {:3.0f}  Violated Distance Restraints ###\n'.format(len(vio
 # violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
 violpeaks = sorted(violpeaks, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 for viol in violpeaks:
-	if viol in assigndict.keys():
-		checkcons.write('{:}  {:3.2f}A ({:}): {:}'.format(viol,float(upldict[viol]),len(assigndict[viol]), violdict[viol]))
-		checkcons.writelines(assigndict[viol])
-		checkcons.write('\n')
+    if viol in assigndict.keys():
+        checkcons.write('{:}  {:3.2f}A ({:}): {:}'.format(viol,float(upldict[viol]),len(assigndict[viol]), violdict[viol]))
+        checkcons.writelines(assigndict[viol])
+        checkcons.write('\n')
 checkcons.write('\n\n')
 #### Write out Poor/Low Support constraints to the summary file
 poorcons2 = sorted(poorcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 checkcons.write('### {:3.0f} Low Support Restraints ###\n'.format(len(poorcons2)))
 for con in poorcons2:
-	if con in assigndict.keys():
-		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
-		checkcons.writelines(assigndict[con])
-		checkcons.write('\n')
+    if con in assigndict.keys():
+        checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
+        checkcons.writelines(assigndict[con])
+        checkcons.write('\n')
 checkcons.write('\n\n')
 #### Write out Probable Diffusion Distance constraints to the summary file
 diffcons2 = sorted(diffcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 checkcons.write('### {:3.0f} Probable Diffusion Distance Restraints ###\n'.format(len(diffcons2)))
 for con in diffcons2:
-	if con in assigndict.keys():
-		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
-		checkcons.writelines(assigndict[con])
-		checkcons.write('\n')
+    if con in assigndict.keys():
+        checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
+        checkcons.writelines(assigndict[con])
+        checkcons.write('\n')
 #### Write out Long Distance constraints to the summary file
 longcons2 = sorted(longcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 checkcons.write('### {:3.0f} Long Distance Restraints d >= 6.0 ###\n'.format(len(longcons2)))
 for con in longcons2:
-	if con in assigndict.keys():
-		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
-		checkcons.writelines(assigndict[con])
-		checkcons.write('\n')
+    if con in assigndict.keys():
+        checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
+        checkcons.writelines(assigndict[con])
+        checkcons.write('\n')
 checkcons.write('\n\n')
 #### Write out Short Distance constraints to the summary file
 checkcons.write('### {:3.0f} Short Distance Restraints d <= 3.0 ###\n'.format(len(shortcons2)))
 shortcons2 = sorted(shortcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 for con in shortcons2:
-	if con in assigndict.keys():
-		checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
-		checkcons.writelines(assigndict[con])
-		checkcons.write('\n')
+    if con in assigndict.keys():
+        checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
+        checkcons.writelines(assigndict[con])
+        checkcons.write('\n')
 checkcons.write('\n\n')
 checkcons.close()
 
 for line in open(fovw).readlines():
-	if line.strip():
-		if line.split()[0] == 'Ave':
-			shortsum.write("Target Function {:}\n".format(line.split()[1]))
-		if line.split()[0] == 'Average':
-			shortsum.write(line.strip()[8:52] + '\n')
+    if line.strip():
+        if line.split()[0] == 'Ave':
+            shortsum.write("Target Function {:}\n".format(line.split()[1]))
+        if line.split()[0] == 'Average':
+            shortsum.write(line.strip()[8:52] + '\n')
 shortsum.close()
 for y in range(2,21,1):
-	outpml.write('align {:}_{:04d}, {:}_0001\n'.format(pdbname,y, pdbname))
+    outpml.write('align {:}_{:04d}, {:}_0001\n'.format(pdbname,y, pdbname))
 outcmx.write('open ../' + in_pdb+ ' maxModels 1\nrename #{:} angles\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(mn,mn,mn))
 outcmx.write(cmxphisel.replace('angmn',str(mn))[:-1] + '\n')
 outcmx.write('color phipsisel purple target c\n')
 if cmxchisel[-1] != ':':
-	outcmx.write(cmxchisel.replace('angmn',str(mn))[:-1] + '\n')
-	outcmx.write('color chisel navy target a \n')
-	outcmx.write('show chisel target a\n')
+    outcmx.write(cmxchisel.replace('angmn',str(mn))[:-1] + '\n')
+    outcmx.write('color chisel navy target a \n')
+    outcmx.write('show chisel target a\n')
 if cmxphiviol[-1] != ':':
-	outcmx.write(cmxphiviol.replace('angmn',str(mn))[:-1] + '\n')
-	outcmx.write('color phipsiviol mediumpurple target c \n')
+    outcmx.write(cmxphiviol.replace('angmn',str(mn))[:-1] + '\n')
+    outcmx.write('color phipsiviol mediumpurple target c \n')
 if cmxchiviol[-1] != ':':
-	outcmx.write(cmxchiviol.replace('angmn',str(mn))[:-1] + '\n')
-	outcmx.write('color chiviol cornflower blue target a\n')
-	outcmx.write('show chiviol target a\n')
+    outcmx.write(cmxchiviol.replace('angmn',str(mn))[:-1] + '\n')
+    outcmx.write('color chiviol cornflowerblue target a\n')
+    outcmx.write('show chiviol target a\n')
 outcmx.write('label #{:} text "{{0.label_one_letter_code}}{{0.number}}{{0.insertion_code}}"\n''label ontop false\n'.format(mn))
 outcmx.write('hide #{:}@H*,N,O target a\ncolor  byhetero target a\n'.format(mn))
 outpml.write('hide everything, {:}\n'.format(pdbname))
@@ -797,50 +802,48 @@ outpml.write("hide labels\n")
 
 mn+=1
 outcmx.write('open ../' + in_pdb+ ' maxModels 1\nrename #{:} noes\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(mn,mn,mn))
-#outcmx.write('color name c9 rgb(0,56,71)\ncolor name c8 rgb(0,63,92)\ncolor name c7 rgb(47,75,124)\ncolor name c6 rgb(102,81,145)\ncolor name c5 rgb(160,81,149)\ncolor name c4 rgb(212,80,135)\ncolor name c3 rgb(249,93,106)\ncolor name c2 rgb(255,124,67)\ncolor name c1 rgb(255,166,0)\ncolor name c0 rgb(255,205,0)\n')
-#outpml.write('set_color c9 = [0,56,71]\nset_color c8  = [0,63,92]\nset_color c7  = [47,75,124]\nset_color c6  = [102,81,145]\nset_color c5  = [160,81,149]\nset_color c4  = [212,80,135]\nset_color c3  = [249,93,106]\nset_color c2  = [255,124,67]\nset_color c1  = [255,166,0]\nset_color c0  = [255,205,0]\n')
 outcmx.write('color name c0 rgb(255,205,0)\ncolor name c2 rgb(156,217,59)\ncolor name c4 rgb(52,182,121)\ncolor name c6 rgb(42,117,142)\ncolor name c8 rgb(59,81,139)\ncolor name c10 rgb(20,64,110)\n')
 outpml.write('set_color c0 = [255,205,0]\nset_color c2  = [156,217,59]\nset_color c4  = [52,182,121]\nset_color c6  = [42,117,142]\nset_color c8  = [59,81,139]\nset_color c10  = [20,64,110]\n')
 outpml.write('create noes, {:}_0001\ncolor gray60,phi-psi\nhide sticks, noes\n'.format(pdbname))
 indexs = [val[1:] for val in upldf[(upldf['cya'] == 0)].index.tolist() if val[0] != 'P']
 for x in range(0,len(indexs),50):
-	i = x
-	plmout = 'color c0, noes and resi '
-	cmxout = 'color #{:}:'.format(mn)
-	for j in range(50):
-		plmout = plmout + str(indexs[i]) + '+'
-		cmxout = cmxout + str(indexs[i]) + ','
-		i=i+1
-		if i== len(indexs): break
-	outpml.write(plmout[:-1] + '\n')
-	outcmx.write(cmxout[:-1] + ' c0 target ac\n')
+    i = x
+    plmout = 'color c0, noes and resi '
+    cmxout = 'color #{:}:'.format(mn)
+    for j in range(50):
+        plmout = plmout + str(indexs[i]) + '+'
+        cmxout = cmxout + str(indexs[i]) + ','
+        i=i+1
+        if i== len(indexs): break
+    outpml.write(plmout[:-1] + '\n')
+    outcmx.write(cmxout[:-1] + ' c0 target ac\n')
 for n in range(2,10,2):
 
-	indexs = [val[1:] for val in upldf[(upldf['cya'] == n-1)].index.tolist()]
-	indexs.extend([val[1:] for val in upldf[(upldf['cya'] == n)].index.tolist()])
-	for x in range(0,len(indexs),50):
-		i = x
-		plmout = 'color c{:}, noes and resi '.format(str(n))
-		cmxout = 'color #{:}:'.format(mn)
-		for j in range(50):
-			plmout = plmout + str(indexs[i]) + '+'
-			cmxout = cmxout + str(indexs[i]) + ','
-			i=i+1
-			if i== len(indexs): break
-		outpml.write(plmout[:-1] + '\n')
-		outcmx.write(cmxout[:-1] + ' c{:} target ac\n'.format(str(n)))
+    indexs = [val[1:] for val in upldf[(upldf['cya'] == n-1)].index.tolist()]
+    indexs.extend([val[1:] for val in upldf[(upldf['cya'] == n)].index.tolist()])
+    for x in range(0,len(indexs),50):
+        i = x
+        plmout = 'color c{:}, noes and resi '.format(str(n))
+        cmxout = 'color #{:}:'.format(mn)
+        for j in range(50):
+            plmout = plmout + str(indexs[i]) + '+'
+            cmxout = cmxout + str(indexs[i]) + ','
+            i=i+1
+            if i== len(indexs): break
+        outpml.write(plmout[:-1] + '\n')
+        outcmx.write(cmxout[:-1] + ' c{:} target ac\n'.format(str(n)))
 indexs = [val[1:] for val in upldf[(upldf['cya'] >= 9)].index.tolist()]
 for x in range(0,len(indexs),50):
-	i = x
-	plmout = 'color c10, noes and resi '
-	cmxout = 'color #{:}:'.format(mn)
-	for j in range(50):
-		plmout = plmout + str(indexs[i]) + '+'
-		cmxout = cmxout + str(indexs[i]) + ','
-		i=i+1
-		if i== len(indexs): break
-	outpml.write(plmout[:-1] + '\n')
-	outcmx.write(cmxout[:-1] + ' c10 target ac\n')
+    i = x
+    plmout = 'color c10, noes and resi '
+    cmxout = 'color #{:}:'.format(mn)
+    for j in range(50):
+        plmout = plmout + str(indexs[i]) + '+'
+        cmxout = cmxout + str(indexs[i]) + ','
+        i=i+1
+        if i== len(indexs): break
+    outpml.write(plmout[:-1] + '\n')
+    outcmx.write(cmxout[:-1] + ' c10 target ac\n')
 outcmx.write(sidechains[:-1].replace('#1',"#{:}".format(mn)) + '\n')
 outcmx.write("show #{:}:thr,met,ala,leu,val,ile,phe,tyr\nhide #{:}@H*\ncolor byhetero\n".format(mn,mn))
 outcmx.write('key c0:0 c2:2 c4:4 c6:6 c8:8 c10:10 fontsize 14 colorTreatment distinct numericLabelSpacing equal\nkey size 0.25000,0.03000\n')
