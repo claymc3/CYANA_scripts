@@ -23,7 +23,7 @@ dt_string = now.strftime("%Y-%m-%d %H:%M")
 pdb_columns = ['name', 'resn', 'resid', 'X', 'Y', 'Z','nuc']
 # Read in PDB file one line at a time, if the first four letter ar ATOM or HETA then it will parse the data into the 
 # data frame, using the atome index int he PDB as the row index in the data frame. 
-AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "PTR":'Y', "TPO":"T", "SEP":'S' }
+AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST":"H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "PTR":'Y', "TPO":"T", "SEP":'S' }
 A_dict = {'A': 'ALA', 'C': 'CYS', 'E': 'GLU', 'D': 'ASP', 'G': 'GLY', 'F': 'PHE', 'I': 'ILE', 'H': 'HIS', 'K': 'LYS', 'M': 'MET', 'L': 'LEU', 'N': 'ASN', 'Q': 'GLN', 'P': 'PRO', 'S': 'SER', 'R': 'ARG', 'T': 'THR', 'W': 'TRP', 'V': 'VAL', 'Y': 'TYR' }
 Atoms_dict = {'I':['CD1'], 'L':['CD1','CD2'], 'V':['CG1','CG2'], 'M':['CE'], 'A':['CB'], 'T':['CG2'], 'W':['NE1','HE1'], 'F':['CE1','CE2','HE1','HE2'], 'Y':['CE1','CE2','HE1','HE2']}
 
@@ -173,7 +173,7 @@ aco.write('## Phi/Psi values from TALOS\n')
 phicount, psicount = 0,0 
 for line in dihed_lines:
 	dline = line.split()
-	if dline[-1] in scale.keys():
+	if dline[-1] in ['Strong','Generous']:
 		dphi = float(dline[4])
 		if dphi<10: dphi = 20.0
 		if dphi>35: dphi = 30.0
@@ -189,6 +189,7 @@ for line in dihed_lines:
 		aco.write("{:>5}  {:<4}  PSI  {:8.1f}{:8.1f}\n\n".format(int(dline[0]), num2AAA[dline[0]], float(dline[3])-dpsi, float(dline[3])+dpsi))
 		psicount+= 1
 for line in dihed_lines:
+	dline = line.split()
 	if dline[-1] == 'Dyn':
 		dphi = 30.0
 		dpsi = 30.0
@@ -199,6 +200,8 @@ for line in dihed_lines:
 
 aco.close()
 log.write('Extracted {:} PHI angles and {:} PSI angles form TALOS\n'.format(phicount,psicount))
+
+
 
 #------------------------------------------------------------------------------
 # Prep and inital aco file to dias LEU, ILE, and MET residues to favorable 
@@ -213,7 +216,16 @@ for (res, resn) in num_seq:
 	if res == 'M':
 		aco2.write(' {:>5}  MET   CHI1     45.0    84.0 9.00E-01 type=2\n {:>5}  MET   CHI2    157.0   210.0 9.00E-01 type=2\n {:>5}  MET   CHI1    157.0   208.0 9.00E-01 type=2 OR\n {:>5}  MET   CHI2    150.0   208.0 9.00E-01 type=2\n {:>5}  MET   CHI1    265.0   322.0 9.00E-01 type=2 OR\n {:>5}  MET   CHI2    146.0   212.0 9.00E-01 type=2\n {:>5}  MET   CHI1    266.0   320.0 9.00E-01 type=2 OR\n {:>5}  MET   CHI2    270.0   325.0 9.00E-01 type=2\n {:>5}  MET   CHI1    161.0   208.0 9.00E-01 type=2 OR\n {:>5}  MET   CHI2     42.0    86.0 9.00E-01 type=2\n\n'.format(resn,resn,resn,resn,resn,resn,resn,resn,resn,resn))
 aco2.close()
-
+ssa = open('ssa.cya','w')
+ssa.write("###lock stereospecific assignments based on ProS sample assignments\n\n### Leucines\n\n")
+for (res, resn) in num_seq:
+	if res == 'L':
+		ssa.write('#  atom stereo "QD1  QD2  {:>5}"  #{:}{:}\n'.format(resn,res,resn))
+ssa.write('\n\n### Valines\n\n')
+for (res, resn) in num_seq:
+	if res == 'V':
+		ssa.write('#  atom stereo "QD1  QD2  {:>5}"  #{:}{:}\n'.format(resn,res,resn))
+ssa.close()
 #------------------------------------------------------------------------------
 # Fetch the .peak files and create a list 
 #
@@ -479,8 +491,6 @@ print("Made %3.0f CC upl constraints " % (len(CC_outlines)))
 log.write("Generated  {:} CC upl constraints\n\n".format(len(CC_outlines)))
 upl.close()
 
-ssa = open('ssa.cya','w')
-ssa.close()
 CYANA = open('CALC.cya','w')
 clac_text = '''
 peaks       := {:}      # names of NOESY peak lists
