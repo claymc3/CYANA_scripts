@@ -818,7 +818,6 @@ for x in range(0,len(indexs),50):
     outpml.write(plmout[:-1] + '\n')
     outcmx.write(cmxout[:-1] + ' c0 target ac\n')
 for n in range(2,10,2):
-
     indexs = [val[1:] for val in upldf[(upldf['cya'] == n-1)].index.tolist()]
     indexs.extend([val[1:] for val in upldf[(upldf['cya'] == n)].index.tolist()])
     for x in range(0,len(indexs),50):
