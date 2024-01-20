@@ -91,64 +91,6 @@ def getDistance(donor, acceptor,PDBdict):
   else: reff = 0.0
   return reff
 
-def postCNS(in_pdb, noetbl):
-
-  num2seq = {}
-  pdb_name = in_pdb.split('/')[-1].replace('.pdb','')
-  Starts,Ends = [], []
-  for mnum in range(1,21,1):
-    start = open(in_pdb).readlines().index('MODEL' + '%9s\n' %str(mnum))
-    exec('Coor' + str(mnum) + ' = {}')
-    Starts.append(start)
-    Ends.append(start-1)
-  Ends.append(len(open(in_pdb).readlines()))
-  Ends = Ends[1:]
-  pdb = open(in_pdb).readlines()
-  n = 0
-  for (start,end) in zip(Starts,Ends):
-    n+=1
-    # print('Reading coordinates for model {:d}'.format(n))
-    Coor = eval('Coor' + str(n))
-    for x in range(start,end,1):
-      line = pdb[x]
-      if line[0:4] == "ATOM" or line[0:4] == 'HETA':
-        if line[17:20].strip() in AAA_dict.keys():
-          index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
-          Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
-          num2seq[line[22:26].strip()] = "{:}{:}".format(AAA_dict[line[17:20].strip()],line[22:26].strip())
-  # assign (resid 632 and name HG2*)  (resid 642 and name HD1*)  3.350  1.550  1.459   ! target: 3.350  lower: 1.800  upper: 4.809
-  DistancesDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
-  count = 0.0
-  for noe in noetbl:
-    noe = noe.replace('HN)','H').replace('HN ','H ').replace('HB1','HB3')
-    if re.search("\\*",noe):
-      noe = noe.replace('H','Q')
-    noe = noe.replace('(','').replace(')','').replace('*','')
-    dmin = '{:1.3f}'.format(float(noe.split()[11]) - float(noe.split()[12]))
-    dmax = '{:1.3f}'.format(float(noe.split()[11]) + float(noe.split()[13]))
-    inatom1 = '{:}-{:}'.format(num2seq[noe.split()[2]],noe.split()[5])
-    inatom2 = '{:}-{:}'.format(num2seq[noe.split()[7]],noe.split()[10])
-    pos = '{:}-{:}'.format(inatom1,inatom2)
-    Coord = eval('Coor1')
-    atom1 = find_protons(inatom1, Coord)
-    atom2 = find_protons(inatom2, Coord)
-    dist = []
-    for mnum in range(1,21,1):
-      Coor = eval('Coor' + str(mnum))
-      d = getDistance(atom1, atom2, Coor)
-      if np.round(d - float(dmax),3) >= 0.100:
-        DistancesDF.loc[pos,mnum] = np.round(d - float(dmax),2)
-        dist.append(np.round(d - float(dmax),2))
-        count+=1
-      if np.round(float(dmin) - d,3) >= 0.100:
-        count+=1
-        DistancesDF.loc[pos,mnum] = np.round(d - float(dmin),2)
-    if len(dist) > 5:
-      print(dist)
-      print(inatom1,inatom2)
-  DistancesDF.to_csv('post_CNS_analysis/' + pdb_name + '_distance_viol_CNS.csv')
-  return DistancesDF
-
 def examin(in_pdb, ADpairs,Assignments):
   pdb_name = in_pdb.split('/')[-1].replace('.pdb','')
   num2seq = {}
