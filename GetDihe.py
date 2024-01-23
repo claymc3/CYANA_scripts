@@ -163,7 +163,7 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext, pdict,ypos,plotdict,
   aa_type = PhiDF.loc[res,'type']
   outline = "   "
   outcount = 0
-  DArama = "{:>6s} chi1/chi2 ".format(res)
+  DArama = "{:>6s} phi/psi ".format(res)
   for mnum in range(1,21,1):
     if RAMA_PREF_VALUES[aa_type][int(PsiDF.loc[res,mnum])+ 180][int(PhiDF.loc[res,mnum]) + 180] < RAMA_PREFERENCES[aa_type]["bounds"][1]:
       outliers["phi"].append(PhiDF.loc[res,mnum])
@@ -174,6 +174,7 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext, pdict,ypos,plotdict,
     else:
       normals["phi"].append(PhiDF.loc[res,mnum])
       normals["psi"].append(PsiDF.loc[res,mnum])
+      DArama = DArama + '   '
   DArama = DArama + '\n'
   if outcount < 5: DArama = ''
   if outcount != 0:
@@ -262,6 +263,7 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, pdict, ypos,plo
     else:
       normals["chi1"].append(chi1DF.loc[res,mnum])
       normals["chi2"].append(chi2DF.loc[res,mnum])
+      DArota = DArota + '   '
   DArota = DArota + '\n'
   if outcount < 5: DArota = ''
   if outcount != 0:
