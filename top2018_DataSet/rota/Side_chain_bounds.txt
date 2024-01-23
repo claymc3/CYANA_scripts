@@ -1,0 +1,204 @@
+Leucine LEU L
+LEU   CHI1    155.0   212.0
+LEU   CHI2     40.0    88.0
+
+LEU   CHI1    264.0   324.0
+LEU   CHI2    143.0   205.0
+
+Arginine ARG  R
+ARG   CHI1     37.0    91.0
+ARG   CHI2    145.0   215.0
+
+ARG   CHI1    151.0   220.0
+ARG   CHI2    138.0   226.0
+
+ARG   CHI1    258.0   323.0
+ARG   CHI2    138.0   235.0
+
+ARG   CHI1    267.0   325.0
+ARG   CHI2    250.0   325.0
+
+ARG   CHI1    155.0   210.0
+ARG   CHI2     41.0    99.0
+
+Asparagine ASN  N
+ASN   CHI1     42.0    83.0
+ASN   CHI2     0.0    105.0
+
+ASN   CHI1     42.0    83.0
+ASN   CHI2    263.0   359.0
+
+ASN   CHI1    161.0   223.0
+ASN   CHI2      0.0    95.0
+
+ASN   CHI1    161.0   223.0
+ASN   CHI2    200.0   359.0
+
+ASN   CHI1    262.0   323.0
+ASN   CHI2      0.0   190.0
+
+ASN   CHI1    262.0   323.0
+ASN   CHI2    243.0   359.0
+
+Glutamine GLN  Q
+GLN   CHI1     40.0    87.0
+GLN   CHI2    152.0   212.0
+
+GLN   CHI1    155.0   215.0
+GLN   CHI2    141.0   216.0
+
+GLN   CHI1    261.0   323.0
+GLN   CHI2    138.0   223.0
+
+GLN   CHI1    265.0   323.0
+GLN   CHI2    255.0   338.0
+
+GLN   CHI1    265.0   310.0
+GLN   CHI2     65.0   100.0
+
+GLN   CHI1    154.0   211.0
+GLN   CHI2     40.0    96.0
+
+Glutamic Acid GLU  E
+GLU   CHI1     41.0    88.0
+GLU   CHI2    153.0   211.0
+
+GLU   CHI1    153.0   215.0
+GLU   CHI2    141.0   215.0
+
+GLU   CHI1    260.0   322.0
+GLU   CHI2    141.0   226.0
+
+GLU   CHI1    266.0   322.0
+GLU   CHI2    259.0   324.0
+
+GLU   CHI1    266.0   322.0
+GLU   CHI2     57.0   107.0
+
+GLU   CHI1    154.0   212.0
+GLU   CHI2     38.0    96.0
+
+Histadine HIS  H
+HIS   CHI1     36.0    95.0
+HIS   CHI2    229.0   323.0
+
+HIS   CHI1     36.0    95.0
+HIS   CHI2     49.0   126.0
+
+HIS   CHI1    150.0   214.0
+HIS   CHI2     14.0   325.0
+
+HIS   CHI1    260.0   330.0
+HIS   CHI2     33.0   359.0
+
+Isoleucine ILE  I
+ILE   CHI1     40.0    80.0
+ILE   CHI21   145.0   195.0
+
+ILE   CHI1    168.0   212.0
+ILE   CHI21   145.0   185.0
+
+ILE   CHI1    275.0   325.0
+ILE   CHI21   138.0   198.0
+
+ILE   CHI1    278.0   325.0
+ILE   CHI21   274.0   322.0
+
+ILE   CHI1    172.0   210.0
+ILE   CHI21    48.0    82.0
+
+Lysine LYS  K
+LYS   CHI1     42.0    88.0
+LYS   CHI2    154.0   210.0
+
+LYS   CHI1    153.0   215.0
+LYS   CHI2    139.0   215.0
+
+LYS   CHI1    261.0   321.0
+LYS   CHI2    139.0   225.0
+
+LYS   CHI1    269.0   325.0
+LYS   CHI2    253.0   325.0
+
+LYS   CHI1    156.0   205.0
+LYS   CHI2     41.0    96.0
+
+Methionine MET   M
+MET   CHI1     45.0    84.0
+MET   CHI2    157.0   210.0
+
+MET   CHI1    157.0   208.0
+MET   CHI2    150.0   208.0
+
+MET   CHI1    265.0   322.0
+MET   CHI2    146.0   212.0
+
+MET   CHI1    266.0   320.0
+MET   CHI2    270.0   325.0
+
+MET   CHI1    161.0   208.0
+MET   CHI2     42.0    86.0
+
+Tryptophan TRP  W 
+TRP   CHI1     31.0    90.0
+TRP   CHI2     59.0   113.0
+
+TRP   CHI1     31.0    90.0
+TRP   CHI2    244.0   315.0
+
+TRP   CHI1    151.0   212.0
+TRP   CHI2      0.0   110.0
+
+TRP   CHI1    151.0   212.0
+TRP   CHI2    216.0   360.0
+
+TRP   CHI1    255.0   325.0
+TRP   CHI2      0.0   142.0
+
+TRP   CHI1    255.0   325.0
+TRP   CHI2    246.0   360.0
+
+Phenylalanine PHE F
+PHE   CHI1     35.0    90.0
+PHE   CHI2     63.0   117.0
+
+PHE   CHI1     35.0    90.0
+PHE   CHI2    243.0   295.0
+
+PHE   CHI1    149.0   212.0
+PHE   CHI2     20.0   120.0
+
+PHE   CHI1    149.0   212.0
+PHE   CHI2    180.0   300.0
+
+PHE   CHI1    261.0   320.0
+PHE   CHI2     60.0   180.0
+
+PHE   CHI1    261.0   320.0
+PHE   CHI2    240.0   358.0
+
+Tyrosine TYR Y
+TYR   CHI1     35.0    90.0
+TYR   CHI2     63.0   117.0
+
+TYR   CHI1     35.0    90.0
+TYR   CHI2    243.0   295.0
+
+TYR   CHI1    149.0   212.0
+TYR   CHI2     20.0   120.0
+
+TYR   CHI1    149.0   212.0
+TYR   CHI2    180.0   300.0
+
+TYR   CHI1    261.0   320.0
+TYR   CHI2     60.0   180.0
+
+TYR   CHI1    261.0   320.0
+TYR   CHI2    240.0   358.0
+
+Aspartate ASP D
+ASP   CHI1     41.0    86.0
+
+ASP   CHI1    160.0   220.0
+
+ASP   CHI1    260.0   318.0
