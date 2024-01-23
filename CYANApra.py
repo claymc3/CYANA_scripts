@@ -14,7 +14,7 @@ now = datetime.now()
 # dd/mm/YY H:M:S
 dt_string = now.strftime("%Y-%m-%d %H:%M")
 
-Vnum = '2.3'
+Vnum = '2.4'
 replacements ={
 'ALAHA':'CA','ALAQB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'CB','CYSHA':'CA','CYSHB2':'CB','CYSHB3':'CB','CYSQB':'CB','CYSSHA':'CA','CYSSHB2':'CB','CYSSHB3':'CB','CYSSQB':'CB','ASPHA':'CA','ASPHB2':'CB','ASPHB3':'CB','ASPQB':'CB','GLUHA':'CA','GLUHB2':'CB','GLUHB3':'CB','GLUQB':'CB','GLUHG2':'CG','GLUHG3':'CG','GLUQG':'CG','PHEHA':'CA','PHEHB2':'CB','PHEHB3':'CB','PHEQB':'CB','PHEQD':'CD1,CD2','PHEQE':'CE1,CE2','PHEHD1':'CD1','PHEHE1':'CE1','PHEHZ':'CZ','PHEHE2':'CE2','PHEHD2':'CD2','GLYHA2':'CA','GLYHA3':'CA','GLYQA':'CA','HISHA':'CA','HISHB2':'CB','HISHB3':'CB','HISQB':'CB','HISHD1':'ND1','HISHE2':'NE2','HISHD2':'CD2','HISHE1':'CE1','HISTHA':'CA','HISTHB2':'CB','HISTHB3':'CB','HISTQB':'CB','HISTHD1':'ND1','HISTHE2':'NE2','HISTHD2':'CD2','HISTHE1':'CE1','HIS+HA':'CA','HIS+HB2':'CB','HIS+HB3':'CB','HIS+QB':'CB','HIS+HD1':'ND1','HIS+HE2':'NE2','HIS+HD2':'CD2','HIS+HE1':'CE1','ILEHA':'CA','ILEHB':'CB','ILEQG2':'CG2','ILEHG21':'CG2','ILEHG22':'CG2','ILEHG23':'CG2','ILEHG12':'CG1','ILEHG13':'CG1','ILEQG1':'CG1','ILEQD1':'CD1','ILEHD11':'CD1','ILEHD12':'CD1','ILEHD13':'CD1','LYSHA':'CA','LYSHB2':'CB','LYSHB3':'CB','LYSQB':'CB','LYSHG2':'CG','LYSHG3':'CG','LYSHD2':'CD ','LYSHD3':'CD ','LYSQD':'CD ','LYSHE2':'CE','LYSHE3':'CE','LYSQE':'CE','LYSHZ1':'NZ','LYSHZ2':'NZ','LYSHZ3':'NZ','LYSQZ':'NZ','LEUHA':'CA','LEUHB2':'CB','LEUHB3':'CB','LEUQB':'CB','LEUHG':'CG','LEUHD11':'CD1','LEUHD12':'CD1','LEUHD13':'CD1','LEUQD1':'CD1','LEUHD21':'CD2','LEUHD22':'CD2','LEUHD23':'CD2','LEUQD2':'CD2','LEUQQD':'CD2,CD1','METHA':'CA','METHB2':'CB','METHB3':'CB','METQB':'CB','METHG2':'CG','METHG3':'CG','METQG':'CG','METQE':'CE','METHE1':'CE','METHE2':'CE','METHE3':'CE','ASNHA':'CA','ASNHB2':'CB','ASNHB3':'CB','ASNQB':'CB','ASNHD21':'ND2','ASNHD22':'ND2','ASNQD2':'ND2','PROHA':'CA','PROHB2':'CB','PROHB3':'CB','PROQB':'CB','PROHG2':'CG','PROHG3':'CG','PROQG':'CG','PROHD2':'CD','PROHD3':'CD','PROQD':'CD','CPROHA':'CA','CPROHB2':'CB','CPROHB3':'CB','CPROQB':'CB','CPROHG2':'CG','CPROHG3':'CG','CPROQG':'CG','CPROHD2':'CD','CPROHD3':'CD','CPROQD':'CD','GLNHA':'CA','GLNHB2':'CB','GLNHB3':'CB','GLNQB':'CB','GLNHG2':'CG','GLNHG3':'CG','GLNQG':'CG','GLNHE21':'NE2','GLNHE22':'NE2','GLNQE2':'NE2','ARGHA':'CA','ARGHB2':'CB','ARGHB3':'CB','ARGQB':'CB','ARGHG2':'CG','ARGHG3':'CG','ARGQG':'CG','ARGHD2':'CD','ARGHD3':'CD','ARGQD':'CD','ARGHE':'NE','ARGHH11':'NH1','ARGHH12':'NH1','ARGQH1':'NH1','ARGHH21':'NH2','ARGHH22':'NH2','ARGQH2':'NH2','SERHA':'CA','SERHB2':'CB','SERHB3':'CB','SERHG':'OG','SEPHA':'CA','SEPHB2':'CB','SEPHB3':'CB','SEPHG':'OG','THRHA':'CA','THRHB':'CB','THRHG1':'OG1','THRHG21':'CG2','THRHG22':'CG2','THRHG23':'CG2','THRQG2':'CG2','TPOHA':'CA','TPOHB':'CB','TPOHG1':'OG1','TPOHG21':'CG2','TPOHG22':'CG2','TPOHG23':'CG2','TPOQG2':'CG2','VALHA':'CA','VALHB':'CB','VALHG11':'CG1','VALHG12':'CG1','VALHG13':'CG1','VALQG1':'CG1','VALHG21':'CG2','VALHG22':'CG2','VALHG23':'CG2','VALQG2':'CG2','VALQQG':'CG1,CG2','TRPHA':'CA','TRPHB2':'CB','TRPHB3':'CB','TRPQB':'CB','TRPHD1':'CD1','TRPHE3':'CE3','TRPHE1':'NE1','TRPHZ3':'CZ3','TRPHZ2':'CZ2','TRPHH2':'CH2','TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRQD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH','PTRHA':'CA','PTRHB2':'CB','PTRHB3':'CB','PTRQB':'CB','PTRQD':'CD1,CD2','PTRQE':'CE1,CE2','PTRHD1':'CD1','PTRHE1':'CE1','PTRHE2':'CE2','PTRHD2':'CD2','PTRHH':'OH'}
 #'ALAH':'N','CYSH':'N','ASPH':'N','GLUH':'N','PHEH':'N','GLYH':'N','HISH':'N','ILEH':'N','LYSH':'N','LEUH':'N','METH':'N','ASNH':'N','GLNH':'N','ARGH':'N','SERH':'N','THRH':'N','VALH':'N','TRPH':'N','TYRH':'N',
@@ -72,7 +72,7 @@ fupl = sys.argv[2]
 pdbname = in_pdb.split('/')[-1].split('.')[0]
 fovw = fupl.replace('.upl','.ovw')
 calc = cwd + 'CALC.cya'
-outname = fupl.split('.')[0]
+outname = in_pdb.split('.')[0]
 init = cwd + 'init.cya'
 seq = [line.strip().split() for line in open(cwd + open(init).readlines()[0].strip().split(':=')[-1] + '.seq').readlines() if '#' != line[0] and line.split()[0] in AAA_dict.keys()]
 Seqdict = {}
@@ -106,10 +106,6 @@ pad = ''
 for x in range(max(lengths)):
   pad = pad + ' '
 
-shortsum = open(outdir + 'Short_stats.txt','w')
-checkcons.write('## Generated using CYANApra_{:} on {:} \n'.format(Vnum,dt_string))
-shortsum.write('## Generated using CYANApra_{:} on {:} \n'.format(Vnum,dt_string))
-checkcons.write('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl    %\n'.format(pad,pad))
 manualcons = [line.strip() for line in open(calc).readlines() if line.strip() and '.upl' in line][0].split()[2].split(',')
 upls = [con for con in manualcons if 'upl' in con and 'hbond' not in con]
 hbonds = [con for con in manualcons if 'upl' in con and 'hbond' in con]
@@ -117,10 +113,18 @@ lols = [con for con in manualcons if 'lol' in con and 'hbond' not in con]
 dihed = [con for con in manualcons if 'aco' in con if con != 'inital.aco']
 noa = cwd + 'cycle7.noa'
 noalines = open(noa).readlines()
-print('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl    %'.format(pad,pad))
-shortsum.write('{:} #peaks  % Assignment\n'.format(pad))
+
+shortsum = open(outdir + 'Short_stats.txt','w')
+checkcons.write('## Generated using CYANApra_{:} on {:} \n'.format(Vnum,dt_string))
+shortsum.write('## Generated using CYANApra_{:} on {:} \n'.format(Vnum,dt_string))
+peaklisttxt = '{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl    %\n'.format(pad,pad)
+#checkcons.write('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl    %\n'.format(pad,pad))
+#print('{:}                                         Assignments \n{:}#peaks   upl  Viol Unique  Multiple  Unused  None  Diagonal Increased upl    %'.format(pad,pad))
+shortsumtext = '{:} #peaks  % Assignment\n'.format(pad)
+
+## ---------------------------------------------------------------------------
 ## Open Summary file and check the peak list files, upl, and ovw to determine the number of assignments and violations and write out the summary file 
-## Creating the pseudobond files and group strings for rendering the constraints in chimera/pymol
+
 tpeak,tsingle,tamb,tnotused,tnota,tdia,tincr,tupl,tviol  = 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 for x in range(len(cya_plists)):
@@ -155,16 +159,15 @@ for x in range(len(cya_plists)):
         dia+=1
         tdia+=1
   linepad = pad[len(plist):]
-  checkcons.write("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%\n".format(plist,linepad,peak,len(upl),len(viol), single,amb,notused,nota,dia,incr, 100*((single+amb+dia)/peak)))
-  shortsum.write("{:<}{:} {:^6d}   {:^3.1f}% ({:})\n".format(plist,linepad,peak,100*((single+amb+dia)/peak),(single+amb+dia)))
-  print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%".format(plist,linepad, peak,len(upl),len(viol),single,amb,notused,nota,dia,incr, 100*((single+amb+dia)/peak)))
-checkcons.write("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%\n".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr,100*((tsingle+ tamb+ tdia)/tpeak)))
-shortsum.write("{:<}{:} {:^6d}   {:^3.1f}% ({:})\n\n".format('Total',pad[5:],tpeak,100*((tsingle+ tamb+ tdia)/tpeak),(tsingle+ tamb+ tdia)))
-print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr, 100*((tsingle+ tamb+ tdia)/tpeak)))
-checkcons.write('\n\n')
-
-
-
+  peaklisttxt = peaklisttxt + "{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%\n".format(plist,linepad,peak,len(upl),len(viol), single,amb,notused,nota,dia,incr, 100*((single+amb+dia)/peak))
+  shortsumtext = shortsumtext + "{:<}{:} {:^6d}   {:^3.1f}% ({:})\n".format(plist,linepad,peak,100*((single+amb+dia)/peak),(single+amb+dia))
+  # print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%".format(plist,linepad, peak,len(upl),len(viol),single,amb,notused,nota,dia,incr, 100*((single+amb+dia)/peak)))
+peaklisttxt = peaklisttxt + "{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%\n".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr,100*((tsingle+ tamb+ tdia)/tpeak))
+shortsumtext = shortsumtext + "{:<}{:} {:^6d}   {:^3.1f}% ({:})\n\n".format('Total',pad[5:],tpeak,100*((tsingle+ tamb+ tdia)/tpeak),(tsingle+ tamb+ tdia))
+#print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr, 100*((tsingle+ tamb+ tdia)/tpeak)))
+print(peaklisttxt)
+checkcons.write(peaklisttxt +'\n\n')
+shortsum.write(shortsumtext)
 
 outpml = open(outdir + fupl.replace('.upl','_pra.pml'),'w')
 outpml.write('load ./' + in_pdb+'\n')
@@ -186,7 +189,9 @@ outcmx.write('show #1:thr,met,ala,leu,val,ile,phe,tyr\nname meyfside #1:thr,met,
 outcmx.write('label #1.1 text "{0.label_one_letter_code}{0.number}{0.insertion_code}"\n''label ontop false\n')
 outcmx.write('ui tool show "Side View"\n#ui mousemode right distance\n')
 
-### Make pseudo bond and gorup statements for poor, long, and short upl entries from designated upl file 
+## ---------------------------------------------------------------------------
+## Creating the pseudobond files and group strings for rendering the constraints in chimera/pymol
+## Make pseudo bond and gorup statements for poor, long, and short upl entries from designated upl file 
 for conect in ConectionTypes:
   exec("{:}_pb = []".format(conect))
   exec("group{:} = 'group {:}, '".format(conect, conect))
@@ -202,14 +207,14 @@ uviolpbout = open(outdir +'pseudobonds/' + outname + '_viol_upls.pb','w')
 uviolpbout.write("; halfbond = false\n; color = hotpink\n; radius = 0.1\n; dashes = 0\n")
 finalupls = [["###Violated Restraints\n"],["###Poor/Low Support\n"],["###Long Distance Restraints (d >= 6.0)\n"],["###Short Distance Restraints (d <= 3.0)\n"],["###Good Restraints\n"]]
 
-cmxphisel, cmxchisel, cmxphiviol, cmxchiviol = 'name phipsisel #angmn:', 'name chisel #angmn:', 'name phipsiviol #angmn:', 'name chiviol #angmn:'
-pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'phipsi and resi ','chi and resi ', 'phipsi and resi ', 'chi and resi '
+# cmxphisel, cmxchisel, cmxphiviol, cmxchiviol = 'name phipsisel #angmn:', 'name chisel #angmn:', 'name phipsiviol #angmn:', 'name chiviol #angmn:'
+# pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'phipsi and resi ','chi and resi ', 'phipsi and resi ', 'chi and resi '
 
 ### Go through the final overview file and extract information about violated distance and angle restraints 
 Filtered = []
 violdict, Upperdict, Lowerdict, dihedviol = {}, {}, {}, {}
 viol_upls= 'group viol_upl, '
-phiviol, chiviol,violpeaks,diheviols =  [], [], [], []
+phiviol,chiviol,violpeaks,diheviols =  [], [], [], []
 v = 0
 vphicount, vpsicount,vchi1count,vchi2count, vothercount = 0,0,0,0,0
 hbondline = ''
@@ -755,7 +760,7 @@ for con in diffcons2:
     checkcons.write('\n')
 #### Write out Long Distance constraints to the summary file
 longcons2 = sorted(longcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
-checkcons.write('### {:3.0f} Long Distance Restraints d >= 6.0 ###\n'.format(len(longcons2)))
+checkcons.write('### {:3.0f} Long Distance Restraints d >= 6.0\u00C5 ###\n'.format(len(longcons2)))
 for con in longcons2:
   if con in assigndict.keys():
     checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
@@ -763,7 +768,7 @@ for con in longcons2:
     checkcons.write('\n')
 checkcons.write('\n\n')
 #### Write out Short Distance constraints to the summary file
-checkcons.write('### {:3.0f} Short Distance Restraints d <= 3.0 ###\n'.format(len(shortcons2)))
+checkcons.write('### {:3.0f} Short Distance Restraints d <= 3.0\u00C5 ###\n'.format(len(shortcons2)))
 shortcons2 = sorted(shortcons2, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 for con in shortcons2:
   if con in assigndict.keys():
@@ -771,17 +776,21 @@ for con in shortcons2:
     checkcons.writelines(assigndict[con])
     checkcons.write('\n')
 checkcons.write('\n\n')
+#### Write out Violated Dihedral Restraints to the summary file
+checkcons.write('### {:3.0f} Violated Dihedral Restraints ###\n'.format(len(diheviols)))
+diheviols = sorted(diheviols, key = lambda x: (x.split()[0][1:], x.split()[1]))
+for con in diheviols:
+  checkcons.writelines(con)
+checkcons.write('\n\n')
 #### Write out Residues with Disallowed Phi/Psi to the summary file
 checkcons.write('### {:3.0f} Disallowed Phi/Psi Dihedral Restraints ###\n'.format(len(DAramalist)))
 for con in DAramalist:
   checkcons.writelines(con)
-  checkcons.write('\n')
 checkcons.write('\n\n')
 #### Write out Residues with Disallowed Chi1/Chi2 to the summary file
 checkcons.write('### {:3.0f} Disallowed Chi1/Chi2 Dihedral ###\n'.format(len(DArotalist)))
 for con in DArotalist:
   checkcons.writelines(con)
-  checkcons.write('\n')
 checkcons.write('\n\n')
 checkcons.close()
 
