@@ -384,24 +384,22 @@ shortsum.write(angle_text)
 ## ---------------------------------------------------------------------------
 ## Run the GetDihed.py to determine phi, psi, chi1 and chi2 and plot them
 ## for all 20 structures
+## ---------------------------------------------------------------------------
 text = [['UPL','#9acd32'],['Violated UPL < 0.3\u00C5','#ffa500'],['Violated UPL > 0.3\u00C5','#db7093']]
 print('Extracting dihedrals')
 DAramalist, DArotalist = Dihed.extract(in_pdb, ASequence, outdir, upldf, phipsidict, chidict, plotdict,dihedviol,text)
 print('finished plotting dihedrals')
 armn = mn+1
-print('phi psi modle #{:}'.format(armn))
 routmn = mn+2
-print('phi psi modle #{:}'.format(routmn))
 mn+=2
-print('curent model #{:}'.format(mn))
 outcmx.write('open ../CNS/refinedPDB/{:} maxModels 1\nrename #{:} angle_restraints\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(in_pdb,armn,armn,armn))
 outcmx.write('open ../CNS/refinedPDB/{:} maxModels 1\nrename #{:} rama_outliers\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(in_pdb,routmn,routmn,routmn))
 ramalist, rotalist = [],[]
 for line in DAramalist:ramalist.append(line.split()[0][1:])
 for line in DArotalist:rotalist.append(line.split()[0][1:])
-anglesout = [[phiaco, "phipsi","mediumpurple",armn], [chiaco,"chi1chi2","cornflowerblue",armn], 
-[phiviol,"viol_phipsi","purple",armn], [chiviol,"chi1chi2","navy",armn],
-[ramalist,"dissallowed_phipsi","mediumvioletred",routmn], [rotalist,"dissallowed_chi1chi2","medium violet red",routmn]]
+anglesout = [[phiaco, "phipsi","purple",armn], [chiaco,"chi1chi2","navy",armn], 
+[phiviol,"viol_phipsi","mediumpurple",armn], [chiviol,"chi1chi2","cornflowerblue",armn],
+[ramalist,"dissallowed_phipsi","mediumvioletred",routmn], [rotalist,"dissallowed_chi1chi2","mediumvioletred",routmn]]
 for listn, aname, color, modle in anglesout:
   outpml.write('create {:}, {:}_0001\ncolor gray60,{:}\nhide sticks, {:}\n'.format(aname,pdbname,aname,aname))
   rline = ""
@@ -415,6 +413,7 @@ for listn, aname, color, modle in anglesout:
     if 'chi' in aname:
       outcmx.write("name {:} #{:}:{:}\nshow {:} target a\ncolor {:} {:} target a\nhide #{:}@H*,N,O target a\ncolor byhetero target a\n".format(aname,modle,rline,aname,aname,color,modle))
       outpml.write("create {:}, {:}_0001\ncolor gray60,{:}\nhide sticks, {:}\nshow sticks, {:} and resn {:}\ncolor {:}, {:} and resn {:}".format(aname,pdbname,aname,aname,aname,rline.replace(',','+'),color,aname,rline.replace(',','+')))
+
 ## ---------------------------------------------------------------------------
 ## Write things out the the summary file
 ## ---------------------------------------------------------------------------
@@ -471,7 +470,7 @@ checkcons.close()
 #     if line.split()[0] == 'Average':
 #       shortsum.write(line.strip()[8:52] + '\n')
 # shortsum.close()
-
+## ---------------------------------------------------------------------------
 ### Creating Model coloring residues based on the number of NOE restraints 
 mn+=1
 outcmx.write('open ../CNS/refinedPDB/{:}_cya.pdb maxModels 1\nrename #{:} noes\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(name,mn,mn,mn))
