@@ -82,7 +82,7 @@ for resn,resi in seq:
     Seqdict[resi] = AAA_dict[resn] + resi
     ASequence.append(AAA_dict[resn] + resi)
     Sequence.append(resi)
-upldf = pd.DataFrame(index = ASequence, columns=['cya','long','viol','input','viol input','vdihed'])
+upldf = pd.DataFrame(index = ASequence, columns=['cya','long','viol','input','found input','viol input'])
 upldf['cya'] = np.zeros(len(Sequence))
 upldf['long'] = np.zeros(len(Sequence))
 upldf['viol'] = np.zeros(len(Sequence))
@@ -175,6 +175,8 @@ outpml.write('show sticks, {:} and resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\n hide s
 outpml.write('color paleturquoise, {:} and resn ILE\ncolor lightsalmon, {:} and resn LEU\ncolor khaki, {:} and resn VAL\ncolor yellowgreen, {:} and resn ALA\ncolor thistle, {:} and resn MET\ncolor aquamarine, {:} and resn THR\ncolor lightpink, {:} and resn TYR\ncolor plum, {:} and resn PHE\n'.format(pdbname,pdbname,pdbname,pdbname,pdbname,pdbname,pdbname,pdbname))
 outpml.write('color gold, elem S\ncolor red, elem O\ncolor blue, elem N\n')
 outpml.write('split_states ' + pdbname + '\n')
+for y in range(2,21,1):
+  outpml.write('align {:}_{:04d}, {:}_0001\n'.format(pdbname,y, pdbname))
 outcmx = open(outdir + fupl.replace('.upl','_pra.cxc'),'w')
 outcmx.write('open ../'+ in_pdb+'\n')
 outcmx.write('color #1 gray(150)\n')
@@ -207,10 +209,9 @@ pmlphisel, pmlchisel, pmlphiviol, pmlchiviol = 'phipsi and resi ','chi and resi 
 Filtered = []
 violdict, Upperdict, Lowerdict, dihedviol = {}, {}, {}, {}
 viol_upls= 'group viol_upl, '
-
+phiviol, chiviol,violpeaks,diheviols =  [], [], [], []
 v = 0
 vphicount, vpsicount,vchi1count,vchi2count, vothercount = 0,0,0,0,0
-phiv, chiv, violpeaks = [], [], []
 hbondline = ''
 for line in open(fovw).readlines():
   if line[4:9] == 'Upper' or line[4:9] == 'Lower':
@@ -258,21 +259,22 @@ for line in open(fovw).readlines():
   if line[4:9] == 'Angle':
     dang = line.split()
     dihedviol[AAA_dict[dang[2]] + dang[3] + dang[1].replace('CHI21','CHI2')] = r'$\{:}$ viol in {:} by {:}'.format(dang[1].lower(), dang[6], dang[7])
+    diheviols.append(r'$\{:}$ viol in {:} by {:}'.format(dang[1].lower(), dang[6], dang[7]))
     angle = dang[1].replace('CHI21','CHI2')
     try:
       exec('v{:}count = v{:}count + 1'.format(angle.lower(),angle.lower()))
     except NameError:
       vothercount+=1
     if dang[1] == 'PHI' or dang[1] == 'PSI':
-      if dang[3] not in phiv:
-        phiv.append(dang[3])
-        cmxphiviol = cmxphiviol + dang[3] + ','
-        pmlphiviol = pmlphiviol + dang[3] + '+'
+      if dang[3] not in phiviol:
+        phiviol.append(dang[3])
+        # cmxphiviol = cmxphiviol + dang[3] + ','
+        # pmlphiviol = pmlphiviol + dang[3] + '+'
     if 'CHI' in dang[1]:
-      if dang[3] not in chiv:
-        chiv.append(dang[3])
-        cmxchiviol = cmxchiviol + dang[3] + ','
-        pmlchiviol = pmlchiviol + dang[3] + '+'
+      if dang[3] not in chiviol:
+        chiviol.append(dang[3])
+        # cmxchiviol = cmxchiviol + dang[3] + ','
+        # pmlchiviol = pmlchiviol + dang[3] + '+'
   if 'Hydrogen bonds in 6' in line:
     hbondline = line
 
@@ -646,11 +648,11 @@ for lolfile in lols:
   fout = open(outdir + lolfile,'w')
   fout.writelines(newlines)
   fout.close()
+print('finished finding upls')
 checkcons.write('\n\n')
-
+phiaco, chiaco = [], []
 phicount, psicount,chi1count,chi2count, othercount, total = 0,0,0,0,0,0
 phipsidict,chidict,plotdict = {}, {}, {}
-phir, chir = [],[]
 for aco in dihed:
   for line in open(aco):
     if line.split():
@@ -666,16 +668,16 @@ for aco in dihed:
           othercount+=1
         if 'P' in ang[2]:
           angdict = phipsidict
-          if ang[0] not in phir:
-            phir.append(ang[0])
-            cmxphisel = cmxphisel + ang[0] + ','
-            pmlphisel = pmlphisel + ang[0] + '+'
+          if ang[0] not in phiaco:
+            phiaco.append(ang[0])
+            # cmxphisel = cmxphisel + ang[0] + ','
+            # pmlphisel = pmlphisel + ang[0] + '+'
         if 'CHI' in ang[2]:
           angdict = chidict
-          if ang[0] not in chir:
-            chir.append(ang[0])
-            cmxchisel = cmxchisel + ang[0] + ','
-            pmlchisel = pmlchisel  + ang[0] + '+'
+          if ang[0] not in chiaco:
+            chiaco.append(ang[0])
+            # cmxchisel = cmxchisel + ang[0] + ','
+            # pmlchisel = pmlchisel  + ang[0] + '+'
         outline = r"$\{:}$  {:} - {:}".format(angle.lower(), ang[3],ang[4])
         plotdict[AAA_dict[ang[1]] + ang[0] + angle] = [float(ang[3]), float(ang[4])]
         if AAA_dict[ang[1]] + ang[0] not in angdict.keys():
@@ -685,16 +687,46 @@ for aco in dihed:
 
 angle_text = "Total of {:} dihedral restraints:\n       input viol\n{:<6} {:^5} {:^4}\n{:<6} {:^5} {:^4}\n{:<6} {:^5} {:^4}\n{:<6} {:^5} {:^4}\n\n".format(total, 'Phi', phicount, vphicount, 'Psi', psicount, vpsicount , 'Chi1', chi1count ,vchi1count, 'Chi2', chi2count, vchi2count)
 
+## ---------------------------------------------------------------------------
+## Run the GetDihed.py to determine phi, psi, chi1 and chi2 and plot them
+## for all 20 structures
+## ---------------------------------------------------------------------------
+print('Extracting dihedrals')
+text = [['CYANA UPL','#9acd32'],['long UPL','#800080'],['Violated UPL','#ffa500'],['Input UPL','#6495ed'],['Found Input UPL','navy'],['Violate Input UPL','#db7093']]
+DAramalist, DArotalist = Dihed.extract(in_pdb, ASequence, outdir, upldf, phipsidict, chidict, plotdict,dihedviol,text)
+print('finished plotting dihedrals')
+armn = mn
+routmn = mn+1
+mn+=1
+outcmx.write('open ../{:} maxModels 1\nrename #{:} angle_restraints\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(in_pdb,armn,armn,armn))
+outcmx.write('open ../{:} maxModels 1\nrename #{:} rama_outliers\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(in_pdb,routmn,routmn,routmn))
+ramalist, rotalist = [],[]
+for line in DAramalist:ramalist.append(line.split()[0][1:])
+for line in DArotalist:rotalist.append(line.split()[0][1:])
+anglesout = [[phiaco, "phipsi","purple",armn], [chiaco,"chi1chi2","navy",armn], 
+[phiviol,"viol_phipsi","mediumpurple",armn], [chiviol,"chi1chi2","cornflowerblue",armn],
+[ramalist,"dissallowed_phipsi","mediumvioletred",routmn], [rotalist,"dissallowed_chi1chi2","medium violet red",routmn]]
+for listn, aname, color, modle in anglesout:
+  outpml.write('create {:}, {:}_0001\ncolor gray60,{:}\nhide sticks, {:}\n'.format(aname,pdbname,aname,aname))
+  rline = ""
+  if len(listn) > 1:
+    for resn in listn:
+      rline = rline + "{:},".format(resn)
+    rline = rline[:-1]
+    if 'phi' in aname:
+      outcmx.write("name {:} #{:}:{:}\ncolor {:} {:} target c\n".format(aname,modle,rline,aname,color))
+      outpml.write("create {:}, {:}_0001\ncolor gray60,{:}\nhide sticks, {:}\ncolor {:}, {:} and resn {:}".format(aname,pdbname,aname,aname,color,aname,rline.replace(',','+')))
+    if 'chi' in aname:
+      outcmx.write("name {:} #{:}:{:}\nshow {:} target a\ncolor {:} {:} target a\nhide #{:}@H*,N,O target a\ncolor byhetero target a\n".format(aname,modle,rline,aname,aname,color,modle))
+      outpml.write("create {:}, {:}_0001\ncolor gray60,{:}\nhide sticks, {:}\nshow sticks, {:} and resn {:}\ncolor {:}, {:} and resn {:}".format(aname,pdbname,aname,aname,aname,rline.replace(',','+'),color,aname,rline.replace(',','+')))
+
 print(angle_text[:-2])
 checkcons.write(angle_text)
 shortsum.write(angle_text)
-checkcons.write('{:3.0f} Violated Distance Restraints\n'.format(len(violpeaks)))
-checkcons.write('{:3.0f} Low Support Restraints\n'.format(len(poorcons2)))
-checkcons.write('{:3.0f} Probable Diffusion Distance Restraints\n'.format(len(diffcons2)))
-checkcons.write('{:3.0f} Long Distance Restraints d >= 6.0\n'.format(len(longcons2)))
-checkcons.write('{:3.0f} Short Distance Restraints d <= 3.0\n\n'.format(len(shortcons2)))
+overviewtxt = '{:3.0f} Residues with Disallowed Phi/Psi \n{:3.0f} Residues with Disallowed Chi1/Chi2\n{:3.0f} Violated Distance Restraints\n{:3.0f} Low Support Restraints\n{:3.0f} Probable Diffusion Distance Restraints\n{:3.0f} Long Distance Restraints d >= 6.0\n{:3.0f} Short Distance Restraints d <= 3.0\n\n'.format(len(DAramalist),len(DArotalist),len(violpeaks),len(poorcons2),len(diffcons2),len(longcons2),len(shortcons2))
+print(overviewtxt)
+checkcons.write(overviewtxt)
 
-print('finished finding upls')
 checkcons.write('### {:3.0f}  Violated Distance Restraints ###\n'.format(len(violpeaks)))
 # violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
 violpeaks = sorted(violpeaks, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
@@ -739,6 +771,18 @@ for con in shortcons2:
     checkcons.writelines(assigndict[con])
     checkcons.write('\n')
 checkcons.write('\n\n')
+#### Write out Residues with Disallowed Phi/Psi to the summary file
+checkcons.write('### {:3.0f} Disallowed Phi/Psi Dihedral Restraints ###\n'.format(len(DAramalist)))
+for con in DAramalist:
+  checkcons.writelines(con)
+  checkcons.write('\n')
+checkcons.write('\n\n')
+#### Write out Residues with Disallowed Chi1/Chi2 to the summary file
+checkcons.write('### {:3.0f} Disallowed Chi1/Chi2 Dihedral ###\n'.format(len(DArotalist)))
+for con in DArotalist:
+  checkcons.writelines(con)
+  checkcons.write('\n')
+checkcons.write('\n\n')
 checkcons.close()
 
 for line in open(fovw).readlines():
@@ -748,35 +792,9 @@ for line in open(fovw).readlines():
     if line.split()[0] == 'Average':
       shortsum.write(line.strip()[8:52] + '\n')
 shortsum.close()
-for y in range(2,21,1):
-  outpml.write('align {:}_{:04d}, {:}_0001\n'.format(pdbname,y, pdbname))
-outcmx.write('open ../' + in_pdb+ ' maxModels 1\nrename #{:} angles\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(mn,mn,mn))
-outcmx.write(cmxphisel.replace('angmn',str(mn))[:-1] + '\n')
-outcmx.write('color phipsisel purple target c\n')
-if cmxchisel[-1] != ':':
-  outcmx.write(cmxchisel.replace('angmn',str(mn))[:-1] + '\n')
-  outcmx.write('color chisel navy target a \n')
-  outcmx.write('show chisel target a\n')
-if cmxphiviol[-1] != ':':
-  outcmx.write(cmxphiviol.replace('angmn',str(mn))[:-1] + '\n')
-  outcmx.write('color phipsiviol mediumpurple target c \n')
-if cmxchiviol[-1] != ':':
-  outcmx.write(cmxchiviol.replace('angmn',str(mn))[:-1] + '\n')
-  outcmx.write('color chiviol cornflowerblue target a\n')
-  outcmx.write('show chiviol target a\n')
-outcmx.write('label #{:} text "{{0.label_one_letter_code}}{{0.number}}{{0.insertion_code}}"\n''label ontop false\n'.format(mn))
-outcmx.write('hide #{:}@H*,N,O target a\ncolor  byhetero target a\n'.format(mn))
-outpml.write('hide everything, {:}\n'.format(pdbname))
-outpml.write('create phipsi, {:}_0001\ncolor gray60,phi-psi\nhide sticks, phi-psi\n'.format(pdbname))
-outpml.write('color purple, ' + pmlphisel[:-1] + '\n')
-outpml.write('color mediumpurple, ' + pmlphiviol[:-1] + '\n')
-outpml.write('create chi, {:}_0001\ncolor gray60, chi\nhide sticks, chi\n'.format(pdbname))
-outpml.write('color navy, ' + pmlchisel[:-1] + '\n')
-outpml.write('show sticks,' + pmlchisel[:-1] + '\n')
-outpml.write('color cornflowerblue, ' + pmlchiviol[:-1] + '\n')
-outpml.write('show sticks, ' + pmlchiviol[:-1] + '\n')
-outpml.write("hide labels\n")
 
+## ---------------------------------------------------------------------------
+### Creating Model coloring residues based on the number of NOE restraints 
 mn+=1
 outcmx.write('open ../' + in_pdb+ ' maxModels 1\nrename #{:} noes\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(mn,mn,mn))
 outcmx.write('color name c0 rgb(255,205,0)\ncolor name c2 rgb(156,217,59)\ncolor name c4 rgb(52,182,121)\ncolor name c6 rgb(42,117,142)\ncolor name c8 rgb(59,81,139)\ncolor name c10 rgb(20,64,110)\n')
@@ -827,14 +845,6 @@ outpml.write('show sticks, noes and resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\nhide s
 outpml.write(sidechains[:-1].replace(",","+").replace('#1:',"sticks, noes and resi ") + '\n')
 outpml.close()
 outcmx.close()
-
-# ---------------------------------------------------------------------------
-# Run the GetDihed.py to determine phi, psi, chi1 and chi2 and plot them
-# for all 20 structures
-print('Extracting dihedrals')
-text = [['CYANA UPL','#9acd32'],['long UPL','#800080'],['Violated UPL','#ffa500'],['Input UPL','#6495ed'],['Found Input UPL','navy'],['Violate Input UPL','#db7093']]
-Dihed.extract(in_pdb, ASequence, outdir, upldf, phipsidict, chidict, plotdict,dihedviol)
-print('finished plotting dihedrals')
 
 print('finished')
 
