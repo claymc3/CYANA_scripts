@@ -151,13 +151,13 @@ SideDihe = {
  'F':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
  'Y':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
  'W':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']]}
-def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames):
+def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames,plotcolors):
 
 	global RAMA_PREF_VALUES
 
 	if RAMA_PREF_VALUES is None:
 		RAMA_PREF_VALUES = _cache_RAMA_PREF_VALUES()
-	outtext = []
+	outtext,plotc = [],[]
 	normals = {"phi":[],"psi":[]}
 	outliers = {"phi":[],"psi":[]}
 	aa_type = PhiDF.loc[res,'type']
@@ -168,6 +168,7 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames):
 	outtext.append([r"$\psi$ = {:} $\pm$ {:}".format(PsiDF.loc[res,'mean'],PsiDF.loc[res,'stdv']),'black'])
 	for mnum in colnames:
 		if not np.isnan(PsiDF.loc[res,mnum]) and not np.isnan(PhiDF.loc[res,mnum]):
+			# ax.scatter(normals["phi"], normals["psi"],marker='o',s= 30,facecolors=plotcolors[mnum], edgecolors= 'none', linewidth=1.0)
 			if RAMA_PREF_VALUES[aa_type][int(PsiDF.loc[res,mnum])+ 180][int(PhiDF.loc[res,mnum]) + 180] < RAMA_PREFERENCES[aa_type]["bounds"][1]:
 				outliers["phi"].append(PhiDF.loc[res,mnum])
 				outliers["psi"].append(PsiDF.loc[res,mnum])
@@ -176,6 +177,7 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames):
 			else:
 				normals["phi"].append(PhiDF.loc[res,mnum])
 				normals["psi"].append(PsiDF.loc[res,mnum])
+				plotc.append(plotcolors[mnum])
 	if outcount != 0:
 		outtext.append([r"$\phi, \psi$ disallowed in:",'red'])
 		for x in range(0,len(outline.split()),5):
@@ -189,7 +191,7 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames):
 	ax.imshow(RAMA_PREF_VALUES[aa_type], cmap=RAMA_PREFERENCES[aa_type]["cmap"],
 			norm=colors.BoundaryNorm(RAMA_PREFERENCES[aa_type]["bounds"], RAMA_PREFERENCES[aa_type]["cmap"].N),
 			extent=(-180, 180, 180, -180))
-	ax.scatter(normals["phi"], normals["psi"],marker='o',s= 30,facecolors='black', edgecolors= 'none', linewidth=1.0)
+	ax.scatter(normals["phi"], normals["psi"],marker='o',s= 30,c=plotc, edgecolors= 'none', linewidth=1.0)
 	if outcount != 0:
 		ax.scatter(outliers["phi"], outliers["psi"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
 	ax.set_xlabel(r'$\mathrm{\phi}$')
@@ -208,13 +210,13 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames):
 	ax.grid(visible=True, which='major', axis='both',linestyle='--')
 	# plt.tight_layout(w_pad = 0.0001)
 
-def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames):
+def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames,plotcolors):
 
 	global ROTA_PREF_VALUES
 
 	if ROTA_PREF_VALUES is None:
 		ROTA_PREF_VALUES = _cache_ROTA_PREF_VALUES()
-	outtext = []
+	outtext,plotc = [],[]
 	normals = {"chi1":[],"chi2":[]}
 	outliers = {"chi1":[],"chi2":[]}
 	outline = "   "
@@ -232,6 +234,7 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames):
 			else:
 				normals["chi1"].append(chi1DF.loc[res,mnum])
 				normals["chi2"].append(chi2DF.loc[res,mnum])
+				plotc.append(plotcolors[mnum])
 	if outcount != 0: 
 		outtext.append([r"$\chi1, \chi2$ disallowed in:",'red'])
 		for x in range(0,len(outline.split()),5):
@@ -245,7 +248,7 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames):
 	ax.imshow(ROTA_PREF_VALUES[aa_type], cmap=ROTA_PREFERENCES[aa_type]["cmap"],
 			norm=colors.BoundaryNorm(ROTA_PREFERENCES[aa_type]["bounds"], ROTA_PREFERENCES[aa_type]["cmap"].N),
 			extent=(0, 360, 360, 0))
-	ax.scatter(normals["chi1"], normals["chi2"],marker='o',s= 30,facecolors='black', edgecolors= 'none', linewidth=1.0)
+	ax.scatter(normals["chi1"], normals["chi2"],marker='o',s= 30,c=plotc, edgecolors= 'none', linewidth=1.0)
 	if outcount != 0:
 		ax.scatter(outliers["chi1"], outliers["chi2"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
 	ax.set_xlabel(r'$\mathrm{\chi}1$')
@@ -271,38 +274,51 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames):
 ##								A#-atom:[x,y,z] 								##
 ##	where A# is the residue single letter code and index 						##
 ###----------------------------------------------------------------------------###
-if len(sys.argv)==1:
-	print('''
-Usage:
-	getdihe [UniProt_id] [residues] [outname] [PDB_IDs]
+# if len(sys.argv)==1:
+# 	print('''
+# Usage:
+# 	getdihe [UniProt_id] [residues] [outname] [PDB_IDs]
 
-	gitdihe P11362 478-767 FGFR1_inhib_vs_phos 1FGK,3KY2,3GQI
+# 	gitdihe P11362 478-767 FGFR1_inhib_vs_phos 1FGK,3KY2,3GQI
 
-	UniProt_id: UniProt accession id number for protin, the script 
-				will pull that fasts file from https://www.uniprot.org
-				P11362
+# 	UniProt_id: UniProt accession id number for protin, the script 
+# 				will pull that fasts file from https://www.uniprot.org
+# 				P11362
 
-	resdues:	start-end index of the residues you are intersted in 
-				468-768
+# 	resdues:	start-end index of the residues you are intersted in 
+# 				468-768
 
-	outname:	name to give output files, not spaces allowed
+# 	outname:	name to give output files, not spaces allowed
 
-	PDB_IDs:	comma separated list of PDB ids to be examined, 
-				not case sensative, and PDB does not need to be 
-				saved to the directory the script pulls the PDB
-				file directly from https://www.rcsb.org
+# 	PDB_IDs:	comma separated list of PDB ids to be examined, 
+# 				not case sensative, and PDB does not need to be 
+# 				saved to the directory the script pulls the PDB
+# 				file directly from https://www.rcsb.org
 
-	The script will extract all the possible phi,psi and chi1/chi2
-	dihedral angles. It also checks the protin sequence from the 
-	PDB and identifies mutation and phosphorylation sites.
-		''')
-	exit()
+# 	The script will extract all the possible phi,psi and chi1/chi2
+# 	dihedral angles. It also checks the protin sequence from the 
+# 	PDB and identifies mutation and phosphorylation sites.
+# 		''')
+# 	exit()
 
-uniprotid  = sys.argv[1]
-seqbounds = sys.argv[2]
-inpdbs = sys.argv[4].split(',')
-outname = sys.argv[3]
+# uniprotid  = sys.argv[1]
+# seqbounds = sys.argv[2]
+# inpdbs = sys.argv[4].split(',')
+# outname = sys.argv[3]
 
+# infile = sys.argv[1]
+infile = open('FGFR1_structures_input.txt').readlines()
+outname = infile[0].strip()
+uniprotid = infile[1].strip()
+seqbounds = infile[2].strip()
+inpdbs, colorsd = [], {}
+for line in infile[3:]:
+	inpdbs.append(line[0:4])
+	colorsd[line[0:4]]= line[5:].strip()
+# print(inpdbs)
+print(colorsd)
+# print(seqbounds)
+# exit()
 UNPdict,UNPnseq = {},[]
 UNPseq = ''
 dbsb = int(seqbounds.split('-')[0])
@@ -316,6 +332,7 @@ for res in UNPseq:
 	UNPdict[str(index)] = res
 	UNPnseq.append(res+str(index))
 	index+=1
+plotcolors = {}
 colnames  = []
 for in_pdb in inpdbs:
 	chains = []
@@ -333,6 +350,7 @@ for in_pdb in inpdbs:
 	for chain in chains:
 		exec('Coor_{:}_{:}'.format(in_pdb,chain) + '= {}')
 		colnames.append('{:}_{:}'.format(in_pdb,chain))
+		plotcolors['{:}_{:}'.format(in_pdb,chain)] = colorsd[in_pdb]
 	for line in pdblines:
 		if line[0:4] == "ATOM" or line[0:4] == 'HETA':
 			if line[21] in chains:
@@ -416,22 +434,22 @@ for res in UNPnseq:
 			ax2 = fig.add_subplot(gs[1])
 			ax0 = fig.add_subplot(gs[2])
 			# fig, (ax1,ax2,ax3,ax0) =plt.subplots(1,4,figsize=(9,3), width_ratios = [6,6,3,3])
-			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0, 0.90,colnames)
-			plot_chi1_chi2_ramachandran(res, ax2, chi1DF, chi2DF,ax0, 0.50,colnames)
+			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0, 0.90,colnames,plotcolors)
+			plot_chi1_chi2_ramachandran(res, ax2, chi1DF, chi2DF,ax0, 0.50,colnames,plotcolors)
 		if res in PhiDF.index.to_list() and res not in chi1DF.index.to_list():
 			fig = plt.figure(figsize=(6,3))
 			gs = GridSpec(1,2,width_ratios = (1,1))
 			ax1 = fig.add_subplot(gs[0])
 			ax0 = fig.add_subplot(gs[1])
 			# fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3), width_ratios = [2,1,1])
-			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0, 0.90, colnames)
+			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0, 0.90, colnames,plotcolors)
 		if res not in PhiDF.index.to_list() and res in chi1DF.index.to_list():
 			fig = plt.figure(figsize=(6,3))
 			gs = GridSpec(1,2,width_ratios = (1,1))
 			ax1 = fig.add_subplot(gs[0])
 			ax0 = fig.add_subplot(gs[1])
 			# fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3),width_ratios = [2,1,1])
-			plot_chi1_chi2_ramachandran(res, ax1, chi1DF, chi2DF,ax0, 0.50, colnames)
+			plot_chi1_chi2_ramachandran(res, ax1, chi1DF, chi2DF,ax0, 0.50, colnames,plotcolors)
 		ax0.axis('off')
 		y = 0.99
 		plt.tight_layout()
