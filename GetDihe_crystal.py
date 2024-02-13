@@ -149,7 +149,7 @@ SideDihe = {
  'F':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
  'Y':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
  'W':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']]}
-def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames,plotcolors):
+def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames,plotcolors,logfile):
 
 	global RAMA_PREF_VALUES
 
@@ -172,26 +172,19 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames,plotcol
 				outliers["psi"].append(PsiDF.loc[res,mnum])
 				outline = outline  + "{:} ".format(mnum, PhiDF.loc[res,mnum],PsiDF.loc[res,mnum])
 				outcount+=1
-			else:
-				normals["phi"].append(PhiDF.loc[res,mnum])
-				normals["psi"].append(PsiDF.loc[res,mnum])
-				plotc.append(plotcolors[mnum])
+			# else:
+			normals["phi"].append(PhiDF.loc[res,mnum])
+			normals["psi"].append(PsiDF.loc[res,mnum])
+			plotc.append(plotcolors[mnum])
 	if outcount != 0:
-		outtext.append([r"$\phi, \psi$ disallowed in:",'red'])
-		for x in range(0,len(outline.split()),5):
-			i = x
-			outline2 = '   '
-			for j in range(5):
-				outline2 = outline2 + '{:>2} '.format(outline.split()[i])
-				i+=1
-				if i== len(outline.split()): break
-			outtext.append([outline2,'red'])
+		logfile.write("{:} Phi, Psi disallowed in:\n".format(res))
+		logfile.write('  {:}\n'.format(outline))
 	ax.imshow(RAMA_PREF_VALUES[aa_type], cmap=RAMA_PREFERENCES[aa_type]["cmap"],
 			norm=colors.BoundaryNorm(RAMA_PREFERENCES[aa_type]["bounds"], RAMA_PREFERENCES[aa_type]["cmap"].N),
 			extent=(-180, 180, 180, -180))
 	ax.scatter(normals["phi"], normals["psi"],marker='o',s= 30,c=plotc, edgecolors= 'none', linewidth=1.0)
-	if outcount != 0:
-		ax.scatter(outliers["phi"], outliers["psi"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
+	# if outcount != 0:
+	# 	ax.scatter(outliers["phi"], outliers["psi"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
 	ax.set_xlabel(r'$\mathrm{\phi}$')
 	ax.set_ylabel(r'$\mathrm{\psi}$')
 	tcolor = 'black'
@@ -208,7 +201,7 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames,plotcol
 	ax.grid(visible=True, which='major', axis='both',linestyle='--')
 	# plt.tight_layout(w_pad = 0.0001)
 
-def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames,plotcolors):
+def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames,plotcolors,logfile):
 
 	global ROTA_PREF_VALUES
 
@@ -229,26 +222,27 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames,p
 				outliers["chi2"].append(chi2DF.loc[res,mnum])
 				outcount+=1
 				outline = outline  + "{:} ".format(mnum)
-			else:
-				normals["chi1"].append(chi1DF.loc[res,mnum])
-				normals["chi2"].append(chi2DF.loc[res,mnum])
-				plotc.append(plotcolors[mnum])
+			# else:
+			normals["chi1"].append(chi1DF.loc[res,mnum])
+			normals["chi2"].append(chi2DF.loc[res,mnum])
+			plotc.append(plotcolors[mnum])
 	if outcount != 0: 
-		outtext.append([r"$\chi1, \chi2$ disallowed in:",'red'])
-		for x in range(0,len(outline.split()),5):
-			i = x
-			outline2 = '   '
-			for j in range(5):
-				outline2 = outline2 + '{:>2} '.format(outline.split()[i])
-				i+=1
-				if i== len(outline.split()): break
-			outtext.append([outline2,'red'])
+		logfile.write("{:} chi1, chi2 disallowed in:\n".format(res))
+		logfile.write('  {:}\n'.format(outline))
+		# for x in range(0,len(outline.split()),5):
+		# 	i = x
+		# 	outline2 = '   '
+		# 	for j in range(5):
+		# 		outline2 = outline2 + '{:>2} '.format(outline.split()[i])
+		# 		i+=1
+		# 		if i== len(outline.split()): break
+		# 	outtext.append([outline2,'red'])
 	ax.imshow(ROTA_PREF_VALUES[aa_type], cmap=ROTA_PREFERENCES[aa_type]["cmap"],
 			norm=colors.BoundaryNorm(ROTA_PREFERENCES[aa_type]["bounds"], ROTA_PREFERENCES[aa_type]["cmap"].N),
 			extent=(0, 360, 360, 0))
 	ax.scatter(normals["chi1"], normals["chi2"],marker='o',s= 30,c=plotc, edgecolors= 'none', linewidth=1.0)
-	if outcount != 0:
-		ax.scatter(outliers["chi1"], outliers["chi2"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
+	# if outcount != 0:
+	# 	ax.scatter(outliers["chi1"], outliers["chi2"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
 	ax.set_xlabel(r'$\mathrm{\chi}1$')
 	ax.set_ylabel(r'$\mathrm{\chi}2$')
 	tcolor = 'black'
@@ -299,8 +293,8 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames,p
 # 		''')
 # 	exit()
 
-# infile = sys.argv[1]
-infile = open('FGFR1_structures_input.txt').readlines()
+infile = open(sys.argv[1]).readlines()
+# infile = open('FGFR1_structures_input.txt').readlines()
 
 outname = infile[0].strip()
 uniprotid = infile[1].strip()
@@ -429,7 +423,6 @@ chi1DF['stdv'] = chi1DF[colnames].std(axis=1).astype(float).round(2)
 chi2DF['mean'] = chi2DF[colnames].mean(axis=1).astype(float).round(2)
 chi2DF['stdv'] = chi2DF[colnames].std(axis=1).astype(float).round(2)
 
-print(chi1DF.loc[res])
 for res in UNPnseq:
 	if res in PhiDF.index.to_list():
 		dihedDF.loc['{:}_Phi'.format(res)] = PhiDF.loc[res].copy()
@@ -441,12 +434,9 @@ for res in UNPnseq:
 		dihedDF.loc['{:}_Chi2'.format(res)] = chi2DF.loc[res].copy()
 dihedDF['mean'] = dihedDF[colnames].mean(axis=1).astype(float).round(2)
 dihedDF['stdv'] = dihedDF[colnames].std(axis=1).astype(float).round(2)
-print(dihedDF)
+# print(dihedDF)
 dihedDF.to_csv(outname+'_dihed.csv')
-# PhiDF.to_csv(outname + '_Phi.csv')
-# PsiDF.to_csv(outname + '_Psi.csv')
-# chi1DF.to_csv(outname + '_Chi1.csv')
-# chi2DF.to_csv(outname + '_Chi2.csv')
+logfile.write('\n\n')
 
 import time
 start_time = time.time()
@@ -465,28 +455,28 @@ for res in UNPnseq:
 			ax2 = fig.add_subplot(gs[1])
 			ax0 = fig.add_subplot(gs[2])
 			# fig, (ax1,ax2,ax3,ax0) =plt.subplots(1,4,figsize=(9,3), width_ratios = [6,6,3,3])
-			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0, 0.30,colnames,plotcolors)
-			plot_chi1_chi2_ramachandran(res, ax2, chi1DF, chi2DF,ax0, 0.20,colnames,plotcolors)
+			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0, 0.90,colnames,plotcolors,logfile)
+			plot_chi1_chi2_ramachandran(res, ax2, chi1DF, chi2DF,ax0, 0.78,colnames,plotcolors,logfile)
 		if res in PhiDF.index.to_list() and res not in chi1DF.index.to_list():
 			fig = plt.figure(figsize=(6,3))
 			gs = GridSpec(1,2,width_ratios = (1,1))
 			ax1 = fig.add_subplot(gs[0])
 			ax0 = fig.add_subplot(gs[1])
 			# fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3), width_ratios = [2,1,1])
-			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0, 0.30, colnames,plotcolors)
+			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0, 0.90, colnames,plotcolors,logfile)
 		if res not in PhiDF.index.to_list() and res in chi1DF.index.to_list():
 			fig = plt.figure(figsize=(6,3))
 			gs = GridSpec(1,2,width_ratios = (1,1))
 			ax1 = fig.add_subplot(gs[0])
 			ax0 = fig.add_subplot(gs[1])
 			# fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3),width_ratios = [2,1,1])
-			plot_chi1_chi2_ramachandran(res, ax1, chi1DF, chi2DF,ax0, 0.30, colnames,plotcolors)
+			plot_chi1_chi2_ramachandran(res, ax1, chi1DF, chi2DF,ax0, 0.90, colnames,plotcolors,logfile)
 		ax0.axis('off')
-		xpos = -1.3
+		xpos = -0.5
 		for x in range(0,len(inpdbs),10):
 			i = x
-			y = 0.90
-			xpos = xpos + 1
+			y = 0.66
+			xpos = xpos + 0.2
 			for j in range(10):
 				ax0.text(xpos, y, inpdbs[i], color = colorsd[inpdbs[i]], fontsize = 8)
 				i+=1
@@ -496,6 +486,5 @@ for res in UNPnseq:
 		pdf.savefig(transparent=True)
 		plt.close()
 pdf.close()
-
-y = y - 0.06
+logfile.close()
 
