@@ -38,8 +38,6 @@ Aromatics = ['PHE', 'TYR']
 Aromatic_groups = {"PHE" : ['CE1', 'CE2'], "TYR": ['CE1','CHE2']}
 Pass_Atoms = ['N   ALA', 'H   ALA', 'N   ARG', 'H   ARG', 'N   ASN', 'H   ASN', 'N   ASP', 'H   ASP', 'N   CYS', 'H   CYS', 'N   GLU', 'H   GLU', 'N   GLN', 'H   GLN', 'N   GLY', 'H   GLY', 'N   HIS', 'H   HIS', 'N   ILE', 'H   ILE', 'N   LEU', 'H   LEU', 'N   LYS', 'H   LYS', 'N   MET', 'H   MET', 'N   PHE', 'H   PHE', 'N   SER', 'H   SER', 'N   THR', 'H   THR', 'N   TRP', 'H   TRP', 'N   TYR', 'H   TYR', 'N   VAL', 'H   VAL']
 
-
-
 RAMA_PREF_VALUES = None
 ROTA_PREF_VALUES = None
 
@@ -301,22 +299,19 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames,p
 # 		''')
 # 	exit()
 
-# uniprotid  = sys.argv[1]
-# seqbounds = sys.argv[2]
-# inpdbs = sys.argv[4].split(',')
-# outname = sys.argv[3]
-
 # infile = sys.argv[1]
 infile = open('FGFR1_structures_input.txt').readlines()
+
 outname = infile[0].strip()
 uniprotid = infile[1].strip()
 seqbounds = infile[2].strip()
+logfile =  open("{:}_log.txt".format(outname),'w')
 inpdbs, colorsd = [], {}
 for line in infile[3:]:
-	inpdbs.append(line[0:4])
-	colorsd[line[0:4]]= line[5:].strip()
+	if line.strip():
+		inpdbs.append(line[0:4])
+		colorsd[line[0:4]]= line[5:].strip()
 # print(inpdbs)
-print(colorsd)
 # print(seqbounds)
 # exit()
 UNPdict,UNPnseq = {},[]
@@ -332,8 +327,7 @@ for res in UNPseq:
 	UNPdict[str(index)] = res
 	UNPnseq.append(res+str(index))
 	index+=1
-plotcolors = {}
-colnames  = []
+plotcolors,colnames = {},[]
 for in_pdb in inpdbs:
 	chains = []
 	pSEQ_dict,pSEQ = {},[]
@@ -348,7 +342,11 @@ for in_pdb in inpdbs:
 		if line[0:5] == 'ATOM ':
 			break
 	for chain in chains:
+		exec('Res_{:}_{:}'.format(in_pdb,chain) + '= {}')
 		exec('Coor_{:}_{:}'.format(in_pdb,chain) + '= {}')
+		# Resdict = eval('Res_{:}_{:}'.format(in_pdb,chain))
+		# for x in range(dbsb,dbse):
+		# 	Resdict[str(x)] = []
 		colnames.append('{:}_{:}'.format(in_pdb,chain))
 		plotcolors['{:}_{:}'.format(in_pdb,chain)] = colorsd[in_pdb]
 	for line in pdblines:
@@ -356,6 +354,7 @@ for in_pdb in inpdbs:
 			if line[21] in chains:
 				chain = line[21]
 				Coor = eval('Coor_{:}_{:}'.format(in_pdb,chain))
+				Resdict = eval('Res_{:}_{:}'.format(in_pdb,chain))
 				if line[17:20].strip() in AAA_dict.keys():
 					if line[22:26].strip() not in pSEQ: 
 						pSEQ.append(line[22:26].strip())
@@ -363,20 +362,37 @@ for in_pdb in inpdbs:
 						SEQdict[int(line[22:26].strip())] = '{:}{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip())
 					resid = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()], line[22:26].strip(),line[12:16].strip())
 					Coor[resid]= [float(line[30:38]), float(line[38:46]), float(line[46:54])]
-	print(in_pdb)
+					if line[22:26].strip() in Resdict.keys() and line[12:16].strip()[0] != 'H':
+						Resdict[line[22:26].strip()].append(line[12:16].strip())
+					elif line[22:26].strip() not in Resdict.keys() and line[12:16].strip()[0] != 'H':
+						Resdict[line[22:26].strip()]=[line[12:16].strip()]
+
+	logfile.write('{:}\n'.format(in_pdb.upper()))
 	for x in range(dbsb,dbse):
 		if str(x) in pSEQ_dict.keys():
-			# print(pSEQ_dict[str(x)])
-			if pSEQ_dict[str(x)] in ["PTR", "TPO", "SEP"]: print('Phosphorlated {:}{:}'.format(UNPdict[str(x)],x))
+			if pSEQ_dict[str(x)] in ["PTR", "TPO", "SEP"]: logfile.write('  Phosphorlated p{:}{:}\n'.format(UNPdict[str(x)],x))
 			elif A_dict[UNPdict[str(x)]] != pSEQ_dict[str(x)]:
-				print('mutation {:}{:}{:}'.format(UNPdict[str(x)],x,AAA_dict[pSEQ_dict[str(x)]]))
+				logfile.write('  mutation {:}{:}{:}\n'.format(UNPdict[str(x)],x,AAA_dict[pSEQ_dict[str(x)]]))
+	for chain in chains:
+		missingSide,missingRes ='',''
+		Resdict = eval('Res_{:}_{:}'.format(in_pdb,chain))
+		for x in range(dbsb,dbse):
+			if str(x) in Resdict.keys():
+				if pSEQ_dict[str(x)] not in ['ALA','GLY'] and len(Resdict[str(x)]) < 5:
+					missingSide = missingSide + '{:}{:} '.format(AAA_dict[pSEQ_dict[str(x)]],x)
+			if str(x) not in Resdict.keys():
+				missingRes= missingRes + '{:}{:} '.format(UNPdict[str(x)],x)
+		if len(missingSide) != 0:
+			logfile.write('  {:} {:} Missing side chains:\n    {:}\n'.format(in_pdb,chain,missingSide))
+		if len(missingRes) != 0:
+			logfile.write('  {:} {:} Missing Residues:\n    {:}\n'.format(in_pdb,chain,missingRes))
 
 # colnames.extend(['mean','stdv'])
 PhiDF =  pd.DataFrame(columns=colnames)
 PsiDF =  pd.DataFrame(columns=colnames)
 chi1DF = pd.DataFrame(columns=colnames)
 chi2DF = pd.DataFrame(columns=colnames)
-
+dihedDF = pd.DataFrame(columns=colnames)
 for entry in colnames:
 	Coords = eval('Coor_' + entry)
 	Sequence = eval('Seq_{:}'.format(entry[0:-2]))
@@ -412,10 +428,25 @@ chi1DF['mean'] = chi1DF[colnames].mean(axis=1).astype(float).round(2)
 chi1DF['stdv'] = chi1DF[colnames].std(axis=1).astype(float).round(2)
 chi2DF['mean'] = chi2DF[colnames].mean(axis=1).astype(float).round(2)
 chi2DF['stdv'] = chi2DF[colnames].std(axis=1).astype(float).round(2)
-PhiDF.to_csv(outname + '_Phi.csv')
-PsiDF.to_csv(outname + '_Psi.csv')
-chi1DF.to_csv(outname + '_Chi1.csv')
-chi2DF.to_csv(outname + '_Chi2.csv')
+
+print(chi1DF.loc[res])
+for res in UNPnseq:
+	if res in PhiDF.index.to_list():
+		dihedDF.loc['{:}_Phi'.format(res)] = PhiDF.loc[res].copy()
+	if res in  PsiDF.index.to_list():
+		dihedDF.loc['{:}_Psi'.format(res)] = PsiDF.loc[res].copy()
+	if res in chi1DF.index.to_list():
+		dihedDF.loc['{:}_Chi1'.format(res)] = chi1DF.loc[res].copy()
+	if res in chi1DF.index.to_list():
+		dihedDF.loc['{:}_Chi2'.format(res)] = chi2DF.loc[res].copy()
+dihedDF['mean'] = dihedDF[colnames].mean(axis=1).astype(float).round(2)
+dihedDF['stdv'] = dihedDF[colnames].std(axis=1).astype(float).round(2)
+print(dihedDF)
+dihedDF.to_csv(outname+'_dihed.csv')
+# PhiDF.to_csv(outname + '_Phi.csv')
+# PsiDF.to_csv(outname + '_Psi.csv')
+# chi1DF.to_csv(outname + '_Chi1.csv')
+# chi2DF.to_csv(outname + '_Chi2.csv')
 
 import time
 start_time = time.time()
@@ -434,28 +465,37 @@ for res in UNPnseq:
 			ax2 = fig.add_subplot(gs[1])
 			ax0 = fig.add_subplot(gs[2])
 			# fig, (ax1,ax2,ax3,ax0) =plt.subplots(1,4,figsize=(9,3), width_ratios = [6,6,3,3])
-			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0, 0.90,colnames,plotcolors)
-			plot_chi1_chi2_ramachandran(res, ax2, chi1DF, chi2DF,ax0, 0.50,colnames,plotcolors)
+			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0, 0.30,colnames,plotcolors)
+			plot_chi1_chi2_ramachandran(res, ax2, chi1DF, chi2DF,ax0, 0.20,colnames,plotcolors)
 		if res in PhiDF.index.to_list() and res not in chi1DF.index.to_list():
 			fig = plt.figure(figsize=(6,3))
 			gs = GridSpec(1,2,width_ratios = (1,1))
 			ax1 = fig.add_subplot(gs[0])
 			ax0 = fig.add_subplot(gs[1])
 			# fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3), width_ratios = [2,1,1])
-			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0, 0.90, colnames,plotcolors)
+			plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0, 0.30, colnames,plotcolors)
 		if res not in PhiDF.index.to_list() and res in chi1DF.index.to_list():
 			fig = plt.figure(figsize=(6,3))
 			gs = GridSpec(1,2,width_ratios = (1,1))
 			ax1 = fig.add_subplot(gs[0])
 			ax0 = fig.add_subplot(gs[1])
 			# fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3),width_ratios = [2,1,1])
-			plot_chi1_chi2_ramachandran(res, ax1, chi1DF, chi2DF,ax0, 0.50, colnames,plotcolors)
+			plot_chi1_chi2_ramachandran(res, ax1, chi1DF, chi2DF,ax0, 0.30, colnames,plotcolors)
 		ax0.axis('off')
-		y = 0.99
+		xpos = -1.3
+		for x in range(0,len(inpdbs),10):
+			i = x
+			y = 0.90
+			xpos = xpos + 1
+			for j in range(10):
+				ax0.text(xpos, y, inpdbs[i], color = colorsd[inpdbs[i]], fontsize = 8)
+				i+=1
+				y = y - 0.06
+				if i== len(inpdbs): break
 		plt.tight_layout()
 		pdf.savefig(transparent=True)
 		plt.close()
 pdf.close()
 
-
+y = y - 0.06
 
