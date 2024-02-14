@@ -26,17 +26,9 @@ plt.rcParams['mathtext.default'] = 'regular'
 pdb_columns = ['name', 'resn', 'resid', 'Chain', 'X', 'Y', 'Z', 'Element']
 # Read in PDB file one line at a time, if the first four letter ar ATOM or HETA then it will parse the data into the 
 # data frame, using the atome index int he PDB as the row index in the data frame. 
-AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C",
- "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H", "ILE": "I", "LEU": "L",
- "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T",
+AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "SER": "S", "THR": "T",
  "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S','CYSS':'C', 'HIST':'H'}
-
 A_dict = {'C': 'CYS', 'D': 'ASP', 'S': 'SER', 'Q': 'GLN', 'K': 'LYS', 'I': 'ILE', 'P': 'PRO', 'T': 'THR', 'F': 'PHE', 'N': 'ASN','G': 'GLY', 'H': 'HIS', 'L': 'LEU', 'R': 'ARG', 'W': 'TRP','A': 'ALA', 'V':'VAL', 'E': 'GLU', 'Y': 'TYR', 'M': 'MET'}
-Methyl_groups = {"LEU" : ['CD1','CD2'], "ILE" : ['CD1'], "VAL" : ['CG1','CG2'], "THR" : ['CG2'], "MET" : ['CE'], "ALA" : ['CB']}
-Methyls = ['ILE', 'LEU','VAL','MET','ALA', 'THR']
-Aromatics = ['PHE', 'TYR']
-Aromatic_groups = {"PHE" : ['CE1', 'CE2'], "TYR": ['CE1','CHE2']}
-Pass_Atoms = ['N   ALA', 'H   ALA', 'N   ARG', 'H   ARG', 'N   ASN', 'H   ASN', 'N   ASP', 'H   ASP', 'N   CYS', 'H   CYS', 'N   GLU', 'H   GLU', 'N   GLN', 'H   GLN', 'N   GLY', 'H   GLY', 'N   HIS', 'H   HIS', 'N   ILE', 'H   ILE', 'N   LEU', 'H   LEU', 'N   LYS', 'H   LYS', 'N   MET', 'H   MET', 'N   PHE', 'H   PHE', 'N   SER', 'H   SER', 'N   THR', 'H   THR', 'N   TRP', 'H   TRP', 'N   TYR', 'H   TYR', 'N   VAL', 'H   VAL']
 
 RAMA_PREF_VALUES = None
 ROTA_PREF_VALUES = None
@@ -183,8 +175,6 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext,ypos,colnames,plotcol
 			norm=colors.BoundaryNorm(RAMA_PREFERENCES[aa_type]["bounds"], RAMA_PREFERENCES[aa_type]["cmap"].N),
 			extent=(-180, 180, 180, -180))
 	ax.scatter(normals["phi"], normals["psi"],marker='o',s= 30,c=plotc, edgecolors= 'none', linewidth=1.0)
-	# if outcount != 0:
-	# 	ax.scatter(outliers["phi"], outliers["psi"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
 	ax.set_xlabel(r'$\mathrm{\phi}$')
 	ax.set_ylabel(r'$\mathrm{\psi}$')
 	tcolor = 'black'
@@ -229,20 +219,10 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames,p
 	if outcount != 0: 
 		logfile.write("{:} chi1, chi2 disallowed in:\n".format(res))
 		logfile.write('  {:}\n'.format(outline))
-		# for x in range(0,len(outline.split()),5):
-		# 	i = x
-		# 	outline2 = '   '
-		# 	for j in range(5):
-		# 		outline2 = outline2 + '{:>2} '.format(outline.split()[i])
-		# 		i+=1
-		# 		if i== len(outline.split()): break
-		# 	outtext.append([outline2,'red'])
 	ax.imshow(ROTA_PREF_VALUES[aa_type], cmap=ROTA_PREFERENCES[aa_type]["cmap"],
 			norm=colors.BoundaryNorm(ROTA_PREFERENCES[aa_type]["bounds"], ROTA_PREFERENCES[aa_type]["cmap"].N),
 			extent=(0, 360, 360, 0))
 	ax.scatter(normals["chi1"], normals["chi2"],marker='o',s= 30,c=plotc, edgecolors= 'none', linewidth=1.0)
-	# if outcount != 0:
-	# 	ax.scatter(outliers["chi1"], outliers["chi2"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
 	ax.set_xlabel(r'$\mathrm{\chi}1$')
 	ax.set_ylabel(r'$\mathrm{\chi}2$')
 	tcolor = 'black'
@@ -266,32 +246,38 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, ypos,colnames,p
 ##								A#-atom:[x,y,z] 								##
 ##	where A# is the residue single letter code and index 						##
 ###----------------------------------------------------------------------------###
-# if len(sys.argv)==1:
-# 	print('''
-# Usage:
-# 	getdihe [UniProt_id] [residues] [outname] [PDB_IDs]
+if len(sys.argv)==1:
+	print('''
+Usage:
+	getdihe [input_file]
 
-# 	gitdihe P11362 478-767 FGFR1_inhib_vs_phos 1FGK,3KY2,3GQI
+	input_file: text file containg the following on separate lines
 
-# 	UniProt_id: UniProt accession id number for protin, the script 
-# 				will pull that fasts file from https://www.uniprot.org
-# 				P11362
+	outname:	name to give output files, no spaces allowed
 
-# 	resdues:	start-end index of the residues you are intersted in 
-# 				468-768
+	UniProt_id: UniProt accession id number for protin, the script 
+				will pull that fasts file from https://www.uniprot.org
+				and use only chains which match this UniProt ID 
 
-# 	outname:	name to give output files, not spaces allowed
+	resdues:	start-end indexs of the residues you are intersted in 468-768
 
-# 	PDB_IDs:	comma separated list of PDB ids to be examined, 
-# 				not case sensative, and PDB does not need to be 
-# 				saved to the directory the script pulls the PDB
-# 				file directly from https://www.rcsb.org
+	PDB ID color: the PDB id space and color to use for this PDB on the plots
 
-# 	The script will extract all the possible phi,psi and chi1/chi2
-# 	dihedral angles. It also checks the protin sequence from the 
-# 	PDB and identifies mutation and phosphorylation sites.
-# 		''')
-# 	exit()
+	Example: FGFR1_active_input.txt
+				FGFR1_Active_pdbs
+				P11362
+				464-762
+				3GQI green
+				5FLF blue
+				3KXX orange
+
+	The script will extract all the possible phi,psi and chi1/chi2
+	dihedral angles. It also checks the protin sequence from the 
+	PDB and identifies mutation and phosphorylation sites, and identifies
+	missing residues or side chaings in the PDB. These are recorded in the 
+	outname_log.txt file, alonge with the idenity of any dissallowed dihderals
+		''')
+	exit()
 
 infile = open(sys.argv[1]).readlines()
 # infile = open('FGFR1_structures_input.txt').readlines()
@@ -338,9 +324,6 @@ for in_pdb in inpdbs:
 	for chain in chains:
 		exec('Res_{:}_{:}'.format(in_pdb,chain) + '= {}')
 		exec('Coor_{:}_{:}'.format(in_pdb,chain) + '= {}')
-		# Resdict = eval('Res_{:}_{:}'.format(in_pdb,chain))
-		# for x in range(dbsb,dbse):
-		# 	Resdict[str(x)] = []
 		colnames.append('{:}_{:}'.format(in_pdb,chain))
 		plotcolors['{:}_{:}'.format(in_pdb,chain)] = colorsd[in_pdb]
 	for line in pdblines:
@@ -369,7 +352,7 @@ for in_pdb in inpdbs:
 				logfile.write('  mutation {:}{:}{:}\n'.format(UNPdict[str(x)],x,AAA_dict[pSEQ_dict[str(x)]]))
 	for chain in chains:
 		missingSide,missingRes ='',''
-		Resdict = eval('Res_{:}_{:}'.format(in_pdb,chain))
+		Resdict = eval('Res_{:}_{:}'.format(in_pdb.upper(),chain))
 		for x in range(dbsb,dbse):
 			if str(x) in Resdict.keys():
 				if pSEQ_dict[str(x)] not in ['ALA','GLY'] and len(Resdict[str(x)]) < 5:
@@ -377,9 +360,9 @@ for in_pdb in inpdbs:
 			if str(x) not in Resdict.keys():
 				missingRes= missingRes + '{:}{:} '.format(UNPdict[str(x)],x)
 		if len(missingSide) != 0:
-			logfile.write('  {:} {:} Missing side chains:\n    {:}\n'.format(in_pdb,chain,missingSide))
+			logfile.write('  {:} {:} Missing side chains:\n    {:}\n'.format(in_pdb.upper(),chain,missingSide))
 		if len(missingRes) != 0:
-			logfile.write('  {:} {:} Missing Residues:\n    {:}\n'.format(in_pdb,chain,missingRes))
+			logfile.write('  {:} {:} Missing Residues:\n    {:}\n'.format(in_pdb.upper(),chain,missingRes))
 
 # colnames.extend(['mean','stdv'])
 PhiDF =  pd.DataFrame(columns=colnames)
@@ -478,7 +461,7 @@ for res in UNPnseq:
 			y = 0.66
 			xpos = xpos + 0.2
 			for j in range(10):
-				ax0.text(xpos, y, inpdbs[i], color = colorsd[inpdbs[i]], fontsize = 8)
+				ax0.text(xpos, y, inpdbs[i].upper(), color = colorsd[inpdbs[i]], fontsize = 8)
 				i+=1
 				y = y - 0.06
 				if i== len(inpdbs): break
