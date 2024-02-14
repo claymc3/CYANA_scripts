@@ -251,31 +251,33 @@ if len(sys.argv)==1:
 Usage:
 	getdihe [input_file]
 
-	input_file: text file containg the following on separate lines
+	input_file: text file containing the following on separate lines
+
+	Example :	getdihe FGFR1_active_input.txt
+
+	Example input file (explanation below):
+		FGFR1_Active_pdbs
+		P11362
+		464-762
+		3GQI green
+		5FLF blue
+		3KXX orange
 
 	outname:	name to give output files, no spaces allowed
 
-	UniProt_id: UniProt accession id number for protin, the script 
+	UniProt_id: UniProt accession id number for protein, the script 
 				will pull that fasts file from https://www.uniprot.org
 				and use only chains which match this UniProt ID 
 
-	resdues:	start-end indexs of the residues you are intersted in 468-768
+	residues:	start-end indices of the residues you are interested in 468-768
 
 	PDB ID color: the PDB id space and color to use for this PDB on the plots
 
-	Example: FGFR1_active_input.txt
-				FGFR1_Active_pdbs
-				P11362
-				464-762
-				3GQI green
-				5FLF blue
-				3KXX orange
-
 	The script will extract all the possible phi,psi and chi1/chi2
-	dihedral angles. It also checks the protin sequence from the 
+	dihedral angles. It also checks the protein sequence from the 
 	PDB and identifies mutation and phosphorylation sites, and identifies
-	missing residues or side chaings in the PDB. These are recorded in the 
-	outname_log.txt file, alonge with the idenity of any dissallowed dihderals
+	missing residues or side chains in the PDB. These are recorded in the 
+	outname_log.txt file, along with the identity of any disallowed dihderals
 
 	Dependancies:panadas, numpy, matplotlib, requests
 		''')
@@ -289,6 +291,7 @@ uniprotid = infile[1].strip()
 seqbounds = infile[2].strip()
 logfile =  open("{:}_log.txt".format(outname),'w')
 inpdbs, colorsd = [], {}
+x=-1
 for line in infile[3:]:
 	if line.strip():
 		inpdbs.append(line[0:4])
