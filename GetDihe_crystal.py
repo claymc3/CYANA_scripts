@@ -279,7 +279,7 @@ Usage:
 	missing residues or side chains in the PDB. These are recorded in the 
 	outname_log.txt file, along with the identity of any disallowed dihderals
 
-	Dependancies:panadas, numpy, matplotlib, requests
+	Dependencies:pandas, numpy, matplotlib, requests
 		''')
 	exit()
 
