@@ -276,6 +276,8 @@ Usage:
 	PDB and identifies mutation and phosphorylation sites, and identifies
 	missing residues or side chaings in the PDB. These are recorded in the 
 	outname_log.txt file, alonge with the idenity of any dissallowed dihderals
+
+	Dependancies:panadas, numpy, matplotlib, requests
 		''')
 	exit()
 
