@@ -290,12 +290,14 @@ outname = infile[0].strip()
 uniprotid = infile[1].strip()
 seqbounds = infile[2].strip()
 logfile =  open("{:}_log.txt".format(outname),'w')
-inpdbs, colorsd = [], {}
+inpdbs,pdbnames, colorsd = [], [], {}
 x=-1
 for line in infile[3:]:
 	if line.strip():
-		inpdbs.append(line[0:4])
-		colorsd[line[0:4]]= line[5:].strip()
+		inpdbs.append(line.split()[0])
+		pdbname=line.split()[0].split('/')[-1].split('.')[0].replace('-','_')
+		pdbnames.append(pdbname)
+		colorsd[pdbname]= line.split()[1].strip()
 # print(inpdbs)
 # print(seqbounds)
 # exit()
@@ -314,29 +316,38 @@ for res in UNPseq:
 	index+=1
 plotcolors,colnames = {},[]
 for in_pdb in inpdbs:
+	pdbname = in_pdb.split('/')[-1].split('.')[0].replace('-','_')
+	print('Extracting dihedrals for: {:}'.format(pdbname))
 	chains = []
 	pSEQ_dict,pSEQ = {},[]
-	exec('Seq_{:}'.format(in_pdb) + '= {}')
-	SEQdict = eval('Seq_{:}'.format(in_pdb))
-	pdblines = list(requests.get('https://files.rcsb.org/view/'+in_pdb+'.pdb', allow_redirects=True).iter_lines(decode_unicode=True))
-	for line in pdblines:
-		if line[0:5] == 'DBREF':
-			name = line[33:41].strip()
-			if name == uniprotid:
-				chains.append(line[12])
-		if line[0:5] == 'ATOM ':
-			break
+	exec('Seq_{:}'.format(pdbname) + '= {}')
+	SEQdict = eval('Seq_{:}'.format(pdbname))
+	if not re.search('.pdb',in_pdb):
+		pdblines = list(requests.get('https://files.rcsb.org/view/'+in_pdb+'.pdb', allow_redirects=True).iter_lines(decode_unicode=True))
+		for line in pdblines:
+			if line[0:5] == 'DBREF':
+				name = line[33:41].strip()
+				if name == uniprotid:
+					chains.append(line[12])
+			if line[0:5] == 'ATOM ':
+				break
+	if re.search('.pdb',in_pdb):
+		pdblines = open(in_pdb).readlines()
+		# if 'DBREF' not in open(in_pdb).read():
+		for line in pdblines:
+			if line[0:5] == 'ATOM ' and line[21] not in chains:
+				chains.append(line[21])
 	for chain in chains:
-		exec('Res_{:}_{:}'.format(in_pdb,chain) + '= {}')
-		exec('Coor_{:}_{:}'.format(in_pdb,chain) + '= {}')
-		colnames.append('{:}_{:}'.format(in_pdb,chain))
-		plotcolors['{:}_{:}'.format(in_pdb,chain)] = colorsd[in_pdb]
+		exec('Res_{:}_{:}'.format(pdbname,chain) + '= {}')
+		exec('Coor_{:}_{:}'.format(pdbname,chain) + '= {}')
+		colnames.append('{:}_{:}'.format(pdbname,chain))
+		plotcolors['{:}_{:}'.format(pdbname,chain)] = colorsd[pdbname]
 	for line in pdblines:
 		if line[0:4] == "ATOM" or line[0:4] == 'HETA':
 			if line[21] in chains:
 				chain = line[21]
-				Coor = eval('Coor_{:}_{:}'.format(in_pdb,chain))
-				Resdict = eval('Res_{:}_{:}'.format(in_pdb,chain))
+				Coor = eval('Coor_{:}_{:}'.format(pdbname,chain))
+				Resdict = eval('Res_{:}_{:}'.format(pdbname,chain))
 				if line[17:20].strip() in AAA_dict.keys():
 					if line[22:26].strip() not in pSEQ: 
 						pSEQ.append(line[22:26].strip())
@@ -357,10 +368,10 @@ for in_pdb in inpdbs:
 				logfile.write('  mutation {:}{:}{:}\n'.format(UNPdict[str(x)],x,AAA_dict[pSEQ_dict[str(x)]]))
 	for chain in chains:
 		missingSide,missingRes ='',''
-		Resdict = eval('Res_{:}_{:}'.format(in_pdb.upper(),chain))
+		Resdict = eval('Res_{:}_{:}'.format(pdbname,chain))
 		for x in range(dbsb,dbse):
 			if str(x) in Resdict.keys():
-				if pSEQ_dict[str(x)] not in ['ALA','GLY'] and len(Resdict[str(x)]) < 5:
+				if pSEQ_dict[str(x)] not in ['ALA','GLY'] and len(Resdict[str(x)]) < 6:
 					missingSide = missingSide + '{:}{:} '.format(AAA_dict[pSEQ_dict[str(x)]],x)
 			if str(x) not in Resdict.keys():
 				missingRes= missingRes + '{:}{:} '.format(UNPdict[str(x)],x)
@@ -466,7 +477,7 @@ for res in UNPnseq:
 			y = 0.66
 			xpos = xpos + 0.2
 			for j in range(10):
-				ax0.text(xpos, y, inpdbs[i].upper(), color = colorsd[inpdbs[i]], fontsize = 8)
+				ax0.text(xpos, y, pdbnames[i].upper(), color = colorsd[pdbnames[i]], fontsize = 8)
 				i+=1
 				y = y - 0.06
 				if i== len(inpdbs): break
