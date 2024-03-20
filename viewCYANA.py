@@ -79,16 +79,15 @@ talosSS = os.path.join(TALOSdir +'/predSS.tab')
 pdbname = in_pdb.split('/')[-1].replace('.pdb','')
 calc = cwd + 'CALC.cya'
 outname = in_pdb.split('.')[0]
-
+pdb_path = in_pdb
+pymol_pdb_path = in_pdb
 if '/' not in in_pdb:
 	pdb_path = '../' + in_pdb
 	pymol_pdb_path = './' + in_pdb
 if '../' in in_pdb:
 	pdb_path = '../' + in_pdb
 	pymol_pdb_path = './' + in_pdb
-else:
-	pdb_path = in_pdb
-	pymol_pdb_path = in_pdb
+
 ## Check for the output directory if it does not exist make it
 if not os.path.exists(outdir):
 	os.makedirs(outdir)
@@ -102,12 +101,13 @@ lols = [con for con in manualongcons if 'lol' in con and 'hbond' not in con]
 dihed = [con for con in manualongcons if 'aco' in con]
 mn = 1
 outpml = open(outdir + 'CYANA_input.pml','w')
-outpml.write('load '+pdb_path+'\n')
+# outpml.write('load '+pdb_path+'\n')
 outpml.write('load '+pymol_pdb_path+'\n')
 outpml.write('set_color royalblue = [65,105,225]\nset_color forest = [34,139,34]\nset_color yellowgreen = [154,205,50]\nset_color darkorange = [255,140,0]\nset_color purple = [128,0,128]\nset_color lightseagreen = [32,178,170]\nset_color darkkhaki = [189,183,107]\nset_color peru = [205,133,63]\nset_color saddlebrown = [139,69,19]\nset_color gold = [255,215,0]\nset_color navy = [0,0,128]\nset_color darkturquoise = [0,206,209]\nset_color pink = [255,192,203]\nset_color cyan = [0,255,255]\nset_color paleturquoise = [175,238,238]\nset_color lightsalmon = [255,160,122]\nset_color khaki = [240,230,140]\nset_color yellowgreen = [154,205,50]\nset_color thistle = [216,191,216]\nset_color aquamarine = [127,255,212]\nset_color plum = [221,160,221]\nset_color lightpink = [255,182,193]\nset_color mediumvioletred = [199,21,133]\nset_color firebrick = [178,34,34]\nset_color lightcoral = [240,128,128]\nset_color deeppink = [255,20,147]\nset_color hotpink = [255,105,180]\nset_color mediumpurple = [147,112,219]\nset_color navy = [0,0,128]\nset_color cornflowerblue = [100,149,237]\n')
 outpml.write('set dash_gap, 0.05\n')
 outpml.write('color gray60, all\n')
 outcmx = open(outdir + 'CYANA_input.cxc','w')
+print(pdb_path)
 outcmx.write('open {:} maxModels 1\nrename #{:} predSS\n'.format(pdb_path,mn))
 
 mcount = 0
