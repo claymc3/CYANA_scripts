@@ -45,7 +45,7 @@ files = [
 ['rota2018-his.data', pcmap, [0, 0.02, 0.2, 1], 'Histadine (HIS,H)'],
 ['rota2018-ile.data', bcmap, [0, 0.03, 0.3, 1], 'Isoleucine (ILE,I)'],
 ['rota2018-leu.data', bcmap, [0, 0.04, 0.2, 1], 'Leucine (LEU,L)'],
-['rota2018-lys.data', gcmap, [0, 0.02, 0.2, 1], 'Lysince (LYS,K)'],
+['rota2018-lys.data', gcmap, [0, 0.02, 0.2, 1], 'Lysine (LYS,K)'],
 ['rota2018-met.data', bcmap, [0, 0.04, 0.2, 1], 'Methionine (MET, M)'],
 ['rota2018-trp.data', pcmap, [0, 0.02, 0.2, 1], 'Tryptophan (TRP,W)']]
 for file,cmap, bounds, label in files:
