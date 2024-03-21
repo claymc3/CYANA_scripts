@@ -98,7 +98,7 @@ if not os.path.exists(outdir +'pseudobonds/'):
 manualongcons = [line.strip() for line in open(calc).readlines() if line.strip() and '.upl' in line][0].split()[2].split(',')
 upls = [con for con in manualongcons if 'upl' in con and 'hbond' not in con]
 lols = [con for con in manualongcons if 'lol' in con and 'hbond' not in con]
-dihed = [con for con in manualongcons if 'aco' in con]
+dihed = [con for con in manualongcons if 'aco' in con and 'inital' not in con]
 mn = 1
 outpml = open(outdir + 'CYANA_input.pml','w')
 # outpml.write('load '+pdb_path+'\n')
@@ -188,12 +188,8 @@ for line in open('hbond.upl').readlines():
 				if cns[2] not in ['O','H','N']: sidehbond = sidehbond +'{:},'.format(cns[0])
 				if cns[5] not in ['O','H','N']: sidehbond = sidehbond +'{:},'.format(cns[3])
 hbond.close()
-outpml.write(hbgroupline + '\n')
-outcmx.write('open '+ pdb_path +' maxModels 1\n')
-cmxn = '#2'
-outcmx.write('color {:} gray(150)\n'.format(cmxn))
-mn+=2
 ### Read in the dihed.aco file and color residues that have defined phi/psi angles purple, and defined chi angles cornflower blue
+mn+=1
 cmxphisel, cmxchisel = 'name phipsisel #{:}:'.format(mn), 'name chisel #{:}:'.format(mn)
 pmlphisel, pmlchisel = 'color purple, phi-psi and resi ','color navy, chi and resi '
 phir, chir = [],[]
@@ -216,9 +212,20 @@ outcmx.write(cmxphisel[:-1] + '\n')
 outcmx.write('color phipsisel purple target ac\n')
 outpml.write('create phi-psi, {:}\ncolor gray60, phi-psi\nhide sticks, phi-psi\n'.format(pmln))
 outpml.write(pmlphisel[:-1] + '\n')
-sidelist = []
-u = 0
+if len(cmxchisel[:-1]) > 18:
+	outcmx.write(cmxchisel[:-1] + '\n''color chisel navy target a \n')
+	outcmx.write('show chisel\n')
+	outpml.write('create chi, {:}\ncolor gray60, chi\nshow sticks, chi\n'.format(pmln))
+	outpml.write(pmlchisel[:-1] + '\n')
+### Read in the *.upl files and create pseudobond files to show distances 
 mn+=1
+sidelist = []
+outpml.write(hbgroupline + '\n')
+outcmx.write('open '+ pdb_path +' maxModels 1\n')
+cmxn = mn
+print('cmxn',cmxn)
+outcmx.write('color #{:} gray(150)\n'.format(cmxn))
+u = 0
 for uplfile in upls:
 	for conect in ConectionTypes:
 		exec("{:}_{:}_pb = []".format(uplfile.replace('.upl','').replace("-","_"),conect))
@@ -251,14 +258,13 @@ for uplfile in upls:
 				for atom1 in atoms1:
 					for atom2 in atoms2:
 						u+=1
-						outpb.append('{:}:{:}@{:} {:}:{:}@{:}\n'.format(cmxn, cns[0], atom1, cmxn, cns[3],atom2))
+						outpb.append('#{:}:{:}@{:} #{:}:{:}@{:}\n'.format(cmxn, cns[0], atom1, cmxn, cns[3],atom2))
 						outpml.write('distance UPL{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(u), pmln, cns[0], atom1, pmln, cns[3], atom2))
 						exec('group{:}{:} = group{:}{:} + "UPL{:}"'.format(uplfile.replace('.upl','').replace("-","_"), ctype,uplfile.replace('.upl','').replace("-","_"), ctype,u))
 				if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
 					sidelist.append(cns[0])
 				if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
 					sidelist.append(cns[3])
-
 for uplfile in upls:
 	for x in range(len(ConectionTypes)):
 		pbs = eval('{:}_{:}_pb'.format(uplfile.replace('.upl','').replace("-","_"),ConectionTypes[x]))
@@ -272,9 +278,7 @@ for uplfile in upls:
 			groupstr = eval('group{:}{:}'.format(uplfile.replace('.upl','').replace("-","_"),ConectionTypes[x]))
 			outpml.write(groupstr + '\n')
 			outpml.write('color {:}, {:}_{:}\n'.format(colors[x],uplfile.replace('.upl','').replace("-","_"),ConectionTypes[x]))
-
-
-sidechains = 'show #2:'
+sidechains = 'show #{:}:'.format(mn)
 for res in sidelist:
 	sidechains = sidechains + res + ','
 outcmx.write(sidechains[:-1] + '\n')
@@ -292,24 +296,16 @@ if ',' in sidehbond:
 	outcmx.write(sidehbond)
 	outcmx.write('show shbond  target a\nhide H\nshow hbond target a\n')
 
-
-if len(cmxchisel[:-1]) > 18:
-	outcmx.write(cmxchisel[:-1] + '\n''color chisel navy target a \n')
-	outcmx.write('show chisel\n')
-	outpml.write('create chi, {:}\ncolor gray60, chi\nshow sticks, chi\n'.format(pmln))
-	outpml.write(pmlchisel[:-1] + '\n')
 outpml.write('color gray60, {:}\n'.format(pdbname))
 outpml.write('show sticks, {:} and resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\n hide sticks, elem H\nhide sticks, name N+C\n'.format(pdbname))
 outpml.write('color paleturquoise, {:} and resn ILE\ncolor lightsalmon, {:} and resn LEU\ncolor khaki, {:} and resn VAL\ncolor yellowgreen, {:} and resn ALA\ncolor thistle, {:} and resn MET\ncolor aquamarine, {:} and resn THR\ncolor lightpink, {:} and resn TYR\ncolor plum, {:} and resn PHE\n'.format(pdbname,pdbname,pdbname,pdbname,pdbname,pdbname,pdbname,pdbname))
 outpml.write('color gold, elem S\ncolor red, elem O\ncolor blue, elem N\n')
-outcmx.write('cartoon suppress false\nlabel {:}  text "{{0.label_one_letter_code}}{{0.number}}{{0.insertion_code}}"\nlabel ontop false\n'.format(cmxn))
-outcmx.write('color #2:ile paleturquoise target a\ncolor #2:leu lightsalmon  target a\ncolor #2:val khaki target a\ncolor #2:ala yellowgreen  target a\ncolor #2:met thistle target a\ncolor #2:thr aquamarine target a\ncolor #2:phe plum target a\ncolor #2:tyr lightpink target a\n')
-outcmx.write('color  byhetero target a\n')
-outcmx.write('show #2:thr,met,ala,leu,val,ile,phe,tyr\n')
-outcmx.write('hide H\nshow {:}@N,H target a\n'.format(cmxn))
-
-outcmx.write('hide #{:}@C,O,N,H\n'.format(3))
-
+outcmx.write('cartoon suppress false\nlabel #{:}  text "{{0.label_one_letter_code}}{{0.number}}{{0.insertion_code}}"\nlabel ontop false\n'.format(cmxn))
+outcmx.write('color #{:}:ile paleturquoise target a\ncolor #{:}:leu lightsalmon  target a\ncolor #{:}:val khaki target a\ncolor #{:}:ala yellowgreen  target a\ncolor #{:}:met thistle target a\ncolor #{:}:thr aquamarine target a\ncolor #{:}:phe plum target a\ncolor #{:}:tyr lightpink target a\n'.format(cmxn,cmxn,cmxn,cmxn,cmxn,cmxn,cmxn,cmxn))
+outcmx.write('color byhetero target a\n')
+outcmx.write('show #{:}:thr,met,ala,leu,val,ile,phe,tyr\n'.format(cmxn))
+outcmx.write('hide H\nshow #{:}@N,H target a\n'.format(cmxn))
+# outcmx.write('hide #{:}@C,O,N,H\n'.format(3))
 outcmx.write('ui tool show "Side View"\n')
 outpml.write("hide labels\n")
 for y in range(2,21,1):
