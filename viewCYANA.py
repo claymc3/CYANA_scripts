@@ -108,7 +108,7 @@ outpml.write('set dash_gap, 0.05\n')
 outpml.write('color gray60, all\n')
 outcmx = open(outdir + 'CYANA_input.cxc','w')
 print(pdb_path)
-outcmx.write('open {:} maxModels 1\nrename #{:} predSS\n'.format(pdb_path,mn))
+outcmx.write('open {:} maxModels 1 name predSS\n'.format(pdb_path))
 
 mcount = 0
 Hasprot = False
@@ -207,7 +207,7 @@ for angf in dihed:
 					chir.append(ang[0])
 					cmxchisel = cmxchisel + ang[0] + ','
 					pmlchisel = pmlchisel  + ang[0] + '+'
-outcmx.write('open {:} maxModels 1\nrename #{:} dihed\nhide #{:} target a\n color #{:} gray(150)\n'.format(pdb_path,mn,mn,mn))
+outcmx.write('open {:} maxModels 1 name dihed\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(pdb_path,mn,mn))
 outcmx.write(cmxphisel[:-1] + '\n')
 outcmx.write('color phipsisel purple target ac\n')
 outpml.write('create phi-psi, {:}\ncolor gray60, phi-psi\nhide sticks, phi-psi\n'.format(pmln))
@@ -221,9 +221,8 @@ if len(cmxchisel[:-1]) > 18:
 mn+=1
 sidelist = []
 outpml.write(hbgroupline + '\n')
-outcmx.write('open '+ pdb_path +' maxModels 1\n')
+outcmx.write('open '+ pdb_path +' maxModels 1 name model_upls\n')
 cmxn = mn
-print('cmxn',cmxn)
 outcmx.write('color #{:} gray(150)\n'.format(cmxn))
 u = 0
 for uplfile in upls:
