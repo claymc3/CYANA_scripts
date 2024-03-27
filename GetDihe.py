@@ -381,6 +381,7 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
   PsiDF =  pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
   chi1DF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
   chi2DF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
+  dihedDF =  pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv','type'])
   DAramalist, DArotalist = [], []
 
   for mnum in range(1,21,1):
@@ -416,13 +417,21 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
   for res in Sequence: 
     if res[0] in SideDihe.keys():
       chi1DF.loc[res,'type'] = res[0]
-
-  PhiDF.to_csv(outdir + outname + '_Phi.csv')
-  PsiDF.to_csv(outdir + outname + '_Psi.csv')
-  chi1DF.to_csv(outdir + outname + '_Chi1.csv')
-  chi2DF.to_csv(outdir + outname + '_Chi2.csv')
-  #chi3DF.to_csv(outdir + outname + '_chi3.csv')
-  #chi4DF.to_csv(outdir + outname + '_chi4.csv')
+    if res in PhiDF.index.to_list():
+      dihedDF.loc['{:}_Phi'.format(res)] = PhiDF.loc[res].copy()
+    if res in  PsiDF.index.to_list():
+      dihedDF.loc['{:}_Psi'.format(res)] = PsiDF.loc[res].copy()
+    if res in chi1DF.index.to_list():
+      dihedDF.loc['{:}_Chi1'.format(res)] = chi1DF.loc[res].copy()
+    if res in chi1DF.index.to_list():
+      dihedDF.loc['{:}_Chi2'.format(res)] = chi2DF.loc[res].copy()
+  dihedDF.to_csv(outdir + outname+'_dihed.csv')
+  # PhiDF.to_csv(outdir + outname + '_Phi.csv')
+  # PsiDF.to_csv(outdir + outname + '_Psi.csv')
+  # chi1DF.to_csv(outdir + outname + '_Chi1.csv')
+  # chi2DF.to_csv(outdir + outname + '_Chi2.csv')
+  # chi3DF.to_csv(outdir + outname + '_chi3.csv')
+  # chi4DF.to_csv(outdir + outname + '_chi4.csv')
   import time
   start_time = time.time()
   pdf = PdfPages(outdir + '{:}_overview.pdf'.format(outname))
