@@ -15,7 +15,33 @@ dt_string = now.strftime("%Y-%m-%d %H:%M")
 
 Vnum = '2.4'
 replacements ={
-'ALAHA':'CA','ALAQB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'CB','CYSHA':'CA','CYSHB2':'CB','CYSHB3':'CB','CYSQB':'CB','CYSSHA':'CA','CYSSHB2':'CB','CYSSHB3':'CB','CYSSQB':'CB','ASPHA':'CA','ASPHB2':'CB','ASPHB3':'CB','ASPQB':'CB','GLUHA':'CA','GLUHB2':'CB','GLUHB3':'CB','GLUQB':'CB','GLUHG2':'CG','GLUHG3':'CG','GLUQG':'CG','PHEHA':'CA','PHEHB2':'CB','PHEHB3':'CB','PHEQB':'CB','PHEQD':'CD1,CD2','PHEQE':'CE1,CE2','PHEHD1':'CD1','PHEHE1':'CE1','PHEHZ':'CZ','PHEHE2':'CE2','PHEHD2':'CD2','GLYHA2':'CA','GLYHA3':'CA','GLYQA':'CA','HISHA':'CA','HISHB2':'CB','HISHB3':'CB','HISQB':'CB','HISHD1':'ND1','HISHE2':'NE2','HISHD2':'CD2','HISHE1':'CE1','HISTHA':'CA','HISTHB2':'CB','HISTHB3':'CB','HISTQB':'CB','HISTHD1':'ND1','HISTHE2':'NE2','HISTHD2':'CD2','HISTHE1':'CE1','HIS+HA':'CA','HIS+HB2':'CB','HIS+HB3':'CB','HIS+QB':'CB','HIS+HD1':'ND1','HIS+HE2':'NE2','HIS+HD2':'CD2','HIS+HE1':'CE1','ILEHA':'CA','ILEHB':'CB','ILEQG2':'CG2','ILEHG21':'CG2','ILEHG22':'CG2','ILEHG23':'CG2','ILEHG12':'CG1','ILEHG13':'CG1','ILEQG1':'CG1','ILEQD1':'CD1','ILEHD11':'CD1','ILEHD12':'CD1','ILEHD13':'CD1','LYSHA':'CA','LYSHB2':'CB','LYSHB3':'CB','LYSQB':'CB','LYSHG2':'CG','LYSHG3':'CG','LYSHD2':'CD ','LYSHD3':'CD ','LYSQD':'CD ','LYSHE2':'CE','LYSHE3':'CE','LYSQE':'CE','LYSHZ1':'NZ','LYSHZ2':'NZ','LYSHZ3':'NZ','LYSQZ':'NZ','LEUHA':'CA','LEUHB2':'CB','LEUHB3':'CB','LEUQB':'CB','LEUHG':'CG','LEUHD11':'CD1','LEUHD12':'CD1','LEUHD13':'CD1','LEUQD1':'CD1','LEUHD21':'CD2','LEUHD22':'CD2','LEUHD23':'CD2','LEUQD2':'CD2','LEUQQD':'CD2,CD1','METHA':'CA','METHB2':'CB','METHB3':'CB','METQB':'CB','METHG2':'CG','METHG3':'CG','METQG':'CG','METQE':'CE','METHE1':'CE','METHE2':'CE','METHE3':'CE','ASNHA':'CA','ASNHB2':'CB','ASNHB3':'CB','ASNQB':'CB','ASNHD21':'ND2','ASNHD22':'ND2','ASNQD2':'ND2','PROHA':'CA','PROHB2':'CB','PROHB3':'CB','PROQB':'CB','PROHG2':'CG','PROHG3':'CG','PROQG':'CG','PROHD2':'CD','PROHD3':'CD','PROQD':'CD','CPROHA':'CA','CPROHB2':'CB','CPROHB3':'CB','CPROQB':'CB','CPROHG2':'CG','CPROHG3':'CG','CPROQG':'CG','CPROHD2':'CD','CPROHD3':'CD','CPROQD':'CD','GLNHA':'CA','GLNHB2':'CB','GLNHB3':'CB','GLNQB':'CB','GLNHG2':'CG','GLNHG3':'CG','GLNQG':'CG','GLNHE21':'NE2','GLNHE22':'NE2','GLNQE2':'NE2','ARGHA':'CA','ARGHB2':'CB','ARGHB3':'CB','ARGQB':'CB','ARGHG2':'CG','ARGHG3':'CG','ARGQG':'CG','ARGHD2':'CD','ARGHD3':'CD','ARGQD':'CD','ARGHE':'NE','ARGHH11':'NH1','ARGHH12':'NH1','ARGQH1':'NH1','ARGHH21':'NH2','ARGHH22':'NH2','ARGQH2':'NH2','SERHA':'CA','SERHB2':'CB','SERHB3':'CB','SERHG':'OG','SEPHA':'CA','SEPHB2':'CB','SEPHB3':'CB','SEPHG':'OG','THRHA':'CA','THRHB':'CB','THRHG1':'OG1','THRHG21':'CG2','THRHG22':'CG2','THRHG23':'CG2','THRQG2':'CG2','TPOHA':'CA','TPOHB':'CB','TPOHG1':'OG1','TPOHG21':'CG2','TPOHG22':'CG2','TPOHG23':'CG2','TPOQG2':'CG2','VALHA':'CA','VALHB':'CB','VALHG11':'CG1','VALHG12':'CG1','VALHG13':'CG1','VALQG1':'CG1','VALHG21':'CG2','VALHG22':'CG2','VALHG23':'CG2','VALQG2':'CG2','VALQQG':'CG1,CG2','TRPHA':'CA','TRPHB2':'CB','TRPHB3':'CB','TRPQB':'CB','TRPHD1':'CD1','TRPHE3':'CE3','TRPHE1':'NE1','TRPHZ3':'CZ3','TRPHZ2':'CZ2','TRPHH2':'CH2','TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRQD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH','PTRHA':'CA','PTRHB2':'CB','PTRHB3':'CB','PTRQB':'CB','PTRQD':'CD1,CD2','PTRQE':'CE1,CE2','PTRHD1':'CD1','PTRHE1':'CE1','PTRHE2':'CE2','PTRHD2':'CD2','PTRHH':'OH'}
+'ALA':{'HA':'CA','CA':'HA','H':'N','N':'H','CB':'QB','QB':'CB'},
+'CYS':{'HA':'CA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','H':'N','N':'H'},
+'CYSS':{'HA':'CA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','H':'N','N':'H'},
+'ASP':{'HA':'CA','HB2':'CB','CB':'HB2','HB3':'CB','CB':'HB3','QB':'CB','H':'N','N':'H'},
+'GLU':{'HA':'CA','HB2':'CB','HB3':'CB','CB':'HB3,HB2','QB':'CB,HB2,HB3','HG2':'CG','HG3':'CG','CG':'HG2,HG3','QG':'CG,HG2,HG3','H':'N','N':'H'},
+'PHE':{'HA':'CA','HB2':'CB','HB3':'CB','CB':'HB3,HB2','QB':'CB,HB2,HB3','QD':'CD1,CD2,HD1,HD2','QE':'CE1,CE2,HE1,HE2','HD1':'CD1','HE1':'CE1','HZ':'CZ','HE2':'CE2','HD2':'CD2','CD1':'HD1','CE1':'HE1','CZ': 'HZ','CE2':'HE2','CD2':'HD2','H':'N','N':'H'},
+'GLY':{'QA':'CA,HA2,HA3','CA':'HA2,HA3','HA2':'CA','HA3':'CA','H':'N','N':'H'},
+'HIS':{'HA':'CA','CA':'HA','CB':'HB2,HB3','HB2':'CB','HB3':'CB','QB':'CB,HB2,HB3','HD1':'ND1','HE2':'NE2','HD2':'CD2','HE1':'CE1','ND1':'HD1','NE2':'HE2','CD2':'HD2','CE1':'HE1','H':'N','N':'H'},
+'HIST':{'HA':'CA','CA':'HA','CB':'HB2,HB3','HB2':'CB','HB3':'CB','QB':'CB,HB2,HB3','HD1':'ND1','HE2':'NE2','HD2':'CD2','HE1':'CE1','ND1':'HD1','NE2':'HE2','CD2':'HD2','CE1':'HE1','H':'N','N':'H'},
+'HIS+':{'HA':'CA','CA':'HA','CB':'HB2,HB3','HB2':'CB','HB3':'CB','QB':'CB,HB2,HB3','HD1':'ND1','HE2':'NE2','HD2':'CD2','HE1':'CE1','ND1':'HD1','NE2':'HE2','CD2':'HD2','CE1':'HE1','H':'N','N':'H'},
+'ILE':{'HA':'CA','HB':'CB','CA':'HA','CB':'HB','QG2':'CG2','QG1':'CG1,HG12,HG13','QD1':'CD1','CG2':'QG2','CG1':'QG1,HG12,HG13','CD1':'QD1','HG12':'CG1','HG13':'CG1','H':'N','N':'H'},
+'LYS':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HG2':'CG','HG3':'CG','CG':'HG2,HG3','QG':'CG,HG2,HG3','HD2':'CD','HD3':'CD','CD':'HD2,HD3','QD':'CD,HD2,HD3','HE2':'CE','HE3':'CE','CE':'HE2,HE3','QE':'CE,HE2,HE3','QZ':'NZ','NZ':'QZ','H':'N','N':'H'},
+'LEU':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','QD1':'CD1','CD1':'QD1','QD2':'CD2','CD2':'QD2','H':'N','N':'H'},
+'MET':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HG2':'CG','HG3':'CG','CG':'HG2,HG3','QG':'CG,HG2,HG3','QE':'CE','CE':'QE','H':'N','N':'H'},
+'ASN':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','QD2':'ND2,HD21,HD22','HD21':'ND2,QD2','HD22':'ND2,QD2','ND2':'HD21,HD22','H':'N','N':'H'},
+'PRO':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HG2':'CG','HG3':'CG','CG':'HG2,HG3','QG':'CG,HG2,HG3','HD2':'CD','HD3':'CD','CD':'HD2,HD3','QD':'CD,HD2,HD3'},
+'CPRO':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HG2':'CG','HG3':'CG','CG':'HG2,HG3','QG':'CG,HG2,HG3','HD2':'CD','HD3':'CD','CD':'HD2,HD3','QD':'CD,HD2,HD3'},
+'GLN':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HG2':'CG','HG3':'CG','CG':'HG2,HG3','QG':'CG,HG2,HG3','HE21':'NE2','HE22':'NE2','QE2':'NE2,HE21,HE22','NE2':'HE21,HE22,QE2','H':'N','N':'H'},
+'ARG':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HG2':'CG','HG3':'CG','CG':'HG2,HG3','QG':'CG,HG2,HG3','HD2':'CD','HD3':'CD','CD':'HD2,HD3','QD':'CD,HD2,HD3','HE':'NE','NE':'HE','NH1':'HH11,HH12','HH11':'NH1','HH12':'NH1','QH1':'NH1,HH11,HH12','NH2':'HH21,HH22','HH21':'NH2','HH22':'NH2','QH2':'NH2,HH21,HH22','H':'N','N':'H'},
+'SER':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HG':'OG','OG':'HG','H':'N','N':'H'},
+'SEP':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HG':'OG','OG':'HG','H':'N','N':'H'},
+'THR':{'HA':'CA','CA':'HA','HB':'CB','CB':'HB','HG1':'OG1','OG1':'HG1','QG2':'CG2','CG2':'QG2','H':'N','N':'H'},
+'TPO':{'HA':'CA','CA':'HA','HB':'CB','CB':'HB','HG1':'OG1','OG1':'HG1','QG2':'CG2','CG2':'QG2','H':'N','N':'H'},
+'VAL':{'HA':'CA','CA':'HA','HB':'CB','CB':'HB','QG1':'CG1','CG1':'QG1','QG2':'CG2','CG2':'QG2','H':'N','N':'H'},
+'TRP':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HD1':'CD1','CD1':'HD1','HE3':'CE3','HE1':'NE1','HZ3':'CZ3','HZ2':'CZ2','HH2':'CH2','CE3':'HE3','NE1':'HE1','CZ3':'HZ3','CZ2':'HZ2','CH2':'HH2','H':'N','N':'H'},
+'TYR':{'HA':'CA','HB2':'CB','HB3':'CB','CB':'HB3,HB2','QB':'CB,HB2,HB3','QD':'CD1,CD2,HD1,HD2','QE':'CE1,CE2,HE1,HE2','HD1':'CD1','HE1':'CE1','HZ':'CZ','HE2':'CE2','HD2':'CD2','CD1':'HD1','CE1':'HE1','CZ': 'HZ','CE2':'HE2','CD2':'HD2','HH':'OH','OH':'HH','H':'N','N':'H'},
+'PTR':{'HA':'CA','HB2':'CB','HB3':'CB','CB':'HB3,HB2','QB':'CB,HB2,HB3','QD':'CD1,CD2,HD1,HD2','QE':'CE1,CE2,HE1,HE2','HD1':'CD1','HE1':'CE1','HZ':'CZ','HE2':'CE2','HD2':'CD2','CD1':'HD1','CE1':'HE1','CZ': 'HZ','CE2':'HE2','CD2':'HD2','HH':'OH','OH':'HH','H':'N','N':'H'}}
 #'ALAH':'N','CYSH':'N','ASPH':'N','GLUH':'N','PHEH':'N','GLYH':'N','HISH':'N','ILEH':'N','LYSH':'N','LEUH':'N','METH':'N','ASNH':'N','GLNH':'N','ARGH':'N','SERH':'N','THRH':'N','VALH':'N','TRPH':'N','TYRH':'N',
 ConTypeDict = {'ALAH':'N', 'ALAHA':'Ali', 'ALAHB':'Methyl', 'ALAHB1':'Methyl', 'ALAHB2':'Methyl', 'ALAHB3':'Methyl', 'ALAQB':'Methyl', 'ALAC':'Other', 'ALACA':'Ali', 'ALACB':'Methyl', 'ALAN':'N', 'CYSSH':'N', 'CYSSHA':'Ali', 'CYSSHB2':'Ali', 'CYSSHB3':'Ali', 'CYSSQB':'Ali', 'CYSSC':'Other', 'CYSSCA':'Ali', 'CYSSCB':'Ali', 'CYSSN':'N', 'CYSH':'N', 'CYSHA':'Ali', 'CYSHB2':'Ali', 'CYSHB3':'Ali', 'CYSQB':'Ali', 'CYSHG':'Ali', 'CYSC':'Other', 'CYSCA':'Ali', 'CYSCB':'Ali', 'CYSN':'N', 'ASPH':'N', 'ASPHA':'Ali', 'ASPHB2':'Ali', 'ASPHB3':'Ali', 'ASPQB':'Ali', 'ASPHD2':'Other', 'ASPC':'Other', 'ASPCA':'Ali', 'ASPCB':'Ali', 'ASPCG':'Ali', 'ASPN':'N', 'GLUH':'N', 'GLUHA':'Ali', 'GLUHB2':'Ali', 'GLUHB3':'Ali', 'GLUQB':'Ali', 'GLUHE2':'Other', 'GLUHG2':'Ali', 'GLUHG3':'Ali', 'GLUQG':'Ali', 'GLUC':'Other', 'GLUCA':'Ali', 'GLUCB':'Ali', 'GLUCG':'Ali', 'GLUCD':'Other', 'GLUN':'N', 'PHEH':'N', 'PHEHA':'Aro', 'PHEHB2':'Aro', 'PHEHB3':'Aro', 'PHEQB':'Aro', 'PHEHD1':'Aro', 'PHEHD2':'Aro', 'PHEQD':'Aro', 'PHEHE1':'Aro', 'PHEHE2':'Aro', 'PHEQE':'Aro', 'PHEHZ':'Aro', 'PHEC':'Other', 'PHECA':'Aro', 'PHECB':'Aro', 'PHECD1':'Aro', 'PHECD2':'Aro', 'PHECE1':'Aro', 'PHECE2':'Aro', 'PHECG':'Aro', 'PHECZ':'Aro', 'PHEN':'N',  'GLYH':'N', 'GLYHA2':'Ali', 'GLYHA3':'Ali', 'GLYC':'Other', 'GLYCA':'Ali', 'GLYN':'N',  'HISH':'N', 'HISHA':'Ali', 'HISHB2':'Ali', 'HISHB3':'Ali', 'HISQB':'Ali', 'HISHD1':'N', 'HISHD2':'Aro', 'HISHE1':'Aro', 'HISC':'Other', 'HISCA':'Ali', 'HISCB':'Ali', 'HISCD2':'Aro', 'HISCE1':'Aro', 'HISCG':'Aro', 'HISN':'N', 'HISND1':'N', 'HISNE2':'N', 'HISTH':'N', 'HISTHA':'Ali', 'HISTHB2':'Ali', 'HISTHB3':'Ali', 'HISTQB':'Ali', 'HISTHD2':'Aro', 'HISTHE1':'Aro', 'HISTHE2':'N', 'HISTC':'Other', 'HISTCA':'Ali', 'HISTCB':'Ali', 'HISTCD2':'Aro', 'HISTCE1':'Aro', 'HISTCG':'Aro', 'HISTN':'N', 'HISTND1':'N', 'HISTNE2':'N', 'HIS+H':'N', 'HIS+HA':'Ali', 'HIS+HB2':'Ali', 'HIS+HB3':'Ali', 'HIS+QB':'Ali', 'HIS+HD1':'N', 'HIS+HD2':'Aro', 'HIS+HE1':'Aro', 'HIS+HE2':'N', 'HIS+C':'Other', 'HIS+CA':'Ali', 'HIS+CB':'Ali', 'HIS+CD2':'Aro', 'HIS+CE1':'Aro', 'HIS+CG':'Aro', 'HIS+N':'N', 'HIS+ND1':'N', 'HIS+NE2':'N', 'ILEH':'N', 'ILEHA':'Ali', 'ILEHB':'Ali', 'ILEHG12':'Ali', 'ILEHG13':'Ali', 'ILEQG1':'Ali', 'ILEHD1':'Methyl', 'ILEHD11':'Methyl', 'ILEHD12':'Methyl', 'ILEHD13':'Methyl', 'ILEQD1':'Methyl', 'ILEHG2':'Methyl', 'ILEHG21':'Methyl', 'ILEHG22':'Methyl', 'ILEHG23':'Methyl', 'ILEQG2':'Methyl', 'ILEC':'Other', 'ILECA':'Ali', 'ILECB':'Ali', 'ILECD1':'Methyl', 'ILECG1':'Ali', 'ILECG2':'Methyl', 'ILEN':'N', 'LYSH':'N', 'LYSHA':'Ali', 'LYSHB2':'Ali', 'LYSHB3':'Ali', 'LYSQB':'Ali', 'LYSHD2':'Ali', 'LYSHD3':'Ali', 'LYSQD':'Ali', 'LYSHE2':'Ali', 'LYSHE3':'Ali', 'LYSQE':'Ali', 'LYSHG2':'Ali', 'LYSHG3':'Ali', 'LYSQG':'Ali', 'LYSC':'Other', 'LYSCA':'Ali', 'LYSCB':'Ali', 'LYSCD':'Ali', 'LYSCE':'Ali', 'LYSCG':'Ali', 'LYSN':'N', 'LYSNZ':'N', 'LYSQZ':'N', 'LYSHZ':'N', 'LEUH':'N', 'LEUHA':'Ali', 'LEUHB2':'Ali', 'LEUHB3':'Ali', 'LEUQB':'Ali', 'LEUHG':'Ali', 'LEUHD1':'Methyl', 'LEUHD11':'Methyl', 'LEUHD12':'Methyl', 'LEUHD13':'Methyl', 'LEUQD1':'Methyl', 'LEUHD2':'Methyl', 'LEUHD21':'Methyl', 'LEUHD22':'Methyl', 'LEUHD23':'Methyl', 'LEUQD2':'Methyl', 'LEUC':'Other', 'LEUCA':'Ali', 'LEUCB':'Ali', 'LEUCG':'Ali', 'LEUCD1':'Methyl', 'LEUCD2':'Methyl', 'LEUN':'N', 'METH':'N', 'METHA':'Ali', 'METHB2':'Ali', 'METHB3':'Ali', 'METQB':'Ali', 'METHG2':'Ali', 'METHG3':'Ali', 'METQG':'Ali', 'METHE':'Methyl', 'METHE1':'Methyl', 'METHE2':'Methyl', 'METHE3':'Methyl', 'METQE':'Methyl', 'METC':'Other', 'METCA':'Ali', 'METCB':'Ali', 'METCE':'Methyl', 'METCG':'Ali', 'METN':'N', 'ASNH':'N', 'ASNHA':'Ali', 'ASNHB2':'Ali', 'ASNHB3':'Ali', 'ASNQB':'Ali', 'ASNHD21':'N', 'ASNHD22':'N', 'ASNQD':'N', 'ASNC':'Other', 'ASNCA':'Ali', 'ASNCB':'Ali', 'ASNCG':'Other', 'ASNN':'N', 'ASNND2':'N', 'PROHA':'Ali', 'PROHB2':'Ali', 'PROHB3':'Ali', 'PROQB':'Ali', 'PROHD2':'Ali', 'PROHD3':'Ali', 'PROQD':'Ali', 'PROHG2':'Ali', 'PROHG3':'Ali', 'PROQG':'Ali', 'PROC':'Other', 'PROCA':'Ali', 'PROCB':'Ali', 'PROCD':'Ali', 'PROCG':'Ali', 'PRON':'N', 'CPROHA':'Ali', 'CPROHB2':'Ali', 'CPROHB3':'Ali', 'CPROQB':'Ali', 'CPROHD2':'Ali', 'CPROHD3':'Ali', 'CPROQD':'Ali', 'CPROHG2':'Ali', 'CPROHG3':'Ali', 'CPROQG':'Ali', 'CPROC':'Other', 'CPROCA':'Ali', 'CPROCB':'Ali', 'CPROCD':'Ali', 'CPROCG':'Ali', 'CPRON':'N', 'GLNH':'N', 'GLNHA':'Ali', 'GLNHB2':'Ali', 'GLNHB3':'Ali', 'GLNQB':'Ali', 'GLNHE21':'N', 'GLNHE22':'N', 'GLNQE2':'N', 'GLNHG2':'Ali', 'GLNHG3':'Ali', 'GLNQG':'Ali', 'GLNC':'Other', 'GLNCA':'Ali', 'GLNCB':'Ali', 'GLNCD':'Other', 'GLNCG':'Ali', 'GLNN':'N', 'GLNNE2':'N', 'ARGH':'N', 'ARGHA':'Ali', 'ARGHB2':'Ali', 'ARGHB3':'Ali', 'ARGQB':'Ali', 'ARGHD2':'Ali', 'ARGHD3':'Ali', 'ARGQD':'Ali', 'ARGHG2':'Ali', 'ARGHG3':'Ali', 'ARGQG':'Ali', 'ARGHH11':'N', 'ARGHH12':'N', 'ARGQH1':'N', 'ARGHH21':'N', 'ARGHH22':'N', 'ARGQH2':'N', 'ARGC':'Other', 'ARGCA':'Ali', 'ARGCB':'Ali', 'ARGCD':'Ali', 'ARGCG':'Ali', 'ARGCZ':'Ali', 'ARGN':'N', 'ARGNE':'N', 'ARGNH1':'N', 'ARGNH2':'N', 'ARGHE':'N', 'SERH':'N', 'SERHA':'Ali', 'SERHB2':'Ali', 'SERHB3':'Ali', 'SERQB':'Ali', 'SERHG':'Other', 'SERC':'Other', 'SERCA':'Ali', 'SERCB':'Ali', 'SERN':'N', 'SEPH':'N', 'SEPHA':'Ali', 'SEPHB2':'Ali', 'SEPHB3':'Ali', 'SEPQB':'Ali', 'SEPHG':'Other', 'SEPC':'Other', 'SEPCA':'Ali', 'SEPCB':'Ali', 'SEPN':'N', 'THRH':'N', 'THRHA':'Ali', 'THRHB':'Ali', 'THRHG1':'Other', 'THRHG2':'Methyl', 'THRQG2':'Methyl', 'THRC':'Other', 'THRCA':'Ali', 'THRCB':'Ali', 'THRCG2':'Methyl', 'THRN':'N', 'TPOH':'N', 'TPOHA':'Ali', 'TPOHB':'Ali', 'TPOHG1':'Other', 'TPOHG2':'Methyl', 'TPOQG2':'Methyl', 'TPOC':'Other', 'TPOCA':'Ali', 'TPOCB':'Ali', 'TPOCG2':'Methyl', 'TPON':'N', 'VALH':'N', 'VALHA':'Ali', 'VALHB':'Ali', 'VALHG1':'Methyl', 'VALQG1':'Methyl', 'VALHG2':'Methyl', 'VALQG2':'Methyl', 'VALC':'Other', 'VALCA':'Ali', 'VALCB':'Ali', 'VALCG1':'Methyl', 'VALCG2':'Methyl', 'VALN':'N', 'TRPH':'N', 'TRPHA':'Ali', 'TRPHB2':'Ali', 'TRPHB3':'Ali', 'TRPQB':'Ali', 'TRPHD1':'Aro', 'TRPHE1':'N', 'TRPHE3':'Aro', 'TRPHH2':'Aro', 'TRPHZ2':'Aro', 'TRPHZ3':'Aro', 'TRPC':'Other', 'TRPCA':'Ali', 'TRPCB':'Ali', 'TRPCD1':'Aro', 'TRPCD2':'Aro', 'TRPCE2':'Aro', 'TRPCE3':'Aro', 'TRPCG':'Aro', 'TRPCH2':'Aro', 'TRPCZ2':'Aro', 'TRPCZ3':'Aro', 'TRPN':'N', 'TRPNE1':'N', 'TYRH':'N', 'TYRHA':'Aro', 'TYRHB2':'Aro', 'TYRHB3':'Aro', 'TYRQB':'Aro', 'TYRHD1':'Aro', 'TYRHD2':'Aro', 'TYRQD':'Aro', 'TYRHE1':'Aro', 'TYRHE2':'Aro', 'TYRQE':'Aro', 'TYRHH':'Other', 'TYRC':'Other', 'TYRCA':'Aro', 'TYRCB':'Aro', 'TYRCD1':'Aro', 'TYRCD2':'Aro', 'TYRCE1':'Aro', 'TYRCE2':'Aro', 'TYRCG':'Aro', 'TYRCZ':'Aro', 'TYRN':'N', 'PTRH':'N', 'PTRHA':'Aro', 'PTRHB2':'Aro', 'PTRHB3':'Aro', 'PTRQB':'Aro', 'PTRHD1':'Aro', 'PTRHD2':'Aro', 'PTRQD':'Aro', 'PTRHE1':'Aro', 'PTRHE2':'Aro', 'PTRQE':'Aro', 'PTRHH':'Other', 'PTRC':'Other', 'PTRCA':'Aro', 'PTRCB':'Aro', 'PTRCD1':'Aro', 'PTRCD2':'Aro', 'PTRCE1':'Aro', 'PTRCE2':'Aro', 'PTRCG':'Aro', 'PTRCZ':'Aro', 'PTRN':'N', 'N-N':'N_N', 'Aro-Aro':'Aro_Aro', 'Methyl-Methyl':'Methyl_Methyl', 'Ali-Ali':'Ali_Ali', 'Aro-Methyl':'Methyl_Aro', 'Methyl-Aro':'Methyl_Aro', 'Methyl-N':'N_Methyl', 'N-Methyl':'N_Methyl', 'Aro-N':'N_Aro', 'N-Aro':'N_Aro', 'Methyl-Ali':'Ali_Methyl', 'Ali-Methyl':'Ali_Methyl', 'Aro-Ali':'Ali_Aro', 'Ali-Aro':'Ali_Aro', 'Ali-N':'N_Ali', 'N-Ali':'N_Ali', 'Other-Other':'Other','Other-N':'Other','N-Other':'Other','Other-Ali':'Other','Ali-Other':'Other','Other-Methyl':'Other','Methyl-Other':'Other', 'Other-Aro':'Other', 'Aro-Other':'Other'}
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "CYSS":"C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H","HISE": "H","HIS+": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "PROO":"P","PROU":"P","CPRO":"P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S',"ADE":"A","RADE":"A","CYT":"C","RCYT":"C","GUA":"G","RGUA":"G","THY":"T","URA":"U"}
@@ -26,27 +52,221 @@ cwd = os.getcwd() + '/'
 run1dir = sys.argv[1]
 run2dir = sys.argv[2]
 
-fupl1 = run1dir + '/final.upl'
-fupl2 = run2dir + '/final.upl'
+if run1dir[-1] != '/': run1dir = run1dir + '/'
+if run2dir[-1] != '/': run2dir = run2dir + '/'
+changelog = open(run2dir + 'Changes_log.txt','w')
+changelog.write('Reporting changes in {:} relative to {:}\n\n'.format(run2dir,run1dir))
+fupl1 = run1dir + 'final.upl'
+fupl2 = run2dir + 'final.upl'
+hbupl1 = run1dir + 'hbond.upl'
+hbupl2 = run2dir + 'hbond.upl'
+hblol1 = run1dir + 'hbond.lol'
+hblol2 = run2dir + 'hbond.lol'
+dihe1 = run1dir + 'dihed.aco'
+dihe2 = run2dir + 'dihed.aco'
 
-calc = cwd + run1dir + '/CALC.cya'
+# cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
 
-cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
+hbonds1,hbonds2 ={},{}
+for ln in ['1','2']:
+	hbdict = eval('hbonds{:}'.format(ln))
+	uplf = eval('hbupl{:}'.format(ln))
+	lolf = eval('hblol{:}'.format(ln))
+	print(uplf)
+	print(lolf)
+	for line in open(uplf).readlines():
+		if line.strip() and not re.match('^\s*#', line):
+			cns = line.split()
+			upl = '{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])
+			if upl in hbdict.keys():
+				print('Duplicate hbond entry {:}'.format(upl))
+			if upl not in hbdict.keys():
+				hbdict['{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])] = [cns[6]]
+	for line in open(lolf).readlines():
+		if line.strip() and not re.match('^\s*#', line):
+			cns = line.split()
+			upl = '{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])
+			if upl in hbdict.keys():
+				hbdict['{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])].append(cns[6])
+			if upl not in hbdict.keys():
+				print('missing hbond lol entry {:}'.format(upl))
+
+rmhb, addhb = '',''
+for hb in hbonds1.keys():
+	if hb not in hbonds2.keys():
+		rmhb = rmhb + '   {:}\n'.format(hb)
+for hb in hbonds2.keys():
+	if hb not in hbonds1.keys():
+		addhb = addhb + '   {:}'.format(hb)
+if len(rmhb) > 0: 
+	rmhb = 'Removed Hbonds:\n' + rmhb
+	print(rmhb)
+	changelog.write(rmhb)
+if len(addhb) > 0: 
+	addhb = 'Added Hbonds:/n' + addhb
+	changelog.write(addhb)
+	print(addhb)
+
+dihedrals1,dihedrals2 = {},{}
+for ln in ['1','2']:
+	angdict = eval('dihedrals{:}'.format(ln))
+	dihedf = eval('dihe{:}'.format(ln))
+	for line in open(dihedf).readlines():
+		if line.strip() and not re.match('^\s*#', line):
+			cns = line.split()
+			# ang = '{:>5}  {:<4} {:<5}  {:>8} {:>8}'.format(cns[0],cns[1],cns[2],cns[3],cns[4])
+			ang = '{:>5}  {:<4} {:<5}'.format(cns[0],cns[1],cns[2])
+			if ang in angdict.keys():
+				print('Duplicate dihedral entry {:}'.format(ang))
+			if ang not in angdict.keys():
+				angdict[ang] = '{:8.1f}{:8.1f}'.format(float(cns[3]),float(cns[4]))
+
+
+rmdih,addih,changedih = '','',''
+for ang in dihedrals1.keys():
+	if ang not in dihedrals2.keys():
+		rmdih = rmdih + '   {:}  {:}\n'.format(ang,dihedrals1[ang])
+for ang in dihedrals2.keys():
+	if ang not in dihedrals1.keys():
+		addih = addih  + '  {:}  {:}\n'.format(ang,dihedrals2[ang])
+for ang in dihedrals1.keys():
+	if ang in dihedrals2.keys():
+		low1, up1 = dihedrals1[ang].split()
+		low2, up2 = dihedrals2[ang].split()
+	if low1 != low2 or up1 != up2:
+		changedih = changedih + '   {:}  {:} to  {:}\n'.format(ang,dihedrals1[ang],dihedrals2[ang])
+if len(rmdih) > 0:
+	rmdih = 'Removed Dihedrals:\n' + rmdih
+	changelog.write(rmdih)
+	print(rmdih)
+if len(addih) > 0:
+	addih = 'Added Dihedrals:\n' + addih
+	changelog.write(addih)
+	print(addih)
+if len(changedih) > 0:
+	changedih = 'Changed Dihedral Bounds:\n' + changedih
+	changelog.write(changedih)
+	print(changedih)
+
+calc = run1dir + '/CALC.cya'
 manualcons = [line.strip() for line in open(calc).readlines() if line.strip() and '.upl' in line][0].split()[2].split(',')
 uplsf = [con for con in manualcons if 'upl' in con and 'hbond' not in con]
-hbondsf = [con for con in manualcons if 'upl' in con and 'hbond' in con]
 lolsf = [con for con in manualcons if 'lol' in con and 'hbond' not in con]
-dihedf = [con for con in manualcons if 'aco' in con if con != 'inital.aco']
+
+## Check to see if both directories have the same files
+distcons = []
+for uplf in uplsf:
+	if os.path.exists(run2dir+ uplf):
+		distcons.append(uplf)
+for lolf in lolsf:
+	if os.path.exists(run2dir+ lolf):
+		distcons.append(lolf)
+for distcon in distcons:
+	for ln in ['1','2']:
+		exec("{:}{:} = {{}}".format(distcon.split('.')[0],ln))
+		condict = eval("{:}{:}".format(distcon.split('.')[0],ln))
+		confile = eval('run{:}dir'.format(ln)) + distcon 
+		for line in open(confile).readlines():
+			if line.strip() and not re.match('^\s*#', line):
+				cns = line.split()
+				upl = '{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])
+				if upl in condict.keys():
+					print('Duplicate hbond entry {:}'.format(upl))
+				if upl not in condict.keys():
+					condict['{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])] = float(cns[6])
+
+for distcon in distcons:
+	lostupl,newupl,changupl,chang2upl = '','','',''
+	dict1 = eval(distcon.split('.')[0]+'1')
+	dict2 = eval(distcon.split('.')[0]+'2')
+	for upl in dict1.keys():
+		if upl not in dict2.keys():
+			atoms1 = replacements[upl.split()[1]][upl.split()[2]]
+			atoms2 = replacements[upl.split()[4]][upl.split()[5]]
+			for atom1 in atoms1.split(','):
+				for atom2 in atoms2.split(','):
+					rupl = '{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(upl.split()[0],upl.split()[1],atom1,upl.split()[4],upl.split()[5],atom2)
+					if rupl not in dict2.keys():
+						lostupl = lostupl + '   {:}  {:}\n'.format(upl,dict1[upl])
+					if rupl in dict2.keys():
+						changupl = changupl + '   {:}  {:} to {:} {:}\n'.format(upl,dict1[upl],rupl,dict2[rupl])
+	for upl in dict2.keys():
+		if upl not in dict1.keys():
+			atoms1 = replacements[upl.split()[1]][upl.split()[2]]
+			atoms2 = replacements[upl.split()[4]][upl.split()[5]]
+			for atom1 in atoms1.split(','):
+				for atom2 in atoms2.split(','):
+					rupl = '{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(upl.split()[0],upl.split()[1],atom1,upl.split()[4],upl.split()[5],atom2)
+					if rupl not in dict1.keys():
+						newupl = newupl + '   {:}  {:}\n'.format(upl,dict2[upl])
+					if rupl in dict1.keys():
+						changupl = changupl + '   {:}  {:} to {:} {:}\n'.format(upl,dict2[upl],rupl,dict1[rupl])
+
+	for upl in dict1.keys():
+		if upl in dict2.keys():
+			if float(dict1[upl]) != float(dict2[upl]):
+				chang2upl = chang2upl + '   {:}  {:} to {:}'.format(upl,dict1[upl],dict2[upl])
+
+	if len(lostupl) > 0:
+		lostupl = 'Removed UPLs from {:}:\n'.format(distcon.split('.')[0]) + lostupl
+		print(lostupl)
+		changelog.write(lostupl)
+	if len(newupl) > 0:
+		newupl = 'Added UPLs to {:}:\n'.format(distcon.split('.')[0]) + newupl
+		print(newupl)
+		changelog.write(newupl)
+	if len(changupl) > 0:
+		changupl = 'Changed UPL Atoms in {:}:\n'.format(distcon.split('.')[0]) + changupl
+		print(changupl)
+		changelog.write(changupl)
+	if len(chang2upl) > 0:
+		changupl = 'Changed UPL Value in {:}:\n'.format(distcon.split('.')[0]) + chang2upl
+		print(chang2upl)
+		changelog.write(chan2gupl)
 
 
-finalupls1 = []
-for line in open(fupl1).readlines():
-	cns = line.split()
-	upl = '{:} {:} {:} {:} {:} {:} {:}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5],cns[6])
-	finalupls1.append(upl)
-for line in open(fupl2).readlines():
-	cns = line.split()
-	upl = '{:} {:} {:} {:} {:} {:} {:}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5],cns[6])
-	if upl not in finalupls1:
-		print(line.strip())
+finalupl1,finalupl2 ={},{}
+for ln in ['1','2']:
+	upldict = eval('finalupl{:}'.format(ln))
+	uplf = eval('fupl{:}'.format(ln))
+	for line in open(uplf).readlines():
+		if line.strip() and not re.match('^\s*#', line):
+			cns = line.split()
+			upl = '{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])
+			if upl in upldict.keys():
+				print('Duplicate hbond entry {:}'.format(upl))
+			if upl not in upldict.keys():
+				upldict['{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])] = float(cns[6])
+lostupl,newupl,changupl = '','',''
+for upl in finalupl1.keys():
+	if upl not in finalupl2.keys():
+		lostupl = lostupl + '   {:}   {:6.2f}\n'.format(upl,finalupl1[upl])
+for upl in finalupl2.keys():
+	if upl not in finalupl1.keys():
+		newupl = newupl + '   {:}   {:6.2f}\n'.format(upl,finalupl2[upl])
+for upl in finalupl1.keys():
+	if upl in finalupl2.keys():
+		if abs(finalupl1[upl] - finalupl2[upl]) > 0.4:
+			changupl = changupl + '   {:}  {:6.2f}  to  {:6.2f}\n'.format(upl,finalupl1[upl],finalupl2[upl])
+if len(lostupl) > 0:
+	lostupl = 'Old UPLs not found:\n' + lostupl
+	print(lostupl)
+	changelog.write(lostupl)
+if len(newupl) > 0:
+	newupl = 'New UPLs:\n' + newupl
+	print(newupl)
+	changelog.write(newupl)
+if len(changupl) > 0:
+	changupl = 'UPL with difference > 0.3:\n' + changupl
+	print(changupl)
+	changelog.write(changupl)
+
+
+
+
+
+
+
+
+
 
