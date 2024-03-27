@@ -324,10 +324,10 @@ for line in open(log).readlines():
     Swapped[group2] = group1
 for x in range(len(noalines)):
   if 'Peak' in noalines[x] and 'out of' in noalines[x+1]:
-    if '0 out of' not in noalines[x+1] and 'diagonal' not in noalines[x]: 
+    if '0 out of 0' not in noalines[x+1] and 'diagonal' not in noalines[x]:
       index = 0
-    if '0 out of 0' not in noalines[x+1]:
-      index = 3
+      if '0 out of' in noalines[x+1]: 
+        index = 3
       for y in range(2,int(noalines[x+1].split()[index])+2,1):
         cns = noalines[x+y].strip().split()
         if not re.match('^\s*[A-Z]*',noalines[x+y]):
@@ -346,7 +346,8 @@ for x in range(len(noalines)):
 Assignments = sorted(Assignments , key = lambda x:(x.split('-')[0][1:], x.split('-')[1]))
 posdiffout = open(outdir + 'probable_diffusion_log.txt','w')
 import GetDistances as distance
-distDF,fillteredDF = distance.examin(in_pdb,ADpairs,Assignments)
+distDF,fillteredDF = distance.examin(in_pdb,ADpairs,Assignments,fupl)
+# exit()
 i = 1
 im = 0
 for line in open(fupl).readlines():
