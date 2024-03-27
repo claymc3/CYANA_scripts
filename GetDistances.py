@@ -15,6 +15,9 @@ import pandas as pd
 import numpy as np
 import re
 import math as m
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+from matplotlib.backends.backend_pdf import PdfPages
 
 Pseudo2Prot = {'AQB':['HB1', 'HB2', 'HB3'],'RQB':['HB2', 'HB3'],'RQG':['HG2', 'HG3'],'RQD':['HD2', 'HD3'],'RQH1':['HH11', 'HH12'],'RQH2':['HH21', 'HH22'],'NQB':['HB2', 'HB3'],'NQD2':['HD21', 'HD22'],'DQB':['HB2', 'HB3'],'CQB':['HB2', 'HB3'],'QQB':['HB2', 'HB3'],'QQG':['HG2', 'HG3'],'QQE2':['HE21', 'HE22'],'EQB':['HB2', 'HB3'],'EQG':['HG2', 'HG3'],'GQA':['HA2', 'HA3'],'HQB':['HB2', 'HB3'],'IQG1':['HG11', 'HG12', 'HG13'],'IQG2':['HG21', 'HG22', 'HG23'],'IQD1':['HD11', 'HD12', 'HD13'],'LQB':['HB2', 'HB3'],'LQD1':['HD11', 'HD12', 'HD13'],'LQD2':['HD21', 'HD22', 'HD23'],'KQG':['HG2', 'HG3'],'KQD':['HD2', 'HD3'],'KQE':['HE2', 'HE3'],'KQZ':['HZ2', 'HZ3'],'MQB':['HB2', 'HB3'],'MQG':['HG2', 'HG3'],'MQE':['HE1', 'HE2', 'HE3'],'FQB':['HB2', 'HB3'],'FQD':['HD1', 'HD2'],'FQE':['HE1', 'HE2'],'PQB':['HB2', 'HB3'],'PQG':['HG2', 'HG3'],'PQD':['HD2', 'HD3'],'SQB':['HB2', 'HB3'],'TQG2':['HG21', 'HG22', 'HG23'],'WQB':['HB2', 'HB3'],'YQB':['HB2', 'HB3'],'YQD':['HD1', 'HD2'],'YQE':['HE1', 'HE2'],'VQB':['HB2', 'HB3'],'VQG1':['HG11', 'HG12', 'HG13'],'VQG2':['HG21', 'HG22', 'HG23'],'AHB':['HB1', 'HB2', 'HB3'],'RHB':['HB2', 'HB3'],'RHG':['HG2', 'HG3'],'RHD':['HD2', 'HD3'],'RHH1':['HH11', 'HH12'],'RHH2':['HH21', 'HH22'],'NHB':['HB2', 'HB3'],'NHD2':['HD21', 'HD22'],'DHB':['HB2', 'HB3'],'HHB':['HB2', 'HB3'],'QHB':['HB2', 'HB3'],'QHG':['HG2', 'HG3'],'QHE2':['HE21', 'HE22'],'EHB':['HB2', 'HB3'],'EHG':['HG2', 'HG3'],'GHA':['HA2', 'HA3'],'HHB':['HB2', 'HB3'],'IHG1':['HG12', 'HG13'],'IHG2':['HG21', 'HG22', 'HG23'],'IHD1':['HD11', 'HD12', 'HD13'],'LHB':['HB2', 'HB3'],'LHD1':['HD11', 'HD12', 'HD13'],'LHD2':['HD21', 'HD22', 'HD23'],'KHG':['HG2', 'HG3'],'KHD':['HD2', 'HD3'],'KHE':['HE2', 'HE3'],'KHZ':['HZ2', 'HZ3'],'MHB':['HB2', 'HB3'],'MHG':['HG2', 'HG3'],'MHE':['HE1', 'HE2', 'HE3'],'FHB':['HB2', 'HB3'],'FHD':['HD1', 'HD2'],'FHE':['HE1', 'HE2'],'PHB':['HB2', 'HB3'],'PHG':['HG2', 'HG3'],'PHD':['HD2', 'HD3'],'SHB':['HB2', 'HB3'],'THG2':['HG21', 'HG22', 'HG23'],'WHB':['HB2', 'HB3'],'YHB':['HB2', 'HB3'],'YHD':['HD1','HD2'],'YHE':['HE1', 'HE2'],'VHB':['HB2', 'HB3'],'VHG1':['HG11', 'HG12', 'HG13'],'VHG2':['HG21', 'HG22', 'HG23']}
 Prot2Heavy = {
@@ -82,16 +85,20 @@ def find_heavy(inatom, PDBdict):
 # ------------------------------------------------------------------------------
 def getDistance(donor, acceptor,PDBdict):
   d = 0.0
+  dist = []
   for a1 in donor:
     for a2 in acceptor:
       (x1,y1,z1) = PDBdict[a1]
       (x2,y2,z2) = PDBdict[a2]
       d = d + np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)**-6
-  if d != 0.0: reff = np.round(d**(-1/6),2)
+      dist.append(d)
+  if d != 0.0: 
+    #reff = np.round(d**(-1/6),2)
+    reff = round(m.pow(d/len(dist),-1/6),1)
   else: reff = 0.0
   return reff
 
-def examin(in_pdb, ADpairs,Assignments):
+def examin(in_pdb, ADpairs,Assignments,finalupl):
   pdb_name = in_pdb.split('/')[-1].replace('.pdb','')
   num2seq = {}
   Starts,Ends = [], []
@@ -140,7 +147,43 @@ def examin(in_pdb, ADpairs,Assignments):
         if np.mean(dist) <= 7.5:
           FilteredDF.loc[inatom1,inatom2] = "{:3.2f} +/- {:0.2f}".format(np.mean(dist),np.std(dist))
           FilteredDF.loc[inatom2,inatom1] = "{:3.2f} +/- {:0.2f}".format(np.mean(dist),np.std(dist))
-  DistancesDF.to_csv('post_cyana_analysis/' + pdb_name + '_distances_heavy_v2.csv')
+          # if np.std(dist) >= 0.5:
+          #   print("{:} {:} {:3.2f} +/- {:0.2f}".format(inatom1,inatom2,np.mean(dist),np.std(dist)))
+  cyana,observed,cyana1 = [],[],[]
+  for line in open(finalupl).readlines():
+    if '#SUP' not in line: ## exclude ambiguous restraints
+      pass 
+    else:
+      cns = line.split()
+      atom1 = '{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2])
+      atom2 = '{:}{:}-{:}'.format(AAA_dict[cns[4]],cns[3],cns[5])
+      upl = float(cns[6])
+      cyana.append(upl)
+      cyana1.append(upl-1.0)
+      Hatom1 = find_protons(atom1, Coord)
+      Hatom2 = find_protons(atom2, Coord)
+      odl = []
+      for mnum in range(1,21,1):
+        Coor = eval('Coor' + str(mnum))
+        dobs = getDistance(Hatom1, Hatom2, Coor)
+        odl.append(dobs)
+      observed.append(np.round(np.mean(odl),2))
+      if np.mean(odl) - upl < -2.0:
+        print('{:} {:} mean {:3.2f} upl {:}'.format(atom1, atom2, np.mean(odl),upl))
+      if np.std(odl) > 1:
+        print('{:} {:} std {:3.2f} upl {:}'.format(atom1, atom2, np.std(odl),upl))
+  # fig=plt.figure(figsize=(4,4))
+  # ax = fig.add_subplot(1,1,1)
+  # ax.plot(cyana,cyana1,linewidth = 2, color = [0,0,0], label = None, zorder = 1)
+  # ax.plot(cyana,cyana,linewidth = 2, color = [0,0,0], label = None, zorder = 1)
+  # ax.scatter(cyana,observed, color = 'darkgreen',marker='o', s=30, label = None, clip_on=False, zorder = 2)
+  # ax.set_xlabel('CYANA UPL')
+  # ax.set_ylabel('Average Dist')
+  # ax.set_ylim([1,8])
+  # ax.set_ylim([1,8])
+  # plt.show()
+
+  DistancesDF.to_csv('post_cyana_analysis/' + pdb_name + '_distances_heavy_v3.csv')
   # print(DistancesDF)
   # print(DistancesDF.shape)
 # print(DistancesDF.dropna(thresh=5).shape)
