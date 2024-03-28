@@ -97,13 +97,13 @@ for hb in hbonds1.keys():
 		rmhb = rmhb + '   {:}\n'.format(hb)
 for hb in hbonds2.keys():
 	if hb not in hbonds1.keys():
-		addhb = addhb + '   {:}'.format(hb)
+		addhb = addhb + '   {:}\n'.format(hb)
 if len(rmhb) > 0: 
-	rmhb = 'Removed Hbonds:\n' + rmhb
+	rmhb = 'Removed Hbonds:\n' + rmhb + '\n'
 	print(rmhb)
 	changelog.write(rmhb)
 if len(addhb) > 0: 
-	addhb = 'Added Hbonds:/n' + addhb
+	addhb = 'Added Hbonds:\n' + addhb + '\n'
 	changelog.write(addhb)
 	print(addhb)
 
@@ -136,15 +136,15 @@ for ang in dihedrals1.keys():
 	if low1 != low2 or up1 != up2:
 		changedih = changedih + '   {:}  {:} to  {:}\n'.format(ang,dihedrals1[ang],dihedrals2[ang])
 if len(rmdih) > 0:
-	rmdih = 'Removed Dihedrals:\n' + rmdih
+	rmdih = 'Removed Dihedrals:\n' + rmdih + '\n'
 	changelog.write(rmdih)
 	print(rmdih)
 if len(addih) > 0:
-	addih = 'Added Dihedrals:\n' + addih
+	addih = 'Added Dihedrals:\n' + addih + '\n'
 	changelog.write(addih)
 	print(addih)
 if len(changedih) > 0:
-	changedih = 'Changed Dihedral Bounds:\n' + changedih
+	changedih = 'Changed Dihedral Bounds:\n' + changedih + '\n'
 	changelog.write(changedih)
 	print(changedih)
 
@@ -171,7 +171,7 @@ for distcon in distcons:
 				cns = line.split()
 				upl = '{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])
 				if upl in condict.keys():
-					print('Duplicate hbond entry {:}'.format(upl))
+					print('Duplicate entry {:} in {:}'.format(upl,confile))
 				if upl not in condict.keys():
 					condict['{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])] = float(cns[6])
 
@@ -183,46 +183,49 @@ for distcon in distcons:
 		if upl not in dict2.keys():
 			atoms1 = replacements[upl.split()[1]][upl.split()[2]]
 			atoms2 = replacements[upl.split()[4]][upl.split()[5]]
+			badupl = ''
 			for atom1 in atoms1.split(','):
 				for atom2 in atoms2.split(','):
 					rupl = '{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(upl.split()[0],upl.split()[1],atom1,upl.split()[4],upl.split()[5],atom2)
 					if rupl not in dict2.keys():
-						lostupl = lostupl + '   {:}  {:}\n'.format(upl,dict1[upl])
+						badupl = '   {:}  {:}\n'.format(upl,dict1[upl])
 					if rupl in dict2.keys():
 						changupl = changupl + '   {:}  {:} to {:} {:}\n'.format(upl,dict1[upl],rupl,dict2[rupl])
+			if len(badupl) > 0: lostupl = lostupl +badupl
 	for upl in dict2.keys():
 		if upl not in dict1.keys():
 			atoms1 = replacements[upl.split()[1]][upl.split()[2]]
 			atoms2 = replacements[upl.split()[4]][upl.split()[5]]
+			badupl = ''
 			for atom1 in atoms1.split(','):
 				for atom2 in atoms2.split(','):
 					rupl = '{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(upl.split()[0],upl.split()[1],atom1,upl.split()[4],upl.split()[5],atom2)
 					if rupl not in dict1.keys():
-						newupl = newupl + '   {:}  {:}\n'.format(upl,dict2[upl])
+						badupl = '   {:}  {:}\n'.format(upl,dict2[upl])
 					if rupl in dict1.keys():
 						changupl = changupl + '   {:}  {:} to {:} {:}\n'.format(upl,dict2[upl],rupl,dict1[rupl])
-
+				if len(badupl) > 0: newupl = newupl + badupl
 	for upl in dict1.keys():
 		if upl in dict2.keys():
 			if float(dict1[upl]) != float(dict2[upl]):
 				chang2upl = chang2upl + '   {:}  {:} to {:}'.format(upl,dict1[upl],dict2[upl])
 
 	if len(lostupl) > 0:
-		lostupl = 'Removed UPLs from {:}:\n'.format(distcon.split('.')[0]) + lostupl
+		lostupl = 'Removed UPLs from {:}:\n'.format(distcon.split('.')[0]) + lostupl + '\n'
 		print(lostupl)
 		changelog.write(lostupl)
 	if len(newupl) > 0:
-		newupl = 'Added UPLs to {:}:\n'.format(distcon.split('.')[0]) + newupl
+		newupl = 'Added UPLs to {:}:\n'.format(distcon.split('.')[0]) + newupl + '\n'
 		print(newupl)
 		changelog.write(newupl)
 	if len(changupl) > 0:
-		changupl = 'Changed UPL Atoms in {:}:\n'.format(distcon.split('.')[0]) + changupl
+		changupl = 'Changed UPL Atoms in {:}:\n'.format(distcon.split('.')[0]) + changupl + '\n'
 		print(changupl)
 		changelog.write(changupl)
 	if len(chang2upl) > 0:
-		changupl = 'Changed UPL Value in {:}:\n'.format(distcon.split('.')[0]) + chang2upl
+		chang2upl = 'Changed UPL Value in {:}:\n'.format(distcon.split('.')[0]) + chang2upl + '\n'
 		print(chang2upl)
-		changelog.write(chan2gupl)
+		changelog.write(chang2upl)
 
 
 finalupl1,finalupl2 ={},{}
@@ -232,11 +235,9 @@ for ln in ['1','2']:
 	for line in open(uplf).readlines():
 		if line.strip() and not re.match('^\s*#', line):
 			cns = line.split()
-			upl = '{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])
-			if upl in upldict.keys():
-				print('Duplicate hbond entry {:}'.format(upl))
+			upl = '{:>} {:<4} {:<5} {:>} {:<4} {:<5}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])
 			if upl not in upldict.keys():
-				upldict['{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])] = float(cns[6])
+				upldict['{:>} {:<4} {:<5} {:>} {:<4} {:<5}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])] = float(cns[6])
 lostupl,newupl,changupl = '','',''
 for upl in finalupl1.keys():
 	if upl not in finalupl2.keys():
@@ -246,18 +247,18 @@ for upl in finalupl2.keys():
 		newupl = newupl + '   {:}   {:6.2f}\n'.format(upl,finalupl2[upl])
 for upl in finalupl1.keys():
 	if upl in finalupl2.keys():
-		if abs(finalupl1[upl] - finalupl2[upl]) > 0.4:
+		if abs(finalupl1[upl] - finalupl2[upl]) > 0.5:
 			changupl = changupl + '   {:}  {:6.2f}  to  {:6.2f}\n'.format(upl,finalupl1[upl],finalupl2[upl])
 if len(lostupl) > 0:
-	lostupl = 'Old UPLs not found:\n' + lostupl
+	lostupl = '{:} {:} final UPLs not found in {:}:\n'.format(lostupl.count('\n'),run1dir,run2dir) + lostupl + '\n'
 	print(lostupl)
 	changelog.write(lostupl)
 if len(newupl) > 0:
-	newupl = 'New UPLs:\n' + newupl
+	newupl = '{:} {:} final UPLs not found in {:}:\n'.format(newupl.count('\n'),run2dir,run1dir) + newupl + '\n'
 	print(newupl)
 	changelog.write(newupl)
 if len(changupl) > 0:
-	changupl = 'UPL with difference > 0.3:\n' + changupl
+	changupl = '{:} UPL with difference > 0.4:\n'.format(changupl.count('\n')) + changupl + '\n'
 	print(changupl)
 	changelog.write(changupl)
 
