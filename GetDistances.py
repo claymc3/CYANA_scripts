@@ -93,8 +93,8 @@ def getDistance(donor, acceptor,PDBdict):
       d = d + np.sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)**-6
       dist.append(d)
   if d != 0.0: 
-    #reff = np.round(d**(-1/6),2)
-    reff = round(m.pow(d/len(dist),-1/6),1)
+    reff = np.round(d**(-1/6),2)
+    #reff = round(m.pow(d/len(dist),-1/6),1)
   else: reff = 0.0
   return reff
 
