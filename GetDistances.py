@@ -168,10 +168,10 @@ def examin(in_pdb, ADpairs,Assignments,finalupl):
         dobs = getDistance(Hatom1, Hatom2, Coor)
         odl.append(dobs)
       observed.append(np.round(np.mean(odl),2))
-      if np.mean(odl) - upl < -2.0:
-        print('{:} {:} mean {:3.2f} upl {:}'.format(atom1, atom2, np.mean(odl),upl))
-      if np.std(odl) > 1:
-        print('{:} {:} std {:3.2f} upl {:}'.format(atom1, atom2, np.std(odl),upl))
+      # if np.mean(odl) - upl < -2.0:
+      #   print('{:} {:} mean {:3.2f} upl {:}'.format(atom1, atom2, np.mean(odl),upl))
+      # if np.std(odl) > 1:
+      #   print('{:} {:} std {:3.2f} upl {:}'.format(atom1, atom2, np.std(odl),upl))
   # fig=plt.figure(figsize=(4,4))
   # ax = fig.add_subplot(1,1,1)
   # ax.plot(cyana,cyana1,linewidth = 2, color = [0,0,0], label = None, zorder = 1)
