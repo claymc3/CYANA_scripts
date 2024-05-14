@@ -400,7 +400,11 @@ for line in open(fupl).readlines():
           sidelist.append(cns[0])
         if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
           sidelist.append(cns[3])
-        d = float(distDF.loc[group1,group2].split()[0])
+        try:
+          d = float(distDF.loc[group1,group2].split()[0])
+        except:
+          KeyError
+          d = 0
         if d >= 7.7 and line not in Filtered:
           common = fillteredDF.dropna(subset=[group1,group2]).index.tolist()
           if len(common) > 2:
