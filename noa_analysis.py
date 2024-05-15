@@ -238,8 +238,8 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
 							if conect not in upldict.keys(): udist =' '
 							outlist.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^5}  {:^10}  {:^6.2f}   {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,note))
 							used.append('{:} {:}'.format(peak, conect))
-						except AttributeError:
-							pass
+					except AttributeError:
+						pass
 				if localpdif >=1:
 					pdiffcount+=1
 					posdiffout.write(noalines[x])
