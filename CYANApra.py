@@ -402,8 +402,7 @@ for line in open(fupl).readlines():
           sidelist.append(cns[3])
         try:
           d = float(distDF.loc[group1,group2].split()[0])
-        except:
-          KeyError
+        except KeyError:
           d = 0
         if d >= 7.7 and line not in Filtered:
           common = fillteredDF.dropna(subset=[group1,group2]).index.tolist()
