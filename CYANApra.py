@@ -330,9 +330,9 @@ for x in range(len(noalines)):
         index = 3
       for y in range(2,int(noalines[x+1].split()[index])+2,1):
         cns = noalines[x+y].strip().split()
-        if not re.match('^\s*[A-Z]*',noalines[x+y]):
+        if not re.match('^\s+[A-Z]+',noalines[x+y]):
           atom1,resn1, resi1, atom2, resn2, resi2 = cns[1],cns[2],int(cns[3]), cns[5], cns[6], int(cns[7])
-        if re.match('^\s*[A-Z]*',noalines[x+y]):
+        if re.match('^\s+[A-Z]+',noalines[x+y]):
           atom1,resn1, resi1, atom2, resn2, resi2 = cns[0],cns[1],int(cns[2]), cns[4], cns[5], int(cns[6])
         group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
         group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
