@@ -30,8 +30,8 @@ replacements ={
 'LEU':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','QD1':'CD1','CD1':'QD1','QD2':'CD2','CD2':'QD2','H':'N','N':'H'},
 'MET':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HG2':'CG','HG3':'CG','CG':'HG2,HG3','QG':'CG,HG2,HG3','QE':'CE','CE':'QE','H':'N','N':'H'},
 'ASN':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','QD2':'ND2,HD21,HD22','HD21':'ND2,QD2','HD22':'ND2,QD2','ND2':'HD21,HD22','H':'N','N':'H'},
-'PRO':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HG2':'CG','HG3':'CG','CG':'HG2,HG3','QG':'CG,HG2,HG3','HD2':'CD','HD3':'CD','CD':'HD2,HD3','QD':'CD,HD2,HD3'},
-'CPRO':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HG2':'CG','HG3':'CG','CG':'HG2,HG3','QG':'CG,HG2,HG3','HD2':'CD','HD3':'CD','CD':'HD2,HD3','QD':'CD,HD2,HD3'},
+'PRO':{'N':'N','HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HG2':'CG','HG3':'CG','CG':'HG2,HG3','QG':'CG,HG2,HG3','HD2':'CD','HD3':'CD','CD':'HD2,HD3','QD':'CD,HD2,HD3'},
+'CPRO':{'N':'N','HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HG2':'CG','HG3':'CG','CG':'HG2,HG3','QG':'CG,HG2,HG3','HD2':'CD','HD3':'CD','CD':'HD2,HD3','QD':'CD,HD2,HD3'},
 'GLN':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HG2':'CG','HG3':'CG','CG':'HG2,HG3','QG':'CG,HG2,HG3','HE21':'NE2','HE22':'NE2','QE2':'NE2,HE21,HE22','NE2':'HE21,HE22,QE2','H':'N','N':'H'},
 'ARG':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HG2':'CG','HG3':'CG','CG':'HG2,HG3','QG':'CG,HG2,HG3','HD2':'CD','HD3':'CD','CD':'HD2,HD3','QD':'CD,HD2,HD3','HE':'NE','NE':'HE','NH1':'HH11,HH12','HH11':'NH1','HH12':'NH1','QH1':'NH1,HH11,HH12','NH2':'HH21,HH22','HH21':'NH2','HH22':'NH2','QH2':'NH2,HH21,HH22','H':'N','N':'H'},
 'SER':{'HA':'CA','CA':'HA','HB2':'CB','HB3':'CB','CB':'HB2,HB3','QB':'CB,HB2,HB3','HG':'OG','OG':'HG','H':'N','N':'H'},
@@ -54,7 +54,7 @@ run2dir = sys.argv[2]
 
 if run1dir[-1] != '/': run1dir = run1dir + '/'
 if run2dir[-1] != '/': run2dir = run2dir + '/'
-changelog = open(run2dir + 'Changes_log.txt','w')
+changelog = open(run2dir + '{:}_vs_{:}_Changes_log.txt'.format(sys.argv[2],sys.argv[1]),'w')
 changelog.write('Reporting changes in {:} relative to {:}\n\n'.format(run2dir,run1dir))
 fupl1 = run1dir + 'final.upl'
 fupl2 = run2dir + 'final.upl'
@@ -67,9 +67,11 @@ dihe2 = run2dir + 'dihed.aco'
 
 # cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
 
-hbonds1,hbonds2 ={},{}
+
+hbonds1,hbonds2,lol1,lol2 ={},{},{},{}
 for ln in ['1','2']:
 	hbdict = eval('hbonds{:}'.format(ln))
+	loldict = eval('lol{:}'.format(ln))
 	uplf = eval('hbupl{:}'.format(ln))
 	lolf = eval('hblol{:}'.format(ln))
 	print(uplf)
@@ -79,7 +81,7 @@ for ln in ['1','2']:
 			cns = line.split()
 			upl = '{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])
 			if upl in hbdict.keys():
-				print('Duplicate hbond entry {:}'.format(upl))
+				print('Duplicate hbond entry {:} in {:}'.format(upl,uplf))
 			if upl not in hbdict.keys():
 				hbdict['{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])] = [cns[6]]
 	for line in open(lolf).readlines():
@@ -106,7 +108,6 @@ if len(addhb) > 0:
 	addhb = 'Added Hbonds:\n' + addhb + '\n'
 	changelog.write(addhb)
 	print(addhb)
-
 dihedrals1,dihedrals2 = {},{}
 for ln in ['1','2']:
 	angdict = eval('dihedrals{:}'.format(ln))
@@ -117,11 +118,9 @@ for ln in ['1','2']:
 			# ang = '{:>5}  {:<4} {:<5}  {:>8} {:>8}'.format(cns[0],cns[1],cns[2],cns[3],cns[4])
 			ang = '{:>5}  {:<4} {:<5}'.format(cns[0],cns[1],cns[2])
 			if ang in angdict.keys():
-				print('Duplicate dihedral entry {:}'.format(ang))
+				print('Duplicate dihedral entry {:} in {:}'.format(ang,dihedf))
 			if ang not in angdict.keys():
-				angdict[ang] = '{:8.1f}{:8.1f}'.format(float(cns[3]),float(cns[4]))
-
-
+				angdict[ang] = '{:6.1f}{:8.1f}'.format(float(cns[3]),float(cns[4]))
 rmdih,addih,changedih = '','',''
 for ang in dihedrals1.keys():
 	if ang not in dihedrals2.keys():
@@ -134,7 +133,7 @@ for ang in dihedrals1.keys():
 		low1, up1 = dihedrals1[ang].split()
 		low2, up2 = dihedrals2[ang].split()
 	if low1 != low2 or up1 != up2:
-		changedih = changedih + '   {:}  {:} to  {:}\n'.format(ang,dihedrals1[ang],dihedrals2[ang])
+		changedih = changedih + '   {:}  {:}  to  {:}\n'.format(ang,dihedrals1[ang],dihedrals2[ang])
 if len(rmdih) > 0:
 	rmdih = 'Removed Dihedrals:\n' + rmdih + '\n'
 	changelog.write(rmdih)
@@ -148,19 +147,23 @@ if len(changedih) > 0:
 	changelog.write(changedih)
 	print(changedih)
 
-calc = run1dir + '/CALC.cya'
+calc = run2dir + '/CALC.cya'
 manualcons = [line.strip() for line in open(calc).readlines() if line.strip() and '.upl' in line][0].split()[2].split(',')
 uplsf = [con for con in manualcons if 'upl' in con and 'hbond' not in con]
 lolsf = [con for con in manualcons if 'lol' in con and 'hbond' not in con]
+cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
 
 ## Check to see if both directories have the same files
 distcons = []
 for uplf in uplsf:
-	if os.path.exists(run2dir+ uplf):
+	if os.path.exists(run1dir+ uplf):
 		distcons.append(uplf)
+	if not os.path.exists(run2dir+ uplf):
+		changelog.write('{:} not used in {:}'.format(uplf,run1dir))
 for lolf in lolsf:
-	if os.path.exists(run2dir+ lolf):
+	if os.path.exists(run1dir+ lolf):
 		distcons.append(lolf)
+
 for distcon in distcons:
 	for ln in ['1','2']:
 		exec("{:}{:} = {{}}".format(distcon.split('.')[0],ln))
@@ -176,13 +179,20 @@ for distcon in distcons:
 					condict['{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])] = float(cns[6])
 
 for distcon in distcons:
+	print(distcon)
 	lostupl,newupl,changupl,chang2upl = '','','',''
 	dict1 = eval(distcon.split('.')[0]+'1')
 	dict2 = eval(distcon.split('.')[0]+'2')
 	for upl in dict1.keys():
 		if upl not in dict2.keys():
-			atoms1 = replacements[upl.split()[1]][upl.split()[2]]
-			atoms2 = replacements[upl.split()[4]][upl.split()[5]]
+			try:
+				atoms1 = replacements[upl.split()[1]][upl.split()[2]]
+			except KeyError:
+				atoms1 = upl.split()[2]
+			try:
+				atoms2 = replacements[upl.split()[4]][upl.split()[5]]
+			except KeyError:
+				atoms2 = upl.split()[5]
 			badupl = ''
 			for atom1 in atoms1.split(','):
 				for atom2 in atoms2.split(','):
@@ -208,7 +218,7 @@ for distcon in distcons:
 	for upl in dict1.keys():
 		if upl in dict2.keys():
 			if float(dict1[upl]) != float(dict2[upl]):
-				chang2upl = chang2upl + '   {:}  {:} to {:}'.format(upl,dict1[upl],dict2[upl])
+				chang2upl = chang2upl + '   {:}  {:} to {:}\n'.format(upl,dict1[upl],dict2[upl])
 
 	if len(lostupl) > 0:
 		lostupl = 'Removed UPLs from {:}:\n'.format(distcon.split('.')[0]) + lostupl + '\n'
@@ -227,40 +237,45 @@ for distcon in distcons:
 		print(chang2upl)
 		changelog.write(chang2upl)
 
+#cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
 
-finalupl1,finalupl2 ={},{}
-for ln in ['1','2']:
-	upldict = eval('finalupl{:}'.format(ln))
-	uplf = eval('fupl{:}'.format(ln))
-	for line in open(uplf).readlines():
-		if line.strip() and not re.match('^\s*#', line):
-			cns = line.split()
-			upl = '{:>} {:<4} {:<5} {:>} {:<4} {:<5}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])
-			if upl not in upldict.keys():
-				upldict['{:>} {:<4} {:<5} {:>} {:<4} {:<5}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])] = float(cns[6])
-lostupl,newupl,changupl = '','',''
-for upl in finalupl1.keys():
-	if upl not in finalupl2.keys():
-		lostupl = lostupl + '   {:}   {:6.2f}\n'.format(upl,finalupl1[upl])
-for upl in finalupl2.keys():
-	if upl not in finalupl1.keys():
-		newupl = newupl + '   {:}   {:6.2f}\n'.format(upl,finalupl2[upl])
-for upl in finalupl1.keys():
-	if upl in finalupl2.keys():
-		if abs(finalupl1[upl] - finalupl2[upl]) > 0.5:
-			changupl = changupl + '   {:}  {:6.2f}  to  {:6.2f}\n'.format(upl,finalupl1[upl],finalupl2[upl])
-if len(lostupl) > 0:
-	lostupl = '{:} {:} final UPLs not found in {:}:\n'.format(lostupl.count('\n'),run1dir,run2dir) + lostupl + '\n'
-	print(lostupl)
-	changelog.write(lostupl)
-if len(newupl) > 0:
-	newupl = '{:} {:} final UPLs not found in {:}:\n'.format(newupl.count('\n'),run2dir,run1dir) + newupl + '\n'
-	print(newupl)
-	changelog.write(newupl)
-if len(changupl) > 0:
-	changupl = '{:} UPL with difference > 0.4:\n'.format(changupl.count('\n')) + changupl + '\n'
-	print(changupl)
-	changelog.write(changupl)
+
+## Check if there are final.upl files available, if so compare them
+
+if os.path.exists(fupl1) and os.path.exists(fupl2):
+	finalupl1,finalupl2 ={},{}
+	for ln in ['1','2']:
+		upldict = eval('finalupl{:}'.format(ln))
+		uplf = eval('fupl{:}'.format(ln))
+		for line in open(uplf).readlines():
+			if line.strip() and not re.match('^\s*#', line):
+				cns = line.split()
+				upl = '{:>} {:<4} {:<5} {:>} {:<4} {:<5}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])
+				if upl not in upldict.keys():
+					upldict['{:>} {:<4} {:<5} {:>} {:<4} {:<5}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])] = float(cns[6])
+	lostupl,newupl,changupl = '','',''
+	for upl in finalupl1.keys():
+		if upl not in finalupl2.keys():
+			lostupl = lostupl + '   {:}   {:6.2f}\n'.format(upl,finalupl1[upl])
+	for upl in finalupl2.keys():
+		if upl not in finalupl1.keys():
+			newupl = newupl + '   {:}   {:6.2f}\n'.format(upl,finalupl2[upl])
+	for upl in finalupl1.keys():
+		if upl in finalupl2.keys():
+			if abs(finalupl1[upl] - finalupl2[upl]) > 0.4:
+				changupl = changupl + '   {:}  {:6.2f}  to  {:6.2f}\n'.format(upl,finalupl1[upl],finalupl2[upl])
+	if len(lostupl) > 0:
+		lostupl = '{:} {:} final UPLs not found in {:}:\n'.format(lostupl.count('\n'),run1dir,run2dir) + lostupl + '\n'
+		print('{:} {:} final UPLs not found in {:}'.format(lostupl.count('\n'),run1dir,run2dir))
+		changelog.write(lostupl)
+	if len(newupl) > 0:
+		newupl = '{:} {:} final UPLs not found in {:}:\n'.format(newupl.count('\n'),run2dir,run1dir) + newupl + '\n'
+		print('{:} {:} final UPLs not found in {:}'.format(newupl.count('\n'),run2dir,run1dir))
+		changelog.write(newupl)
+	if len(changupl) > 0:
+		changupl = '{:} UPL with difference > 0.4:\n'.format(changupl.count('\n')) + changupl + '\n'
+		print('{:} UPL with difference > 0.4'.format(changupl.count('\n')))
+		changelog.write(changupl)
 
 
 
