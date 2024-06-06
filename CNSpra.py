@@ -425,7 +425,7 @@ print(AVioltext)
 checkcons.write(DVioltext)
 checkcons.write(AVioltext)
 
-checkcons.write('### {:3.0f}  Violated Distance Restraints  > 0.3 ###\n'.format(len(viol1list)))
+checkcons.write('### {:3.0f}  Violated Distance Restraints  < 0.3 ###\n'.format(len(viol1list)))
 # violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
 viol1list = sorted(viol1list, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 for viol in viol1list:
@@ -437,7 +437,7 @@ for viol in viol1list:
 checkcons.write('\n\n')
 #### Write out Poor/Low Support constraints to the summary file
 viol2list = sorted(viol2list, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
-checkcons.write('### {:3.0f}  Violated Distance Restraints  < 0.3 \u00C5 ###\n'.format(len(viol2list)))
+checkcons.write('### {:3.0f}  Violated Distance Restraints  > 0.3 \u00C5 ###\n'.format(len(viol2list)))
 for viol in viol2list:
   # if con in assigndict.keys():
   #   checkcons.write('{:}  {:3.2f}A ({:}):\n'.format(con,float(upldict[con]),len(assigndict[con])))
