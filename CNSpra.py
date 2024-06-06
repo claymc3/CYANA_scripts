@@ -17,7 +17,7 @@ dt_string = now.strftime("%Y-%m-%d %H:%M")
 
 Vnum = '1.1'
 replacements ={
-'ALAHA':'CA','ALAQB':'CB','ALAHB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'CB','CYSHA':'CA','CYSHB2':'CB','CYSHB3':'CB','CYSQB':'CB','CYSHB':'CB','CYSSHA':'CA','CYSSHB2':'CB','CYSSHB3':'CB','CYSSQB':'CB','CYSSHB':'CB','ASPHA':'CA','ASPHB2':'CB','ASPHB3':'CB','ASPQB':'CB','ASPHB':'CB','GLUHA':'CA','GLUHB2':'CB','GLUHB3':'CB','GLUQB':'CB','GLUHB':'CB','GLUHG2':'CG','GLUHG3':'CG','GLUQG':'CG','GLUHG':'CG','PHEHA':'CA','PHEHB2':'CB','PHEHB3':'CB','PHEQB':'CB','PHEHB':'CB','PHEQD':'CD1,CD2','PHEHD':'CD1,CD2','PHEQE':'CE1,CE2','PHEHE':'CE1,CE2','PHEHD1':'CD1','PHEHE1':'CE1','PHEHZ':'CZ','PHEHE2':'CE2','PHEHD2':'CD2','GLYHA2':'CA','GLYHA3':'CA','GLYQA':'CA','GLYHA':'CA','HISHA':'CA','HISHB2':'CB','HISHB3':'CB','HISQB':'CB','HISHB':'CB','HISHD1':'ND1','HISHE2':'NE2','HISHD2':'CD2','HISHE1':'CE1','HISTHA':'CA','HISTHB2':'CB','HISTHB3':'CB','HISTQB':'CB','HISTHB':'CB','HISTHD1':'ND1','HISTHE2':'NE2','HISTHD2':'CD2','HISTHE1':'CE1','HIS+HA':'CA','HIS+HB2':'CB','HIS+HB3':'CB','HIS+QB':'CB','HIS+HB':'CB','HIS+HD1':'ND1','HIS+HE2':'NE2','HIS+HD2':'CD2','HIS+HE1':'CE1','ILEHA':'CA','ILEHB':'CB','ILEQG2':'CG2','ILEHG2':'CG2','ILEHG21':'CG2','ILEHG22':'CG2','ILEHG23':'CG2','ILEHG12':'CG1','ILEHG13':'CG1','ILEQG1':'CG1','ILEHG1':'CG1','ILEQD1':'CD1','ILEHD1':'CD1','ILEHD11':'CD1','ILEHD12':'CD1','ILEHD13':'CD1','LYSHA':'CA','LYSHB2':'CB','LYSHB3':'CB','LYSQB':'CB','LYSHB':'CB','LYSHG2':'CG','LYSHG3':'CG','LYSHD2':'CD ','LYSHD3':'CD ','LYSQD':'CD ','LYSHD':'CD ','LYSHE2':'CE','LYSHE3':'CE','LYSQE':'CE','LYSHE':'CE','LYSHZ1':'NZ','LYSHZ2':'NZ','LYSHZ3':'NZ','LYSQZ':'NZ','LYSHZ':'NZ','LEUHA':'CA','LEUHB2':'CB','LEUHB3':'CB','LEUQB':'CB','LEUHB':'CB','LEUHG':'CG','LEUHD11':'CD1','LEUHD12':'CD1','LEUHD13':'CD1','LEUQD1':'CD1','LEUHD1':'CD1','LEUHD1':'CD1','LEUHD21':'CD2','LEUHD22':'CD2','LEUHD23':'CD2','LEUQD2':'CD2','LEUHD2':'CD2','LEUQQD':'CD2,CD1','METHA':'CA','METHB2':'CB','METHB3':'CB','METQB':'CB','METHB':'CB','METHG2':'CG','METHG3':'CG','METHG':'CG','METQG':'CG','METHG':'CG','METQE':'CE','METHE':'CE','METHE1':'CE','METHE2':'CE','METHE3':'CE','ASNHA':'CA','ASNHB2':'CB','ASNHB3':'CB','ASNQB':'CB','ASNHB':'CB','ASNHD21':'ND2','ASNHD22':'ND2','ASNQD2':'ND2','ASNHD2':'ND2','PROHA':'CA','PROHB2':'CB','PROHB3':'CB','PROQB':'CB','PROHB':'CB','PROHG2':'CG','PROHG3':'CG','PROQG':'CG','PROHD2':'CD','PROHD3':'CD','PROQD':'CD','PROHD':'CD','CPROHA':'CA','CPROHB2':'CB','CPROHB3':'CB','CPROQB':'CB','CPROHB':'CB','CPROHG2':'CG','CPROHG3':'CG','CPROQG':'CG','CPROHG':'CG','CPROHD2':'CD','CPROHD3':'CD','CPROQD':'CD','CPROHD':'CD','GLNHA':'CA','GLNHB2':'CB','GLNHB3':'CB','GLNQB':'CB','GLNHG2':'CG','GLNHG3':'CG','GLNQG':'CG','GLNHG':'CG','GLNHE21':'NE2','GLNHE22':'NE2','GLNQE2':'NE2','GLNHE2':'NE2','ARGHA':'CA','ARGHB2':'CB','ARGHB3':'CB','ARGQB':'CB','ARGHG2':'CG','ARGHG3':'CG','ARGQG':'CG','ARGHG':'CG','ARGHD2':'CD','ARGHD3':'CD','ARGQD':'CD','ARGHD':'CD','ARGHE':'NE','ARGHH11':'NH1','ARGHH12':'NH1','ARGQH1':'NH1','ARGHH1':'NH1','ARGHH21':'NH2','ARGHH22':'NH2','ARGQH2':'NH2','ARGHH2':'NH2','SERHA':'CA','SERHB2':'CB','SERHB3':'CB','SERHG':'OG','SEPHA':'CA','SEPHB2':'CB','SEPHB3':'CB','SEPHG':'OG','THRHA':'CA','THRHB':'CB','THRHG1':'OG1','THRHG21':'CG2','THRHG22':'CG2','THRHG23':'CG2','THRQG2':'CG2','THRHG2':'CG2','TPOHA':'CA','TPOHB':'CB','TPOHG1':'OG1','TPOHG21':'CG2','TPOHG22':'CG2','TPOHG23':'CG2','TPOQG2':'CG2','TPOHG2':'CG2','VALHA':'CA','VALHB':'CB','VALHG11':'CG1','VALHG12':'CG1','VALHG13':'CG1','VALQG1':'CG1','VALHG1':'CG1','VALHG21':'CG2','VALHG22':'CG2','VALHG23':'CG2','VALQG2':'CG2','VALHG2':'CG2','VALQQG':'CG1,CG2','TRPHA':'CA','TRPHB2':'CB','TRPHB3':'CB','TRPQB':'CB','TRPHB':'CB','TRPHD1':'CD1','TRPHE3':'CE3','TRPHE1':'NE1','TRPHZ3':'CZ3','TRPHZ2':'CZ2','TRPHH2':'CH2','TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRHB':'CB','TYRQD':'CD1,CD2','TYRHD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH','PTRHA':'CA','PTRHB2':'CB','PTRHB3':'CB','PTRQB':'CB','PTRHB':'CB','PTRQD':'CD1,CD2','PTRHD':'CD1,CD2','PTRQE':'CE1,CE2','PTRHE':'CE1,CE2','PTRHD1':'CD1','PTRHE1':'CE1','PTRHE2':'CE2','PTRHD2':'CD2','PTRHH':'OH'}
+'ALAHA':'CA','ALAQB':'CB','ALAHB':'CB','ALAHB1':'CB','ALAHB2':'CB','ALAHB3':'CB','CYSHA':'CA','CYSHB2':'CB','CYSHB3':'CB','CYSQB':'CB','CYSHB':'CB','CYSSHA':'CA','CYSSHB2':'CB','CYSSHB3':'CB','CYSSQB':'CB','CYSSHB':'CB','ASPHA':'CA','ASPHB2':'CB','ASPHB3':'CB','ASPQB':'CB','ASPHB':'CB','GLUHA':'CA','GLUHB2':'CB','GLUHB3':'CB','GLUQB':'CB','GLUHB':'CB','GLUHG2':'CG','GLUHG3':'CG','GLUQG':'CG','GLUHG':'CG','PHEHA':'CA','PHEHB2':'CB','PHEHB3':'CB','PHEQB':'CB','PHEHB':'CB','PHEQD':'CD1,CD2','PHEHD':'CD1,CD2','PHEQE':'CE1,CE2','PHEHE':'CE1,CE2','PHEHD1':'CD1','PHEHE1':'CE1','PHEHZ':'CZ','PHEHE2':'CE2','PHEHD2':'CD2','GLYHA2':'CA','GLYHA3':'CA','GLYQA':'CA','GLYHA':'CA','HISHA':'CA','HISHB2':'CB','HISHB3':'CB','HISQB':'CB','HISHB':'CB','HISHD1':'ND1','HISHE2':'NE2','HISHD2':'CD2','HISHE1':'CE1','HISTHA':'CA','HISTHB2':'CB','HISTHB3':'CB','HISTQB':'CB','HISTHB':'CB','HISTHD1':'ND1','HISTHE2':'NE2','HISTHD2':'CD2','HISTHE1':'CE1','HIS+HA':'CA','HIS+HB2':'CB','HIS+HB3':'CB','HIS+QB':'CB','HIS+HB':'CB','HIS+HD1':'ND1','HIS+HE2':'NE2','HIS+HD2':'CD2','HIS+HE1':'CE1','ILEHA':'CA','ILEHB':'CB','ILEQG2':'CG2','ILEHG2':'CG2','ILEHG21':'CG2','ILEHG22':'CG2','ILEHG23':'CG2','ILEHG12':'CG1','ILEHG13':'CG1','ILEQG1':'CG1','ILEHG1':'CG1','ILEQD1':'CD1','ILEHD1':'CD1','ILEHD11':'CD1','ILEHD12':'CD1','ILEHD13':'CD1','LYSHA':'CA','LYSHB2':'CB','LYSHB3':'CB','LYSQB':'CB','LYSHB':'CB','LYSHG2':'CG','LYSHG3':'CG','LYSHD2':'CD ','LYSHD3':'CD ','LYSQD':'CD ','LYSHD':'CD ','LYSHE2':'CE','LYSHE3':'CE','LYSQE':'CE','LYSHE':'CE','LYSHZ1':'NZ','LYSHZ2':'NZ','LYSHZ3':'NZ','LYSQZ':'NZ','LYSHZ':'NZ','LEUHA':'CA','LEUHB2':'CB','LEUHB3':'CB','LEUQB':'CB','LEUHB':'CB','LEUHG':'CG','LEUHD11':'CD1','LEUHD12':'CD1','LEUHD13':'CD1','LEUQD1':'CD1','LEUHD1':'CD1','LEUHD1':'CD1','LEUHD21':'CD2','LEUHD22':'CD2','LEUHD23':'CD2','LEUQD2':'CD2','LEUHD2':'CD2','LEUQQD':'CD2,CD1','METHA':'CA','METHB2':'CB','METHB3':'CB','METQB':'CB','METHB':'CB','METHG2':'CG','METHG3':'CG','METHG':'CG','METQG':'CG','METHG':'CG','METQE':'CE','METHE':'CE','METHE1':'CE','METHE2':'CE','METHE3':'CE','ASNHA':'CA','ASNHB2':'CB','ASNHB3':'CB','ASNQB':'CB','ASNHB':'CB','ASNHD21':'ND2','ASNHD22':'ND2','ASNQD2':'ND2','ASNHD2':'ND2','PROHA':'CA','PROHB2':'CB','PROHB3':'CB','PROQB':'CB','PROHB':'CB','PROHG2':'CG','PROHG3':'CG','PROQG':'CG','PROHD2':'CD','PROHD3':'CD','PROQD':'CD','PROHD':'CD','CPROHA':'CA','CPROHB2':'CB','CPROHB3':'CB','CPROQB':'CB','CPROHB':'CB','CPROHG2':'CG','CPROHG3':'CG','CPROQG':'CG','CPROHG':'CG','CPROHD2':'CD','CPROHD3':'CD','CPROQD':'CD','CPROHD':'CD','GLNHA':'CA','GLNHB2':'CB','GLNHB3':'CB','GLNQB':'CB','GLNHG2':'CG','GLNHG3':'CG','GLNQG':'CG','GLNHG':'CG','GLNHE21':'NE2','GLNHE22':'NE2','GLNQE2':'NE2','GLNHE2':'NE2','ARGHA':'CA','ARGHB2':'CB','ARGHB3':'CB','ARGQB':'CB','ARGHG2':'CG','ARGHG3':'CG','ARGQG':'CG','ARGHG':'CG','ARGHD2':'CD','ARGHD3':'CD','ARGQD':'CD','ARGHD':'CD','ARGHE':'NE','ARGHH11':'NH1','ARGHH12':'NH1','ARGQH1':'NH1','ARGHH1':'NH1','ARGHH21':'NH2','ARGHH22':'NH2','ARGQH2':'NH2','ARGHH2':'NH2','SERHA':'CA','SERHB2':'CB','SERHB3':'CB','SERHG':'OG','SEPHA':'CA','SEPHB2':'CB','SEPHB3':'CB','SEPHG':'OG','THRHA':'CA','THRHB':'CB','THRHG1':'OG1','THRHG21':'CG2','THRHG22':'CG2','THRHG23':'CG2','THRQG2':'CG2','THRHG2':'CG2','TPOHA':'CA','TPOHB':'CB','TPOHG1':'OG1','TPOHG21':'CG2','TPOHG22':'CG2','TPOHG23':'CG2','TPOQG2':'CG2','TPOHG2':'CG2','VALHA':'CA','VALHB':'CB','VALHG11':'CG1','VALHG12':'CG1','VALHG13':'CG1','VALQG1':'CG1','VALHG1':'CG1','VALHG21':'CG2','VALHG22':'CG2','VALHG23':'CG2','VALQG2':'CG2','VALHG2':'CG2','VALQQG':'CG1,CG2','TRPHA':'CA','TRPHB2':'CB','TRPHB3':'CB','TRPQB':'CB','TRPHB':'CB','TRPHD1':'CD1','TRPHE3':'CE3','TRPHE1':'NE1','TRPHZ3':'CZ3','TRPHZ2':'CZ2','TRPHH2':'CH2','TYRHA':'CA','TYRHB2':'CB','TYRHB3':'CB','TYRQB':'CB','TYRHB':'CB','TYRQD':'CD1,CD2','TYRHD':'CD1,CD2','TYRQE':'CE1,CE2','TYRHE':'CE1,CE2','TYRHD1':'CD1','TYRHE1':'CE1','TYRHE2':'CE2','TYRHD2':'CD2','TYRHH':'OH','PTRHA':'CA','PTRHB2':'CB','PTRHB3':'CB','PTRQB':'CB','PTRHB':'CB','PTRQD':'CD1,CD2','PTRHD':'CD1,CD2','PTRQE':'CE1,CE2','PTRHE':'CE1,CE2','PTRHD1':'CD1','PTRHE1':'CE1','PTRHE2':'CE2','PTRHD2':'CD2','PTRHH':'OH','GLUHG1':'CG','ILEHG11':'CG','LYSHG1':'CG','LYSHD1':'CD','LYSHE1':'CE','METHG1':'CG','PROHG1':'CG','PROHD1':'CD','GLNHG1':'CG','ARGHG1':'CG','ARGHD1':'CD'}
 #'ALAH':'N','CYSH':'N','ASPH':'N','GLUH':'N','PHEH':'N','GLYH':'N','HISH':'N','ILEH':'N','LYSH':'N','LEUH':'N','METH':'N','ASNH':'N','GLNH':'N','ARGH':'N','SERH':'N','THRH':'N','VALH':'N','TRPH':'N','TYRH':'N',
 Pseudo2Prot = {'AQB':['HB1', 'HB2', 'HB3'],'RQB':['HB2', 'HB3'],'RQG':['HG2', 'HG3'],'RQD':['HD2', 'HD3'],'RQH1':['HH11', 'HH12'],'RQH2':['HH21', 'HH22'],'NQB':['HB2', 'HB3'],'NQD2':['HD21', 'HD22'],'DQB':['HB2', 'HB3'],'CQB':['HB2', 'HB3'],'QQB':['HB2', 'HB3'],'QQG':['HG2', 'HG3'],'QQE2':['HE21', 'HE22'],'EQB':['HB2', 'HB3'],'EQG':['HG2', 'HG3'],'GQA':['HA2', 'HA3'],'HQB':['HB2', 'HB3'],'IQG1':['HG11', 'HG12', 'HG13'],'IQG2':['HG21', 'HG22', 'HG23'],'IQD1':['HD11', 'HD12', 'HD13'],'LQB':['HB2', 'HB3'],'LQD1':['HD11', 'HD12', 'HD13'],'LQD2':['HD21', 'HD22', 'HD23'],'KQG':['HG2', 'HG3'],'KQD':['HD2', 'HD3'],'KQE':['HE2', 'HE3'],'KQZ':['HZ2', 'HZ3'],'MQB':['HB2', 'HB3'],'MQG':['HG2', 'HG3'],'MQE':['HE1', 'HE2', 'HE3'],'FQB':['HB2', 'HB3'],'FQD':['HD1', 'HD2'],'FQE':['HE1', 'HE2'],'PQB':['HB2', 'HB3'],'PQG':['HG2', 'HG3'],'PQD':['HD2', 'HD3'],'SQB':['HB2', 'HB3'],'TQG2':['HG21', 'HG22', 'HG23'],'WQB':['HB2', 'HB3'],'YQB':['HB2', 'HB3'],'YQD':['HD1', 'HD2'],'YQE':['HE1', 'HE2'],'VQB':['HB2', 'HB3'],'VQG1':['HG11', 'HG12', 'HG13'],'VQG2':['HG21', 'HG22', 'HG23'],'AHB':['HB1', 'HB2', 'HB3'],'RHB':['HB2', 'HB3'],'RHG':['HG2', 'HG3'],'RHD':['HD2', 'HD3'],'RHH1':['HH11', 'HH12'],'RHH2':['HH21', 'HH22'],'NHB':['HB2', 'HB3'],'NHD2':['HD21', 'HD22'],'DHB':['HB2', 'HB3'],'HHB':['HB2', 'HB3'],'QHB':['HB2', 'HB3'],'QHG':['HG2', 'HG3'],'QHE2':['HE21', 'HE22'],'EHB':['HB2', 'HB3'],'EHG':['HG2', 'HG3'],'GHA':['HA2', 'HA3'],'HHB':['HB2', 'HB3'],'IHG1':['HG12', 'HG13'],'IHG2':['HG21', 'HG22', 'HG23'],'IHD1':['HD11', 'HD12', 'HD13'],'LHB':['HB2', 'HB3'],'LHD1':['HD11', 'HD12', 'HD13'],'LHD2':['HD21', 'HD22', 'HD23'],'KHG':['HG2', 'HG3'],'KHD':['HD2', 'HD3'],'KHE':['HE2', 'HE3'],'KHZ':['HZ2', 'HZ3'],'MHB':['HB2', 'HB3'],'MHG':['HG2', 'HG3'],'MHE':['HE1', 'HE2', 'HE3'],'FHB':['HB2', 'HB3'],'FHD':['HD1', 'HD2'],'FHE':['HE1', 'HE2'],'PHB':['HB2', 'HB3'],'PHG':['HG2', 'HG3'],'PHD':['HD2', 'HD3'],'SHB':['HB2', 'HB3'],'THG2':['HG21', 'HG22', 'HG23'],'WHB':['HB2', 'HB3'],'YHB':['HB2', 'HB3'],'YHD':['HD1','HD2'],'YHE':['HE1', 'HE2'],'VHB':['HB2', 'HB3'],'VHG1':['HG11', 'HG12', 'HG13'],'VHG2':['HG21', 'HG22', 'HG23']}
 ConTypeDict = {'ALAH':'N', 'ALAHA':'Ali', 'ALAHB':'Methyl', 'ALAHB1':'Methyl', 'ALAHB2':'Methyl', 'ALAHB3':'Methyl', 'ALAQB':'Methyl', 'ALAC':'Other', 'ALACA':'Ali', 'ALACB':'Methyl', 'ALAN':'N', 'CYSSH':'N', 'CYSSHA':'Ali', 'CYSSHB2':'Ali', 'CYSSHB3':'Ali', 'CYSSQB':'Ali', 'CYSSC':'Other', 'CYSSCA':'Ali', 'CYSSCB':'Ali', 'CYSSN':'N', 'CYSH':'N', 'CYSHA':'Ali', 'CYSHB2':'Ali', 'CYSHB3':'Ali', 'CYSQB':'Ali', 'CYSHG':'Ali', 'CYSC':'Other', 'CYSCA':'Ali', 'CYSCB':'Ali', 'CYSN':'N', 'ASPH':'N', 'ASPHA':'Ali', 'ASPHB2':'Ali', 'ASPHB3':'Ali', 'ASPQB':'Ali', 'ASPHD2':'Other', 'ASPC':'Other', 'ASPCA':'Ali', 'ASPCB':'Ali', 'ASPCG':'Ali', 'ASPN':'N', 'GLUH':'N', 'GLUHA':'Ali', 'GLUHB2':'Ali', 'GLUHB3':'Ali', 'GLUQB':'Ali', 'GLUHE2':'Other', 'GLUHG2':'Ali', 'GLUHG3':'Ali', 'GLUQG':'Ali', 'GLUC':'Other', 'GLUCA':'Ali', 'GLUCB':'Ali', 'GLUCG':'Ali', 'GLUCD':'Other', 'GLUN':'N', 'PHEH':'N', 'PHEHA':'Aro', 'PHEHB2':'Aro', 'PHEHB3':'Aro', 'PHEQB':'Aro', 'PHEHD1':'Aro', 'PHEHD2':'Aro', 'PHEQD':'Aro', 'PHEHE1':'Aro', 'PHEHE2':'Aro', 'PHEQE':'Aro', 'PHEHZ':'Aro', 'PHEC':'Other', 'PHECA':'Aro', 'PHECB':'Aro', 'PHECD1':'Aro', 'PHECD2':'Aro', 'PHECE1':'Aro', 'PHECE2':'Aro', 'PHECG':'Aro', 'PHECZ':'Aro', 'PHEN':'N',  'GLYH':'N', 'GLYHA2':'Ali', 'GLYHA3':'Ali', 'GLYC':'Other', 'GLYCA':'Ali', 'GLYN':'N',  'HISH':'N', 'HISHA':'Ali', 'HISHB2':'Ali', 'HISHB3':'Ali', 'HISQB':'Ali', 'HISHD1':'N', 'HISHD2':'Aro', 'HISHE1':'Aro', 'HISC':'Other', 'HISCA':'Ali', 'HISCB':'Ali', 'HISCD2':'Aro', 'HISCE1':'Aro', 'HISCG':'Aro', 'HISN':'N', 'HISND1':'N', 'HISNE2':'N', 'HISTH':'N', 'HISTHA':'Ali', 'HISTHB2':'Ali', 'HISTHB3':'Ali', 'HISTQB':'Ali', 'HISTHD2':'Aro', 'HISTHE1':'Aro', 'HISTHE2':'N', 'HISTC':'Other', 'HISTCA':'Ali', 'HISTCB':'Ali', 'HISTCD2':'Aro', 'HISTCE1':'Aro', 'HISTCG':'Aro', 'HISTN':'N', 'HISTND1':'N', 'HISTNE2':'N', 'HIS+H':'N', 'HIS+HA':'Ali', 'HIS+HB2':'Ali', 'HIS+HB3':'Ali', 'HIS+QB':'Ali', 'HIS+HD1':'N', 'HIS+HD2':'Aro', 'HIS+HE1':'Aro', 'HIS+HE2':'N', 'HIS+C':'Other', 'HIS+CA':'Ali', 'HIS+CB':'Ali', 'HIS+CD2':'Aro', 'HIS+CE1':'Aro', 'HIS+CG':'Aro', 'HIS+N':'N', 'HIS+ND1':'N', 'HIS+NE2':'N', 'ILEH':'N', 'ILEHA':'Ali', 'ILEHB':'Ali', 'ILEHG12':'Ali', 'ILEHG13':'Ali', 'ILEQG1':'Ali', 'ILEHD1':'Methyl', 'ILEHD11':'Methyl', 'ILEHD12':'Methyl', 'ILEHD13':'Methyl', 'ILEQD1':'Methyl', 'ILEHG2':'Methyl', 'ILEHG21':'Methyl', 'ILEHG22':'Methyl', 'ILEHG23':'Methyl', 'ILEQG2':'Methyl', 'ILEC':'Other', 'ILECA':'Ali', 'ILECB':'Ali', 'ILECD1':'Methyl', 'ILECG1':'Ali', 'ILECG2':'Methyl', 'ILEN':'N', 'LYSH':'N', 'LYSHA':'Ali', 'LYSHB2':'Ali', 'LYSHB3':'Ali', 'LYSQB':'Ali', 'LYSHD2':'Ali', 'LYSHD3':'Ali', 'LYSQD':'Ali', 'LYSHE2':'Ali', 'LYSHE3':'Ali', 'LYSQE':'Ali', 'LYSHG2':'Ali', 'LYSHG3':'Ali', 'LYSQG':'Ali', 'LYSC':'Other', 'LYSCA':'Ali', 'LYSCB':'Ali', 'LYSCD':'Ali', 'LYSCE':'Ali', 'LYSCG':'Ali', 'LYSN':'N', 'LYSNZ':'N', 'LYSQZ':'N', 'LYSHZ':'N', 'LEUH':'N', 'LEUHA':'Ali', 'LEUHB2':'Ali', 'LEUHB3':'Ali', 'LEUQB':'Ali', 'LEUHG':'Ali', 'LEUHD1':'Methyl', 'LEUHD11':'Methyl', 'LEUHD12':'Methyl', 'LEUHD13':'Methyl', 'LEUQD1':'Methyl', 'LEUHD2':'Methyl', 'LEUHD21':'Methyl', 'LEUHD22':'Methyl', 'LEUHD23':'Methyl', 'LEUQD2':'Methyl', 'LEUC':'Other', 'LEUCA':'Ali', 'LEUCB':'Ali', 'LEUCG':'Ali', 'LEUCD1':'Methyl', 'LEUCD2':'Methyl', 'LEUN':'N', 'METH':'N', 'METHA':'Ali', 'METHB2':'Ali', 'METHB3':'Ali', 'METQB':'Ali', 'METHG2':'Ali', 'METHG3':'Ali', 'METQG':'Ali', 'METHE':'Methyl', 'METHE1':'Methyl', 'METHE2':'Methyl', 'METHE3':'Methyl', 'METQE':'Methyl', 'METC':'Other', 'METCA':'Ali', 'METCB':'Ali', 'METCE':'Methyl', 'METCG':'Ali', 'METN':'N', 'ASNH':'N', 'ASNHA':'Ali', 'ASNHB2':'Ali', 'ASNHB3':'Ali', 'ASNQB':'Ali', 'ASNHD21':'N', 'ASNHD22':'N', 'ASNQD':'N', 'ASNC':'Other', 'ASNCA':'Ali', 'ASNCB':'Ali', 'ASNCG':'Other', 'ASNN':'N', 'ASNND2':'N', 'PROHA':'Ali', 'PROHB2':'Ali', 'PROHB3':'Ali', 'PROQB':'Ali', 'PROHD2':'Ali', 'PROHD3':'Ali', 'PROQD':'Ali', 'PROHG2':'Ali', 'PROHG3':'Ali', 'PROQG':'Ali', 'PROC':'Other', 'PROCA':'Ali', 'PROCB':'Ali', 'PROCD':'Ali', 'PROCG':'Ali', 'PRON':'N', 'CPROHA':'Ali', 'CPROHB2':'Ali', 'CPROHB3':'Ali', 'CPROQB':'Ali', 'CPROHD2':'Ali', 'CPROHD3':'Ali', 'CPROQD':'Ali', 'CPROHG2':'Ali', 'CPROHG3':'Ali', 'CPROQG':'Ali', 'CPROC':'Other', 'CPROCA':'Ali', 'CPROCB':'Ali', 'CPROCD':'Ali', 'CPROCG':'Ali', 'CPRON':'N', 'GLNH':'N', 'GLNHA':'Ali', 'GLNHB2':'Ali', 'GLNHB3':'Ali', 'GLNQB':'Ali', 'GLNHE21':'N', 'GLNHE22':'N', 'GLNQE2':'N', 'GLNHG2':'Ali', 'GLNHG3':'Ali', 'GLNQG':'Ali', 'GLNC':'Other', 'GLNCA':'Ali', 'GLNCB':'Ali', 'GLNCD':'Other', 'GLNCG':'Ali', 'GLNN':'N', 'GLNNE2':'N', 'ARGH':'N', 'ARGHA':'Ali', 'ARGHB2':'Ali', 'ARGHB3':'Ali', 'ARGQB':'Ali', 'ARGHD2':'Ali', 'ARGHD3':'Ali', 'ARGQD':'Ali', 'ARGHG2':'Ali', 'ARGHG3':'Ali', 'ARGQG':'Ali', 'ARGHH11':'N', 'ARGHH12':'N', 'ARGQH1':'N', 'ARGHH21':'N', 'ARGHH22':'N', 'ARGQH2':'N', 'ARGC':'Other', 'ARGCA':'Ali', 'ARGCB':'Ali', 'ARGCD':'Ali', 'ARGCG':'Ali', 'ARGCZ':'Ali', 'ARGN':'N', 'ARGNE':'N', 'ARGNH1':'N', 'ARGNH2':'N', 'ARGHE':'N', 'SERH':'N', 'SERHA':'Ali', 'SERHB2':'Ali', 'SERHB3':'Ali', 'SERQB':'Ali', 'SERHG':'Other', 'SERC':'Other', 'SERCA':'Ali', 'SERCB':'Ali', 'SERN':'N', 'SEPH':'N', 'SEPHA':'Ali', 'SEPHB2':'Ali', 'SEPHB3':'Ali', 'SEPQB':'Ali', 'SEPHG':'Other', 'SEPC':'Other', 'SEPCA':'Ali', 'SEPCB':'Ali', 'SEPN':'N', 'THRH':'N', 'THRHA':'Ali', 'THRHB':'Ali', 'THRHG1':'Other', 'THRHG2':'Methyl', 'THRQG2':'Methyl', 'THRC':'Other', 'THRCA':'Ali', 'THRCB':'Ali', 'THRCG2':'Methyl', 'THRN':'N', 'TPOH':'N', 'TPOHA':'Ali', 'TPOHB':'Ali', 'TPOHG1':'Other', 'TPOHG2':'Methyl', 'TPOQG2':'Methyl', 'TPOC':'Other', 'TPOCA':'Ali', 'TPOCB':'Ali', 'TPOCG2':'Methyl', 'TPON':'N', 'VALH':'N', 'VALHA':'Ali', 'VALHB':'Ali', 'VALHG1':'Methyl', 'VALQG1':'Methyl', 'VALHG2':'Methyl', 'VALQG2':'Methyl', 'VALC':'Other', 'VALCA':'Ali', 'VALCB':'Ali', 'VALCG1':'Methyl', 'VALCG2':'Methyl', 'VALN':'N', 'TRPH':'N', 'TRPHA':'Ali', 'TRPHB2':'Ali', 'TRPHB3':'Ali', 'TRPQB':'Ali', 'TRPHD1':'Aro', 'TRPHE1':'N', 'TRPHE3':'Aro', 'TRPHH2':'Aro', 'TRPHZ2':'Aro', 'TRPHZ3':'Aro', 'TRPC':'Other', 'TRPCA':'Ali', 'TRPCB':'Ali', 'TRPCD1':'Aro', 'TRPCD2':'Aro', 'TRPCE2':'Aro', 'TRPCE3':'Aro', 'TRPCG':'Aro', 'TRPCH2':'Aro', 'TRPCZ2':'Aro', 'TRPCZ3':'Aro', 'TRPN':'N', 'TRPNE1':'N', 'TYRH':'N', 'TYRHA':'Aro', 'TYRHB2':'Aro', 'TYRHB3':'Aro', 'TYRQB':'Aro', 'TYRHD1':'Aro', 'TYRHD2':'Aro', 'TYRQD':'Aro', 'TYRHE1':'Aro', 'TYRHE2':'Aro', 'TYRQE':'Aro', 'TYRHH':'Other', 'TYRC':'Other', 'TYRCA':'Aro', 'TYRCB':'Aro', 'TYRCD1':'Aro', 'TYRCD2':'Aro', 'TYRCE1':'Aro', 'TYRCE2':'Aro', 'TYRCG':'Aro', 'TYRCZ':'Aro', 'TYRN':'N', 'PTRH':'N', 'PTRHA':'Aro', 'PTRHB2':'Aro', 'PTRHB3':'Aro', 'PTRQB':'Aro', 'PTRHD1':'Aro', 'PTRHD2':'Aro', 'PTRQD':'Aro', 'PTRHE1':'Aro', 'PTRHE2':'Aro', 'PTRQE':'Aro', 'PTRHH':'Other', 'PTRC':'Other', 'PTRCA':'Aro', 'PTRCB':'Aro', 'PTRCD1':'Aro', 'PTRCD2':'Aro', 'PTRCE1':'Aro', 'PTRCE2':'Aro', 'PTRCG':'Aro', 'PTRCZ':'Aro', 'PTRN':'N', 'N-N':'N_N', 'Aro-Aro':'Aro_Aro', 'Methyl-Methyl':'Methyl_Methyl', 'Ali-Ali':'Ali_Ali', 'Aro-Methyl':'Methyl_Aro', 'Methyl-Aro':'Methyl_Aro', 'Methyl-N':'N_Methyl', 'N-Methyl':'N_Methyl', 'Aro-N':'N_Aro', 'N-Aro':'N_Aro', 'Methyl-Ali':'Ali_Methyl', 'Ali-Methyl':'Ali_Methyl', 'Aro-Ali':'Ali_Aro', 'Ali-Aro':'Ali_Aro', 'Ali-N':'N_Ali', 'N-Ali':'N_Ali', 'Other-Other':'Other','Other-N':'Other','N-Other':'Other','Other-Ali':'Other','Ali-Other':'Other','Other-Methyl':'Other','Methyl-Other':'Other', 'Other-Aro':'Other', 'Aro-Other':'Other'}
@@ -57,10 +57,11 @@ name = sys.argv[1]
 cwd = os.getcwd() + '/'
 topdir = ''
 for dirn in cwd.split('/'):
-  if dirn == 'CNS': break
+  if re.match('CNS',dirn): 
+    cnsdir = dirn
+    break
   else:
     topdir = topdir + dirn + '/'
-CNSdir = topdir + 'CNS/'
 outdir = topdir + 'post_cns_analysis/'
 in_pdb = '{:}_cya.pdb'.format(name)
 noetbl = open('../{:}_noe.tbl'.format(name)).readlines()
@@ -93,7 +94,7 @@ checkcons.write('## Generated using CNSpra_{:} on {:} \n'.format(Vnum,dt_string)
 shortsum.write('## Generated using CNSpra_{:} on {:} \n'.format(Vnum,dt_string))
 
 outpml = open('{:}{:}.pml'.format(outdir,outname),'w')
-outpml.write('load ../CNS/refinedPDB/{:}_cya.pdb\n'.format(name))
+outpml.write('load ../{:}/refinedPDB/{:}_cya.pdb\n'.format(cnsdir,name))
 outpml.write('set dash_gap, 0.05\n')
 outpml.write('set_color royalblue = [65,105,225]\nset_color forest = [34,139,34]\nset_color yellowgreen = [154,205,50]\nset_color darkorange = [255,140,0]\nset_color purple = [128,0,128]\nset_color lightseagreen = [32,178,170]\nset_color darkkhaki = [189,183,107]\nset_color peru = [205,133,63]\nset_color saddlebrown = [139,69,19]\nset_color gold = [255,215,0]\nset_color navy = [0,0,128]\nset_color darkturquoise = [0,206,209]\nset_color pink = [255,192,203]\nset_color cyan = [0,255,255]\nset_color paleturquoise = [175,238,238]\nset_color lightsalmon = [255,160,122]\nset_color khaki = [240,230,140]\nset_color yellowgreen = [154,205,50]\nset_color thistle = [216,191,216]\nset_color aquamarine = [127,255,212]\nset_color plum = [221,160,221]\nset_color lightpink = [255,182,193]\nset_color mediumvioletred = [199,21,133]\nset_color firebrick = [178,34,34]\nset_color lightcoral = [240,128,128]\nset_color deeppink = [255,20,147]\nset_color hotpink = [255,105,180]\nset_color mediumpurple = [147,112,219]\nset_color navy = [0,0,128]\nset_color cornflowerblue = [100,149,237]\n')
 outpml.write('color gray60, all\n')
@@ -104,7 +105,7 @@ outpml.write('split_states ' + pdbname + '\n')
 for y in range(2,21,1):
   outpml.write('align {:}_{:04d}, {:}_0001\n'.format(pdbname,y, pdbname))
 outcmx = open('{:}{:}.cxc'.format(outdir,outname),'w')
-outcmx.write('open ../CNS/refinedPDB/{:}_cya.pdb\n'.format(name))
+outcmx.write('open ../{:}/refinedPDB/{:}_cya.pdb\n'.format(cnsdir,name))
 outcmx.write('color #1 gray(150)\n')
 outcmx.write('match #1.2-20 to #1.1\n')
 outcmx.write('color #1:ile paleturquoise target a\ncolor #1:leu lightsalmon  target a\ncolor #1:val khaki target a\ncolor #1:ala yellowgreen  target a\ncolor #1:met thistle target a\ncolor #1:thr aquamarine target a\ncolor #1:phe plum target a\ncolor #1:tyr lightpink target a\n')
@@ -158,81 +159,82 @@ DistViolDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,
 i, im, v = 1, 0, 0
 sidelist = []
 for noe in noetbl:
-  noe = noe.replace('HN)','H').replace('HN ','H ').replace('HB1','HB3').replace('(','').replace(')','')
-  if re.search("\\*",noe.split()[5]): 
-    noea1 = noe.split()[5].replace('H','Q').replace('*','')
-    noe = noe.replace(noe.split()[5],noea1)
-  if re.search("\\*",noe.split()[10]): 
-    noea2 = noe.split()[10].replace('H','Q').replace('*','')
-    noe = noe.replace(noe.split()[10],noea2)
-  cns = noe.split()
-  if num2AAA[cns[2]]+cns[5] in ConTypeDict.keys():ct1 = ConTypeDict[num2AAA[cns[2]]+cns[5]]
-  if num2AAA[cns[2]]+cns[5] not in ConTypeDict.keys(): ct1 = 'Other'
-  if num2AAA[cns[7]]+cns[10] in ConTypeDict.keys():ct2 = ConTypeDict[num2AAA[cns[7]]+cns[10]]
-  if num2AAA[cns[7]]+cns[10] not in ConTypeDict.keys(): ct2 = 'Other'
-  ctype = ConTypeDict["{:}-{:}".format(ct1,ct2)]
-  pblist = eval(ctype + '_pb')
-  atom1 = cns[5]
-  atom2 = cns[10]
-  if num2AAA[cns[2]]+cns[5] in replacements.keys():
-    atom1 = atom1.replace(cns[5], replacements[num2AAA[cns[2]]+cns[5]])
-  if num2AAA[cns[7]]+cns[10] in replacements.keys():
-    atom2 = atom2.replace(cns[10], replacements[num2AAA[cns[7]]+cns[10]])
-  upldf.loc[Seqdict[cns[2]],'cns'] = upldf.loc[Seqdict[cns[2]],'cns'] + 1
-  upldf.loc[Seqdict[cns[7]],'cns'] = upldf.loc[Seqdict[cns[7]],'cns'] + 1
-  ## Traslate amides H to N to search input upls but don't mess up the connections drawn in pymol/chimera
-  if atom1 == 'H': atom1 = 'N'
-  if atom2 == 'H': atom2 = 'N'
-  if (float(cns[2]) > 1000 and float(cns[7]) < 1000) or (float(cns[2]) < 1000 and float(cns[7]) > 1000):
-    im+=1
-    ctype = 'Intramolecular'
-    pblist = eval('Intramolecular_pb')
-    outpml.write('distance intramol{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(im), pdbname, cns[2], atom1, pdbname, cns[7], atom2))
-    exec('groupIntramolecular = groupIntramolecular+ "intramo{:} "'.format(im))
+  if not re.match('^\s+\!',noe):
+    noe = noe.replace('HN)','H').replace('HN ','H ').replace('HB1','HB3').replace('(','').replace(')','')
+    if re.search("\\*",noe.split()[5]): 
+      noea1 = noe.split()[5].replace('H','Q').replace('*','')
+      noe = noe.replace(noe.split()[5],noea1)
+    if re.search("\\*",noe.split()[10]): 
+      noea2 = noe.split()[10].replace('H','Q').replace('*','')
+      noe = noe.replace(noe.split()[10],noea2)
+    cns = noe.split()
+    if num2AAA[cns[2]]+cns[5] in ConTypeDict.keys():ct1 = ConTypeDict[num2AAA[cns[2]]+cns[5]]
+    if num2AAA[cns[2]]+cns[5] not in ConTypeDict.keys(): ct1 = 'Other'
+    if num2AAA[cns[7]]+cns[10] in ConTypeDict.keys():ct2 = ConTypeDict[num2AAA[cns[7]]+cns[10]]
+    if num2AAA[cns[7]]+cns[10] not in ConTypeDict.keys(): ct2 = 'Other'
+    ctype = ConTypeDict["{:}-{:}".format(ct1,ct2)]
+    pblist = eval(ctype + '_pb')
+    atom1 = cns[5]
+    atom2 = cns[10]
+    if num2AAA[cns[2]]+cns[5] in replacements.keys():
+      atom1 = atom1.replace(cns[5], replacements[num2AAA[cns[2]]+cns[5]])
+    if num2AAA[cns[7]]+cns[10] in replacements.keys():
+      atom2 = atom2.replace(cns[10], replacements[num2AAA[cns[7]]+cns[10]])
+    upldf.loc[Seqdict[cns[2]],'cns'] = upldf.loc[Seqdict[cns[2]],'cns'] + 1
+    upldf.loc[Seqdict[cns[7]],'cns'] = upldf.loc[Seqdict[cns[7]],'cns'] + 1
+    ## Traslate amides H to N to search input upls but don't mess up the connections drawn in pymol/chimera
+    if atom1 == 'H': atom1 = 'N'
+    if atom2 == 'H': atom2 = 'N'
+    if (float(cns[2]) > 1000 and float(cns[7]) < 1000) or (float(cns[2]) < 1000 and float(cns[7]) > 1000):
+      im+=1
+      ctype = 'Intramolecular'
+      pblist = eval('Intramolecular_pb')
+      outpml.write('distance intramol{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(im), pdbname, cns[2], atom1, pdbname, cns[7], atom2))
+      exec('groupIntramolecular = groupIntramolecular+ "intramo{:} "'.format(im))
+      pblist.append('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[2], atom1, cns[7],atom2))
+    ## Make sure all connections to side chains are shown
+    if (num2AAA[cns[2]] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[2] not in sidelist:
+      sidelist.append(cns[2])
+    if (num2AAA[cns[7]] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[10] not in ['N','H']) and cns[7] not in sidelist:
+      sidelist.append(cns[7])
+    i+=1
+    outpml.write('distance UPL{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[2], atom1, pdbname, cns[7], atom2))
     pblist.append('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[2], atom1, cns[7],atom2))
-  ## Make sure all connections to side chains are shown
-  if (num2AAA[cns[2]] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[2] not in sidelist:
-    sidelist.append(cns[2])
-  if (num2AAA[cns[7]] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[10] not in ['N','H']) and cns[7] not in sidelist:
-    sidelist.append(cns[7])
-  i+=1
-  outpml.write('distance UPL{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[2], atom1, pdbname, cns[7], atom2))
-  pblist.append('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[2], atom1, cns[7],atom2))
-  exec('group' + ctype + '=' + 'group' + ctype + '+ "UPL{:} "'.format(i))
-  dmin = np.round(float(cns[11]) - float(cns[12]),3)
-  dmax = np.round(float(cns[11]) + float(cns[13]),3)
-  cons1 = '{:}-{:}-{:}-{:}'.format(Seqdict[cns[2]],cns[5],Seqdict[cns[7]],cns[10])
-  Coord = eval('Coor1')
-  matom1 = distance.find_protons('{:}-{:}'.format(Seqdict[cns[2]],cns[5]), Coord)
-  matom2 = distance.find_protons('{:}-{:}'.format(Seqdict[cns[7]],cns[10]), Coord)
-  dist = []
-  for mnum in range(1,21,1):
-    Coor = eval('Coor' + str(mnum))
-    d = distance.getDistance(matom1, matom2, Coor)
-    if np.round(d - dmax,3) >= 0.100:
-      DistViolDF.loc[cons1,mnum] = np.round(d - dmax,2)
-      dist.append(np.round(d - dmax,2))
-    if np.round(dmin - d,3) >= 0.100:
-      DistViolDF.loc[cons1,mnum] = np.round(d - dmin,2)
-  if len(dist) > 5:
-    DistViolDF.loc[cons1,'max viol'] = max(dist)
-    DistViolDF.loc[cons1,'average'] = np.round(mean(dist),2)
-    DistViolDF.loc[cons1,'num viol'] = len(dist)
-    v+=1
-    outpml.write('distance viol{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(v), pdbname, cns[2], atom1, pdbname, cns[7], atom2))
-    violdict[cons1] = ""
-    if max(dist) < 0.30:
-      upldf.loc[Seqdict[cns[2]],'viol < 0.3'] = upldf.loc[Seqdict[cns[2]],'viol < 0.3'] + 1
-      upldf.loc[Seqdict[cns[7]],'viol < 0.3'] = upldf.loc[Seqdict[cns[7]],'viol < 0.3'] + 1
-      viol1cons = viol1cons + '+ "viol{:} "'.format(v)
-      viol1pbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[2], atom1, cns[7],atom2))
-      viol1list.append("{:<20}  {:3.2f}A violated in {:2} by {:3.2f}\n".format(cons1,dmax, len(dist),np.round(mean(dist),2)))
-    if max(dist) >= 0.30:
-      upldf.loc[Seqdict[cns[2]],'viol > 0.3'] = upldf.loc[Seqdict[cns[2]],'viol > 0.3'] + 1
-      upldf.loc[Seqdict[cns[7]],'viol > 0.3'] = upldf.loc[Seqdict[cns[7]],'viol > 0.3'] + 1
-      viol2cons = viol2cons + '+ "viol{:} "'.format(v)
-      viol2pbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[2], atom1, cns[7],atom2))
-      viol2list.append("{:<20}  {:3.2f}A violated in {:2} by {:3.2f}\n".format(cons1,dmax, len(dist),np.round(mean(dist),2)))
+    exec('group' + ctype + '=' + 'group' + ctype + '+ "UPL{:} "'.format(i))
+    dmin = np.round(float(cns[11]) - float(cns[12]),3)
+    dmax = np.round(float(cns[11]) + float(cns[13]),3)
+    cons1 = '{:}-{:}-{:}-{:}'.format(Seqdict[cns[2]],cns[5],Seqdict[cns[7]],cns[10])
+    Coord = eval('Coor1')
+    matom1 = distance.find_protons('{:}-{:}'.format(Seqdict[cns[2]],cns[5]), Coord)
+    matom2 = distance.find_protons('{:}-{:}'.format(Seqdict[cns[7]],cns[10]), Coord)
+    dist = []
+    for mnum in range(1,21,1):
+      Coor = eval('Coor' + str(mnum))
+      d = distance.getDistance(matom1, matom2, Coor)
+      if np.round(d - dmax,3) >= 0.100:
+        DistViolDF.loc[cons1,mnum] = np.round(d - dmax,2)
+        dist.append(np.round(d - dmax,2))
+      if np.round(dmin - d,3) >= 0.100:
+        DistViolDF.loc[cons1,mnum] = np.round(d - dmin,2)
+    if len(dist) > 5:
+      DistViolDF.loc[cons1,'max viol'] = max(dist)
+      DistViolDF.loc[cons1,'average'] = np.round(mean(dist),2)
+      DistViolDF.loc[cons1,'num viol'] = len(dist)
+      v+=1
+      outpml.write('distance viol{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(v), pdbname, cns[2], atom1, pdbname, cns[7], atom2))
+      violdict[cons1] = ""
+      if max(dist) < 0.30:
+        upldf.loc[Seqdict[cns[2]],'viol < 0.3'] = upldf.loc[Seqdict[cns[2]],'viol < 0.3'] + 1
+        upldf.loc[Seqdict[cns[7]],'viol < 0.3'] = upldf.loc[Seqdict[cns[7]],'viol < 0.3'] + 1
+        viol1cons = viol1cons + '+ "viol{:} "'.format(v)
+        viol1pbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[2], atom1, cns[7],atom2))
+        viol1list.append("{:<20}  {:3.2f}A violated in {:2} by {:3.2f}\u00C5\n".format(cons1,dmax, len(dist),np.round(mean(dist),2)))
+      if max(dist) >= 0.30:
+        upldf.loc[Seqdict[cns[2]],'viol > 0.3'] = upldf.loc[Seqdict[cns[2]],'viol > 0.3'] + 1
+        upldf.loc[Seqdict[cns[7]],'viol > 0.3'] = upldf.loc[Seqdict[cns[7]],'viol > 0.3'] + 1
+        viol2cons = viol2cons + '+ "viol{:} "'.format(v)
+        viol2pbout.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[2], atom1, cns[7],atom2))
+        viol2list.append("{:<20}  {:3.2f}A violated in {:2} by {:3.2f}\u00C5\n".format(cons1,dmax, len(dist),np.round(mean(dist),2)))
 DistViolDF.to_csv(outdir + name + '_dist_viols_CNS.csv')
 print('found {:} intramolecuar connections'.format(im))
 DVioltext = '{:3.0f} Violated Distance < 0.3\u00C5\n{:3.0f} Violated Distance > 0.3\u00C5\n'.format(len(
@@ -266,23 +268,24 @@ h = 1
 mn+=1
 for line in hbondtbl:
   cns = line.replace('HN','H').replace('(','').replace(')','').split()
-  if line.strip() and "#" not in cns[2]:
-    if (cns[2],cns[7],cns[10]) not in hbonsl:
-      h+=1 
-      hbonsl.append((cns[2],cns[7],cns[10].replace('N','H')))
-      cons = '{:}-{:}-{:}-{:}'.format(Seqdict[cns[2]],cns[5],Seqdict[cns[7]],cns[10])
-      # if cons in Upperdict.keys():
-      #   hbond.write('#1.1:{:}@{:} #1.1:{:}@{:} hotpink\n'.format(cns[2], cns[5], cns[7],cns[10]))
-      # else:
-      hbond.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[2], cns[5], cns[7],cns[10]))
-      outpml.write('distance hbond{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(h), pdbname, cns[2], cns[5].replace('H','N'), pdbname, cns[7], cns[10].replace('H','N')))
-      hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
-      if cns[2] not in selhbond:
-        selhbond = selhbond +'{:},'.format(cns[2])
-      if cns[7] not in selhbond:
-        selhbond = selhbond +'{:},'.format(cns[7])
-      if cns[5] not in ['O','H','N','HN']: sidelist.append(cns[2])
-      if cns[10] not in ['O','H','N','HN']: sidelist.append(cns[7])
+  if not re.match('^\s*\!',line):
+    if line.strip() and "#" not in cns[2]:
+      if (cns[2],cns[7],cns[10]) not in hbonsl:
+        h+=1 
+        hbonsl.append((cns[2],cns[7],cns[10].replace('N','H')))
+        cons = '{:}-{:}-{:}-{:}'.format(Seqdict[cns[2]],cns[5],Seqdict[cns[7]],cns[10])
+        # if cons in Upperdict.keys():
+        #   hbond.write('#1.1:{:}@{:} #1.1:{:}@{:} hotpink\n'.format(cns[2], cns[5], cns[7],cns[10]))
+        # else:
+        hbond.write('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[2], cns[5], cns[7],cns[10]))
+        outpml.write('distance hbond{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(h), pdbname, cns[2], cns[5].replace('H','N'), pdbname, cns[7], cns[10].replace('H','N')))
+        hbgroupline = hbgroupline + 'hbond' + str(h) + ' '
+        if cns[2] not in selhbond:
+          selhbond = selhbond +'{:},'.format(cns[2])
+        if cns[7] not in selhbond:
+          selhbond = selhbond +'{:},'.format(cns[7])
+        if cns[5] not in ['O','H','N','HN']: sidelist.append(cns[2])
+        if cns[10] not in ['O','H','N','HN']: sidelist.append(cns[7])
 hbond.close()
 sidechains = 'show #1:'
 for res in sidelist:
@@ -392,8 +395,8 @@ print('finished plotting dihedrals')
 armn = mn+1
 routmn = mn+2
 mn+=2
-outcmx.write('open ../CNS/refinedPDB/{:} maxModels 1\nrename #{:} angle_restraints\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(in_pdb,armn,armn,armn))
-outcmx.write('open ../CNS/refinedPDB/{:} maxModels 1\nrename #{:} rama_outliers\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(in_pdb,routmn,routmn,routmn))
+outcmx.write('open ../{:}/refinedPDB/{:} maxModels 1\nrename #{:} angle_restraints\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(cnsdir,in_pdb,armn,armn,armn))
+outcmx.write('open ../{:}/refinedPDB/{:} maxModels 1\nrename #{:} rama_outliers\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(cnsdir,in_pdb,routmn,routmn,routmn))
 ramalist, rotalist = [],[]
 for line in DAramalist:ramalist.append(line.split()[0][1:])
 for line in DArotalist:rotalist.append(line.split()[0][1:])
@@ -473,7 +476,7 @@ checkcons.close()
 ## ---------------------------------------------------------------------------
 ### Creating Model coloring residues based on the number of NOE restraints 
 mn+=1
-outcmx.write('open ../CNS/refinedPDB/{:}_cya.pdb maxModels 1\nrename #{:} noes\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(name,mn,mn,mn))
+outcmx.write('open ../{:}/refinedPDB/{:}_cya.pdb maxModels 1\nrename #{:} noes\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(cnsdir,name,mn,mn,mn))
 outcmx.write('color name c0 rgb(255,205,0)\ncolor name c2 rgb(156,217,59)\ncolor name c4 rgb(52,182,121)\ncolor name c6 rgb(42,117,142)\ncolor name c8 rgb(59,81,139)\ncolor name c10 rgb(20,64,110)\n')
 outpml.write('set_color c0 = [255,205,0]\nset_color c2  = [156,217,59]\nset_color c4  = [52,182,121]\nset_color c6  = [42,117,142]\nset_color c8  = [59,81,139]\nset_color c10  = [20,64,110]\n')
 outpml.write('create noes, {:}_0001\ncolor gray60,phi-psi\nhide sticks, noes\n'.format(pdbname))
