@@ -134,19 +134,19 @@ def calcDihedrals(A,B,C,D):
 # 'Y':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
 # 'V':[['chi1', 'N', 'CA', 'CB','CG1']]}
 SideDihe = {
- 'R':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD' ]],
- 'N':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'OD1']],
- 'D':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'OD1']],
- 'Q':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD']],
- 'E':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD']],
- 'H':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2','CA', 'CB', 'CG', 'ND1']],
- 'I':[['chi1', 'N', 'CA', 'CB','CG1'], ['chi2', 'CA', 'CB', 'CG1', 'CD1']],
- 'K':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD']],
- 'L':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
- 'M':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'SD']],
- 'F':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
- 'Y':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']],
- 'W':[['chi1', 'N', 'CA', 'CB','CG'], ['chi2', 'CA', 'CB', 'CG', 'CD1']]}
+ 'R':[['Chi1', 'N', 'CA', 'CB','CG'], ['Chi2', 'CA', 'CB', 'CG', 'CD' ]],
+ 'N':[['Chi1', 'N', 'CA', 'CB','CG'], ['Chi2', 'CA', 'CB', 'CG', 'OD1']],
+ 'D':[['Chi1', 'N', 'CA', 'CB','CG'], ['Chi2', 'CA', 'CB', 'CG', 'OD1']],
+ 'Q':[['Chi1', 'N', 'CA', 'CB','CG'], ['Chi2', 'CA', 'CB', 'CG', 'CD']],
+ 'E':[['Chi1', 'N', 'CA', 'CB','CG'], ['Chi2', 'CA', 'CB', 'CG', 'CD']],
+ 'H':[['Chi1', 'N', 'CA', 'CB','CG'], ['Chi2','CA', 'CB', 'CG', 'ND1']],
+ 'I':[['Chi1', 'N', 'CA', 'CB','CG1'], ['Chi2', 'CA', 'CB', 'CG1', 'CD1']],
+ 'K':[['Chi1', 'N', 'CA', 'CB','CG'], ['Chi2', 'CA', 'CB', 'CG', 'CD']],
+ 'L':[['Chi1', 'N', 'CA', 'CB','CG'], ['Chi2', 'CA', 'CB', 'CG', 'CD1']],
+ 'M':[['Chi1', 'N', 'CA', 'CB','CG'], ['Chi2', 'CA', 'CB', 'CG', 'SD']],
+ 'F':[['Chi1', 'N', 'CA', 'CB','CG'], ['Chi2', 'CA', 'CB', 'CG', 'CD1']],
+ 'Y':[['Chi1', 'N', 'CA', 'CB','CG'], ['Chi2', 'CA', 'CB', 'CG', 'CD1']],
+ 'W':[['Chi1', 'N', 'CA', 'CB','CG'], ['Chi2', 'CA', 'CB', 'CG', 'CD1']]}
 def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext, pdict,ypos,plotdict,dihedviol):
 
   global RAMA_PREF_VALUES
@@ -216,19 +216,24 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext, pdict,ypos,plotdict,
   ax.set_xticks([-180,-120,-60,0,60,120,180])
   ax.set_yticks([-180,-120,-60,0,60,120,180])
   ax.set_ylim([-180,180])
-  x1,x2 = [-180,180]
-  y1,y2 = [-180,180]
+  phi = [[-180,180]]
+  psi = [[-180,180]]
   if res + 'PHI'in plotdict.keys():
-    x1, x2 = plotdict[res +'PHI']
+    philim = plotdict[res +'PHI']
+    if min(plotdict[res +'PHI']) < -180.0:
+      phi = [[-180.0,plotdict[res +'PHI'][1]],[plotdict[res +'PHI'][0]+360.0,180.0]]
+    if max(plotdict[res +'PHI']) > 180.0:
+      phi = [[plotdict[res +'PHI'][0],180.0],[-180.0,plotdict[res +'PHI'][1]-360.0]]
+    else: phi = [plotdict[res +'PHI']]
   if res + 'PSI' in plotdict.keys():
-    y1, y2 = plotdict[res +'PSI']
-  if boundbox == 1 and res + 'PHI'in plotdict.keys():
-    ax.plot([x1, x1], [y1, y2], color="black",linewidth = 1.0)
-    ax.plot([x2, x2], [y1, y2], color="black",linewidth = 1.0)
-  if boundbox == 1 and res + 'PSI'in plotdict.keys():
-    ax.plot([x1, x2], [y1, y1], color="black",linewidth = 1.0)
-    ax.plot([x1, x2], [y2, y2], color="black",linewidth = 1.0)
-  if boundbox == 2:
+    psilim = plotdict[res +'PSI']
+    if min(plotdict[res +'PSI']) < -180.0:
+      psi = [[-180.0,plotdict[res +'PSI'][1]],[plotdict[res +'PSI'][0]+360.0,180.0]]
+    if max(plotdict[res +'PSI']) > 180.0:
+      psi = [[plotdict[res +'PSI'][0],180.0],[-180.0,plotdict[res +'PSI'][1]-360.0]]
+    else: psi = [plotdict[res +'PSI']]
+  for (x1,x2) in phi:
+    for (y1,y2) in psi:
       ax.plot([x1, x1], [y1, y2], color="black",linewidth = 1.0)
       ax.plot([x2, x2], [y1, y2], color="black",linewidth = 1.0)
       ax.plot([x1, x2], [y1, y1], color="black",linewidth = 1.0)
@@ -236,6 +241,7 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext, pdict,ypos,plotdict,
   ax.grid(visible=True, which='major', axis='both',linestyle='--')
   # plt.tight_layout(w_pad = 0.0001)
   return DArama
+
 def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, pdict, ypos,plotdict,dihedviol):
 
   global ROTA_PREF_VALUES
@@ -316,7 +322,7 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, pdict, ypos,plo
   if boundbox == 1 and res + 'CHI2'in plotdict.keys():
     ax.plot([x1, x2], [y1, y1], color="black",linewidth = 1.0)
     ax.plot([x1, x2], [y2, y2], color="black",linewidth = 1.0)
-  if boundbox == 2:
+  if boundbox == 2: 
       ax.plot([x1, x1], [y1, y2], color="black",linewidth = 1.0)
       ax.plot([x2, x2], [y1, y2], color="black",linewidth = 1.0)
       ax.plot([x1, x2], [y1, y1], color="black",linewidth = 1.0)
@@ -346,6 +352,39 @@ def plot_upl(res, ax, upldf, text):
   ax.axes.get_xaxis().set_visible(False)
   # ax.tick_params(axis='y')
   plt.tight_layout(w_pad = 0.0001)
+
+def Get_dihe_stats(dihe,angles):
+  ang360 =[]
+  for ang in angles:
+    if ang < 0: ang360.append(ang+360.0)
+    if ang > 0: ang360.append(ang)
+  S2 = np.round(np.linalg.norm(np.sum(np.cos(np.deg2rad(ang360))+ np.sin(np.deg2rad(ang360)) * 1j))/20,3)
+  mean = np.round(np.mean(ang360),2)
+  std = np.round(np.std(ang360),2)
+  if 'P' in dihe and mean > 180:
+    mean = mean -360.0
+  return mean,std,S2
+
+def Get_dihe_viol(angles,bounds):
+  ang360,error =[],[]
+  ang_min = bounds[0]
+  ang_max = bounds[1]
+  if ang_min < -180 and ang_max < 0: 
+    ang_min = ang_min + 360.0
+    amg_max = ang_max + 360.0
+    for ang in angles:
+      if ang < 0: ang360.append(ang+360.0)
+      if ang > 0: ang360.append(ang)
+  else: ang360 = angles
+  for ang in ang360:
+    if np.round(ang_min - ang,1) > 5.0:
+      error.append(np.round(ang_min - ang,1))
+    if np.round(ang - ang_max,1) > 5.0:
+      error.append(np.round(ang_max - ang,1))
+  if len(error) > 5:
+    viol = r'viol in {:} by {:}'.format(len(error), np.round(np.mean(error),1))
+  else: viol = ''
+  return viol
 
 ###----------------------------------------------------------------------------###
 ##  Extract the starting and ending lines for the 20 NMR models in the file.  ##
@@ -379,9 +418,9 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
           Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
   PhiDF =  pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv','type'])
   PsiDF =  pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
-  chi1DF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
-  chi2DF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
-  dihedDF =  pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv','type'])
+  Chi1DF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
+  Chi2DF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
+  dihedDF =  pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdev','S2','viol'])
   DAramalist, DArotalist = [], []
 
   for mnum in range(1,21,1):
@@ -400,38 +439,22 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
             if ang < 0: ang = ang + 360.0
             diheDF.loc[res,mnum] = np.round(ang,1)
 
-  PhiDF['mean'] = PhiDF.mean(axis=1).astype(float).round(2)
-  PhiDF['stdv'] = PhiDF.std(axis=1).astype(float).round(2)
-  PsiDF['mean'] = PsiDF.mean(axis=1).astype(float).round(2)
-  PsiDF['stdv'] = PsiDF.std(axis=1).astype(float).round(2)
-  chi1DF['mean'] = chi1DF.mean(axis=1).astype(float).round(2)
-  chi1DF['stdv'] = chi1DF.std(axis=1).astype(float).round(2)
-  chi2DF['mean'] = chi2DF.mean(axis=1).astype(float).round(2)
-  chi2DF['stdv'] = chi2DF.std(axis=1).astype(float).round(2)
-
   for i in range(1,len(Sequence)-1,1):
     if Sequence[i+1][0] == 'P' and Sequence[i][0] != 'G': PhiDF.loc[Sequence[i],'type'] = "PRE-PRO"
     elif Sequence[i][0] == 'P':PhiDF.loc[Sequence[i],'type'] = "PRO"
     elif Sequence[i][0] == 'G':PhiDF.loc[Sequence[i],'type'] = "GLY"
     else: PhiDF.loc[Sequence[i],'type'] = "General"
   for res in Sequence: 
-    if res[0] in SideDihe.keys():
-      chi1DF.loc[res,'type'] = res[0]
-    if res in PhiDF.index.to_list():
-      dihedDF.loc['{:}_Phi'.format(res)] = PhiDF.loc[res].copy()
-    if res in  PsiDF.index.to_list():
-      dihedDF.loc['{:}_Psi'.format(res)] = PsiDF.loc[res].copy()
-    if res in chi1DF.index.to_list():
-      dihedDF.loc['{:}_Chi1'.format(res)] = chi1DF.loc[res].copy()
-    if res in chi1DF.index.to_list():
-      dihedDF.loc['{:}_Chi2'.format(res)] = chi2DF.loc[res].copy()
+    for ang in ['Phi','Psi','Chi1','Chi2']:
+      angDF = eval('{:}DF'.format(ang))
+      if res in angDF.index.to_list():
+        dihedDF.loc['{:}_{:}'.format(res,ang)] = angDF.loc[res].copy()
+        mean,std,S2 = Get_dihe_stats(ang,np.array(angDF.loc[res].tolist()[:20]))
+        dihedDF.loc['{:}_{:}'.format(res,ang),['mean','stdev','S2']] = mean,std,S2
+        if '{:}{:}'.format(res,ang.upper()) in plotdict.keys():
+          dihedDF.loc['{:}_{:}'.format(res,ang),['error']] = Get_dihe_viol(np.array(angDF.loc[res].tolist()[:20]),plotdict['{:}{:}'.format(res,ang.upper())])
   dihedDF.to_csv(outdir + outname+'_dihed.csv')
-  # PhiDF.to_csv(outdir + outname + '_Phi.csv')
-  # PsiDF.to_csv(outdir + outname + '_Psi.csv')
-  # chi1DF.to_csv(outdir + outname + '_Chi1.csv')
-  # chi2DF.to_csv(outdir + outname + '_Chi2.csv')
-  # chi3DF.to_csv(outdir + outname + '_chi3.csv')
-  # chi4DF.to_csv(outdir + outname + '_chi4.csv')
+
   import time
   start_time = time.time()
   pdf = PdfPages(outdir + '{:}_overview.pdf'.format(outname))
@@ -448,7 +471,7 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
       ax0 = fig.add_subplot(gs[1])
       # fig, (ax1, ax0) = plt.subplots(1,2, figsize=(3.2,3),width_ratios = [3,4])
       plot_upl(res, ax1, upldf, text)
-    if res in PhiDF.index.to_list() and res in chi1DF.index.to_list():
+    if res in PhiDF.index.to_list() and res in Chi1DF.index.to_list():
       fig = plt.figure(figsize=(9,3))
       gs = GridSpec(1,4,width_ratios = (2,2,1,1))
       ax1 = fig.add_subplot(gs[0])
@@ -459,10 +482,10 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
       ramaout = plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0,phipsidict, 0.60,plotdict,dihedviol)
       if len(ramaout) > 4:
         DAramalist.append(ramaout)
-      rotaout = plot_chi1_chi2_ramachandran(res, ax2, chi1DF, chi2DF,ax0,chidict, 0.35,plotdict,dihedviol)
+      rotaout = plot_chi1_chi2_ramachandran(res, ax2, Chi1DF, Chi2DF,ax0,chidict, 0.35,plotdict,dihedviol)
       if len(rotaout) > 4: DArotalist.append(rotaout)
       plot_upl(res, ax3, upldf, text)
-    if res in PhiDF.index.to_list() and res not in chi1DF.index.to_list():
+    if res in PhiDF.index.to_list() and res not in Chi1DF.index.to_list():
       fig = plt.figure(figsize=(6,3))
       gs = GridSpec(1,3,width_ratios = (2,1,1))
       ax1 = fig.add_subplot(gs[0])
@@ -473,14 +496,14 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
       if len(ramaout) > 4: 
         DAramalist.append(ramaout)
       plot_upl(res, ax2, upldf, text)
-    if res not in PhiDF.index.to_list() and res in chi1DF.index.to_list():
+    if res not in PhiDF.index.to_list() and res in Chi1DF.index.to_list():
       fig = plt.figure(figsize=(6,3))
       gs = GridSpec(1,3,width_ratios = (2,1,1))
       ax1 = fig.add_subplot(gs[0])
       ax2 = fig.add_subplot(gs[1])
       ax0 = fig.add_subplot(gs[2])
       # fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3),width_ratios = [2,1,1])
-      rotaout = plot_chi1_chi2_ramachandran(res, ax1, chi1DF, chi2DF,ax0,chidict, 0.60, plotdict,dihedviol)
+      rotaout = plot_chi1_chi2_ramachandran(res, ax1, Chi1DF, Chi2DF,ax0,chidict, 0.60, plotdict,dihedviol)
       if len(rotaout) > 4:
         DArotalist.append(rotaout)
       plot_upl(res, ax2, upldf, text)
