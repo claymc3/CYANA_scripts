@@ -338,29 +338,37 @@ for x in range(len(dihetbl)):
           phiaco.append(resn)
       if 'CHI' in angle:
         angdict = chidict
+        if ang_min < 0:
+          ang_min = ang_min + 360.0
+          ang_max = ang_max + 360.0
         if resn not in chiaco:
           chiaco.append(resn)
-      outline = r"$\{:}$  {:} - {:}".format(angle.lower(), ang_min,ang_max)
+      outline = r"$\{:}$  {:} - {:}".format(angle.lower(), ang_min, ang_max)
       plotdict[Seqdict[resn] + angle] = [ang_min, ang_max]
       if num2AAA[resn] not in angdict.keys():
         angdict[Seqdict[resn]] = [[outline,'black']]
       else: 
         angdict[Seqdict[resn]].append([outline,'black'])
+      if ang_min <= -180.0:ang_min = ang_min + 360.0
+      # if ang_max > 180:
+
       angles = []
       for mnum in range(1,21,1):
         Coords = eval('Coor' + str(mnum))
         ang = np.round(Dihed.calcDihedrals(Coords[a1],Coords[a2],Coords[a3],Coords[a4]),1)
+        if ang_min > 180.0: ang = ang + 360.0
+        # if ang < 0: ang = ang + 360.0
         if 'CHI' in angle and ang < 0: ang = ang + 360.0
-        if 'P' in angle and ang_max > 180:  ang_min = ang_max - 360.0 
+        # if 'P' in angle and ang_max > 180:  ang_min = ang_max - 360.0 
         if np.round(ang_min - ang,1) > 5.0 :
-          #print('{:} max {:} min {:}'.format(num2AAA[resn]+angle,ang_max,ang_min))
-          #print('min {:} val {:} min {:} diff {:}'.format(num2AAA[resn]+angle, ang, ang_min,np.round(ang_min - ang,1)))
+          print('{:} max {:} min {:}'.format(num2AAA[resn]+angle,ang_max,ang_min))
+          print('min {:} val {:} min {:} diff {:}'.format(num2AAA[resn]+angle, ang, ang_min,np.round(ang_min - ang,1)))
           angles.append(np.round(ang_min - ang,1))
           AngleViolDF.loc[Seqdict[resn]+angle,mnum] = np.round(ang_min - ang,1)
         if np.round(ang - ang_max,1) > 5.0 : 
           angles.append(np.round(ang - ang_max,1))
-          #print('{:} max {:} min {:}'.format(num2AAA[resn]+angle,ang_max,ang_min))
-          #print('max {:} val {:} max {:} diff {:}'.format(num2AAA[resn]+angle, ang, ang_max,np.round(ang - ang_max,1)))
+          print('{:} max {:} min {:}'.format(num2AAA[resn]+angle,ang_max,ang_min))
+          print('max {:} val {:} max {:} diff {:}'.format(num2AAA[resn]+angle, ang, ang_max,np.round(ang - ang_max,1)))
           AngleViolDF.loc[Seqdict[resn]+angle,mnum] = np.round(ang - ang_max,1)
       if len(angles) > 5:
         diheviols.append("{:<6} {:<4s} Violated in {:2d} by {:3.1f}\n".format(Seqdict[resn],angle,len(angles),np.round(mean(angles),1)))
