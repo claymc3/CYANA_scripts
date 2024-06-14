@@ -675,6 +675,8 @@ for aco in dihed:
           exec('{:}count = {:}count + 1'.format(angle.lower(),angle.lower()))
         except NameError:
           othercount+=1
+        ang_min = float(ang[3])
+        ang_max = float(ang[4])
         if 'P' in ang[2]:
           angdict = phipsidict
           if ang[0] not in phiaco:
@@ -685,10 +687,13 @@ for aco in dihed:
           angdict = chidict
           if ang[0] not in chiaco:
             chiaco.append(ang[0])
+          if ang_min < 0:
+            ang_min = ang_min + 360.0
+            ang_max = ang_max + 360.0
             # cmxchisel = cmxchisel + ang[0] + ','
             # pmlchisel = pmlchisel  + ang[0] + '+'
-        outline = r"$\{:}$  {:} - {:}".format(angle.lower(), ang[3],ang[4])
-        plotdict[AAA_dict[ang[1]] + ang[0] + angle] = [float(ang[3]), float(ang[4])]
+        outline = r"$\{:}$  {:} - {:}".format(angle.lower(), ang_min,ang_max)
+        plotdict[AAA_dict[ang[1]] + ang[0] + angle] = [ang_min, ang_max]
         if AAA_dict[ang[1]] + ang[0] not in angdict.keys():
           angdict[AAA_dict[ang[1]] + ang[0]] = [[outline,'black']]
         else: 
