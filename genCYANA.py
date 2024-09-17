@@ -25,7 +25,8 @@ pdb_columns = ['name', 'resn', 'resid', 'X', 'Y', 'Z','nuc']
 # data frame, using the atome index int he PDB as the row index in the data frame. 
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "CYSS":"C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H","HISE": "H","HIS+": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "PROO":"P","PROU":"P","CPRO":"P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S',"ADE":"A","RADE":"A","CYT":"C","RCYT":"C","GUA":"G","RGUA":"G","THY":"T","URA":"U"}
 A_dict = {'A': 'ALA', 'C': 'CYS', 'E': 'GLU', 'D': 'ASP', 'G': 'GLY', 'F': 'PHE', 'I': 'ILE', 'H': 'HIS', 'K': 'LYS', 'M': 'MET', 'L': 'LEU', 'N': 'ASN', 'Q': 'GLN', 'P': 'PRO', 'S': 'SER', 'R': 'ARG', 'T': 'THR', 'W': 'TRP', 'V': 'VAL', 'Y': 'TYR' }
-Atoms_dict = {'I':['CD1'], 'L':['CD1','CD2'], 'V':['CG1','CG2'], 'M':['CE'], 'A':['CB'], 'T':['CG2'], 'W':['NE1','HE1'], 'F':['CE1','CE2','HE1','HE2'], 'Y':['CE1','CE2','HE1','HE2']}
+Atoms_dict = {'I':['CD1'], 'L':['CD1','CD2'], 'V':['CG1','CG2'], 'M':['CE'], 'A':['CB'], 'T':['CG2'], 'W':['NE1','HE1'], 'F':['CE1','CE2','HE1','HE2'], 'Y':['CE1','CE2','HE1','HE2'],'K':['CA','CB','CG','CD','CE','HA','HB3','HG3','HD3','HE2'],'R':['CA','CB','CG','CD','HA','HB3','HG3','HD3'],'H':['CE1','HE1','CD2','HD2']}
+
 
 cwd = os.getcwd()
 #####
@@ -47,7 +48,7 @@ Required Input:
 					Supported labeling of: I, L, V, M, A,T, Y, F, or W
 					I = I-CD1, L = L-CD1, L-CD2, V = V-CG1, V-CG2, M = M-CE,
 					A = A-CB, T = T-CG2 F = F-CE1, F-CE2, Y = Y-CE1, Y-CE2,
-					W = W-NE1
+					W = W-NE1, K, R, H
 
 	residues 		Residues to use in upl generation and rmsd calumniation.
 					20-200,300-490
@@ -217,14 +218,6 @@ for (res, resn) in num_seq:
 		aco2.write(' {:>5}  MET   CHI1     45.0    84.0 9.00E-01 type=2\n {:>5}  MET   CHI2    157.0   210.0 9.00E-01 type=2\n {:>5}  MET   CHI1    157.0   208.0 9.00E-01 type=2 OR\n {:>5}  MET   CHI2    150.0   208.0 9.00E-01 type=2\n {:>5}  MET   CHI1    265.0   322.0 9.00E-01 type=2 OR\n {:>5}  MET   CHI2    146.0   212.0 9.00E-01 type=2\n {:>5}  MET   CHI1    266.0   320.0 9.00E-01 type=2 OR\n {:>5}  MET   CHI2    270.0   325.0 9.00E-01 type=2\n {:>5}  MET   CHI1    161.0   208.0 9.00E-01 type=2 OR\n {:>5}  MET   CHI2     42.0    86.0 9.00E-01 type=2\n\n'.format(resn,resn,resn,resn,resn,resn,resn,resn,resn,resn))
 aco2.close()
 ssa = open('ssa.cya','w')
-ssa.write("###lock stereospecific assignments based on ProS sample assignments\n\n### Leucines\n\n")
-for (res, resn) in num_seq:
-	if res == 'L':
-		ssa.write('#  atom stereo "QD1  QD2  {:>5}"  #{:}{:}\n'.format(resn,res,resn))
-ssa.write('\n\n### Valines\n\n')
-for (res, resn) in num_seq:
-	if res == 'V':
-		ssa.write('#  atom stereo "QD1  QD2  {:>5}"  #{:}{:}\n'.format(resn,res,resn))
 ssa.close()
 #------------------------------------------------------------------------------
 # Fetch the .peak files and create a list 
@@ -419,6 +412,8 @@ for i in range(len(C_list)):
 					if (str(PDB_df.loc[C_list[i],'resid']),str(PDB_df.loc[C_list[x],'resid'])) not in CC_ids:
 						CC_ids.append((str(PDB_df.loc[C_list[i],'resid']),str(PDB_df.loc[C_list[x],'resid'])))
 
+
+
 #------------------------------------------------------------------------------
 # Filter the NC and CC distance restraints so that only the shortest connection
 # to geminal methyls and Aromatic CE1/CE2 is kept. 
@@ -452,26 +447,56 @@ for (cid1,cid2) in CC_ids:
 	if len(temp) >= 1:
 		CC_outlines.append(temp[temp2.index(min(temp2))])
 
-NC_methyl, NC_Aro, CC_methyl, CC_Aro = [], [], [], []
+NC_methyl, NC_Aro, CC_methyl, CC_Aro,CC_LYS,N_LYS,CC_ARG,NC_ARG,CC_HIS,NC_HIS = [], [], [], [], [], [], [], [], [], []
+NC_sorted,CC_sorted = [],[]
 for line in NC_outlines:
 	if line.split()[4] in ['PHE','TYR']:
 		if 'missing' in line: line = '#' + line
 		NC_Aro.append(line)
+		NC_sorted.append(line)
 for line in NC_outlines:
-	if line not in NC_Aro:
+	if line.split()[4] in ['LYS','ARG','HIS','HIST']:
+		nc_list = eval('NC_{:}'.format(line.split()[4][:-1]))
+		if 'missing' in line: line = '#' + line
+		nc_list.append(line)
+		NC_sorted.append(line)
+for line in NC_outlines:
+	if line not in NC_sorted:
 		if 'missing' in line: line = '#' + line
 		NC_methyl.append(line)
 upl.write('### N-C Methyl Distances\n')
 upl.writelines(NC_methyl)
 upl.write('### N-C Aromatic Distances\n')
 upl.writelines(NC_Aro)
+if len(NC_LYS >=1):
+	upl.write('### N-C Lysine Distances\n')
+	upl.writelines(NC_LYS)
+if len(NC_ARG >=1):
+	upl.write('### N-C Arginine Distances\n')
+	upl.writelines(NC_ARG)
+if len(NC_HIS >=1):
+	upl.write('### N-C Histadine Distances\n')
+	upl.writelines(NC_HIS)
+
 for line in CC_outlines:
-	if line.split()[1] in ['PHE','TYR'] and line not in CC_Aro:
+	if line.split()[1] in ['PHE','TYR'] and line not in CC_sorted:
 		if 'missing' in line: line = '#' + line
 		CC_Aro.append(line)
-	if line.split()[4] in ['PHE','TYR'] and line not in CC_Aro:
+		CC_sorted.append(line)
+	if line.split()[4] in ['PHE','TYR'] and line not in CC_sorted:
 		if 'missing' in line: line = '#' + line
 		CC_Aro.append(line)
+		CC_sorted.append(line)
+	if line.split()[1] in ['LYS','ARG','HIS','HIST'] and line not in CC_sorted:
+		if 'missing' in line: line = '#' + line
+		cc_list = eval('CC_{:}'.format(line.split()[1][:-1]))
+		cc_list.append(line)
+		CC_sorted.append(line)
+	if line.split()[4] in ['LYS','ARG','HIS','HIST'] and line not in CC_sorted:
+		if 'missing' in line: line = '#' + line
+		cc_list = eval('CC_{:}'.format(line.split()[4][:-1]))
+		cc_list.append(line)
+		CC_sorted.append(line)
 for line in CC_outlines:
 	if line not in CC_Aro:
 		if 'missing' in line: 
@@ -482,6 +507,16 @@ upl.write('### C-C Methyl-Methyl Distances\n')
 upl.writelines(CC_methyl)
 upl.write('### C-C Methyl-Aromatic Distances\n')
 upl.writelines(CC_Aro)
+if len(CC_LYS >=1):
+	upl.write('### C-C Lysine Distances\n')
+	upl.writelines(CC_LYS)
+if len(CC_ARG >=1):
+	upl.write('### C-C Arginine Distances\n')
+	upl.writelines(CC_ARG)
+if len(CC_HIS >=1):
+	upl.write('### C-C Histadine Distances\n')
+	upl.writelines(CC_HIS)
+
 upl.write('\n\n')
 print("Original %3.0f NC upl constraints " % (len(NC_lines)))
 print("Made %3.0f NC upl constraints " % (len(NC_outlines)))
@@ -530,6 +565,27 @@ read seq $name.seq
 #molecule symdist "CA 1..146" "CA 201..346"
 #weight_sym=0.025'''.format(name,residues.replace('-','...'))
 Init_Cyana.write(init_text)
+
+Init_Cyana.write("###lock stereospecific assignments based on ProS sample assignments\n\n### Leucines\n\n")
+for (res, resn) in num_seq:
+	if res == 'L':
+		ssa.write('#  atom stereo "QD1  QD2  {:>5}"  #{:}{:}\n'.format(resn,res,resn))
+Init_Cyana.write('\n\n### Valines\n\n')
+for (res, resn) in num_seq:
+	if res == 'V':
+		Init_Cyana.write('#  atom stereo "QD1  QD2  {:>5}"  #{:}{:}\n'.format(resn,res,resn))
+if 'K' in sys.argv[3]:
+	Init_Cyana.write('\n\n### Sail Lysine\n\n')
+	for (res, resn) in num_seq:
+		if res == 'K':
+			Init_Cyana.write('  atom stereo "HB3  HG3  HD3  HE2  {:>5}"  #{:}{:}\n'.format(resn,res,resn))
+if 'R' in sys.argv[3]:
+	Init_Cyana.write('\n\n### Sail Arginine\n\n')
+	for (res, resn) in num_seq:
+		if res == 'R':
+			Init_Cyana.write('  atom stereo "HB3  HG3  HD3  {:>5}"  #{:}{:}\n'.format(resn,res,resn))
+
+
 Init_Cyana.close()
 
 special = open('special.lib','w')
