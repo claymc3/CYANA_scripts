@@ -170,6 +170,43 @@ aco = open('dihed.aco','w')
 # 		aco.write("#  " + line + "\n")
 # 		aco.write("{:>4s}  {:<4s} CHI1  {:8.1f}{:8.1f}\n\n".format(cline[0], A_dict[cline[1]], chi1-dchi, chi1+dchi))
 aco.write('## Generated using PrepCyana_{:}\n## Dihedrals extracted from {:}\n'.format(Vnum,indihed))
+
+aco.write('\n## Preformatted entries for chi1/chi2 restraints that should be included as strucutre is refined\n')
+for (res, resn) in num_seq:
+	if res == 'I':
+		aco.write('## {:>5}  ILE  CHI1    360.0   360.0\n## {:>5}  ILE  CHI21   360.0   360.0\n'.format(resn,resn))
+aco.write('\n\n')
+for (res, resn) in num_seq:
+	if res == 'L':
+		aco.write('## {:>5}  LEU  CHI1    360.0   360.0\n## {:>5}  LEU  CHI2    360.0   360.0\n'.format(resn,resn))
+aco.write('\n\n')
+for (res, resn) in num_seq:
+	if res == 'M':
+		aco.write('## {:>5}  MET  CHI1    360.0   360.0\n## {:>5}  MET  CHI2    360.0   360.0\n'.format(resn,resn))
+aco.write('\n\n')
+for (res, resn) in num_seq:
+	if res == 'F':
+		aco.write('## {:>5}  PHE  CHI1    360.0   360.0\n## {:>5}  PHE  CHI2    360.0   360.0\n'.format(resn,resn))
+aco.write('\n\n')
+for (res, resn) in num_seq:
+	if res == 'Y':
+		aco.write('## {:>5}  TYR  CHI1    360.0   360.0\n## {:>5}  TYR  CHI2    360.0   360.0\n'.format(resn,resn))
+aco.write('\n\n')
+for (res, resn) in num_seq:
+	if res == 'W':
+		aco.write('## {:>5}  TRP  CHI1    360.0   360.0\n## {:>5}  TRP  CHI2    360.0   360.0\n'.format(resn,resn))
+aco.write('\n\n')
+if 'K' in sys.argv[3]:
+	for (res, resn) in num_seq:
+		if res == 'K':
+			aco.write('## {:>5}  LYS  CHI1    360.0   360.0\n## {:>5}  LYS  CHI2    360.0   360.0\n'.format(resn,resn))
+	aco.write('\n\n')
+if 'R' in sys.argv[3]:
+	for (res, resn) in num_seq:
+		if res == 'W':
+			aco.write('## {:>5}  ARG  CHI1    360.0   360.0\n## {:>5}  ARG  CHI2    360.0   360.0\n'.format(resn,resn))
+	aco.write('\n\n')
+
 aco.write('## Phi/Psi values from TALOS\n')
 phicount, psicount = 0,0 
 for line in dihed_lines:
@@ -330,7 +367,7 @@ print("Generated hbond.upl and hbond.lol")
 # based on TALOS predSS.tab
 #
 NN_used, NN_lines = [],[]
-upl = open(name + '_model.upl','w')
+upl = open('{:}_{:}.upl'.format(in_pdb.replace('.pdb',''),chain),'w')
 upl.write('##Generated using PrepCyana_{:}\n## Distances extracted from {:}\n'.format(Vnum,in_pdb))
 N_list = PDB_df[(PDB_df['nuc'] == 'N')  & (PDB_df['resn'] != 'PRO')].index.tolist()
 C_list = PDB_df[(PDB_df['nuc'] == 'C')].index.tolist()
@@ -447,16 +484,16 @@ for (cid1,cid2) in CC_ids:
 	if len(temp) >= 1:
 		CC_outlines.append(temp[temp2.index(min(temp2))])
 
-NC_methyl, NC_Aro, CC_methyl, CC_Aro,CC_LYS,N_LYS,CC_ARG,NC_ARG,CC_HIS,NC_HIS = [], [], [], [], [], [], [], [], [], []
+NC_methyl, NC_Aro, CC_methyl, CC_Aro,CC_LYS,NC_LYS,CC_ARG,NC_ARG,CC_HIS,NC_HIS,CC_HIST,NC_HIST = [], [], [], [], [], [], [], [], [], [], [], []
 NC_sorted,CC_sorted = [],[]
 for line in NC_outlines:
-	if line.split()[4] in ['PHE','TYR']:
+	if line.split()[4] in ['PHE','TYR','PTR']:
 		if 'missing' in line: line = '#' + line
 		NC_Aro.append(line)
 		NC_sorted.append(line)
 for line in NC_outlines:
 	if line.split()[4] in ['LYS','ARG','HIS','HIST']:
-		nc_list = eval('NC_{:}'.format(line.split()[4][:-1]))
+		nc_list = eval('NC_{:}'.format(line.split()[4]))
 		if 'missing' in line: line = '#' + line
 		nc_list.append(line)
 		NC_sorted.append(line)
@@ -468,37 +505,39 @@ upl.write('### N-C Methyl Distances\n')
 upl.writelines(NC_methyl)
 upl.write('### N-C Aromatic Distances\n')
 upl.writelines(NC_Aro)
-if len(NC_LYS >=1):
+if len(NC_LYS) >=1:
 	upl.write('### N-C Lysine Distances\n')
 	upl.writelines(NC_LYS)
-if len(NC_ARG >=1):
+if len(NC_ARG) >=1:
 	upl.write('### N-C Arginine Distances\n')
 	upl.writelines(NC_ARG)
-if len(NC_HIS >=1):
+if len(NC_HIS) >=1:
 	upl.write('### N-C Histadine Distances\n')
 	upl.writelines(NC_HIS)
+	if len(NC_HIST) >=1:
+		upl.writelines(NC_HIST)
 
 for line in CC_outlines:
-	if line.split()[1] in ['PHE','TYR'] and line not in CC_sorted:
+	if line.split()[1] in ['PHE','TYR','PTR'] and line not in CC_sorted:
 		if 'missing' in line: line = '#' + line
 		CC_Aro.append(line)
 		CC_sorted.append(line)
-	if line.split()[4] in ['PHE','TYR'] and line not in CC_sorted:
+	if line.split()[4] in ['PHE','TYR','PTR'] and line not in CC_sorted:
 		if 'missing' in line: line = '#' + line
 		CC_Aro.append(line)
 		CC_sorted.append(line)
 	if line.split()[1] in ['LYS','ARG','HIS','HIST'] and line not in CC_sorted:
+		cc_list = eval('CC_{:}'.format(line.split()[1]))
 		if 'missing' in line: line = '#' + line
-		cc_list = eval('CC_{:}'.format(line.split()[1][:-1]))
 		cc_list.append(line)
 		CC_sorted.append(line)
 	if line.split()[4] in ['LYS','ARG','HIS','HIST'] and line not in CC_sorted:
+		cc_list = eval('CC_{:}'.format(line.split()[4]))
 		if 'missing' in line: line = '#' + line
-		cc_list = eval('CC_{:}'.format(line.split()[4][:-1]))
 		cc_list.append(line)
 		CC_sorted.append(line)
 for line in CC_outlines:
-	if line not in CC_Aro:
+	if line not in CC_sorted:
 		if 'missing' in line: 
 			line = '#' + line
 		CC_methyl.append(line)
@@ -507,15 +546,17 @@ upl.write('### C-C Methyl-Methyl Distances\n')
 upl.writelines(CC_methyl)
 upl.write('### C-C Methyl-Aromatic Distances\n')
 upl.writelines(CC_Aro)
-if len(CC_LYS >=1):
+if len(CC_LYS) >=1:
 	upl.write('### C-C Lysine Distances\n')
 	upl.writelines(CC_LYS)
-if len(CC_ARG >=1):
+if len(CC_ARG) >=1:
 	upl.write('### C-C Arginine Distances\n')
 	upl.writelines(CC_ARG)
-if len(CC_HIS >=1):
+if len(CC_HIS) >=1:
 	upl.write('### C-C Histadine Distances\n')
 	upl.writelines(CC_HIS)
+	if len(CC_HIST) >=1:
+		upl.writelines(CC_HIST)
 
 upl.write('\n\n')
 print("Original %3.0f NC upl constraints " % (len(NC_lines)))
@@ -530,7 +571,7 @@ CYANA = open('CALC.cya','w')
 clac_text = '''
 peaks       := {:}      # names of NOESY peak lists
 prot        := {:}      # names of chemical shift lists
-constraints := {:}.upl,{:},{:},{:}      # additional (non-NOE) constraints
+constraints := {:},{:},{:},{:}      # additional (non-NOE) constraints
 tolerance   := 0.01,0.01,0.01,0.01      # chemical shift tolerances
 calibration :=      # NOE calibration parameters
 dref        := 4.5
@@ -547,10 +588,18 @@ upl_values  := 2.4,7.0
 
 ssa
 noeassign peaks=$peaks prot=$prot autoaco # keep=KEEP 
-'''.format(peaks_out, prots_out, name+ '_model', 'hbond.lol', 'hbond.upl','dihed.aco,inital.aco',residues.replace("-",".."))
+'''.format(peaks_out, prots_out, '{:}_{:}.upl'.format(in_pdb.replace('.pdb',''),chain), 'hbond.lol', 'hbond.upl','dihed.aco,inital.aco,manual.upl',residues.replace("-",".."))
 CYANA.write(clac_text)
 CYANA.close()
 
+manupl = open('manual.upl','w')
+manupl.write('### Manualy generated UPL entries based on NOESY Data ###\n')
+manupl.write('#{:>5}  {:<4}  {:<4}   {:>5}  {:<4}  {:<4}   {:6.1f}\n'.format('123','ALA','CB','456','ARG','N',6.0))
+manupl.write('#{:>5}  {:<4}  {:<4}   {:>5}  {:<4}  {:<4}   {:6.1f}\n'.format('123','ALA','QB','456','ARG','H',6.0))
+manupl.write('#{:>5}  {:<4}  {:<4}   {:>5}  {:<4}  {:<4}   {:6.1f}\n'.format('123','PHE','CE1','456','ARG','N',6.0))
+manupl.write('#{:>5}  {:<4}  {:<4}   {:>5}  {:<4}  {:<4}   {:6.1f}\n'.format('123','PHE','QE','456','ARG','H',6.0))
+manupl.write('#{:>5}  {:<4}  {:<4}   {:>5}  {:<4}  {:<4}   {:6.1f}\n'.format('123','PHE','HE1','456','ARG','H',6.0))
+manupl.close()
 Init_Cyana = open('init.cya','w')
 init_text = '''name:={:}
 rmsdrange:={:}
@@ -563,27 +612,27 @@ read seq $name.seq
 #molecule identity
 #weight_ide=0.09
 #molecule symdist "CA 1..146" "CA 201..346"
-#weight_sym=0.025'''.format(name,residues.replace('-','...'))
+#weight_sym=0.025'''.format(name,residues.replace('-','..'))
 Init_Cyana.write(init_text)
 
 Init_Cyana.write("###lock stereospecific assignments based on ProS sample assignments\n\n### Leucines\n\n")
 for (res, resn) in num_seq:
 	if res == 'L':
-		ssa.write('#  atom stereo "QD1  QD2  {:>5}"  #{:}{:}\n'.format(resn,res,resn))
+		Init_Cyana.write('# atom stereo "QD1  QD2  {:>5}"  #{:}{:}\n'.format(resn,res,resn))
 Init_Cyana.write('\n\n### Valines\n\n')
 for (res, resn) in num_seq:
 	if res == 'V':
-		Init_Cyana.write('#  atom stereo "QD1  QD2  {:>5}"  #{:}{:}\n'.format(resn,res,resn))
+		Init_Cyana.write('# atom stereo "QG1  QG2  {:>5}"  #{:}{:}\n'.format(resn,res,resn))
 if 'K' in sys.argv[3]:
 	Init_Cyana.write('\n\n### Sail Lysine\n\n')
 	for (res, resn) in num_seq:
 		if res == 'K':
-			Init_Cyana.write('  atom stereo "HB3  HG3  HD3  HE2  {:>5}"  #{:}{:}\n'.format(resn,res,resn))
+			Init_Cyana.write(' atom stereo "HB3  HG3  HD3  HE2  {:>5}"  #{:}{:}\n'.format(resn,res,resn))
 if 'R' in sys.argv[3]:
 	Init_Cyana.write('\n\n### Sail Arginine\n\n')
 	for (res, resn) in num_seq:
 		if res == 'R':
-			Init_Cyana.write('  atom stereo "HB3  HG3  HD3  {:>5}"  #{:}{:}\n'.format(resn,res,resn))
+			Init_Cyana.write(' atom stereo "HB3  HG2  HD2  {:>5}"  #{:}{:}\n'.format(resn,res,resn))
 
 
 Init_Cyana.close()
@@ -781,8 +830,71 @@ RESIDUE   PTR      7   31    3   30
 	30 O    O_BYL    0    0.0000    1.6224   -0.3027   -3.5762   29    0    0    0    0
 	31 N    N_AMI    0    0.0000   -0.1313    0.0279   -2.2068   29    0    0    0    0
 
+RESIDUE   SEP      8   20    3   19
+      1 OMEGA    0    0    0.0000    2    1    3    4    0
+      2 PHI      0    0    0.0000    1    3    5   18    0
+      3 CHI1     0    0    0.0000    3    5    6    7   16
+      4 CHI2     0    0    0.0000    5    6    7    8   13
+      5 CHI3     0    0    0.0000    6    7    8    9   13
+      6 CHI4     0    0    0.0000    7    8   10   11   11
+      7 CHI5     0    0    0.0000    7    8   12   13   13
+      8 PSI      0    0    0.0000    3    5   18   20    0
+      1 C    C_BYL    0    0.0000    2.6673    0.9171    0.8235    2    3    0    0    0
+      2 O    O_BYL    0    0.0000    2.2658    1.5682   -0.1398    1    0    0    0    0
+      3 N    N_AMI    0    0.0000    1.8550    0.4210    1.7510    1    4    5    0    0
+      4 H    H_AMI    0    0.0000    2.2353   -0.0900    2.4957    3    0    0    0    0
+      5 CA   C_ALI    0    0.0000    0.4010    0.6200    1.6870    3    6   17   18    0
+      6 CB   C_ALI    0    0.0000   -0.1390    0.0150    0.3910    5    7   14   15    0
+      7 OG   O_EST    0    0.0000    0.4770    0.6550   -0.7270    6    8    0    0    0
+      8 P    P_ALI    0    0.0000   -0.1350   -0.0270   -2.0500    7    9   10   12    0
+      9 O1P  O_BYL    0    0.0000   -1.6010    0.1720   -2.0740    8    0    0    0    0
+     10 O2P  O_HYD    0    0.0000    0.5200    0.6490   -3.3560    8   11    0    0    0
+     11 HOP2 H_OXY    0    0.0000    0.1270    0.2120   -4.1240   10    0    0    0    0
+     12 O3P  O_HYD    0    0.0000    0.1910   -1.6030   -2.0410    8   13    0    0    0
+     13 HOP3 H_OXY    0    0.0000    1.1540   -1.6890   -2.0250   12    0    0    0    0
+     14 HB2  H_ALI    0    0.0000    0.0820   -1.0510    0.3670    6    0    0    0   16
+     15 HB3  H_ALI    0    0.0000   -1.2180    0.1630    0.3440    6    0    0    0   16
+     16 QB   PSEUD    0    0.0000   -0.5680   -0.4440    0.3555    0    0    0    0    0
+     17 HA   H_ALI    0    0.0000    0.1790    1.6870    1.7110    5    0    0    0    0
+     18 C    C_BYL    0    0.0000   -0.2490   -0.0530    2.8670    5   19   20    0    0
+     19 O    O_BYL    0    0.0000    0.4272   -0.6527    3.7012   18    0    0    0    0
+     20 N    N_AMI    0    0.0000   -1.5723    0.0440    2.9422   18    0    0    0    0
 
-CSTABLE      65
+RESIDUE   TPO      9   23    3   22
+   1 OMEGA    0    0    0.0000    2    1    3    4    0
+   2 PHI      0    0    0.0000    1    3    5   21    0
+   3 CHI1     0    0    0.0000    3    5    6    7   19
+   4 CHI2     0    0    0.0000    5    6    7    8   11
+   5 CHI3     0    0    0.0000    5    6   12   13   18
+   6 CHI4     0    0    0.0000    6   12   13   14   18
+   7 CHI5     0    0    0.0000   12   13   15   16   16
+   8 CHI6     0    0    0.0000   12   13   17   18   18
+   9 PSI      0    0    0.0000    3    5   21   23    0
+   1 C    C_BYL    0    0.0000    2.4657   -1.1866    2.5242    2    3    0    0    0
+   2 O    O_BYL    0    0.0000    3.2750   -0.3086    2.2291    1    0    0    0    0
+   3 N    N_AMI    0    0.0000    1.1530   -1.0400    2.3770    1    4    5    0    0
+   4 H    H_AMI    0    0.0000    0.5583   -1.7766    2.6303    3    0    0    0    0
+   5 CA   C_ALI    0    0.0000    0.5720    0.1990    1.8440    3    6   20   21    0
+   6 CB   C_ALI    0    0.0000    1.1110    0.4490    0.4340    5    7   12   19    0
+   7 CG2  C_ALI    0    0.0000    2.6340    0.5800    0.4850    6    8    9   10    0
+   8 HG21 H_ALI    0    0.0000    3.0650   -0.3390    0.8810    7    0    0    0   11
+   9 HG22 H_ALI    0    0.0000    3.0180    0.7580   -0.5180    7    0    0    0   11
+  10 HG23 H_ALI    0    0.0000    2.9060    1.4150    1.1310    7    0    0    0   11
+  11 QG2  PSEUD    0    0.0000    2.9963    0.6113    0.4980    0    0    0    0    0
+  12 OG1  O_EST    0    0.0000    0.7550   -0.6450   -0.4120    6   13    0    0    0
+  13 P    P_ALI    0    0.0000   -0.1420   -0.0390   -1.6030   12   14   15   17    0
+  14 O1P  O_BYL    0    0.0000    0.6440    0.9680   -2.3500   13    0    0    0    0
+  15 O2P  O_HYD    0    0.0000   -0.5800   -1.2240   -2.6010   13   16    0    0    0
+  16 HOP2 H_OXY    0    0.0000   -1.1140   -0.8190   -3.2980   15    0    0    0    0
+  17 O3P  O_HYD    0    0.0000   -1.4560    0.6560   -0.9850   13   18    0    0    0
+  18 HOP3 H_OXY    0    0.0000   -1.9380   -0.0330   -0.5090   17    0    0    0    0
+  19 HB   H_ALI    0    0.0000    0.6800    1.3690    0.0390    6    0    0    0    0
+  20 HA   H_ALI    0    0.0000    0.8440    1.0340    2.4900    5    0    0    0    0
+  21 C    C_BYL    0    0.0000   -0.9270    0.0700    1.7940    5   22   23    0    0
+  22 O    O_BYL    0    0.0000   -1.4832   -0.9616    2.1674   21    0    0    0    0
+  23 N    N_AMI    0    0.0000   -1.5914    1.1231    1.3294   21    0    0    0    0
+
+CSTABLE      81
 	 1 HIST N     6491  119.62    4.02  105.00  136.48
 	 2 HIST H     7180    8.24    0.69    5.24   12.39
 	 3 HIST CA    6056   56.49    2.33   46.01   66.98
@@ -848,6 +960,22 @@ CSTABLE      65
 	63 PTR  CE2    122  117.33    1.11  114.30  119.80
 	64 PTR  CD2    125  132.32    1.25  129.70  137.70
 	65 PTR  C       41  175.16    1.82  170.20  178.50
+	66 SEP  H       98    8.73    0.36    7.18   10.05
+	67 SEP  N       73  118.32    1.87  113.00  123.35
+	68 SEP  CA      68   57.57    1.56   55.23   63.70
+	69 SEP  HA      47    4.50    0.16    4.07    4.83
+	70 SEP  CB      68   65.72    1.17   63.29   72.07
+	71 SEP  QB      39    4.06    0.19    3.64    4.84
+	72 SEP  C       42  173.82    1.15  169.38  176.94 
+	73 TPO  H       34    8.87    0.53    7.86   10.23
+	74 TPO  N       29  120.39    5.12  103.22  132.72
+	75 TPO  CA      27   61.35    1.67   59.38   67.00
+	76 TPO  HA      10    4.37    0.32    3.85    5.03
+	77 TPO  CB      28   72.70    2.48   69.28   81.93
+	78 TPO  HB      11    4.25    0.19    3.91    4.49
+	79 TPO  CG2      5   22.28    2.38   20.50   26.46
+	80 TPO  QG2      2    1.26    0.14    1.16    1.35
+	81 TPO  C       12  173.47    1.06  172.06  175.74
 '''
 special.write(special_text)
 special.close()
