@@ -39,8 +39,8 @@ Required Input:
 
 OutPut:
   post_cyana_analysis/
-    pdb_pra.cxc
-    pdb_pra.pml
+    pdb.cxc
+    pdb.pml
     upl_summary.txt
     upl_overview.pdf
     pdb_Phi.csv, pdb_Psi.csv, pdb_Chi1.csv, pdb_Chi2.csv 
@@ -98,7 +98,7 @@ if not os.path.exists(noadir):
   os.makedirs(noadir)
 checkcons = open(outdir + outname + '_summary.txt','w')
 ## open the CALC.cya file to get the peaks list and additional constraint files used in the calculation. 
-cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
+cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match(r'^\s*#', line)][0].split()[2].split(',')
 lengths,upllengths = [], []
 for plist in cya_plists:
   lengths.append(len(plist))
@@ -169,7 +169,7 @@ print(peaklisttxt)
 checkcons.write(peaklisttxt +'\n\n')
 shortsum.write(shortsumtext)
 
-outpml = open(outdir + fupl.replace('.upl','_pra.pml'),'w')
+outpml = open(outdir + pdbname + '.pml','w')
 outpml.write('load ./' + in_pdb+'\n')
 outpml.write('set dash_gap, 0.05\n')
 outpml.write('set_color royalblue = [65,105,225]\nset_color forest = [34,139,34]\nset_color yellowgreen = [154,205,50]\nset_color darkorange = [255,140,0]\nset_color purple = [128,0,128]\nset_color lightseagreen = [32,178,170]\nset_color darkkhaki = [189,183,107]\nset_color peru = [205,133,63]\nset_color saddlebrown = [139,69,19]\nset_color gold = [255,215,0]\nset_color navy = [0,0,128]\nset_color darkturquoise = [0,206,209]\nset_color pink = [255,192,203]\nset_color cyan = [0,255,255]\nset_color paleturquoise = [175,238,238]\nset_color lightsalmon = [255,160,122]\nset_color khaki = [240,230,140]\nset_color yellowgreen = [154,205,50]\nset_color thistle = [216,191,216]\nset_color aquamarine = [127,255,212]\nset_color plum = [221,160,221]\nset_color lightpink = [255,182,193]\nset_color mediumvioletred = [199,21,133]\nset_color firebrick = [178,34,34]\nset_color lightcoral = [240,128,128]\nset_color deeppink = [255,20,147]\nset_color hotpink = [255,105,180]\nset_color mediumpurple = [147,112,219]\nset_color navy = [0,0,128]\nset_color cornflowerblue = [100,149,237]\n')
@@ -180,7 +180,7 @@ outpml.write('color gold, elem S\ncolor red, elem O\ncolor blue, elem N\n')
 outpml.write('split_states ' + pdbname + '\n')
 for y in range(2,21,1):
   outpml.write('align {:}_{:04d}, {:}_0001\n'.format(pdbname,y, pdbname))
-outcmx = open(outdir + fupl.replace('.upl','_pra.cxc'),'w')
+outcmx = open(outdir + pdbname + '.cxc','w')
 outcmx.write('open ../'+ in_pdb+'\n')
 outcmx.write('color #1 gray(150)\n')
 outcmx.write('match #1.2-20 to #1.1\n')
@@ -330,9 +330,9 @@ for x in range(len(noalines)):
         index = 3
       for y in range(2,int(noalines[x+1].split()[index])+2,1):
         cns = noalines[x+y].strip().split()
-        if not re.match('^\s+[A-Z]+',noalines[x+y]):
+        if not re.match(r'^\s+[A-Z]+',noalines[x+y]):
           atom1,resn1, resi1, atom2, resn2, resi2 = cns[1],cns[2],int(cns[3]), cns[5], cns[6], int(cns[7])
-        if re.match('^\s+[A-Z]+',noalines[x+y]):
+        if re.match(r'^\s+[A-Z]+',noalines[x+y]):
           atom1,resn1, resi1, atom2, resn2, resi2 = cns[0],cns[1],int(cns[2]), cns[4], cns[5], int(cns[6])
         group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
         group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
@@ -666,7 +666,7 @@ phipsidict,chidict,plotdict = {}, {}, {}
 for aco in dihed:
   for line in open(aco):
     if line.split():
-      if re.match('^\s*#', line):
+      if re.match(r'^\s*#', line):
         continue
       else:
         total+=1
