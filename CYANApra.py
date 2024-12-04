@@ -130,9 +130,11 @@ tpeak,tsingle,tamb,tnotused,tnota,tdia,tincr,tupl,tviol  = 0, 0, 0, 0, 0, 0, 0, 
 for x in range(len(cya_plists)):
   plistn = cya_plists[x]
   plist = cya_plists[x]
-  upl = [line.strip() for line in open(fupl).readlines() if line.strip() and 'plist '+ str(x+1) in line]
+  upl_re_str = r'.*plist ' + str(x+1) + '([^0-9]|$)'
+  upl = [line.strip() for line in open(fupl).readlines() if line.strip() and re.match(upl_re_str, line)]
   tupl = tupl + len(upl)
-  viol = [line.strip() for line in open(fovw).readlines() if line.strip() and 'list '+ str(x+1) in line]
+  viol_re_str = r'.*list ' + str(x+1) + '([^0-9]|$)'
+  viol = [line.strip() for line in open(fovw).readlines() if line.strip() and re.match(viol_re_str, line
   tviol = tviol + len(viol)
   peak,single,amb,notused,nota,dia,incr = 0, 0, 0, 0, 0, 0, 0
   for y in range(len(noalines)):
