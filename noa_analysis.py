@@ -28,8 +28,8 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
   calc = cwd + 'CALC.cya'
   outdir = cwd +'noa_analysis/'
   noa7 = cwd +'cycle7.noa'
-  cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
-  prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
+  cya_plists = [line.strip() for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match(r'^\s*#', line)][0].split()[2].split(',')
+  prots = [line.strip() for line in open(calc).readlines() if line.strip() and 'prot' in line and not re.match(r'^\s*#', line)][0].split()[2].split(',')
   log = glob.glob(os.path.join(cwd + 'log*'))[0]
   header = [ '### UPL: Peak was idenitified in the output.upl file\n',
   '### swapped: steriospecific assignment was swapped relative to the input chemical shift list\n'
@@ -60,7 +60,7 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
     for i in range(len(peaklines)):
       line = peaklines[i]
       if line.strip():
-        if not re.match('^\s*#', line):
+        if not re.match(r'^\s*#', line):
           if line[0:7] == '       ':  # account for old format of cycle7.peaks
             line = peaklines[i-1][0:peaklines[i-1].find(' U ')+35] + ' ' + peaklines[i].strip()
             peaklines[i] = line
@@ -124,9 +124,9 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
         # print('{:1.3E}'.format(Calconst))
         for y in range(2,int(noalines[x+1].split()[0])+2,1):
           cns = noalines[x+y].strip().split()
-          if not re.match('^\s+[A-Z]+',noalines[x+y]):
+          if not re.match(r'^\s+[A-Z]+',noalines[x+y]):
             atom1,resn1, resi1, atom2, resn2, resi2, pshift, drange = cns[1],cns[2],int(cns[3]), cns[5], cns[6], int(cns[7]), float(cns[10])/100, cns[13]
-          if re.match('^\s+[A-Z]+',noalines[x+y]):
+          if re.match(r'^\s+[A-Z]+',noalines[x+y]):
             atom1,resn1, resi1, atom2, resn2, resi2, pshift, drange = cns[0],cns[1],int(cns[2]), cns[4], cns[5], int(cns[6]), float(cns[9])/100, cns[12]
           group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
           group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
@@ -193,9 +193,9 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
         for y in range(2,int(noalines[x+1].split()[3])+2,1):
           cns = noalines[x+y].strip().split()
           # if len(cns) > 8:
-          if not re.match('^\s+[A-Z]+',noalines[x+y]):
+          if not re.match(r'^\s+[A-Z]+',noalines[x+y]):
             atom1,resn1, resi1, atom2, resn2, resi2, pshift, drange = cns[1],cns[2],int(cns[3]), cns[5],cns[6],int(cns[7]), float(cns[10])/100, cns[13]
-          if re.match('^\s+[A-Z]+',noalines[x+y]):
+          if re.match(r'^\s+[A-Z]+',noalines[x+y]):
             atom1,resn1, resi1, atom2, resn2, resi2,pshift, drange = cns[0],cns[1],int(cns[2]), cns[4],cns[5],int(cns[6]), float(cns[9])/100, cns[12]
           group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
           group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
