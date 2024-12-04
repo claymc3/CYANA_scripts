@@ -1,5 +1,5 @@
 from math import sqrt, cos, sin, acos, pi
-import pandas as pd 
+import pandas as pd
 import os
 import re
 import numpy as np
@@ -24,8 +24,8 @@ mpl.rcParams['xtick.labelsize'] = mpl.rcParams['ytick.labelsize']=8
 plt.rcParams['mathtext.default'] = 'regular'
 
 pdb_columns = ['name', 'resn', 'resid', 'Chain', 'X', 'Y', 'Z', 'Element']
-# Read in PDB file one line at a time, if the first four letter ar ATOM or HETA then it will parse the data into the 
-# data frame, using the atome index int he PDB as the row index in the data frame. 
+# Read in PDB file one line at a time, if the first four letter ar ATOM or HETA then it will parse the data into the
+# data frame, using the atome index int he PDB as the row index in the data frame.
 AAA_dict = {"ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C", "CYSS":"C", "GLU": "E", "GLN": "Q", "GLY": "G", "HIS": "H","HIST": "H","HISE": "H","HIS+": "H", "ILE": "I", "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P", "PROO":"P","PROU":"P","CPRO":"P", "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": 'V', "MSE":'M', "PTR":'Y', "TPO":"T", "SEP":'S',"ADE":"A","RADE":"A","CYT":"C","RCYT":"C","GUA":"G","RGUA":"G","THY":"T","URA":"U"}
 A_dict = {'C': 'CYS', 'D': 'ASP', 'S': 'SER', 'Q': 'GLN', 'K': 'LYS', 'I': 'ILE', 'P': 'PRO', 'T': 'THR', 'F': 'PHE', 'N': 'ASN','G': 'GLY', 'H': 'HIS', 'L': 'LEU', 'R': 'ARG', 'W': 'TRP','A': 'ALA', 'V':'VAL', 'E': 'GLU', 'Y': 'TYR', 'M': 'MET'}
 Methyl_groups = {"LEU" : ['CD1','CD2'], "ILE" : ['CD1'], "VAL" : ['CG1','CG2'], "THR" : ['CG2'], "MET" : ['CE'], "ALA" : ['CB']}
@@ -47,7 +47,7 @@ def _cache_RAMA_PREF_VALUES():
     RAMA_PREF_VALUES[key] = np.full((361, 361), 0, dtype=np.float64)
     with open(os.path.join(f_path, val["file"])) as fn:
       for line in fn:
-        if not re.match('^\s*#', line):
+        if not re.match(r'^\s*#', line):
           x = int(float(line.split()[1]))
           y = int(float(line.split()[0]))
           for nx in np.arange(x-1,x+1,1):
@@ -62,7 +62,7 @@ def _cache_ROTA_PREF_VALUES():
     ROTA_PREF_VALUES[key] = np.full((361, 361), 0, dtype=np.float64)
     with open(os.path.join(f_path, val["file"])) as fn:
       for line in fn:
-        if not re.match('^\s*#', line):
+        if not re.match(r'^\s*#', line):
           x = int(float(line.split()[1]))
           y = int(float(line.split()[0]))
           for nx in np.arange(x-1,x+1,1):
@@ -191,7 +191,7 @@ def plot_phi_psi_ramachandran(res, ax, PhiDF, PsiDF,axtext, pdict,ypos,plotdict,
       norm=colors.BoundaryNorm(RAMA_PREFERENCES[aa_type]["bounds"], RAMA_PREFERENCES[aa_type]["cmap"].N),
       extent=(-180, 180, 180, -180))
   ax.scatter(normals["phi"], normals["psi"],marker='o',s= 30,facecolors='black', edgecolors= 'none', linewidth=1.0)
-  
+
   if outcount != 0:
     ax.scatter(outliers["phi"], outliers["psi"],marker='o',s= 30,facecolors='red', edgecolors= 'none', linewidth=1.0)
   ax.set_xlabel(r'$\mathrm{\phi}$')
@@ -322,7 +322,7 @@ def plot_chi1_chi2_ramachandran(res, ax, chi1DF, chi2DF, axtext, pdict, ypos,plo
   if boundbox == 1 and res + 'CHI2'in plotdict.keys():
     ax.plot([x1, x2], [y1, y1], color="black",linewidth = 1.0)
     ax.plot([x1, x2], [y2, y2], color="black",linewidth = 1.0)
-  if boundbox == 2: 
+  if boundbox == 2:
       ax.plot([x1, x1], [y1, y2], color="black",linewidth = 1.0)
       ax.plot([x2, x2], [y1, y2], color="black",linewidth = 1.0)
       ax.plot([x1, x2], [y1, y1], color="black",linewidth = 1.0)
@@ -369,7 +369,7 @@ def Get_dihe_viol(angles,bounds):
   ang360,error =[],[]
   ang_min = bounds[0]
   ang_max = bounds[1]
-  if ang_min < -180 and ang_max < 0: 
+  if ang_min < -180 and ang_max < 0:
     ang_min = ang_min + 360.0
     amg_max = ang_max + 360.0
     for ang in angles:
@@ -430,7 +430,7 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
       PhiDF.loc[Sequence[i],mnum] = np.round(phi,1)
       psi = calcDihedrals(Coords[Sequence[i]+ '-N'],Coords[Sequence[i]+ '-CA'],Coords[Sequence[i]+ '-C'],Coords[Sequence[i+1]+ '-N'])
       PsiDF.loc[Sequence[i],mnum] = np.round(psi,1)
-    for res in Sequence: 
+    for res in Sequence:
       if res[0] in SideDihe.keys():
         for dihe in SideDihe[res[0]]:
           diheDF = eval(dihe[0] + 'DF')
@@ -444,7 +444,7 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
     elif Sequence[i][0] == 'P':PhiDF.loc[Sequence[i],'type'] = "PRO"
     elif Sequence[i][0] == 'G':PhiDF.loc[Sequence[i],'type'] = "GLY"
     else: PhiDF.loc[Sequence[i],'type'] = "General"
-  for res in Sequence: 
+  for res in Sequence:
     for ang in ['Phi','Psi','Chi1','Chi2']:
       angDF = eval('{:}DF'.format(ang))
       if res in angDF.index.to_list():
@@ -493,7 +493,7 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
       ax0 = fig.add_subplot(gs[2])
       # fig, (ax1,ax2,ax0) =plt.subplots(1,3,figsize=(6,3), width_ratios = [2,1,1])
       ramaout = plot_phi_psi_ramachandran(res, ax1, PhiDF, PsiDF,ax0,phipsidict, 0.60, plotdict,dihedviol)
-      if len(ramaout) > 4: 
+      if len(ramaout) > 4:
         DAramalist.append(ramaout)
       plot_upl(res, ax2, upldf, text)
     if res not in PhiDF.index.to_list() and res in Chi1DF.index.to_list():
