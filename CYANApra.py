@@ -134,7 +134,7 @@ for x in range(len(cya_plists)):
   upl = [line.strip() for line in open(fupl).readlines() if line.strip() and re.match(upl_re_str, line)]
   tupl = tupl + len(upl)
   viol_re_str = r'.*list ' + str(x+1) + '([^0-9]|$)'
-  viol = [line.strip() for line in open(fovw).readlines() if line.strip() and re.match(viol_re_str, line
+  viol = [line.strip() for line in open(fovw).readlines() if line.strip() and re.match(viol_re_str, line)]
   tviol = tviol + len(viol)
   peak,single,amb,notused,nota,dia,incr = 0, 0, 0, 0, 0, 0, 0
   for y in range(len(noalines)):
