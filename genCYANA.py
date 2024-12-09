@@ -505,13 +505,13 @@ upl.write('### N-C Methyl Distances\n')
 upl.writelines(NC_methyl)
 upl.write('### N-C Aromatic Distances\n')
 upl.writelines(NC_Aro)
-if len(NC_LYS) >=1:
+if 'K' in sys.argv[3] and len(NC_LYS) >=1:
 	upl.write('### N-C Lysine Distances\n')
 	upl.writelines(NC_LYS)
-if len(NC_ARG) >=1:
+if 'R' in sys.argv[3] and len(NC_ARG) >=1:
 	upl.write('### N-C Arginine Distances\n')
 	upl.writelines(NC_ARG)
-if len(NC_HIS) >=1:
+if 'H' in sys.argv[3] and len(NC_HIS) >=1:
 	upl.write('### N-C Histadine Distances\n')
 	upl.writelines(NC_HIS)
 	if len(NC_HIST) >=1:
@@ -546,13 +546,13 @@ upl.write('### C-C Methyl-Methyl Distances\n')
 upl.writelines(CC_methyl)
 upl.write('### C-C Methyl-Aromatic Distances\n')
 upl.writelines(CC_Aro)
-if len(CC_LYS) >=1:
+if 'K' in sys.argv[3] and len(CC_LYS) >=1:
 	upl.write('### C-C Lysine Distances\n')
 	upl.writelines(CC_LYS)
-if len(CC_ARG) >=1:
+if 'R' in sys.argv[3] and  len(CC_ARG) >=1:
 	upl.write('### C-C Arginine Distances\n')
 	upl.writelines(CC_ARG)
-if len(CC_HIS) >=1:
+if 'H' in sys.argv[3] and len(CC_HIS) >=1:
 	upl.write('### C-C Histadine Distances\n')
 	upl.writelines(CC_HIS)
 	if len(CC_HIST) >=1:
