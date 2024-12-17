@@ -213,9 +213,11 @@ for line in dihed_lines:
 	dline = line.split()
 	if dline[-1] in ['Strong','Generous']:
 		dphi = float(dline[4])
+		dphi = 20.0
 		if dphi<10: dphi = 20.0
 		if dphi>35: dphi = 30.0
 		dpsi = float(dline[5])
+		dpsi = 20.0
 		if dpsi<10: dpsi = 20.0
 		if dpsi>35: dpsi = 30.0
 		aco.write("#  " + line + "\n")
