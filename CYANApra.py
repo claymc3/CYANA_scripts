@@ -369,6 +369,8 @@ for line in open(fupl).readlines():
         pblist = eval(ctype + '_pb')
         atom1 = cns[2]
         atom2 = cns[5]
+        if atom1 == 'H': atom1 = 'N'
+        if atom2 == 'H': atom2 = 'N'
         if cns[1]+cns[2] in replacements.keys():
           atom1 = atom1.replace(cns[2], replacements[cns[1]+cns[2]])
         if cns[4]+cns[5] in replacements.keys():
@@ -525,6 +527,7 @@ for uplfile in upls:
         atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
       atoms2 = atom2.split(',')
       atoms1 = atom1.split(',')
+      print(line.rstrip())
       upldf.loc[AAA_dict[cns[1]] + cns[0],'input'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'input'] + 1
       upldf.loc[AAA_dict[cns[4]] + cns[3],'input'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'input'] + 1
       cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
