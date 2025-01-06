@@ -527,7 +527,7 @@ for uplfile in upls:
         atom2 = atom2.replace(cns[5], replacements[cns[4]+cns[5]])
       atoms2 = atom2.split(',')
       atoms1 = atom1.split(',')
-      print(line.rstrip())
+      # print(line.rstrip())
       upldf.loc[AAA_dict[cns[1]] + cns[0],'input'] = upldf.loc[AAA_dict[cns[1]] + cns[0],'input'] + 1
       upldf.loc[AAA_dict[cns[4]] + cns[3],'input'] = upldf.loc[AAA_dict[cns[4]] + cns[3],'input'] + 1
       cons = '{:}{:}-{:}-{:}{:}-{:}'.format(AAA_dict[cns[1]],cns[0],cns[2],AAA_dict[cns[4]],cns[3],cns[5])
@@ -746,13 +746,17 @@ shortsum.write(angle_text)
 overviewtxt = '{:3.0f} Residues with Disallowed Phi/Psi \n{:3.0f} Residues with Disallowed Chi1/Chi2\n{:3.0f} Violated Distance Restraints\n{:3.0f} Low Support Restraints\n{:3.0f} Probable Diffusion Distance Restraints\n{:3.0f} Long Distance Restraints d >= 6.0\n{:3.0f} Short Distance Restraints d <= 3.0\n\n'.format(len(DAramalist),len(DArotalist),len(violpeaks),len(poorcons2),len(diffcons2),len(longcons2),len(shortcons2))
 print(overviewtxt)
 checkcons.write(overviewtxt)
-
+bad_entries = []
 checkcons.write('### {:3.0f}  Violated Distance Restraints ###\n'.format(len(violpeaks)))
 # violpeaks = sorted(violpeaks, key = lambda x: (x.split()[10],x.split()[8]))
 violpeaks = sorted(violpeaks, key = lambda x: (x.split('-')[0][1:], x.split('-')[1]))
 for viol in violpeaks:
   if viol in assigndict.keys():
-    checkcons.write('{:}  {:3.2f}A ({:}): {:}'.format(viol,float(upldict[viol]),len(assigndict[viol]), violdict[viol]))
+    try:
+      checkcons.write('{:}  {:3.2f}A ({:}): {:}'.format(viol,float(upldict[viol]),len(assigndict[viol]), violdict[viol]))
+    except KeyError:
+      print('Found Error {:} violation not in upl list'.format(viol))
+    # checkcons.write('{:}  {:3.2f}A ({:}): {:}'.format(viol,float(upldict[viol]),len(assigndict[viol]), violdict[viol]))
     checkcons.writelines(assigndict[viol])
     checkcons.write('\n')
 checkcons.write('\n\n')
