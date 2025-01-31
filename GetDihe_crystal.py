@@ -387,9 +387,9 @@ MasterDict['PhiDF'] = PhiDF
 PsiDF =  pd.DataFrame(columns=colnames)
 MasterDict['PsiDF'] = PsiDF
 chi1DF = pd.DataFrame(columns=colnames)
-MasterDict['Chi1DF'] = Chi1DF
+MasterDict['chi1DF'] = chi1DF
 chi2DF = pd.DataFrame(columns=colnames)
-MasterDict['Chi2DF'] = Chi2DF
+MasterDict['chi2DF'] = chi2DF
 dihedDF = pd.DataFrame(columns=colnames)
 for entry in colnames:
 	Coords = MasterDict['Coor_' + entry]

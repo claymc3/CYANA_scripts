@@ -68,7 +68,7 @@ OutPut:
 	exit()
 colors = ['royalblue','forest','yellowgreen', 'darkorange','purple','lightseagreen ','darkkhaki','peru','saddlebrown','mediumpurple','blue']
 ConectionTypes = ['N_N','N_Methyl','N_Aro','Methyl_Methyl','Methyl_Aro','Aro_Aro','N_Ali','Ali_Ali','Ali_Aro','Ali_Methyl','Other']
-MasterDict = []
+MasterDict = {}
 cwd = os.getcwd() + '/'
 outdir = cwd + 'pre_cyana/'
 in_pdb = sys.argv[1]
