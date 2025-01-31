@@ -68,7 +68,7 @@ OutPut:
 	exit()
 colors = ['royalblue','forest','yellowgreen', 'darkorange','purple','lightseagreen ','darkkhaki','peru','saddlebrown','mediumpurple','blue']
 ConectionTypes = ['N_N','N_Methyl','N_Aro','Methyl_Methyl','Methyl_Aro','Aro_Aro','N_Ali','Ali_Ali','Ali_Aro','Ali_Methyl','Other']
-
+MasterDict = []
 cwd = os.getcwd() + '/'
 outdir = cwd + 'pre_cyana/'
 in_pdb = sys.argv[1]
@@ -227,8 +227,8 @@ outcmx.write('color #{:} gray(150)\n'.format(cmxn))
 u = 0
 for uplfile in upls:
 	for conect in ConectionTypes:
-		exec("{:}_{:}_pb = []".format(uplfile.replace('.upl','').replace("-","_"),conect))
-		exec("group{:}{:} = 'group {:}_{:}, '".format(uplfile.replace('.upl','').replace("-","_"),conect, uplfile.replace('.upl','').replace("-","_"), conect))
+		MasterDict["{:}_{:}_pb".format(uplfile.replace('.upl','').replace("-","_"),conect)] = []
+		MasterDict["group{:}{:}".format(uplfile.replace('.upl','').replace("-","_"),conect)] = "'group {:}_{:}, '".format(uplfile.replace('.upl','').replace("-","_"),conect)
 for uplfile in upls:
 	fin = open(uplfile,'r')
 	# outpb.write("; halfbond = false\n; color = {:}\n; radius = 0.15\n; dashes = 10\n".format(colors[x]))
@@ -241,7 +241,7 @@ for uplfile in upls:
 				if cns[4]+cns[5] in ConTypeDict.keys():ct2 = ConTypeDict[cns[4]+cns[5]]
 				if cns[4]+cns[5] not in ConTypeDict.keys(): ct2 = 'Other'
 				ctype = ConTypeDict["{:}-{:}".format(ct1,ct2)]
-				outpb = eval('{:}_{:}_pb'.format(uplfile.replace('.upl','').replace("-","_"), ctype))
+				outpb = MasterDict['{:}_{:}_pb'.format(uplfile.replace('.upl','').replace("-","_"), ctype)]
 				atom1 = cns[2]
 				atom2 = cns[5]
 				if cns[1]+cns[2] in replacements.keys():
@@ -259,14 +259,15 @@ for uplfile in upls:
 						u+=1
 						outpb.append('#{:}:{:}@{:} #{:}:{:}@{:}\n'.format(cmxn, cns[0], atom1, cmxn, cns[3],atom2))
 						outpml.write('distance UPL{:}, {:} and resi {:} and name {:}, {:} and resi {:} and name {:}\n'.format(str(u), pmln, cns[0], atom1, pmln, cns[3], atom2))
-						exec('group{:}{:} = group{:}{:} + "UPL{:}"'.format(uplfile.replace('.upl','').replace("-","_"), ctype,uplfile.replace('.upl','').replace("-","_"), ctype,u))
+						MasterDict['group{:}{:}'.format(uplfile.replace('.upl','').replace("-","_"), ctype)] = MasterDict['group{:}{:}'.format(uplfile.replace('.upl','').replace("-","_"), ctype)] + '+ UPL{:}'.format(u)
+						# exec('group{:}{:} = group{:}{:} + "UPL{:}"'.format(uplfile.replace('.upl','').replace("-","_"), ctype,uplfile.replace('.upl','').replace("-","_"), ctype,u))
 				if (cns[1] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[2] not in ['N','H']) and cns[0] not in sidelist:
 					sidelist.append(cns[0])
 				if (cns[4] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[3] not in sidelist:
 					sidelist.append(cns[3])
 for uplfile in upls:
 	for x in range(len(ConectionTypes)):
-		pbs = eval('{:}_{:}_pb'.format(uplfile.replace('.upl','').replace("-","_"),ConectionTypes[x]))
+		pbs = MasterDict['{:}_{:}_pb'.format(uplfile.replace('.upl','').replace("-","_"),ConectionTypes[x])]
 		if len(pbs) > 1:
 			mn+=1
 			pbout = open('{:}pseudobonds/{:}_{:}.pb'.format(outdir, uplfile.replace('.upl',''), ConectionTypes[x]),'w')
@@ -274,7 +275,7 @@ for uplfile in upls:
 			pbout.writelines(pbs)
 			outcmx.write('open pseudobonds/{:}_{:}.pb\n'.format(uplfile.replace('.upl',''), ConectionTypes[x]))
 			outcmx.write('color #{:} {:}\n'.format(str(mn),colors[x]))
-			groupstr = eval('group{:}{:}'.format(uplfile.replace('.upl','').replace("-","_"),ConectionTypes[x]))
+			groupstr = MasterDict['group{:}{:}'.format(uplfile.replace('.upl','').replace("-","_"),ConectionTypes[x])]
 			outpml.write(groupstr + '\n')
 			outpml.write('color {:}, {:}_{:}\n'.format(colors[x],uplfile.replace('.upl','').replace("-","_"),ConectionTypes[x]))
 sidechains = 'show #{:}:'.format(mn)

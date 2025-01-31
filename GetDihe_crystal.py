@@ -315,13 +315,14 @@ for res in UNPseq:
 	UNPnseq.append(res+str(index))
 	index+=1
 plotcolors,colnames = {},[]
+MasterDict ={}
 for in_pdb in inpdbs:
 	pdbname = in_pdb.split('/')[-1].split('.')[0].replace('-','_')
 	print('Extracting dihedrals for: {:}'.format(pdbname))
 	chains = []
 	pSEQ_dict,pSEQ = {},[]
-	exec('Seq_{:}'.format(pdbname) + '= {}')
-	SEQdict = eval('Seq_{:}'.format(pdbname))
+	MasterDict['Seq_{:}'.format(pdbname)] = {}
+	SEQdict = MasterDict['Seq_{:}'.format(pdbname)]
 	if not re.search('.pdb',in_pdb):
 		pdblines = list(requests.get('https://files.rcsb.org/view/'+in_pdb+'.pdb', allow_redirects=True).iter_lines(decode_unicode=True))
 		for line in pdblines:
@@ -338,16 +339,16 @@ for in_pdb in inpdbs:
 			if line[0:5] == 'ATOM ' and line[21] not in chains:
 				chains.append(line[21])
 	for chain in chains:
-		exec('Res_{:}_{:}'.format(pdbname,chain) + '= {}')
-		exec('Coor_{:}_{:}'.format(pdbname,chain) + '= {}')
+		MasterDict['Res_{:}_{:}'.format(pdbname,chain)] = {}
+		MasterDict['Coor_{:}_{:}'.format(pdbname,chain)] = {}
 		colnames.append('{:}_{:}'.format(pdbname,chain))
 		plotcolors['{:}_{:}'.format(pdbname,chain)] = colorsd[pdbname]
 	for line in pdblines:
 		if line[0:4] == "ATOM" or line[0:4] == 'HETA':
 			if line[21] in chains:
 				chain = line[21]
-				Coor = eval('Coor_{:}_{:}'.format(pdbname,chain))
-				Resdict = eval('Res_{:}_{:}'.format(pdbname,chain))
+				Coor = MasterDict['Coor_{:}_{:}'.format(pdbname,chain)]
+				Resdict = MasterDict['Res_{:}_{:}'.format(pdbname,chain)]
 				if line[17:20].strip() in AAA_dict.keys():
 					if line[22:26].strip() not in pSEQ: 
 						pSEQ.append(line[22:26].strip())
@@ -368,7 +369,7 @@ for in_pdb in inpdbs:
 				logfile.write('  mutation {:}{:}{:}\n'.format(UNPdict[str(x)],x,AAA_dict[pSEQ_dict[str(x)]]))
 	for chain in chains:
 		missingSide,missingRes ='',''
-		Resdict = eval('Res_{:}_{:}'.format(pdbname,chain))
+		Resdict = MasterDict['Res_{:}_{:}'.format(pdbname,chain)]
 		for x in range(dbsb,dbse):
 			if str(x) in Resdict.keys():
 				if pSEQ_dict[str(x)] not in ['ALA','GLY'] and len(Resdict[str(x)]) < 6:
@@ -382,13 +383,17 @@ for in_pdb in inpdbs:
 
 # colnames.extend(['mean','stdv'])
 PhiDF =  pd.DataFrame(columns=colnames)
+MasterDict['PhiDF'] = PhiDF
 PsiDF =  pd.DataFrame(columns=colnames)
+MasterDict['PsiDF'] = PsiDF
 chi1DF = pd.DataFrame(columns=colnames)
+MasterDict['Chi1DF'] = Chi1DF
 chi2DF = pd.DataFrame(columns=colnames)
+MasterDict['Chi2DF'] = Chi2DF
 dihedDF = pd.DataFrame(columns=colnames)
 for entry in colnames:
-	Coords = eval('Coor_' + entry)
-	Sequence = eval('Seq_{:}'.format(entry[0:-2]))
+	Coords = MasterDict['Coor_' + entry]
+	Sequence = MasterDict['Seq_{:}'.format(entry[0:-2])]
 	for i in range(dbsb+1,dbse,1):
 		if i-1 in Sequence.keys() and i in Sequence.keys() and i+1 in Sequence.keys():
 			if Sequence[i]+ '-N' in Coords.keys() and Sequence[i]+ '-C' in Coords.keys() and Sequence[i]+ '-CA' in Coords.keys() and Sequence[i+1]+ '-N' in Coords.keys() and Sequence[i-1]+ '-C' in Coords.keys():
@@ -399,7 +404,7 @@ for entry in colnames:
 	for res in UNPnseq: 
 		if res[0] in SideDihe.keys():
 			for dihe in SideDihe[res[0]]:
-				diheDF = eval(dihe[0] + 'DF')
+				diheDF = MasterDict[dihe[0] + 'DF']
 				if res+ '-' + dihe[1] in Coords.keys() and res+ '-' + dihe[2] in Coords.keys() and res+ '-' + dihe[3] in Coords.keys() and res+ '-' + dihe[4] in Coords.keys():
 					ang = calcDihedrals(Coords[res+ '-' + dihe[1]],Coords[res+ '-' + dihe[2]],Coords[res+ '-' + dihe[3]],Coords[res+ '-' + dihe[4]])
 					if ang < 0: ang = ang + 360.0

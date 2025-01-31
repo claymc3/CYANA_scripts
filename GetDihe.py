@@ -396,9 +396,10 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
 
   outname = in_pdb.split('/')[-1].replace('.pdb','')
   Starts, Ends = [], []
+  MasterDict = {}
   for mnum in range(1,21,1):
     start = open(in_pdb).readlines().index('MODEL' + '%9s\n' %str(mnum))
-    exec('Coor' + str(mnum) + ' = {}')
+    MasterDict['Coor' + str(mnum)] = {}
     Starts.append(start)
     Ends.append(start-1)
   Ends.append(len(open(in_pdb).readlines()))
@@ -409,22 +410,27 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
   for (start,end) in zip(Starts,Ends):
     n+=1
     # print('Reading coordinates for model %d' %n)
-    Coor = eval('Coor' + str(n))
+    Coor = MasterDict['Coor' + str(n)]
     for x in range(start,end,1):
       line = pdb[x]
       if line[0:4] == "ATOM" or line[0:4] == 'HETA':
         if line[17:20].strip() in AAA_dict.keys():
           index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
           Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
+  
   PhiDF =  pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv','type'])
+  MasterDict['PhiDF'] = PhiDF
   PsiDF =  pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
+  MasterDict['PsiDF'] = PsiDF
   Chi1DF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
+  MasterDict['Chi1DF'] = Chi1DF
   Chi2DF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
+  MasterDict['Chi2DF'] = Chi2DF
   dihedDF =  pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdev','S2','viol'])
   DAramalist, DArotalist = [], []
 
   for mnum in range(1,21,1):
-    Coords = eval('Coor' + str(mnum))
+    Coords = MasterDict['Coor' + str(mnum)]
     for i in range(1,len(Sequence)-1,1):
       phi = calcDihedrals(Coords[Sequence[i-1]+ '-C'],Coords[Sequence[i]+ '-N'],Coords[Sequence[i]+ '-CA'],Coords[Sequence[i]+ '-C'])
       PhiDF.loc[Sequence[i],mnum] = np.round(phi,1)
@@ -433,7 +439,7 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
     for res in Sequence:
       if res[0] in SideDihe.keys():
         for dihe in SideDihe[res[0]]:
-          diheDF = eval(dihe[0] + 'DF')
+          diheDF = MasterDict[dihe[0] + 'DF']
           if res+ '-' + dihe[1] in Coords.keys() and res+ '-' + dihe[2] in Coords.keys() and res+ '-' + dihe[3] in Coords.keys() and res+ '-' + dihe[4] in Coords.keys():
             ang = calcDihedrals(Coords[res+ '-' + dihe[1]],Coords[res+ '-' + dihe[2]],Coords[res+ '-' + dihe[3]],Coords[res+ '-' + dihe[4]])
             if ang < 0: ang = ang + 360.0
@@ -446,7 +452,7 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
     else: PhiDF.loc[Sequence[i],'type'] = "General"
   for res in Sequence:
     for ang in ['Phi','Psi','Chi1','Chi2']:
-      angDF = eval('{:}DF'.format(ang))
+      angDF = MasterDict['{:}DF'.format(ang)]
       if res in angDF.index.to_list():
         dihedDF.loc['{:}_{:}'.format(res,ang)] = angDF.loc[res].copy()
         mean,std,S2 = Get_dihe_stats(ang,np.array(angDF.loc[res].tolist()[:20]))

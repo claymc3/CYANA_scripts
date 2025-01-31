@@ -17,7 +17,7 @@ from datetime import datetime
 
 # datetime object containing current date and time
 now = datetime.now()
-
+MasterDict = {}
 # dd/mm/YY H:M:S
 dt_string = now.strftime("%Y-%m-%d %H:%M")
 pdb_columns = ['name', 'resn', 'resid', 'X', 'Y', 'Z','nuc']
@@ -378,6 +378,7 @@ for i in range(len(N_list)):
 		diff = abs(int(PDB_df.loc[N_list[i],'resid']) - int(PDB_df.loc[N_list[x],'resid']))
 		if PDB_df.loc[N_list[i],'SecStr'] == 'H' or PDB_df.loc[N_list[x],'SecStr'] == 'H': ridiff = 3
 		else: ridiff = 3
+		ridiff = 4
 		if diff >= ridiff:
 			dist = np.round(np.sqrt(((PDB_df.loc[N_list[i],'X'] - PDB_df.loc[N_list[x],'X'])**2) + ((PDB_df.loc[N_list[i],'Y'] - PDB_df.loc[N_list[x],'Y'])**2) + ((PDB_df.loc[N_list[i],'Z'] - PDB_df.loc[N_list[x],'Z'])**2)),1)
 			if dist < 3.1: 
@@ -488,6 +489,8 @@ for (cid1,cid2) in CC_ids:
 
 NC_methyl, NC_Aro, CC_methyl, CC_Aro,CC_LYS,NC_LYS,CC_ARG,NC_ARG,CC_HIS,NC_HIS,CC_HIST,NC_HIST = [], [], [], [], [], [], [], [], [], [], [], []
 NC_sorted,CC_sorted = [],[]
+MasterDict['NC_methyl'] = NC_methyl;MasterDict['NC_Aro'] = NC_Aro;MasterDict['CC_methyl'] = CC_methyl;MasterDict['CC_Aro'] = CC_Aro;MasterDict['CC_LYS'] = CC_LYS;MasterDict['NC_LYS'] = NC_LYS;MasterDict['CC_ARG'] = CC_ARG;MasterDict['NC_ARG'] = NC_ARG;MasterDict['CC_HIS'] = CC_HIS;MasterDict['NC_HIS'] = NC_HIS;MasterDict['CC_HIST'] = CC_HIST;MasterDict['NC_HIST'] = NC_HIST
+
 for line in NC_outlines:
 	if line.split()[4] in ['PHE','TYR','PTR']:
 		if 'missing' in line: line = '#' + line
@@ -495,7 +498,7 @@ for line in NC_outlines:
 		NC_sorted.append(line)
 for line in NC_outlines:
 	if line.split()[4] in ['LYS','ARG','HIS','HIST']:
-		nc_list = eval('NC_{:}'.format(line.split()[4]))
+		nc_list = MasterDict['NC_{:}'.format(line.split()[4])]
 		if 'missing' in line: line = '#' + line
 		nc_list.append(line)
 		NC_sorted.append(line)
@@ -529,12 +532,12 @@ for line in CC_outlines:
 		CC_Aro.append(line)
 		CC_sorted.append(line)
 	if line.split()[1] in ['LYS','ARG','HIS','HIST'] and line not in CC_sorted:
-		cc_list = eval('CC_{:}'.format(line.split()[1]))
+		cc_list = MasterDict['CC_{:}'.format(line.split()[1])]
 		if 'missing' in line: line = '#' + line
 		cc_list.append(line)
 		CC_sorted.append(line)
 	if line.split()[4] in ['LYS','ARG','HIS','HIST'] and line not in CC_sorted:
-		cc_list = eval('CC_{:}'.format(line.split()[4]))
+		cc_list = MasterDict['CC_{:}'.format(line.split()[4])]
 		if 'missing' in line: line = '#' + line
 		cc_list.append(line)
 		CC_sorted.append(line)

@@ -100,11 +100,11 @@ def getDistance(donor, acceptor,PDBdict):
 
 def examin(in_pdb, ADpairs,Assignments,finalupl):
   pdb_name = in_pdb.split('/')[-1].replace('.pdb','')
-  num2seq = {}
+  num2seq,Coords = {},{}
   Starts,Ends = [], []
   for mnum in range(1,21,1):
     start = open(in_pdb).readlines().index('MODEL' + '%9s\n' %str(mnum))
-    exec('Coor' + str(mnum) + ' = {}')
+    Coords['Coor' + str(mnum)] = {}
     Starts.append(start)
     Ends.append(start-1)
   Ends.append(len(open(in_pdb).readlines()))
@@ -114,7 +114,7 @@ def examin(in_pdb, ADpairs,Assignments,finalupl):
   for (start,end) in zip(Starts,Ends):
     n+=1
     # print('Reading coordinates for model {:d}'.format(n))
-    Coor = eval('Coor' + str(n))
+    Coor = Coords['Coor{:}'.format(n)]
     for x in range(start,end,1):
       line = pdb[x]
       if line[0:4] == "ATOM" or line[0:4] == 'HETA':
@@ -128,7 +128,7 @@ def examin(in_pdb, ADpairs,Assignments,finalupl):
   for connection in ADpairs:
     inatom1 = '{:}-{:}'.format(connection.split('-')[0],connection.split('-')[1])
     inatom2 = '{:}-{:}'.format(connection.split('-')[2],connection.split('-')[3])
-    Coord = eval('Coor1')
+    Coord = Coords['Coor1']
     atom1 = find_protons(inatom1, Coord)
     heavy1 = find_heavy(inatom1, Coord)
     atom2 = find_protons(inatom2, Coord)
@@ -137,7 +137,7 @@ def examin(in_pdb, ADpairs,Assignments,finalupl):
     # print(heavy1,heavy2)
     if heavy1 != heavy2:
       for mnum in range(1,21,1):
-        Coor = eval('Coor' + str(mnum))
+        Coor = Coords['Coor' + str(mnum)]
         d = getDistance(atom1, atom2, Coor)
         # if getDistance(atom1, atom2, Coor) <= 7.5:
         dist.append(getDistance(heavy1, heavy2, Coor))
@@ -164,7 +164,7 @@ def examin(in_pdb, ADpairs,Assignments,finalupl):
       Hatom2 = find_protons(atom2, Coord)
       odl = []
       for mnum in range(1,21,1):
-        Coor = eval('Coor' + str(mnum))
+        Coor = Coords['Coor' + str(mnum)]
         dobs = getDistance(Hatom1, Hatom2, Coor)
         odl.append(dobs)
       observed.append(np.round(np.mean(odl),2))

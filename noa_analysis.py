@@ -43,16 +43,17 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
   "#{:}  {:^26}  {:^24}  {:^5}  {:^10}  {:^6}  {:^24}\n".format('Peak #','Frequencies','Connection','UPL', 'Range' ,'Pshift','Comment')
   ]
   plist_dict = {}
+  MasterDict = {}
   for x in range(len(cya_plists)):
     plist = cya_plists[x].replace('.peaks','')
     plist_dict[plist] = str(x)
-    exec("outlist{:} = []".format(str(x)))
-    exec("usedquestlist{:} = []".format(str(x)))
-    exec("peaks{:} = {{}}".format(str(x)))
-    exec("intensity{:} = {{}}".format(str(x)))
+    MasterDict["outlist{:}".format(str(x))] = []
+    MasterDict["usedquestlist{:}".format(str(x))] = []
+    MasterDict["peaks{:}".format(str(x))] = {}
+    MasterDict["intensity{:}".format(str(x))] = {}
   for x in range(len(cya_plists)):
-    intdict = eval('intensity' + str(x))
-    pdict = eval('peaks' + str(x))
+    intdict = MasterDict['intensity' + str(x)]
+    pdict = MasterDict['peaks' + str(x)]
     peaklines = open(cwd + cya_plists[x].replace('.peaks','-cycle7.peaks')).readlines()
     ndim = int(peaklines[0][-2])
     intidx = ndim + 3
@@ -113,10 +114,10 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
       if '0 out of' not in noalines[x+1] and 'diagonal' not in noalines[x]:
         peak = int(noalines[x].strip().split()[1])
         plist = noalines[x].strip().split()[3].replace('.peaks','')
-        pdict = eval('peaks' + plist_dict[plist])
-        intdict = eval('intensity' + plist_dict[plist])
-        outlist = eval('outlist' + plist_dict[plist])
-        used =eval('usedquestlist' + plist_dict[plist])
+        pdict = MasterDict['peaks' + plist_dict[plist]]
+        intdict =MasterDict['intensity' + plist_dict[plist]]
+        outlist = MasterDict['outlist' + plist_dict[plist]]
+        used =MasterDict['usedquestlist' + plist_dict[plist]]
         SUP = noalines[x+1].split()[-1].replace(':','')
         linepad = pad[len(plist):]
         Calconst = float(Calibration_cns[int(plist_dict[plist])].split()[-1])
@@ -179,10 +180,10 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
     if 'Peak' in noalines[x] and '0 out of' in noalines[x+1]:
       peak = int(noalines[x].strip().split()[1])
       plist = noalines[x].strip().split()[3].replace('.peaks','')
-      pdict = eval('peaks' + plist_dict[plist])
-      used =eval('usedquestlist' + plist_dict[plist])
-      intdict = eval('intensity' + plist_dict[plist])
-      outlist = eval('outlist' + plist_dict[plist])
+      pdict = MasterDict['peaks' + plist_dict[plist]]
+      used =MasterDict['usedquestlist' + plist_dict[plist]]
+      intdict = MasterDict['intensity' + plist_dict[plist]]
+      outlist = MasterDict['outlist' + plist_dict[plist]]
       linepad = pad[len(plist):]
       Calconst = float(Calibration_cns[int(plist_dict[plist])].split()[-1])
       if '0 out of 0' not in noalines[x+1]:
@@ -251,7 +252,7 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
           drange = '{:3.2f}-{:3.2f}'.format(dist, dist*1.25)
         if float(intdict[peak][0]) == 0.0: 
           print('Warning Peak {:>4} from {:} has zero intensity !'.format(peak, plist))
-        pdict = eval('peaks' + plist_dict[plist])
+        pdict = MasterDict['peaks' + plist_dict[plist]]
         outlist.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^5}  {:^10}  {:^6}   no assignmnet\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2], 'none','', drange+'A','na'))
   print('{:} probable diffusion peaks identified in {:} unused peaks'.format(pdiffcount,unassignedcount))
   assigned = open(outdir + 'Assignment_Summary.txt','w')
@@ -280,8 +281,8 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
         if np.mean(dist) > dref: ## there are more longer distaces in the set than shorter
           for pline,d in zip(assigndict[con],dist):
             if d <= dref:
-              questout =  eval('outlist' + plist_dict[pline.replace("#",'').split()[6]])
-              used =eval('usedquestlist' + plist_dict[pline.replace("#",'').split()[6]])
+              questout =  MasterDict['outlist' + plist_dict[pline.replace("#",'').split()[6]]]
+              used =MasterDict['usedquestlist' + plist_dict[pline.replace("#",'').split()[6]]]
               index = used.index('{:} {:}'.format(int(pline.replace("#",'').split()[4]), pline.replace("#",'').split()[0]))
               pline2 = questout[index]
               questout[index] = pline2.replace('\n', 'inconsistent \n')
@@ -292,8 +293,8 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
         if np.mean(dist) <= dref:
           for pline,d in zip(assigndict[con],dist):
             if abs(d - np.mean(dist)) > np.std(dist):
-              questout =  eval('outlist' + plist_dict[pline.replace("#",'').split()[6]])
-              used =eval('usedquestlist' + plist_dict[pline.replace("#",'').split()[6]])
+              questout = MasterDict['outlist' + plist_dict[pline.replace("#",'').split()[6]]]
+              used =MasterDict['usedquestlist' + plist_dict[pline.replace("#",'').split()[6]]]
               index = used.index('{:} {:}'.format(int(pline.replace("#",'').split()[4]), pline.replace("#",'').split()[0]))
               pline2 = questout[index]
               questout[index] = pline2.replace('\n', ' inconsistent\n')
@@ -324,9 +325,9 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
       plist = pline[6]
       pshift = pline[8]
       conect = pline[0]
-      pdict = eval('peaks' + plist_dict[plist])
-      questout =  eval('outlist' + plist_dict[plist])
-      used =eval('usedquestlist' + plist_dict[plist])
+      pdict = MasterDict['peaks' + plist_dict[plist]]
+      questout =  MasterDict['outlist' + plist_dict[plist]]
+      used =MasterDict['usedquestlist' + plist_dict[plist]]
       index = used.index('{:} {:}'.format(peak, conect))
       pline = questout[index]
       questout[index] = pline.replace('\n', 'lone\n')
@@ -335,11 +336,11 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
   for x in range(len(cya_plists)):
     exec("good{:} = open('{:}{:}.list','w')".format(str(x), outdir, cya_plists[x].replace('.peaks','')))
     exec("good{:}.writelines(header)".format(str(x)))
-    eval("outlist{:}".format(str(x)))
-    outlist = eval('outlist' + plist_dict[cya_plists[x].replace('.peaks','')])
+    MasterDict["outlist{:}".format(str(x))]
+    outlist = MasterDict['outlist' + plist_dict[cya_plists[x].replace('.peaks','')]]
     olist = sorted(outlist, key = lambda x: float(x.strip().split()[0]))
-    eval("good{:}.writelines(olist)".format(str(x)))
-    eval("good{:}.close()".format(str(x)))
+    exec("good{:}.writelines(olist)".format(str(x)))
+    exec("good{:}.close()".format(str(x)))
   assigned.close()
   # print('Fount {:} inconsistant distances of {:} connections'.format(inconcount, numcon))
   # print('Found {:} unused intra molecular contacts'.format(intracount))
