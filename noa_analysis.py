@@ -334,13 +334,17 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
 
 
   for x in range(len(cya_plists)):
-    exec("good{:} = open('{:}{:}.list','w')".format(str(x), outdir, cya_plists[x].replace('.peaks','')))
-    exec("good{:}.writelines(header)".format(str(x)))
+    MasterDict["good{:}".format(str(x))] = open('{:}{:}.list'.format(outdir, cya_plists[x].replace('.peaks','')),'w')
+    outfile = MasterDict["good{:}".format(str(x))]
+    outfile.writelines(header)
+    # exec("good{:}.writelines(header)".format(str(x)))
     MasterDict["outlist{:}".format(str(x))]
     outlist = MasterDict['outlist' + plist_dict[cya_plists[x].replace('.peaks','')]]
     olist = sorted(outlist, key = lambda x: float(x.strip().split()[0]))
-    exec("good{:}.writelines(olist)".format(str(x)))
-    exec("good{:}.close()".format(str(x)))
+    outfile.writelines(olist)
+    outfile.close()
+    # exec("good{:}.writelines(olist)".format(str(x)))
+    # exec("good{:}.close()".format(str(x)))
   assigned.close()
   # print('Fount {:} inconsistant distances of {:} connections'.format(inconcount, numcon))
   # print('Found {:} unused intra molecular contacts'.format(intracount))
