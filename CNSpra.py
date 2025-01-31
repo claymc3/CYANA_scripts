@@ -63,6 +63,7 @@ for dirn in cwd.split('/'):
   else:
     topdir = topdir + dirn + '/'
 outdir = topdir + 'post_cns_analysis/'
+MasterDict = {}
 in_pdb = '{:}_cya.pdb'.format(name)
 noetbl = open('../{:}_noe.tbl'.format(name)).readlines()
 hbondtbl = open('../{:}_hbond.tbl'.format(name)).readlines()
@@ -117,8 +118,8 @@ outcmx.write('ui tool show "Side View"\n#ui mousemode right distance\n')
 ## entries from designated upl file 
 
 for conect in ConectionTypes:
-    exec("{:}_pb = []".format(conect))
-    exec("group{:} = 'group {:}, '".format(conect, conect))
+    MasterDict["{:}_pb".format(conect)] = []
+    MasterDict["group{:}".format(conect)] = "'group {:}, '".format(conect)
 
 viol1list, viol2list = [],[]
 viol1pbout = open(outdir +'pseudobonds/dist_viol_<_0.3.pb','w')
@@ -126,6 +127,7 @@ viol1pbout.write("; halfbond = false\n; color = mediumvioletred\n; radius = 0.1\
 viol2pbout = open(outdir +'pseudobonds/dist_viol_>_0.3.pb','w')
 viol2pbout.write("; halfbond = false\n; color = firebrick\n; radius = 0.1\n; dashes = 0\n")
 viol1cons, viol2cons = 'group dis_viol_0.1-0.3, ', 'group dist_viol_0.3, '
+MasterDict['viol1cons'] = viol1cons; MasterDict['viol2cons']= viol2cons
 violdict, dihedviol = {}, {}
 
 ## ---------------------------------------------------------------------------
@@ -134,7 +136,7 @@ violdict, dihedviol = {}, {}
 Starts,Ends = [], []
 for mnum in range(1,21,1):
   start = open(in_pdb).readlines().index('MODEL' + '%9s\n' %str(mnum))
-  exec('Coor' + str(mnum) + ' = {}')
+  MasterDict['Coor' + str(mnum)] = {}
   Starts.append(start)
   Ends.append(start-1)
 Ends.append(len(open(in_pdb).readlines()))
@@ -143,7 +145,7 @@ pdb = open(in_pdb).readlines()
 n = 0
 for (start,end) in zip(Starts,Ends):
   n+=1
-  Coor = eval('Coor' + str(n))
+  Coor = MasterDict['Coor' + str(n)]
   for x in range(start,end,1):
     line = pdb[x]
     if line[0:4] == "ATOM" or line[0:4] == 'HETA':
@@ -159,7 +161,7 @@ DistViolDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,
 i, im, v = 1, 0, 0
 sidelist = []
 for noe in noetbl:
-  if not re.match('^\s+\!',noe):
+  if not re.match(r"^\s+\!",noe):
     noe = noe.replace('HN)','H').replace('HN ','H ').replace('HB1','HB3').replace('(','').replace(')','')
     if re.search("\\*",noe.split()[5]): 
       noea1 = noe.split()[5].replace('H','Q').replace('*','')
@@ -173,7 +175,7 @@ for noe in noetbl:
     if num2AAA[cns[7]]+cns[10] in ConTypeDict.keys():ct2 = ConTypeDict[num2AAA[cns[7]]+cns[10]]
     if num2AAA[cns[7]]+cns[10] not in ConTypeDict.keys(): ct2 = 'Other'
     ctype = ConTypeDict["{:}-{:}".format(ct1,ct2)]
-    pblist = eval(ctype + '_pb')
+    pblist = MasterDict[ctype + '_pb']
     atom1 = cns[5]
     atom2 = cns[10]
     if num2AAA[cns[2]]+cns[5] in replacements.keys():
@@ -188,9 +190,9 @@ for noe in noetbl:
     if (float(cns[2]) > 1000 and float(cns[7]) < 1000) or (float(cns[2]) < 1000 and float(cns[7]) > 1000):
       im+=1
       ctype = 'Intramolecular'
-      pblist = eval('Intramolecular_pb')
+      pblist = MasterDict['Intramolecular_pb']
       outpml.write('distance intramol{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(im), pdbname, cns[2], atom1, pdbname, cns[7], atom2))
-      exec('groupIntramolecular = groupIntramolecular+ "intramo{:} "'.format(im))
+      MasterDict['group' + ctype] = MasterDict['group' + ctype] + '+ "intermo{:} "'.format(im)
       pblist.append('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[2], atom1, cns[7],atom2))
     ## Make sure all connections to side chains are shown
     if (num2AAA[cns[2]] not in ['ALA','LEU','VAL','MET','ILE','THR','TYR','PHE'] and cns[5] not in ['N','H']) and cns[2] not in sidelist:
@@ -200,16 +202,16 @@ for noe in noetbl:
     i+=1
     outpml.write('distance UPL{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(i), pdbname, cns[2], atom1, pdbname, cns[7], atom2))
     pblist.append('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[2], atom1, cns[7],atom2))
-    exec('group' + ctype + '=' + 'group' + ctype + '+ "UPL{:} "'.format(i))
+    MasterDict['group' + ctype] = MasterDict['group' + ctype] + '+ "UPL{:} "'.format(i)
     dmin = np.round(float(cns[11]) - float(cns[12]),3)
     dmax = np.round(float(cns[11]) + float(cns[13]),3)
     cons1 = '{:}-{:}-{:}-{:}'.format(Seqdict[cns[2]],cns[5],Seqdict[cns[7]],cns[10])
-    Coord = eval('Coor1')
+    Coord = MasterDict['Coor1']
     matom1 = distance.find_protons('{:}-{:}'.format(Seqdict[cns[2]],cns[5]), Coord)
     matom2 = distance.find_protons('{:}-{:}'.format(Seqdict[cns[7]],cns[10]), Coord)
     dist = []
     for mnum in range(1,21,1):
-      Coor = eval('Coor' + str(mnum))
+      Coor = MasterDict['Coor' + str(mnum)]
       d = distance.getDistance(matom1, matom2, Coor)
       if np.round(d - dmax,3) >= 0.100:
         DistViolDF.loc[cons1,mnum] = np.round(d - dmax,2)
@@ -244,20 +246,20 @@ print(DVioltext)
 
 mn = 1
 for x in range(len(ConectionTypes)):
-  pbs = eval('{:}_pb'.format(ConectionTypes[x]))
+  pbs = MasterDict['{:}_pb'.format(ConectionTypes[x])]
   if len(pbs) > 1:
     mn+=1
     pbout = open('{:}pseudobonds/{:}_{:}.pb'.format(outdir, outname, ConectionTypes[x]),'w')
     pbout.write("; halfbond = false\n; color = " + colors[x] + "\n; radius = 0.1\n; dashes = 0\n")
     pbout.writelines(pbs)
     outcmx.write('open pseudobonds/{:}_{:}.pb\n'.format(outname, ConectionTypes[x]))
-    groupstr = eval('group' + ConectionTypes[x])
+    groupstr = MasterDict['group' + ConectionTypes[x]]
     outpml.write(groupstr + '\n')
     outpml.write('color {:}, {:}\n'.format(colors[x],ConectionTypes[x]))
 for (group,gname, color) in [('viol1cons','dist_viol_<_0.3','mediumvioletred'),('viol2cons','dist_viol_>_0.3','firebrick')]:
   mn+=1
   outcmx.write('open pseudobonds/{:}.pb\n'.format(gname))
-  grpstr = eval(group)
+  grpstr = MasterDict[group]
   outpml.write(grpstr + '\n')
   outpml.write('color {:}, {:}\n'.format(color, gname))
 selhbond = 'name hbond #1.1:'
@@ -269,7 +271,7 @@ h = 1
 mn+=1
 for line in hbondtbl:
   cns = line.replace('HN','H').replace('(','').replace(')','').split()
-  if not re.match('^\s*\!',line):
+  if not re.match(r"^\s*\!",line):
     if line.strip() and "#" not in cns[2]:
       if (cns[2],cns[7],cns[10]) not in hbonsl:
         h+=1 
@@ -308,7 +310,7 @@ phiaco, chiaco, phiviol, chiviol, diheviols = [], [], [], [], []
 AngleViolDF = pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'max viol','average','num viol'])
 for x in range(len(dihetbl)):
   line = dihetbl[x]
-  if re.match('^\s*assign', line):
+  if re.match(r"^\s*assign", line):
     if line.split()[2] not in Seqdict.keys():
       print('Bad dihedral entry\n{:}{:}'.format(line,dihetbl[x+1]))
       pass
@@ -358,7 +360,7 @@ for x in range(len(dihetbl)):
       # if ang_max > 180:
       angles = []
       for mnum in range(1,21,1):
-        Coords = eval('Coor' + str(mnum))
+        Coords = MasterDict['Coor' + str(mnum)]
         ang = np.round(Dihed.calcDihedrals(Coords[a1],Coords[a2],Coords[a3],Coords[a4]),1)
         if 'P' in angle and ang_min_orig < -180.0: ang = ang + 360.0
         if 'P' in angle and ang_max > 180.0 and ang < 0.0: ang = ang + 360.0
