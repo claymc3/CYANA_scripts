@@ -23,7 +23,7 @@ Required Input:
     numbering correction    how much should be added to correct the numbering
 
 OutPut:
-    PDB_fix.tbl
+    PDB_fixed.pdb
 
 ''')
 
@@ -37,14 +37,15 @@ newpdb = open(inpdb.replace('.pdb','_fixed.pdb'),'w')
 #       newpdb.write(line)
 # newpdb.close()
 for line in open(inpdb).readlines():
+  if re.match(r"^ATOM", line) and line[17:20].strip() in ['PTR','TPO','SEP']:
   if re.match(r"PTR", line[17:20].strip()):
     resid = '{:<2.0f}'.format(float(line[22:26].strip()) + correction)
-    line1 = line.replace('ATOM  ','HETATM').replace('1HE ',' HE1').replace('2HE ',' HE2').replace('1HD ',' HD1').replace('2HD ',' HD2')
+    line1 = line.replace('ATOM  ','HETATM').replace('1HE ',' HE1').replace('2HE ',' HE2').replace('1HD ',' HD1').replace('2HD ',' HD2').replace('1HG2','HG21').replace('2HG2','HG22').replace('3HG2','HG23')
     resid = '{:<2.0f}'.format(float(line[22:26].strip()) + correction)
     newline = "{:} {:} {:<4}{:}".format(line1[0:20],line[72],resid,line1[27:])
     # newline = "{:} {:}{:}".format(line1[0:20],line[72],line1[22:])
     newpdb.write(newline)
-  if re.match(r"^ATOM", line) and not re.match(r"PTR", line[17:20].strip()):
+  if re.match(r"^ATOM", line) and not line[17:20].strip() in ['PTR','TPO','SEP']:
     newline = "{:} {:}{:}".format(line[0:20],line[72],line[22:])
     newpdb.write(newline)
   if not re.match(r"^ATOM", line):
