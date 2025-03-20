@@ -328,6 +328,8 @@ for x in range(len(dihetbl)):
       if line.split()[5] == 'N' and line.split()[11] == 'CA' and line2.split()[4] == 'C' and line2.split()[10] == 'N': angle = 'PSI'
       if line.split()[5] == 'N' and line.split()[11] == 'CA' and line2.split()[4] == 'CB': angle = 'CHI1'
       if line.split()[5] == 'CA' and line.split()[11] == 'CB': angle = 'CHI2'
+      if line.split()[5] == 'CB' and line.split()[11] == 'CG': angle = 'CHI3'
+      if line.split()[5] == 'CG' and line.split()[11] == 'CD': angle = 'CHI4'
       try:
         exec('{:}count = {:}count + 1'.format(angle.lower(),angle.lower()))
       except NameError:
