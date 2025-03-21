@@ -203,9 +203,32 @@ if 'K' in sys.argv[3]:
 	aco.write('\n\n')
 if 'R' in sys.argv[3]:
 	for (res, resn) in num_seq:
-		if res == 'W':
+		if res == 'R':
 			aco.write('## {:>5}  ARG  CHI1    360.0   360.0\n## {:>5}  ARG  CHI2    360.0   360.0\n'.format(resn,resn))
 	aco.write('\n\n')
+
+aco.write('### Other rotamers to check ###')
+for (res, resn) in num_seq:
+	if res == 'H':
+		aco.write('## {:>5}  {:<4} CHI1    360.0   360.0\n## {:>5}  {:<4} CHI2    360.0   360.0\n'.format(resn,num2AAA[resn],resn,num2AAA[resn]))
+aco.write('\n\n')
+for (res, resn) in num_seq:
+	if res == 'D':
+		aco.write('## {:>5}  ASP  CHI1    360.0   360.0\n## {:>5}  ASP  CHI2    360.0   360.0\n'.format(resn,resn))
+aco.write('\n\n')
+for (res, resn) in num_seq:
+	if res == 'N':
+		aco.write('## {:>5}  ASN  CHI1    360.0   360.0\n## {:>5}  ASN  CHI2    360.0   360.0\n'.format(resn,resn))
+aco.write('\n\n')
+for (res, resn) in num_seq:
+	if res == 'E':
+		aco.write('## {:>5}  GLU  CHI1    360.0   360.0\n## {:>5}  GLU  CHI2    360.0   360.0\n'.format(resn,resn))
+aco.write('\n\n')
+for (res, resn) in num_seq:
+	if res == 'Q':
+		aco.write('## {:>5}  GLN  CHI1    360.0   360.0\n## {:>5}  GLN  CHI2    360.0   360.0\n'.format(resn,resn))
+aco.write('\n\n')
+
 
 aco.write('## Phi/Psi values from TALOS\n')
 phicount, psicount = 0,0 
