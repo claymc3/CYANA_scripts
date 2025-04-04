@@ -64,13 +64,13 @@ for dirn in cwd.split('/'):
     topdir = topdir + dirn + '/'
 outdir = topdir + 'post_cns_analysis/'
 MasterDict = {}
-in_pdb = '{:}_cya.pdb'.format(name)
-noetbl = open('../{:}_noe.tbl'.format(name)).readlines()
-hbondtbl = open('../{:}_hbond.tbl'.format(name)).readlines()
-dihetbl = open('../{:}_dihe.tbl'.format(name)).readlines()
+in_pdb = '{:}/{:}_cya.pdb'.format('refinedPDB',name)
+noetbl = open('{:}_noe.tbl'.format(name)).readlines()
+hbondtbl = open('{:}_hbond.tbl'.format(name)).readlines()
+dihetbl = open('{:}_dihe.tbl'.format(name)).readlines()
 pdbname = '{:}_cya'.format(name)
 outname = '{:}_cns'.format(name)
-init = '../../init.cya'
+init = '../init.cya'
 seq = [line.strip().split() for line in open(topdir + open(init).readlines()[0].strip().split(':=')[-1] + '.seq').readlines() if '#' != line[0] and line.split()[0] in AAA_dict.keys()]
 Seqdict, num2AAA, ASequence = {}, {}, []
 for resn,resi in seq:
