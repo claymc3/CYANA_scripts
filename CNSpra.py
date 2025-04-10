@@ -64,11 +64,26 @@ for dirn in cwd.split('/'):
     topdir = topdir + dirn + '/'
 outdir = topdir + 'post_cns_analysis/'
 MasterDict = {}
-in_pdb = '{:}/{:}_cya.pdb'.format('refinedPDB',name)
+
+## Open the ordered PDB name_cya.pdb and fix the chain location and HETATOM classification for phosphorylated residues
+outpdb = open('refinedPDB/{:}.pdb'.format(name),'w')
+for line in open('refinedPDB/{:}_cya.pdb'.format(name)).readlines():
+  if re.match(r"^ATOM", line) and line[17:20].strip() in ['PTR','TPO','SEP']:
+    line1 = line.replace('ATOM  ','HETATM').replace('1HE ',' HE1').replace('2HE ',' HE2').replace('1HD ',' HD1').replace('2HD ',' HD2').replace('1HG2','HG21').replace('2HG2','HG22').replace('3HG2','HG23')
+    newline = "{:} {:}{:}".format(line1[0:20],line[72],line1[22:])
+    outpdb.write(newline)
+  if re.match(r"^ATOM", line) and not line[17:20].strip() in ['PTR','TPO','SEP']:
+    newline = "{:} {:}{:}".format(line[0:20],line[72],line[22:])
+    outpdb.write(newline)
+  if not re.match(r"^ATOM", line):
+    outpdb.write(line)
+outpdb.close()
+
+in_pdb = 'refinedPDB/{:}.pdb'.format(name)
 noetbl = open('{:}_noe.tbl'.format(name)).readlines()
 hbondtbl = open('{:}_hbond.tbl'.format(name)).readlines()
 dihetbl = open('{:}_dihe.tbl'.format(name)).readlines()
-pdbname = '{:}_cya'.format(name)
+pdbname = '{:}'.format(name)
 outname = '{:}_cns'.format(name)
 init = '../init.cya'
 seq = [line.strip().split() for line in open(topdir + open(init).readlines()[0].strip().split(':=')[-1] + '.seq').readlines() if '#' != line[0] and line.split()[0] in AAA_dict.keys()]
@@ -83,6 +98,9 @@ upldf['cns'] = np.zeros(len(ASequence))
 upldf['viol < 0.3'] = np.zeros(len(ASequence))
 upldf['viol > 0.3'] = np.zeros(len(ASequence))
 
+## Fix the chain name in the cyana/IUPAC formated PDB file:
+
+
 ## Check for the output directory if it does not exist make it
 if not os.path.exists(outdir):
   os.makedirs(outdir)
@@ -94,8 +112,8 @@ shortsum = open(outdir + 'Short_stats.txt','w')
 checkcons.write('## Generated using CNSpra_{:} on {:} \n'.format(Vnum,dt_string))
 shortsum.write('## Generated using CNSpra_{:} on {:} \n'.format(Vnum,dt_string))
 
-outpml = open('{:}{:}.pml'.format(outdir,outname),'w')
-outpml.write('load ../{:}/refinedPDB/{:}_cya.pdb\n'.format(cnsdir,name))
+outpml = open('{:}{:}.pml'.format(outdir,name),'w')
+outpml.write('load ../{:}/refinedPDB/{:}.pdb\n'.format(cnsdir,name))
 outpml.write('set dash_gap, 0.05\n')
 outpml.write('set_color royalblue = [65,105,225]\nset_color forest = [34,139,34]\nset_color yellowgreen = [154,205,50]\nset_color darkorange = [255,140,0]\nset_color purple = [128,0,128]\nset_color lightseagreen = [32,178,170]\nset_color darkkhaki = [189,183,107]\nset_color peru = [205,133,63]\nset_color saddlebrown = [139,69,19]\nset_color gold = [255,215,0]\nset_color navy = [0,0,128]\nset_color darkturquoise = [0,206,209]\nset_color pink = [255,192,203]\nset_color cyan = [0,255,255]\nset_color paleturquoise = [175,238,238]\nset_color lightsalmon = [255,160,122]\nset_color khaki = [240,230,140]\nset_color yellowgreen = [154,205,50]\nset_color thistle = [216,191,216]\nset_color aquamarine = [127,255,212]\nset_color plum = [221,160,221]\nset_color lightpink = [255,182,193]\nset_color mediumvioletred = [199,21,133]\nset_color firebrick = [178,34,34]\nset_color lightcoral = [240,128,128]\nset_color deeppink = [255,20,147]\nset_color hotpink = [255,105,180]\nset_color mediumpurple = [147,112,219]\nset_color navy = [0,0,128]\nset_color cornflowerblue = [100,149,237]\n')
 outpml.write('color gray60, all\n')
@@ -106,7 +124,7 @@ outpml.write('split_states ' + pdbname + '\n')
 for y in range(2,21,1):
   outpml.write('align {:}_{:04d}, {:}_0001\n'.format(pdbname,y, pdbname))
 outcmx = open('{:}{:}.cxc'.format(outdir,name),'w')
-outcmx.write('open ../{:}/refinedPDB/{:}_cya.pdb\n'.format(cnsdir,name))
+outcmx.write('open ../{:}/refinedPDB/{:}.pdb\n'.format(cnsdir,name))
 outcmx.write('color #1 gray(150)\n')
 outcmx.write('match #1.2-20 to #1.1\n')
 outcmx.write('color #1:ile paleturquoise target a\ncolor #1:leu lightsalmon  target a\ncolor #1:val khaki target a\ncolor #1:ala yellowgreen  target a\ncolor #1:met thistle target a\ncolor #1:thr aquamarine target a\ncolor #1:phe plum target a\ncolor #1:tyr lightpink target a\n')
@@ -412,8 +430,8 @@ print('finished plotting dihedrals')
 armn = mn+1
 routmn = mn+2
 mn+=2
-outcmx.write('open ../{:}/refinedPDB/{:} maxModels 1\nrename #{:} angle_restraints\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(cnsdir,in_pdb,armn,armn,armn))
-outcmx.write('open ../{:}/refinedPDB/{:} maxModels 1\nrename #{:} rama_outliers\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(cnsdir,in_pdb,routmn,routmn,routmn))
+outcmx.write('open ../{:}/refinedPDB/{:}.pdb maxModels 1\nrename #{:} angle_restraints\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(cnsdir,name,armn,armn,armn))
+outcmx.write('open ../{:}/refinedPDB/{:}.pdb maxModels 1\nrename #{:} rama_outliers\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(cnsdir,name,routmn,routmn,routmn))
 ramalist, rotalist = [],[]
 for line in DAramalist:ramalist.append(line.split()[0][1:])
 for line in DArotalist:rotalist.append(line.split()[0][1:])
@@ -493,7 +511,7 @@ checkcons.close()
 ## ---------------------------------------------------------------------------
 ### Creating Model coloring residues based on the number of NOE restraints 
 mn+=1
-outcmx.write('open ../{:}/refinedPDB/{:}_cya.pdb maxModels 1\nrename #{:} noes\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(cnsdir,name,mn,mn,mn))
+outcmx.write('open ../{:}/refinedPDB/{:}.pdb maxModels 1\nrename #{:} noes\nhide #{:} target a\ncolor #{:} gray(150)\n'.format(cnsdir,name,mn,mn,mn))
 outcmx.write('color name c0 rgb(255,205,0)\ncolor name c2 rgb(156,217,59)\ncolor name c4 rgb(52,182,121)\ncolor name c6 rgb(42,117,142)\ncolor name c8 rgb(59,81,139)\ncolor name c10 rgb(20,64,110)\n')
 outpml.write('set_color c0 = [255,205,0]\nset_color c2  = [156,217,59]\nset_color c4  = [52,182,121]\nset_color c6  = [42,117,142]\nset_color c8  = [59,81,139]\nset_color c10  = [20,64,110]\n')
 outpml.write('create noes, {:}_0001\ncolor gray60,phi-psi\nhide sticks, noes\n'.format(pdbname))
@@ -542,6 +560,7 @@ outpml.write('show sticks, noes and resn THR+MET+ALA+LEU+VAL+ILE+PHE+TYR\nhide s
 outpml.write(sidechains[:-1].replace(",","+").replace('#1:',"sticks, noes and resi ") + '\n')
 outpml.close()
 outcmx.close()
+
 
 print('finished')
 
