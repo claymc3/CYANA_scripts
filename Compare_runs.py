@@ -66,7 +66,7 @@ dihe1 = run1dir + 'dihed.aco'
 dihe2 = run2dir + 'dihed.aco'
 
 # cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
-
+print('Reorting changes to input files of {:} relative to {:}'.format(run2dir,run1dir))
 
 hbonds1,hbonds2,lol1,lol2 ={},{},{},{}
 for ln in ['1','2']:
@@ -74,24 +74,27 @@ for ln in ['1','2']:
 	loldict = eval('lol{:}'.format(ln))
 	uplf = eval('hbupl{:}'.format(ln))
 	lolf = eval('hblol{:}'.format(ln))
-	print(uplf)
-	print(lolf)
 	for line in open(uplf).readlines():
-		if line.strip() and not re.match('^\s*#', line):
+		if line.strip() and not re.match(r'^\s*#', line):
 			cns = line.split()
 			upl = '{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])
 			if upl in hbdict.keys():
 				print('Duplicate hbond entry {:} in {:}'.format(upl,uplf))
 			if upl not in hbdict.keys():
-				hbdict['{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])] = [cns[6]]
+				hbdict[upl] = [cns[6]]
 	for line in open(lolf).readlines():
-		if line.strip() and not re.match('^\s*#', line):
+		if line.strip() and not re.match(r'^\s*#', line):
 			cns = line.split()
-			upl = '{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])
-			if upl in hbdict.keys():
+			lol = '{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])
+			if lol in hbdict.keys():
 				hbdict['{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])].append(cns[6])
-			if upl not in hbdict.keys():
+			if lol not in hbdict.keys():
 				print('missing hbond lol entry {:}'.format(upl))
+			if lol in loldict.keys():
+				print('Duplicate hbond entry {:} in {:}'.format(lol,lolf))
+			if lol not in loldict.keys():
+				loldict[lol] =[cns[6]]
+
 
 rmhb, addhb = '',''
 for hb in hbonds1.keys():
@@ -113,7 +116,7 @@ for ln in ['1','2']:
 	angdict = eval('dihedrals{:}'.format(ln))
 	dihedf = eval('dihe{:}'.format(ln))
 	for line in open(dihedf).readlines():
-		if line.strip() and not re.match('^\s*#', line):
+		if line.strip() and not re.match(r'^\s*#', line):
 			cns = line.split()
 			# ang = '{:>5}  {:<4} {:<5}  {:>8} {:>8}'.format(cns[0],cns[1],cns[2],cns[3],cns[4])
 			ang = '{:>5}  {:<4} {:<5}'.format(cns[0],cns[1],cns[2])
@@ -132,8 +135,8 @@ for ang in dihedrals1.keys():
 	if ang in dihedrals2.keys():
 		low1, up1 = dihedrals1[ang].split()
 		low2, up2 = dihedrals2[ang].split()
-	if low1 != low2 or up1 != up2:
-		changedih = changedih + '   {:}  {:}  to  {:}\n'.format(ang,dihedrals1[ang],dihedrals2[ang])
+		if low1 != low2 or up1 != up2:
+			changedih = changedih + '   {:}  {:}  to  {:}\n'.format(ang,dihedrals1[ang],dihedrals2[ang])
 if len(rmdih) > 0:
 	rmdih = 'Removed Dihedrals:\n' + rmdih + '\n'
 	changelog.write(rmdih)
@@ -151,7 +154,7 @@ calc = run2dir + '/CALC.cya'
 manualcons = [line.strip() for line in open(calc).readlines() if line.strip() and '.upl' in line][0].split()[2].split(',')
 uplsf = [con for con in manualcons if 'upl' in con and 'hbond' not in con]
 lolsf = [con for con in manualcons if 'lol' in con and 'hbond' not in con]
-cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match('^\s*#', line)][0].split()[2].split(',')
+cya_plists = [line.strip().replace('.peaks','') for line in open(calc).readlines() if line.strip() and 'peaks' in line and not re.match(r'^\s*#', line)][0].split()[2].split(',')
 
 ## Check to see if both directories have the same files
 distcons = []
@@ -170,7 +173,7 @@ for distcon in distcons:
 		condict = eval("{:}{:}".format(distcon.split('.')[0],ln))
 		confile = eval('run{:}dir'.format(ln)) + distcon 
 		for line in open(confile).readlines():
-			if line.strip() and not re.match('^\s*#', line):
+			if line.strip() and not re.match(r'^\s*#', line):
 				cns = line.split()
 				upl = '{:>5}  {:<4}  {:<5}  {:>5}  {:<4}  {:<4}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])
 				if upl in condict.keys():
@@ -248,7 +251,7 @@ if os.path.exists(fupl1) and os.path.exists(fupl2):
 		upldict = eval('finalupl{:}'.format(ln))
 		uplf = eval('fupl{:}'.format(ln))
 		for line in open(uplf).readlines():
-			if line.strip() and not re.match('^\s*#', line):
+			if line.strip() and not re.match(r'^\s*#', line):
 				cns = line.split()
 				upl = '{:>} {:<4} {:<5} {:>} {:<4} {:<5}'.format(cns[0],cns[1],cns[2],cns[3],cns[4],cns[5])
 				if upl not in upldict.keys():
