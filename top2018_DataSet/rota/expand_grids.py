@@ -33,7 +33,7 @@ boxes = {
 'Lysine (LYS,K)':[(42.0,88.0,154.0,210.0),(153.0,215.0,139.0,215.0),(261.0,321.0,139.0,225.0),(269.0,325.0,253.0,325.0),(156.0,205.0,41.0,96.0)],
 'Methionine (MET, M)':[(45.0,84.0,157.0,210.0),(157.0,208.0,150.0,208.0),(265.0,322.0,146.0,212.0),(266.0,320.0,270.0,325.0),(161.0,208.0,42.0,86.0)],
 'Tryptophan (TRP,W)':[(31.0,90.0,59.0,113.0),(31.0,90.0,244.0,315.0),(151.0,212.0,0.0,110.0),(151.0,212.0,216.0,360.0),(255.0,325.0,0.0,142.0),(255.0,325.0,246.0,360.0)],
-'Phenylalanine/Tyrosine':[(35.0,90.0,63.0,117.0),(35.0,90.0,243.0,295.0),(149.0,212.0,0.0,120.0),(149.0,212.0,180.0,300.0),(261.0,320.0,60.0,180.0),(261.0,320.0,240.0,358.0)],
+'Phenylalanine/Tyrosine':[(40.0,85.0,70.0,112.0),(40.0,85.0,249.0,290.0),(155.0,205.0,21.0,114.0),(155.0,205.0,200.0,291.0),(267.0,320.0,60.0,180.0),(267.0,320.0,240.0,358.0)],
 'Aspartate (ASP,D)':[(41.0,86.0,0.0,360.0),(160.0,220.0,0.0,360.0),(260.0,318.0,0.0,360.0)]}
 
 pdf = PdfPages('Rotamer_Chi1-Chi2_templates.pdf')
@@ -43,8 +43,8 @@ files = [
 ['rota2018-gln.data', gcmap, [0, 0.02, 0.2, 1], 'Glutamine (GLN,Q)'],
 ['rota2018-glu.data', ycmap, [0, 0.02, 0.2, 1], 'Glutamic Acid (GLU,E)'],
 ['rota2018-his.data', pcmap, [0, 0.02, 0.2, 1], 'Histadine (HIS,H)'],
-['rota2018-ile.data', bcmap, [0, 0.03, 0.3, 1], 'Isoleucine (ILE,I)'],
-['rota2018-leu.data', bcmap, [0, 0.04, 0.2, 1], 'Leucine (LEU,L)'],
+['rota2018-ile.data', bcmap, [0, 0.02, 0.3, 1], 'Isoleucine (ILE,I)'],
+['rota2018-leu.data', bcmap, [0, 0.02, 0.2, 1], 'Leucine (LEU,L)'],
 ['rota2018-lys.data', gcmap, [0, 0.02, 0.2, 1], 'Lysine (LYS,K)'],
 ['rota2018-met.data', bcmap, [0, 0.04, 0.2, 1], 'Methionine (MET, M)'],
 ['rota2018-trp.data', pcmap, [0, 0.02, 0.2, 1], 'Tryptophan (TRP,W)']]
@@ -79,12 +79,11 @@ for file,cmap, bounds, label in files:
 	ax.grid(visible=True, which='major', axis='both',linestyle='--')
 	plt.tight_layout()
 	pdf.savefig()
-	# plt.show()
-	plt.close()
+	#plt.close()
 
 files = [
 ['rota2018-asp.data', ycmap, [0, 0.02, 0.2, 1],'Aspartate (ASP,D)'],
-['rota2018-phetyr.data', pcmap, [0, 0.02, 0.2, 1], 'Phenylalanine/Tyrosine']]
+['rota2018-phetyr.data', pcmap, [0, 0.05, 0.2, 1], 'Phenylalanine/Tyrosine']]
 for file,cmap, bounds, label in files:
 	print(file)
 	data = np.full((361, 361), 0, dtype=np.float64)
@@ -116,8 +115,8 @@ for file,cmap, bounds, label in files:
 	ax.grid(visible=True, which='major', axis='both',linestyle='--')
 	plt.tight_layout()
 	pdf.savefig()
-	plt.show()
-	plt.close()
+plt.show()
+	#plt.close()
 pdf.close()
 
 
