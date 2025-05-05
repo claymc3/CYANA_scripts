@@ -392,13 +392,20 @@ def Get_dihe_viol(angles,bounds):
 ##                A#-atom:[x,y,z]                 ##
 ##  where A# is the residue single letter code and index            ##
 ###----------------------------------------------------------------------------###
-def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihedviol, text):
+def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihedviol, text,multimer):
 
   outname = in_pdb.split('/')[-1].replace('.pdb','')
   Starts, Ends = [], []
   MasterDict = {}
   for mnum in range(1,21,1):
-    start = open(in_pdb).readlines().index('MODEL' + '%9s\n' %str(mnum))
+    try: 
+      start = open(in_pdb).readlines().index('MODEL' + '%9s\n' %str(mnum))
+    except ValueError:
+      pass
+    try:
+      start = open(in_pdb).readlines().index('MODEL          ' + '%s\n' %str(mnum))
+    except ValueError:
+      pass
     MasterDict['Coor' + str(mnum)] = {}
     Starts.append(start)
     Ends.append(start-1)
@@ -415,9 +422,12 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
       line = pdb[x]
       if line[0:4] == "ATOM" or line[0:4] == 'HETA':
         if line[17:20].strip() in AAA_dict.keys():
-          index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
-          Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
-  
+          if multimer == True:
+            index = '{:}{:}-{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[21],line[12:16].strip())
+            Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
+          if multimer == False:
+            index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
+            Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
   PhiDF =  pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv','type'])
   MasterDict['PhiDF'] = PhiDF
   PsiDF =  pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
