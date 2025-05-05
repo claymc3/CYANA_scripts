@@ -168,7 +168,7 @@ for x in range(len(cya_plists)):
 peaklisttxt = peaklisttxt + "{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%\n".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr,100*((tsingle+ tamb+ tdia)/tpeak))
 shortsumtext = shortsumtext + "{:<}{:} {:^6d}   {:^3.1f}% ({:})\n\n".format('Total',pad[5:],tpeak,100*((tsingle+ tamb+ tdia)/tpeak),(tsingle+ tamb+ tdia))
 #print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr, 100*((tsingle+ tamb+ tdia)/tpeak)))
-print(peaklisttxt)
+# print(peaklisttxt)
 checkcons.write(peaklisttxt +'\n\n')
 shortsum.write(shortsumtext)
 
@@ -728,8 +728,9 @@ angle_text = "Total of {:} dihedral restraints:\n       input viol\n{:<6} {:^5} 
 ## for all 20 structures
 ## ---------------------------------------------------------------------------
 print('Extracting dihedrals')
+multimer = False
 text = [['CYANA UPL','#9acd32'],['long UPL','#800080'],['Violated UPL','#ffa500'],['Input UPL','#6495ed'],['Found Input UPL','navy'],['Violate Input UPL','#db7093']]
-DAramalist, DArotalist = Dihed.extract(in_pdb, ASequence, outdir, upldf, phipsidict, chidict, plotdict,dihedviol,text)
+DAramalist, DArotalist = Dihed.extract(in_pdb, ASequence, outdir, upldf, phipsidict, chidict, plotdict,dihedviol,text,multimer)
 print('finished plotting dihedrals')
 armn = mn
 routmn = mn+1
