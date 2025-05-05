@@ -59,15 +59,25 @@ A_dict = {'C': 'CYS', 'D': 'ASP', 'S': 'SER', 'Q': 'GLN', 'K': 'LYS','I': 'ILE',
 
 def find_protons(inatom, PDBdict):
   atype = '{:}{:}'.format(inatom.split('-')[0][0], inatom.split('-')[-1])
-  resid, name = inatom.split('-')[0],inatom.split('-')[-1]
   atoms = []
-  if atype in Pseudo2Prot.keys():
-    for atomid in ['{:}-{:}'.format(resid,atom) for atom in Pseudo2Prot[atype]]:
-      if atomid in PDBdict.keys():
-        atoms.append(atomid)
-  if atype not in Pseudo2Prot.keys():
-    if inatom in PDBdict.keys():
-      atoms.append(inatom)
+  if len(inatom.split('-')) == 2:
+    resid, name = inatom.split('-')[0],inatom.split('-')[-1]
+    if atype in Pseudo2Prot.keys():
+      for atomid in ['{:}-{:}'.format(resid,atom) for atom in Pseudo2Prot[atype]]:
+        if atomid in PDBdict.keys():
+          atoms.append(atomid)
+    if atype not in Pseudo2Prot.keys():
+      if inatom in PDBdict.keys():
+        atoms.append(inatom)
+  if len(inatom.split('-')) == 3:
+    resid, chain, name = inatom.split('-')[0],inatom.split('-')[1],inatom.split('-')[-1]
+    if atype in Pseudo2Prot.keys():
+      for atomid in ['{:}-{:}-{:}'.format(resid,chain,atom) for atom in Pseudo2Prot[atype]]:
+        if atomid in PDBdict.keys():
+          atoms.append(atomid)
+    if atype not in Pseudo2Prot.keys():
+      if inatom in PDBdict.keys():
+        atoms.append(inatom)
   return atoms
 # ------------------------------------------------------------------------------
 # return atoms_list entry containing heavy atom for any pseudo atom entry 
