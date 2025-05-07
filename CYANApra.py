@@ -168,7 +168,7 @@ for x in range(len(cya_plists)):
 peaklisttxt = peaklisttxt + "{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%\n".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr,100*((tsingle+ tamb+ tdia)/tpeak))
 shortsumtext = shortsumtext + "{:<}{:} {:^6d}   {:^3.1f}% ({:})\n\n".format('Total',pad[5:],tpeak,100*((tsingle+ tamb+ tdia)/tpeak),(tsingle+ tamb+ tdia))
 #print("{:<}{:} {:^6d}  {:^4d} {:^4d} {:^7d} {:^9d} {:^7d} {:^5d}  {:^8d} {:^13}  {:^3.1f}%".format('Total',pad[5:],tpeak,tupl,tviol,tsingle,tamb,tnotused,tnota,tdia,tincr, 100*((tsingle+ tamb+ tdia)/tpeak)))
-# print(peaklisttxt)
+print(peaklisttxt)
 checkcons.write(peaklisttxt +'\n\n')
 shortsum.write(shortsumtext)
 
