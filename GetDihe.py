@@ -398,36 +398,19 @@ def extract(in_pdb, Sequence, outdir, upldf, phipsidict, chidict, plotdict, dihe
   Starts, Ends = [], []
   MasterDict = {}
   for mnum in range(1,21,1):
-    try: 
-      start = open(in_pdb).readlines().index('MODEL' + '%9s\n' %str(mnum))
-    except ValueError:
-      pass
-    try:
-      start = open(in_pdb).readlines().index('MODEL          ' + '%s\n' %str(mnum))
-    except ValueError:
-      pass
     MasterDict['Coor' + str(mnum)] = {}
-    Starts.append(start)
-    Ends.append(start-1)
-  Ends.append(len(open(in_pdb).readlines()))
-  Ends = sorted(Ends)[1:]
-  pdb = open(in_pdb).readlines()
-  n = 0
-  Starts = (sorted(Starts))
-  for (start,end) in zip(Starts,Ends):
-    n+=1
-    # print('Reading coordinates for model %d' %n)
-    Coor = MasterDict['Coor' + str(n)]
-    for x in range(start,end,1):
-      line = pdb[x]
-      if line[0:4] == "ATOM" or line[0:4] == 'HETA':
-        if line[17:20].strip() in AAA_dict.keys():
-          if multimer == True:
-            index = '{:}{:}-{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[21],line[12:16].strip())
-            Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
-          if multimer == False:
-            index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
-            Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
+  for line in open(in_pdb).readlines():
+    if line[0:5] == "MODEL":
+      line.split()[1]
+      Coor = MasterDict['Coor' + line.split()[1]]
+    if line[0:4] == "ATOM" or line[0:4] == 'HETA':
+      if line[17:20].strip() in AAA_dict.keys():
+        if multimer == True:
+          index = '{:}{:}-{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[21],line[12:16].strip())
+          Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
+        if multimer == False:
+          index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
+          Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
   PhiDF =  pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv','type'])
   MasterDict['PhiDF'] = PhiDF
   PsiDF =  pd.DataFrame(columns=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,'mean','stdv'])
