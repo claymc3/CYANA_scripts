@@ -396,8 +396,8 @@ for line in open(fupl).readlines():
         usedupls[cons2a] = outline
         if (float(cns[0]) > 1000 and float(cns[3]) < 1000) or (float(cns[0]) < 1000 and float(cns[3]) > 1000):
           im+=1
-          ctype = 'Interamolecular'
-          pblist = intermolecular_pb
+          ctype = 'intermolecular'
+          pblist = MasterDict[ctype + '_pb']
           outpml.write('distance intermol{:}, {:}_0001 and resi {:} and name {:}, {:}_0001 and resi {:} and name {:}\n'.format(str(im), pdbname, cns[0], atom1, pdbname, cns[3], atom2))
           MasterDict['group' + ctype] = MasterDict['group' + ctype] + '+ "intermo{:} "'.format(im)
           pblist.append('#1.1:{:}@{:} #1.1:{:}@{:}\n'.format(cns[0], atom1, cns[3],atom2))
