@@ -111,26 +111,16 @@ def getDistance(donor, acceptor,PDBdict):
 def examin(in_pdb, ADpairs,Assignments,finalupl):
   pdb_name = in_pdb.split('/')[-1].replace('.pdb','')
   num2seq,Coords = {},{}
-  Starts,Ends = [], []
   for mnum in range(1,21,1):
-    start = open(in_pdb).readlines().index('MODEL' + '%9s\n' %str(mnum))
     Coords['Coor' + str(mnum)] = {}
-    Starts.append(start)
-    Ends.append(start-1)
-  Ends.append(len(open(in_pdb).readlines()))
-  Ends = Ends[1:]
-  pdb = open(in_pdb).readlines()
-  n = 0
-  for (start,end) in zip(Starts,Ends):
-    n+=1
-    # print('Reading coordinates for model {:d}'.format(n))
-    Coor = Coords['Coor{:}'.format(n)]
-    for x in range(start,end,1):
-      line = pdb[x]
-      if line[0:4] == "ATOM" or line[0:4] == 'HETA':
-        if line[17:20].strip() in AAA_dict.keys():
-          index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
-          Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
+  for line in open(in_pdb).readlines():
+    if line[0:5] == "MODEL":
+      line.split()[1]
+      Coor = Coords['Coor{:}'.format(line.split()[1])]
+    if line[0:4] == "ATOM" or line[0:4] == 'HETA':
+      if line[17:20].strip() in AAA_dict.keys():
+        index = '{:}{:}-{:}'.format(AAA_dict[line[17:20].strip()],line[22:26].strip(),line[12:16].strip())
+        Coor[index] = [float(line[30:38]),float(line[38:46]),float(line[46:54])]
   DistancesDF = pd.DataFrame(columns=Assignments,index=Assignments)
   FilteredDF = pd.DataFrame(columns=Assignments,index=Assignments)
   # from itertools import combinations
