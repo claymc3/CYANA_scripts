@@ -41,7 +41,7 @@ def _cache_RAMA_PREF_VALUES():
 		RAMA_PREF_VALUES[key] = np.full((361, 361), 0, dtype=np.float64)
 		with open(os.path.join(f_path, val["file"])) as fn:
 			for line in fn:
-				if not re.match('^\s*#', line):
+				if not re.match(r'^\s*#', line):
 					x = int(float(line.split()[1]))
 					y = int(float(line.split()[0]))
 					for nx in np.arange(x-1,x+1,1):
@@ -56,7 +56,7 @@ def _cache_ROTA_PREF_VALUES():
 		ROTA_PREF_VALUES[key] = np.full((361, 361), 0, dtype=np.float64)
 		with open(os.path.join(f_path, val["file"])) as fn:
 			for line in fn:
-				if not re.match('^\s*#', line):
+				if not re.match(r'^\s*#', line):
 					x = int(float(line.split()[1]))
 					y = int(float(line.split()[0]))
 					for nx in np.arange(x-1,x+1,1):

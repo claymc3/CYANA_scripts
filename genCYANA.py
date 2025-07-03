@@ -307,8 +307,7 @@ for i in range(len(resn)):
 #------------------------------------------------------------------------------
 # Generate list of allowed atoms in addition to N and O used for hydrogen bond limit generation 
 #
-allowed_atoms =["ALA-O", "ALA-N", "ALA-H", "ARG-O", "ARG-N", "ARG-H", "ASN-O", "ASN-N", "ASN-H", "ASP-O", "ASP-N", "ASP-H", "CYS-O", "CYS-N", "CYS-H", "GLU-O", "GLU-N", "GLU-H", "GLN-O", "GLN-N", "GLN-H", "GLY-O", "GLY-N", "GLY-H", "HIS-O", "HIS-N", "HIS-H", "ILE-O", "ILE-N", "ILE-H", "LEU-O", "LEU-N", "LEU-H", "LYS-O", "LYS-N", "LYS-H", "MET-O", "MET-N", "MET-H", "PHE-O", "PHE-N", "PHE-H", "PRO-O", "PRO-N", "SER-O", "SER-N", "SER-H", "THR-O", "THR-N", "THR-H", "TRP-O", "TRP-N", "TRP-H", "TYR-O", "TYR-N", "TYR-H", "VAL-O", "VAL-N", "VAL-H"]
-
+allowed_atoms =[["ALA-O", "ALA-N", "ALA-C", "ARG-O", "ARG-N", "ARG-C", "ASN-O", "ASN-N", "ASN-C", "ASP-O", "ASP-N", "ASP-C", "CYS-O", "CYS-N", "CYS-C", "GLU-O", "GLU-N", "GLU-C", "GLN-O", "GLN-N", "GLN-C", "GLY-O", "GLY-N", "GLY-C", "HIS-O", "HIS-N", "HIS-C", "ILE-O", "ILE-N", "ILE-C", "LEU-O", "LEU-N", "LEU-C", "LYS-O", "LYS-N", "LYS-C", "MET-O", "MET-N", "MET-C", "PHE-O", "PHE-N", "PHE-C", "PRO-O", "PRO-N", "SER-O", "SER-N", "SER-C", "SEP-O", "SEP-N", "SEP-C", "TPO-O", "TPO-N", "TPO-C", "THR-O", "THR-N", "THR-C", "TRP-O", "TRP-N", "TRP-C", "TYR-O", "TYR-N", "TYR-C", "VAL-O", "VAL-N", "VAL-C"]
 for i in range(len(atoms)):
 	for x in range(len(Atoms_dict[atoms[i]])):
 		allowed_atoms.append(A_dict[atoms[i]] + '-' + Atoms_dict[atoms[i]][x])

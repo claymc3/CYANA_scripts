@@ -3,7 +3,7 @@ import sys
 import re
 import pandas as pd
 import numpy as np
-import GetDihe as Dihed
+#import GetDihe as Dihed
 import noa_analysis as noaa
 from datetime import datetime
 import glob

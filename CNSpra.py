@@ -372,7 +372,7 @@ hbond.close()
 sidechains = 'show #1'
 for res in sidelist:
   sidechains = sidechains + res
-outcmx.write(sidechains[:-1] + '\n')
+outcmx.write(sidechains + '\n')
 outcmx.write('hide H\n''show #1.1@H,N target a\n')
 selhbond = selhbond + '\nshow hbond target a\n'
 outcmx.write('open pseudobonds/' + 'hbond.pb\n')
