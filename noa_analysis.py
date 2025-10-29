@@ -124,47 +124,50 @@ def analize_noa(Seqdict, violdict, qupldict, upldict, pad, upldict2, distDF,fill
         # print(plist)
         # print('{:1.3E}'.format(Calconst))
         for y in range(2,int(noalines[x+1].split()[0])+2,1):
-          cns = noalines[x+y].strip().split()
-          if not re.match(r'^\s+[A-Z]+',noalines[x+y]):
-            atom1,resn1, resi1, atom2, resn2, resi2, pshift, drange = cns[1],cns[2],int(cns[3]), cns[5], cns[6], int(cns[7]), float(cns[10])/100, cns[13]
-          if re.match(r'^\s+[A-Z]+',noalines[x+y]):
-            atom1,resn1, resi1, atom2, resn2, resi2, pshift, drange = cns[0],cns[1],int(cns[2]), cns[4], cns[5], int(cns[6]), float(cns[9])/100, cns[12]
-          group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
-          group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
-          note = ''
-          if group1 in Swapped.keys(): group1 = Swapped[group1]; note = note + 'swapped '
-          if group2 in Swapped.keys(): group2 = Swapped[group2]; note = note + 'swapped '
-          conect = '{:}-{:}'.format(group1,group2)
-          if '{:} peak {:} from {:}'.format(conect,peak,plist) in upldict2:
-            note = 'UPL ' + note
-          if float(intdict[peak][y-2]) != 0.0: 
-            dist = (Calconst/float(intdict[peak][y-2]))**(1/6)
-            drange = '{:3.2f}-{:3.2f}'.format(dist, dist*1.25)
-          if float(intdict[peak][y-2]) == 0.0: 
-            print('Warning Peak {:>4} from {:} has zero intensity !'.format(peak, plist))
-          outline = '{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:3.2f} {:}\n'.format(conect,intdict[peak][y-2],drange,peak,linepad,plist,pshift,note)
-          udist = ' '
-          if conect in upldict.keys(): udist = upldict[conect] + 'A'
-          if '{:}-{:}'.format(group1,group2)in ADpairs:
-            assigndict2['{:}-{:}'.format(group1,group2)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
-            assigndict['{:}-{:}'.format(group1,group2)].append(outline)
-          if '{:}-{:}'.format(group2,group1)in ADpairs:
-            assigndict['{:}-{:}'.format(group2,group1)].append(outline)
-            assigndict2['{:}-{:}'.format(group2,group1)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
-          if float(SUP) <= 0.6:
-            note = note + 'low support '
+          try:
+            cns = noalines[x+y].strip().split()
+            if not re.match(r'^\s+[A-Z]+',noalines[x+y]):
+              atom1,resn1, resi1, atom2, resn2, resi2, pshift, drange = cns[1],cns[2],int(cns[3]), cns[5], cns[6], int(cns[7]), float(cns[10])/100, cns[13]
+            if re.match(r'^\s+[A-Z]+',noalines[x+y]):
+              atom1,resn1, resi1, atom2, resn2, resi2, pshift, drange = cns[0],cns[1],int(cns[2]), cns[4], cns[5], int(cns[6]), float(cns[9])/100, cns[12]
+            group1 = '{:}{:}-{:}'.format(AAA_dict[resn1],resi1, atom1)
+            group2 = '{:}{:}-{:}'.format(AAA_dict[resn2],resi2, atom2)
+            note = ''
+            if group1 in Swapped.keys(): group1 = Swapped[group1]; note = note + 'swapped '
+            if group2 in Swapped.keys(): group2 = Swapped[group2]; note = note + 'swapped '
+            conect = '{:}-{:}'.format(group1,group2)
+            if '{:} peak {:} from {:}'.format(conect,peak,plist) in upldict2:
+              note = 'UPL ' + note
+            if float(intdict[peak][y-2]) != 0.0: 
+              dist = (Calconst/float(intdict[peak][y-2]))**(1/6)
+              drange = '{:3.2f}-{:3.2f}'.format(dist, dist*1.25)
+            if float(intdict[peak][y-2]) == 0.0: 
+              print('Warning Peak {:>4} from {:} has zero intensity !'.format(peak, plist))
+            outline = '{:^28} {:^14} {:>9}A  Peak {:4} from {:<}{:}  pshift {:3.2f} {:}\n'.format(conect,intdict[peak][y-2],drange,peak,linepad,plist,pshift,note)
+            udist = ' '
+            if conect in upldict.keys(): udist = upldict[conect] + 'A'
+            if '{:}-{:}'.format(group1,group2)in ADpairs:
+              assigndict2['{:}-{:}'.format(group1,group2)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
+              assigndict['{:}-{:}'.format(group1,group2)].append(outline)
+            if '{:}-{:}'.format(group2,group1)in ADpairs:
+              assigndict['{:}-{:}'.format(group2,group1)].append(outline)
+              assigndict2['{:}-{:}'.format(group2,group1)].append('{:^28}  Peak {:4} from {:<}{:}\n'.format(conect,peak,linepad,plist))
+            if float(SUP) <= 0.6:
+              note = note + 'low support '
+              if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
+            if conect in violdict.keys():
+              note = note + violdict[conect].replace(' #','').replace("\n",'') + ' '
+              if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
+            if conect in qupldict.keys():
+              note = note + qupldict[conect]
+              if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
+            if pshift <= 0.60 and '{:} {:}'.format(peak, conect) not in used:
+              note = note + 'poor chem shift '
+              if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
+            outlist.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^5}  {:^10}  {:^6.2f}   {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,note))
             if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
-          if conect in violdict.keys():
-            note = note + violdict[conect].replace(' #','').replace("\n",'') + ' '
-            if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
-          if conect in qupldict.keys():
-            note = note + qupldict[conect]
-            if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
-          if pshift <= 0.60 and '{:} {:}'.format(peak, conect) not in used:
-            note = note + 'poor chem shift '
-            if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
-          outlist.append("{:>6}  {:>8.3f} {:>8.3f} {:>8.3f}  {:^24}  {:^5}  {:^10}  {:^6.2f}   {:}\n".format(peak,pdict[peak][0],pdict[peak][1],pdict[peak][2],conect,udist, drange +'A',pshift,note))
-          if '{:} {:}'.format(peak, conect) not in used: used.append('{:} {:}'.format(peak, conect))
+          except IndexError:
+            pass
 
   print('finished assigned')
   pdiffcount,unassignedcount = 0,0
